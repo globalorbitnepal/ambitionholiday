@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import MediaImage from "@/components/MediaImage";
 import type { BlogPost } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 
@@ -27,11 +28,11 @@ function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }
   return (
     <article className="hl-card group flex flex-col overflow-hidden rounded-[0.9rem] border border-gold/30">
       <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[16/9]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={mediaSrc(post.imageSrc, updatedAt)}
+        <MediaImage
+          src={post.imageSrc}
           alt={post.imageAlt}
-          className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 60vw"
+          className="object-cover transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
         />
         {post.badge && post.badgeStyle !== "none" ? (
           <div className="absolute left-3 top-3 z-[1]">
@@ -64,8 +65,12 @@ function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }
             {post.authorAvatarSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={mediaSrc(post.authorAvatarSrc, updatedAt)}
+                src={mediaSrc(post.authorAvatarSrc)}
                 alt=""
+                width={32}
+                height={32}
+                loading="lazy"
+                decoding="async"
                 className="h-8 w-8 rounded-full border border-white/25 object-cover bg-black/40"
               />
             ) : null}
@@ -104,11 +109,11 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
       className="group flex gap-3 rounded-lg border border-gold/30 bg-white/75 p-2.5 shadow-[0_8px_24px_rgba(40,55,75,0.06)] transition-colors hover:border-gold/55 hover:bg-white/90 sm:gap-3.5 sm:p-3"
     >
       <div className="relative h-[4.6rem] w-[4.6rem] shrink-0 overflow-hidden rounded-md border border-white/10 sm:h-[5.1rem] sm:w-[5.1rem]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={mediaSrc(post.imageSrc, updatedAt)}
+        <MediaImage
+          src={post.imageSrc}
           alt={post.imageAlt}
-          className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-500 [@media(hover:hover)]:group-hover:scale-105"
+          sizes="82px"
+          className="object-cover transition-transform duration-500 [@media(hover:hover)]:group-hover:scale-105"
         />
       </div>
       <div className="min-w-0 flex-1 py-0.5">

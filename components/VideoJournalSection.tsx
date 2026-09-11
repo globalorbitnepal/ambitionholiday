@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import MediaImage from "@/components/MediaImage";
 import type { JournalVideo } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 
@@ -179,11 +180,11 @@ export default function VideoJournalSection() {
               onClick={() => setActive(video)}
               className="group on-photo relative aspect-[16/10] overflow-hidden rounded-[0.85rem] border border-gold/35 text-left transition-transform duration-500 [@media(hover:hover)]:hover:scale-[1.02] hover:border-gold/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={mediaSrc(video.imageSrc, updatedAt)}
+              <MediaImage
+                src={video.imageSrc}
                 alt={video.imageAlt}
-                className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
               />
               <div
                 className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15"

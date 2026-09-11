@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import MediaImage from "@/components/MediaImage";
 import { mediaSrc } from "@/lib/media-src";
 
 function PeakMark({ className = "h-3.5 w-3.5" }: { className?: string }) {
@@ -105,11 +106,11 @@ export default function ExperiencesSection() {
               }}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={mediaSrc(card.imageSrc, updatedAt)}
+                <MediaImage
+                  src={card.imageSrc}
                   alt={card.imageAlt}
-                  className="h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent"

@@ -1,6 +1,6 @@
 import { useSiteContent } from "@/components/SiteContentProvider";
+import MediaImage from "@/components/MediaImage";
 import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
-import { mediaSrc } from "@/lib/media-src";
 
 function CircleIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -170,7 +170,7 @@ function RatingLogo({ rating }: { rating: WhyRating }) {
 }
 
 export default function WhyAmbitionSection() {
-  const { why, updatedAt } = useSiteContent();
+  const { why } = useSiteContent();
   if (!why?.visible) return null;
 
   return (
@@ -212,12 +212,12 @@ export default function WhyAmbitionSection() {
                   {card.body}
                 </p>
               </div>
-              <div className="overflow-hidden rounded-b-[0.85rem]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={mediaSrc(card.imageSrc, updatedAt)}
+              <div className="relative aspect-[16/10] overflow-hidden rounded-b-[0.85rem]">
+                <MediaImage
+                  src={card.imageSrc}
                   alt={card.imageAlt}
-                  className="aspect-[16/10] w-full object-cover object-[center_28%] transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 18vw"
+                  className="object-cover transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
                 />
               </div>
             </article>

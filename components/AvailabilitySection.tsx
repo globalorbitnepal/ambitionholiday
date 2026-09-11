@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import MediaImage from "@/components/MediaImage";
 import type { AvailabilityRouteIcon } from "@/lib/content-types";
-import { mediaSrc } from "@/lib/media-src";
 
 function RouteIcon({ icon, iconSrc }: { icon: AvailabilityRouteIcon; iconSrc?: string }) {
   const cls = "h-3.5 w-3.5 shrink-0 text-gold";
@@ -83,7 +83,7 @@ function PeopleIcon() {
 }
 
 export default function AvailabilitySection() {
-  const { availability, updatedAt } = useSiteContent();
+  const { availability } = useSiteContent();
   if (!availability?.visible) return null;
 
   return (
@@ -112,11 +112,11 @@ export default function AvailabilitySection() {
             >
               {/* Full-bleed image to the top of the card */}
               <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[3/2]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={mediaSrc(card.imageSrc, updatedAt)}
+                <MediaImage
+                  src={card.imageSrc}
                   alt={card.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/35"

@@ -43,7 +43,7 @@ export async function GET(req: Request, { params }: Props) {
         "Accept-Ranges": "bytes",
         "Content-Range": `bytes ${start}-${end}/${size}`,
         "Content-Length": String(chunk.byteLength),
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   }
@@ -53,7 +53,7 @@ export async function GET(req: Request, { params }: Props) {
       "Content-Type": type,
       "Accept-Ranges": "bytes",
       "Content-Length": String(size),
-      "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
 }

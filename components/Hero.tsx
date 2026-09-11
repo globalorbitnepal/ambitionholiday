@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
+import MediaImage from "@/components/MediaImage";
 import HeroSearch from "@/components/HeroSearch";
 import HeroStats from "@/components/HeroStats";
 import HeroTagline from "@/components/HeroTagline";
@@ -27,7 +28,8 @@ export default function Hero() {
         ? DEFAULT_MOBILE_VIDEO
         : hero.videoSrc;
     setVideoSrc(src);
-    setShowVideo(true);
+    const start = window.setTimeout(() => setShowVideo(true), 480);
+    return () => window.clearTimeout(start);
   }, [hero.videoSrc]);
 
   useEffect(() => {
@@ -80,14 +82,13 @@ export default function Hero() {
       ref={sectionRef}
       className="relative isolate flex min-h-[100dvh] w-full flex-col overflow-hidden bg-black"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <MediaImage
         src={hero.posterSrc}
         alt=""
-        fetchPriority="high"
-        decoding="async"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_28%] sm:object-center"
-        aria-hidden="true"
+        priority
+        sizes="100vw"
+        objectPosition="center 28%"
+        className="pointer-events-none object-cover sm:object-center"
       />
       {showVideo ? (
         <video

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import MediaImage from "@/components/MediaImage";
 import type { SignatureImage } from "@/lib/content-types";
 
 type Props = {
@@ -127,14 +128,13 @@ export default function SignatureGallery({ images }: Props) {
               backgroundColor: "#1e252f",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <MediaImage
               src={image.src}
               alt={image.alt}
-              draggable={false}
-              loading={index < 2 ? "eager" : "lazy"}
-              decoding="async"
-              className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-[center_22%]"
+              priority={index < 2}
+              sizes="(max-width: 640px) 42vw, 216px"
+              objectPosition="center 22%"
+              className="pointer-events-none select-none object-cover"
             />
           </figure>
         ))}

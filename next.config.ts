@@ -5,10 +5,29 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 7,
   },
   async headers() {
     // Safari / iOS friendly transport + caching headers (safe defaults).
     return [
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2592000, stale-while-revalidate=31536000",
+          },
+        ],
+      },
+      {
+        source: "/videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2592000, stale-while-revalidate=31536000",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [

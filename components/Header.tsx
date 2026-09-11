@@ -313,6 +313,8 @@ export default function Header() {
               width={977}
               height={258}
               priority
+              sizes="180px"
+              quality={80}
               className="h-[2.60rem] w-auto object-contain sm:h-[2.83rem] lg:h-[3.16rem]"
               key={header.logoSrc}
             />

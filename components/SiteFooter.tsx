@@ -79,12 +79,13 @@ function FooterLandscape({
   return (
     <div className="relative w-full overflow-hidden bg-[#e4ecf4]" aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={mediaSrc(src, updatedAt)}
-        alt=""
-        decoding="async"
-        className="block h-auto w-full max-w-none object-contain object-center"
-      />
+        <img
+          src={mediaSrc(src)}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="block h-auto w-full max-w-none object-contain object-center"
+        />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-[#e8eef5] to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-gradient-to-t from-[#12161c]/60 to-transparent" />
     </div>
@@ -157,6 +158,8 @@ function BrandChip({
         <img
           src={mediaSrc(imageSrc, updatedAt)}
           alt={label}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-contain object-center"
         />
       </Link>
@@ -419,8 +422,10 @@ export default function SiteFooter() {
             <div className="flex flex-col items-center lg:items-start">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={mediaSrc(logoSrc, updatedAt)}
+                src={mediaSrc(logoSrc)}
                 alt="Ambition Holidays"
+                loading="lazy"
+                decoding="async"
                 className="h-16 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] sm:h-[4.5rem]"
               />
             </div>
@@ -435,11 +440,10 @@ export default function SiteFooter() {
             <div className="mx-auto flex w-full max-w-[14rem] items-center justify-center lg:justify-end">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={mediaSrc(
-                  footer.brandArtSrc || "/images/footer/tripadvisor-awards.png",
-                  updatedAt
-                )}
+                src={mediaSrc(footer.brandArtSrc || "/images/footer/tripadvisor-awards.png")}
                 alt="Tripadvisor Travelers' Choice Awards"
+                loading="lazy"
+                decoding="async"
                 className="h-auto w-full max-h-[7.5rem] object-contain object-center drop-shadow-[0_6px_18px_rgba(0,0,0,0.2)] sm:max-h-[8.25rem]"
               />
             </div>

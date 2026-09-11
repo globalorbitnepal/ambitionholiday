@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { mediaSrc } from "@/lib/media-src";
 
 type Props = {
   src: string;
@@ -12,7 +13,8 @@ type Props = {
 };
 
 function isRuntimeUpload(src: string) {
-  return src.startsWith("/uploads/") || src.startsWith("/api/media/");
+  const path = src.split("?")[0];
+  return path.startsWith("/uploads/") || path.startsWith("/api/media/");
 }
 
 export default function MediaImage({
@@ -23,18 +25,20 @@ export default function MediaImage({
   priority = false,
   objectPosition = "center 28%",
 }: Props) {
+  const resolved = mediaSrc(src);
   const style = { objectPosition };
 
-  if (isRuntimeUpload(src)) {
+  if (isRuntimeUpload(resolved)) {
     return (
       // Runtime CMS uploads are served from disk, not the build-time public folder.
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={src}
+        src={resolved}
         alt={alt}
-        className={`h-full w-full ${className ?? ""}`}
+        className={`absolute inset-0 h-full w-full ${className ?? ""}`}
         style={style}
         loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "low"}
         decoding="async"
         draggable={false}
       />
@@ -43,11 +47,11 @@ export default function MediaImage({
 
   return (
     <Image
-      src={src}
+      src={resolved}
       alt={alt}
       fill
       sizes={sizes}
-      quality={78}
+      quality={priority ? 74 : 68}
       priority={priority}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
