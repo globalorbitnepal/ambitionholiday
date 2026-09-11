@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readContent, scrubUploadRefs, writeContent } from "@/lib/content";
 import { uploadDirs, safeUploadName } from "@/lib/uploads";
+import { listSiteMedia, listUploadMedia } from "@/lib/media-library";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
@@ -72,20 +73,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const names = new Set<string>();
-  for (const dir of uploadDirs()) {
-    try {
-      await fs.mkdir(dir, { recursive: true });
-      const files = await fs.readdir(dir);
-      for (const file of files) {
-        if (!file.startsWith(".")) names.add(file);
-      }
-    } catch {
-      // directory may not exist yet
-    }
-  }
+  const uploads = await listUploadMedia();
+  const site = await listSiteMedia();
 
   return NextResponse.json({
-    files: Array.from(names).map((file) => `/uploads/${file}`),
+    files: uploads.map((item) => item.path),
+    items: [...uploads, ...site],
   });
 }

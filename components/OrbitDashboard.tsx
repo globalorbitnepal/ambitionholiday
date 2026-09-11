@@ -9,6 +9,7 @@ import OrbitAvailabilityEditor from "@/components/OrbitAvailabilityEditor";
 import OrbitJournalEditor from "@/components/OrbitJournalEditor";
 import OrbitBlogEditor from "@/components/OrbitBlogEditor";
 import OrbitFooterEditor from "@/components/OrbitFooterEditor";
+import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import type {
   SignatureFeature,
   SiteContent,
@@ -67,8 +68,6 @@ export default function OrbitDashboard({ initial }: Props) {
     | "footer"
     | "media"
   >("journeys");
-  const [uploads, setUploads] = useState<string[]>([]);
-
   const updatedLabel = useMemo(() => {
     try {
       return new Date(content.updatedAt).toLocaleString();
@@ -100,26 +99,6 @@ export default function OrbitDashboard({ initial }: Props) {
   async function logout() {
     await fetch("/api/orbit/login", { method: "DELETE" });
     window.location.href = "/orbit/login";
-  }
-
-  async function refreshMedia() {
-    const res = await fetch("/api/orbit/media", { cache: "no-store" });
-    if (!res.ok) return;
-    const data = (await res.json()) as { files: string[] };
-    setUploads(data.files);
-  }
-
-  async function deleteMedia(path: string) {
-    const res = await fetch("/api/orbit/media", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path }),
-    });
-    if (!res.ok) return;
-    const saved = (await res.json()) as SiteContent;
-    setContent(saved);
-    await refreshMedia();
-    setStatus("Media deleted — removed from site.");
   }
 
   return (
@@ -168,16 +147,13 @@ export default function OrbitDashboard({ initial }: Props) {
               ["hero", "Hero"],
               ["header", "Header / Logo"],
               ["stats", "Trust bar"],
-              ["media", "Media"],
+              ["media", "Media library"],
             ] as const
           ).map(([id, label]) => (
             <button
               key={id}
               type="button"
-              onClick={() => {
-                setTab(id);
-                if (id === "media") void refreshMedia();
-              }}
+              onClick={() => setTab(id)}
               className={`rounded-full px-4 py-2 text-xs font-bold tracking-wide ${
                 tab === id
                   ? "bg-gold/20 text-gold"
@@ -894,45 +870,7 @@ export default function OrbitDashboard({ initial }: Props) {
             </div>
           ) : null}
 
-          {tab === "media" ? (
-            <div className="space-y-4">
-              <button
-                type="button"
-                onClick={() => void refreshMedia()}
-                className="rounded-md border border-white/20 px-3 py-2 text-xs"
-              >
-                Refresh uploads
-              </button>
-              <ul className="grid gap-3 sm:grid-cols-3">
-                {uploads.map((file) => (
-                  <li
-                    key={file}
-                    className="rounded-lg border border-white/10 p-3 space-y-2"
-                  >
-                    <div className="relative aspect-video overflow-hidden rounded-md bg-black/40">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={file}
-                        alt=""
-                        className="absolute inset-0 h-full w-full object-cover"
-                      />
-                    </div>
-                    <p className="truncate text-[0.7rem] text-white/50">{file}</p>
-                    <button
-                      type="button"
-                      className="rounded-md border border-red-400/30 px-2 py-1 text-xs text-red-200"
-                      onClick={() => void deleteMedia(file)}
-                    >
-                      Delete from site
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              {!uploads.length ? (
-                <p className="text-sm text-white/45">No uploads yet.</p>
-              ) : null}
-            </div>
-          ) : null}
+          {tab === "media" ? <OrbitMediaLibrary /> : null}
         </div>
       </div>
     </div>

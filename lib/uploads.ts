@@ -25,9 +25,19 @@ export function contentTypeFor(name: string) {
 }
 
 export async function writeUpload(name: string, buffer: Buffer) {
+  let wrote = false;
+  let lastError: unknown;
   for (const dir of uploadDirs()) {
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, name), buffer);
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(path.join(dir, name), buffer);
+      wrote = true;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  if (!wrote) {
+    throw lastError instanceof Error ? lastError : new Error("Upload write failed");
   }
 }
 

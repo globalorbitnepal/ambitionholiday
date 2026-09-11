@@ -26,17 +26,19 @@ export function contentDataDir(): string {
 
 /** Writable upload folders — CMS dir first when configured. */
 export function uploadDirs(): string[] {
+  const dirs: string[] = [];
   const fromEnv = process.env.AMBITION_CMS_DIR?.trim();
   if (fromEnv) {
     const root = path.resolve(fromEnv);
-    return [
+    dirs.push(
       path.join(root, "uploads"),
-      path.join(process.cwd(), "data", "uploads"),
-      path.join(process.cwd(), "public", "uploads"),
-    ];
+      path.join(root, "data-uploads"),
+      path.join(root, "public-uploads"),
+    );
   }
-  return [
+  dirs.push(
     path.join(process.cwd(), "data", "uploads"),
     path.join(process.cwd(), "public", "uploads"),
-  ];
+  );
+  return [...new Set(dirs)];
 }
