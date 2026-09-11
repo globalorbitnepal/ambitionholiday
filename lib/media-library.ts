@@ -50,7 +50,7 @@ async function walkPublic(
 ): Promise<MediaItem[]> {
   const out: MediaItem[] = [];
   async function walk(dir: string, prefix: string) {
-    let entries: Awaited<ReturnType<typeof fs.readdir>>;
+    let entries: Array<{ name: string; isDirectory: () => boolean }>;
     try {
       entries = await fs.readdir(dir, { withFileTypes: true });
     } catch {
