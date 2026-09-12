@@ -98,7 +98,11 @@ export type WhyContent = {
   visible: boolean;
   eyebrow: string;
   headline: string;
+  headlineWhite: string;
+  headlineGold: string;
   body: string;
+  ctaLabel: string;
+  ctaHref: string;
   cards: WhyCard[];
   awardTitle: string;
   awardSubtitle: string;
@@ -595,28 +599,33 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   why: {
     visible: true,
-    eyebrow: "WHY TRAVEL WITH US",
-    headline: "Why Ambition Holidays",
-    body: "We don't just organize trips — we craft transformative journeys with unmatched care, local expertise, and a passion for the Himalayas.",
-    awardTitle: "Proudly Recognized for Excellence",
-    awardSubtitle: "Awarded by TripAdvisor & our incredible guests",
+    eyebrow: "OUR HERITAGE",
+    headline: "Backed by Himalayan Experience",
+    headlineWhite: "Backed by",
+    headlineGold: "Himalayan Experience",
+    body: "Ambition Holidays is the sister company of Ambition Himalaya Treks & Expeditions — a trusted name in Himalayan travel since 2009.\nFor years, Ambition Himalaya has welcomed travellers from around the world with experienced local guides, carefully planned journeys and genuine Himalayan hospitality.\nAmbition Holidays builds on that foundation with a new vision of refined, private and luxury travel across Nepal.",
+    ctaLabel: "Explore Ambition Holidays",
+    ctaHref: "/about-us",
+    awardTitle: "Proud Heritage. Brighter Journeys.",
+    awardSubtitle:
+      "Our sister company, Ambition Himalaya Treks & Expeditions, has earned 400+ traveller reviews on TripAdvisor.",
     cards: [
       {
         id: "years",
-        title: "11+ Years of Experience",
-        body: "Over a decade of crafting extraordinary Himalayan journeys with excellence and passion.",
-        imageSrc: "/images/why/years-photo.jpg",
-        imageAlt: "Hiker watching a Himalayan sunrise",
+        title: "15+ Years of Himalayan Experience",
+        body: "A legacy of creating extraordinary journeys with excellence and trust.",
+        imageSrc: "/images/why/years-v2.jpg",
+        imageAlt: "Trekker watching a Himalayan sunrise",
         icon: "years",
         href: "/about-us",
         ctaLabel: "LEARN MORE",
       },
       {
         id: "reviews",
-        title: "410+ TripAdvisor Reviews",
-        body: "Consistently trusted by hundreds of happy travelers who recommend us for our service and reliability.",
-        imageSrc: "/images/why/reviews-photo.jpg",
-        imageAlt: "Luxury lodge terrace at dusk",
+        title: "400+ TripAdvisor Reviews",
+        body: "Consistently trusted by hundreds of happy travellers who recommend Ambition Himalaya for our service and reliability.",
+        imageSrc: "/images/why/reviews-v2.jpg",
+        imageAlt: "Trekking group walking toward Himalayan peaks",
         icon: "tripadvisor",
         href: "/about-us",
         ctaLabel: "LEARN MORE",
@@ -625,8 +634,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "guides",
         title: "Expert Local Guides",
         body: "Our professional, certified local guides ensure your journey is safe, insightful, and unforgettable.",
-        imageSrc: "/images/why/guides-photo.jpg",
-        imageAlt: "Trekkers walking toward a snow peak",
+        imageSrc: "/images/why/guides-v2.jpg",
+        imageAlt: "Local Himalayan guide on a snow trail",
         icon: "guide",
         href: "/about-us",
         ctaLabel: "LEARN MORE",
@@ -635,8 +644,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "stays",
         title: "Handpicked Stays",
         body: "Carefully selected luxury lodges and hotels that offer comfort, character, and exceptional service.",
-        imageSrc: "/images/why/stays-photo.jpg",
-        imageAlt: "Warmly lit mountain lodge at night",
+        imageSrc: "/images/why/stays-v2.jpg",
+        imageAlt: "Luxury Himalayan lodge bedroom with mountain views",
         icon: "stay",
         href: "/luxury-lodge-treks",
         ctaLabel: "LEARN MORE",
@@ -645,8 +654,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "support",
         title: "24/7 Guest Support",
         body: "We're with you at every step of your journey with round-the-clock care and personal attention.",
-        imageSrc: "/images/why/support-photo.jpg",
-        imageAlt: "Guest support planning a Himalayan journey",
+        imageSrc: "/images/why/support-v2.jpg",
+        imageAlt: "Guides reviewing a trail map in the forest",
         icon: "support",
         href: "/contact",
         ctaLabel: "LEARN MORE",
@@ -655,15 +664,15 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "responsible",
         title: "Responsible Tourism",
         body: "We travel with purpose—supporting local communities and preserving the natural beauty of Nepal.",
-        imageSrc: "/images/why/responsible-photo.jpg",
-        imageAlt: "Local community in a Himalayan village",
+        imageSrc: "/images/why/responsible-v2.jpg",
+        imageAlt: "Stupa and prayer flags on a Himalayan hillside",
         icon: "responsible",
         href: "/about-us",
         ctaLabel: "LEARN MORE",
       },
     ],
     ratings: [
-      { id: "ta", label: "Tripadvisor", value: "410+ Reviews", brand: "tripadvisor" },
+      { id: "ta", label: "Tripadvisor", value: "400+ Reviews", brand: "tripadvisor" },
       { id: "google", label: "Google", value: "4.9 Rating", brand: "google" },
       { id: "facebook", label: "Facebook", value: "4.8 Rating", brand: "facebook" },
       { id: "instagram", label: "Instagram", value: "4.9 Rating", brand: "instagram" },

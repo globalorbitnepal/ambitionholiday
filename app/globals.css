@@ -121,7 +121,9 @@ li {
 .home-light .signature-section .sig-display,
 .home-light .signature-section .sig-display span,
 .home-light .journeys-section .journeys-display,
-.home-light .journeys-section .journeys-display span {
+.home-light .journeys-section .journeys-display span,
+.home-light .why-section .why-display,
+.home-light .why-section .why-display span {
   font-family: var(--font-cormorant), "Times New Roman", serif !important;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -140,6 +142,25 @@ li {
     0 0 34px rgba(201, 162, 39, 0.32),
     0 22px 48px rgba(0, 0, 0, 0.38),
     inset 0 1px 0 rgba(255, 236, 190, 0.18);
+}
+
+.home-light .why-section .why-card,
+.home-light .why-section .why-bar {
+  box-shadow:
+    0 0 0 1px rgba(224, 196, 90, 0.32),
+    0 0 28px rgba(201, 162, 39, 0.28),
+    0 18px 42px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 236, 190, 0.14);
+}
+
+.home-light .why-section .why-bar {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 10, 8, 0.55),
+    rgba(8, 6, 5, 0.62)
+  );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
 }
 
 .home-light .signature-section .sig-copy {

@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
-import { DEFAULT_CONTENT, type JourneyPackage, type SiteContent } from "@/lib/content-types";
+import { DEFAULT_CONTENT, type JourneyPackage, type SiteContent, type WhyCard } from "@/lib/content-types";
 
 const FEATURED_JOURNEY_ORDER = ["ebc", "abc", "mustang"];
 
@@ -44,6 +44,31 @@ function decorateJourneyPackages(packages: JourneyPackage[]): JourneyPackage[] {
     if (ai === -1) return 1;
     if (bi === -1) return -1;
     return ai - bi;
+  });
+}
+
+const LEGACY_WHY_IMAGES: Record<string, string> = {
+  "/images/why/years-photo.jpg": "/images/why/years-v2.jpg",
+  "/images/why/reviews-photo.jpg": "/images/why/reviews-v2.jpg",
+  "/images/why/guides-photo.jpg": "/images/why/guides-v2.jpg",
+  "/images/why/stays-photo.jpg": "/images/why/stays-v2.jpg",
+  "/images/why/support-photo.jpg": "/images/why/support-v2.jpg",
+  "/images/why/responsible-photo.jpg": "/images/why/responsible-v2.jpg",
+};
+
+function decorateWhyCards(cards: WhyCard[]): WhyCard[] {
+  return cards.map((card) => {
+    const fallback = DEFAULT_CONTENT.why.cards.find((item) => item.id === card.id);
+    const fromUpload = card.imageSrc.startsWith("/uploads/") || card.imageSrc.startsWith("/api/media/");
+    return {
+      ...fallback,
+      ...card,
+      imageSrc: fromUpload
+        ? card.imageSrc
+        : LEGACY_WHY_IMAGES[card.imageSrc] || fallback?.imageSrc || card.imageSrc,
+      title: fallback?.title || card.title,
+      body: fallback?.body || card.body,
+    };
   });
 }
 
@@ -125,8 +150,36 @@ export async function readContent(): Promise<SiteContent> {
       why: {
         ...DEFAULT_CONTENT.why,
         ...parsed.why,
-        cards: parsed.why?.cards ?? DEFAULT_CONTENT.why.cards,
-        ratings: parsed.why?.ratings ?? DEFAULT_CONTENT.why.ratings,
+        eyebrow:
+          !parsed.why?.eyebrow || parsed.why.eyebrow === "WHY TRAVEL WITH US"
+            ? DEFAULT_CONTENT.why.eyebrow
+            : parsed.why.eyebrow,
+        headline:
+          !parsed.why?.headline || parsed.why.headline === "Why Ambition Holidays"
+            ? DEFAULT_CONTENT.why.headline
+            : parsed.why.headline,
+        headlineWhite: DEFAULT_CONTENT.why.headlineWhite,
+        headlineGold: DEFAULT_CONTENT.why.headlineGold,
+        body:
+          !parsed.why?.body || parsed.why.body.includes("We don't just organize trips")
+            ? DEFAULT_CONTENT.why.body
+            : parsed.why.body,
+        ctaLabel: parsed.why?.ctaLabel || DEFAULT_CONTENT.why.ctaLabel,
+        ctaHref: parsed.why?.ctaHref || DEFAULT_CONTENT.why.ctaHref,
+        awardTitle:
+          !parsed.why?.awardTitle || parsed.why.awardTitle === "Proudly Recognized for Excellence"
+            ? DEFAULT_CONTENT.why.awardTitle
+            : parsed.why.awardTitle,
+        awardSubtitle:
+          !parsed.why?.awardSubtitle || parsed.why.awardSubtitle.includes("Awarded by TripAdvisor")
+            ? DEFAULT_CONTENT.why.awardSubtitle
+            : parsed.why.awardSubtitle,
+        cards: decorateWhyCards(parsed.why?.cards ?? DEFAULT_CONTENT.why.cards),
+        ratings: (parsed.why?.ratings ?? DEFAULT_CONTENT.why.ratings).map((rating) =>
+          rating.id === "ta" && rating.value === "410+ Reviews"
+            ? { ...rating, value: "400+ Reviews" }
+            : rating,
+        ),
       },
       experiences: {
         ...DEFAULT_CONTENT.experiences,
