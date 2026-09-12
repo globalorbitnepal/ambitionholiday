@@ -111,18 +111,15 @@ export default function SignatureSection({ content }: Props) {
             </Link>
 
             {content.highlights?.length ? (
-              <ul className="mt-8 flex flex-wrap items-start gap-x-6 gap-y-4 border-t border-white/10 pt-5 sm:gap-x-8">
-                {content.highlights.map((item, index) => (
-                  <li key={item.id} className="flex items-start gap-2.5">
-                    {index > 0 ? (
-                      <span className="mr-1 hidden h-10 w-px bg-white/15 sm:block" aria-hidden="true" />
-                    ) : null}
+              <ul className="mt-8 grid grid-cols-3 gap-3 border-t border-white/12 pt-5">
+                {content.highlights.map((item) => (
+                  <li key={item.id} className="flex items-start gap-2.5 border-l border-white/10 pl-3 first:border-l-0 first:pl-0">
                     <span className="mt-0.5 text-[#e0c45a]">
                       <HighlightIcon icon={item.icon} />
                     </span>
                     <span>
-                      <span className="block text-[0.92rem] font-semibold leading-tight text-white">{item.title}</span>
-                      <span className="mt-0.5 block text-[0.72rem] leading-tight text-white/60">{item.subtitle}</span>
+                      <span className="block text-[0.95rem] font-semibold leading-tight text-white">{item.title}</span>
+                      <span className="mt-0.5 block text-[0.72rem] leading-tight text-white/62">{item.subtitle}</span>
                     </span>
                   </li>
                 ))}

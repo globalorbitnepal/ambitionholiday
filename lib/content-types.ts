@@ -522,10 +522,10 @@ export const DEFAULT_CONTENT: SiteContent = {
         maxAltitude: "5,364 m",
         difficulty: "Moderate",
         description:
-          "Walk private Himalayan trails by day and rest in handpicked lodges by night, with a helicopter option that turns the return into a once-in-a-lifetime flight over Everest.",
+          "Walk legendary trails to Everest Base Camp with premium lodges, expert guides, and unforgettable mountain views.",
         href: "/luxury-everest-base-camp-trek",
-        imageSrc: "/images/packages/everest.jpg",
-        imageAlt: "Luxury breakfast terrace with a helicopter over Everest peaks",
+        imageSrc: "/images/packages/everest-v2.jpg",
+        imageAlt: "Trekker watching sunrise over Everest peaks",
       },
       {
         id: "abc",
@@ -540,8 +540,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         description:
           "A refined sanctuary-to-sanctuary journey through rhododendron forests and amphitheatre peaks, staying in elevated lodges with firelit evenings and exceptional local cuisine.",
         href: "/luxury-annapurna-base-camp-trek",
-        imageSrc: "/images/packages/annapurna.jpg",
-        imageAlt: "Luxury stone lodge with fire pit beneath Annapurna peaks",
+        imageSrc: "/images/packages/annapurna-v2.jpg",
+        imageAlt: "Luxury Annapurna lodge terrace with a fire pit at dusk",
       },
       {
         id: "annapurna-circuit",
@@ -562,18 +562,18 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         id: "mustang",
         title: "Upper Mustang",
-        subtitle: "Luxury Journey",
+        subtitle: "Luxury Tour",
         location: "Mustang Region, Nepal",
         categoryIds: ["mustang"],
-        badge: "",
-        days: 11,
-        maxAltitude: "4,200 m",
+        badge: "Exclusive",
+        days: 14,
+        maxAltitude: "3,840 m",
         difficulty: "Moderate",
         description:
-          "Enter the forbidden kingdom of Lo through ochre canyons and walled cities, staying in boutique lodges that honour Mustang’s ancient culture with quiet luxury.",
+          "Explore the mystical kingdom of Lo with exclusive access, cultural immersion, and luxury stays in one of Nepal’s most remote and breathtaking regions.",
         href: "/luxury-upper-mustang-trek",
-        imageSrc: "/images/packages/mustang.jpg",
-        imageAlt: "Upper Mustang cliffs and a luxury lodge courtyard at sunset",
+        imageSrc: "/images/packages/mustang-v2.jpg",
+        imageAlt: "White-walled monastery on ochre Mustang cliffs at golden hour",
       },
       {
         id: "heli",

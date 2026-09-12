@@ -1,6 +1,51 @@
 import { promises as fs } from "fs";
 import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
-import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
+import { DEFAULT_CONTENT, type JourneyPackage, type SiteContent } from "@/lib/content-types";
+
+const FEATURED_JOURNEY_ORDER = ["ebc", "abc", "mustang"];
+
+const LEGACY_PACKAGE_IMAGES: Record<string, string> = {
+  "/images/packages/everest.jpg": "/images/packages/everest-v2.jpg",
+  "/images/packages/annapurna.jpg": "/images/packages/annapurna-v2.jpg",
+  "/images/packages/mustang.jpg": "/images/packages/mustang-v2.jpg",
+};
+
+function decorateJourneyPackages(packages: JourneyPackage[]): JourneyPackage[] {
+  const mapped = packages.map((pkg) => {
+    const fallback = DEFAULT_CONTENT.journeys.packages.find((item) => item.id === pkg.id);
+    const fromUpload = pkg.imageSrc.startsWith("/uploads/") || pkg.imageSrc.startsWith("/api/media/");
+    const imageSrc = fromUpload
+      ? pkg.imageSrc
+      : LEGACY_PACKAGE_IMAGES[pkg.imageSrc] || fallback?.imageSrc || pkg.imageSrc;
+    return {
+      ...fallback,
+      ...pkg,
+      imageSrc,
+      badge: pkg.id === "mustang" && !pkg.badge ? fallback?.badge || pkg.badge : pkg.badge,
+      subtitle: pkg.id === "mustang" && pkg.subtitle === "Luxury Journey" ? fallback?.subtitle || pkg.subtitle : pkg.subtitle,
+      description:
+        pkg.id === "ebc" && pkg.description.includes("private Himalayan trails")
+          ? fallback?.description || pkg.description
+          : pkg.id === "mustang" && pkg.description.includes("forbidden kingdom")
+            ? fallback?.description || pkg.description
+            : pkg.description,
+      days: pkg.id === "mustang" && pkg.days === 11 ? fallback?.days || pkg.days : pkg.days,
+      maxAltitude:
+        pkg.id === "mustang" && pkg.maxAltitude === "4,200 m"
+          ? fallback?.maxAltitude || pkg.maxAltitude
+          : pkg.maxAltitude,
+    };
+  });
+
+  return mapped.sort((a, b) => {
+    const ai = FEATURED_JOURNEY_ORDER.indexOf(a.id);
+    const bi = FEATURED_JOURNEY_ORDER.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
 
 export async function ensureContentFile(): Promise<void> {
   const DATA_DIR = contentDataDir();
@@ -64,7 +109,9 @@ export async function readContent(): Promise<SiteContent> {
         ...DEFAULT_CONTENT.journeys,
         ...parsed.journeys,
         categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
-        packages: parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
+        packages: decorateJourneyPackages(
+          parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
+        ),
         headlineGold:
           !parsed.journeys?.headlineGold ||
           parsed.journeys.headlineGold === "Luxury Treks"

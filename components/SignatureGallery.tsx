@@ -24,7 +24,7 @@ function GoldArrow({ className = "" }: { className?: string }) {
 }
 
 export default function SignatureGallery({ images }: Props) {
-  const slots = images.slice(0, 6);
+  const slots = images.slice(0, 3);
   const [start, setStart] = useState(0);
 
   const visibleCount = Math.min(3, slots.length);
@@ -45,7 +45,7 @@ export default function SignatureGallery({ images }: Props) {
   });
 
   return (
-    <div className="relative min-w-0 w-full">
+    <div className="relative min-w-0 w-full px-11 sm:px-12">
       <div className="flex items-end justify-center gap-3 sm:gap-4 lg:gap-[1.15rem]">
         {visible.map(({ image, slot }, index) => {
           const featured = slot === 1 || visibleCount === 1;
@@ -95,7 +95,7 @@ export default function SignatureGallery({ images }: Props) {
           <button
             type="button"
             onClick={() => move(-1)}
-            className="focus-ring absolute left-1 top-[46%] z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#e0c45a]/80 bg-black/45 text-[#e0c45a] backdrop-blur-md sm:left-2"
+            className="focus-ring absolute left-0 top-[42%] z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#e0c45a]/80 bg-black/45 text-[#e0c45a] backdrop-blur-md"
             aria-label="Previous packages"
           >
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
@@ -105,7 +105,7 @@ export default function SignatureGallery({ images }: Props) {
           <button
             type="button"
             onClick={() => move(1)}
-            className="focus-ring absolute right-1 top-[46%] z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#e0c45a]/80 bg-black/45 text-[#e0c45a] backdrop-blur-md sm:right-2"
+            className="focus-ring absolute right-0 top-[42%] z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#e0c45a]/80 bg-black/45 text-[#e0c45a] backdrop-blur-md"
             aria-label="Next packages"
           >
             <GoldArrow className="h-4 w-4" />
