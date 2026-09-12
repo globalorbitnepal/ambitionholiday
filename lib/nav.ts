@@ -42,38 +42,31 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Destinations",
     href: "/destinations",
     groups: [
-      group("Everest Region", [
-        "Everest Base Camp",
-        "Everest Luxury Lodge Trek",
-        "Gokyo Valley",
-        "Everest Three Passes",
+      group("Nepal", [
+        "Everest Region",
+        "Annapurna Region",
+        "Manaslu Region",
+        "Langtang Region",
+        "Mustang",
+        "Other Himalayan Regions",
       ]),
-      group("Annapurna Region", [
-        "Annapurna Base Camp",
-        "Annapurna Circuit",
-        "Mardi Himal",
-        "Ghorepani Poon Hill",
+      group("Bhutan", [
+        "Bhutan Cultural Tour",
+        "Luxury Bhutan Journey",
+        "Paro Taktsang",
+        "Thimphu & Punakha",
       ]),
-      group("Manaslu Region", [
-        "Manaslu Circuit",
-        "Tsum Valley",
-        "Manaslu & Tsum Valley",
+      group("Tibet", [
+        "Lhasa Cultural Tour",
+        "Everest North Face",
+        "Mount Kailash",
+        "Tibet Overland Journey",
       ]),
-      group("Langtang Region", [
-        "Langtang Valley",
-        "Gosaikunda",
-        "Langtang & Gosaikunda",
-      ]),
-      group("Mustang", [
-        "Upper Mustang",
-        "Lower Mustang",
-        "Mustang Luxury Journey",
-      ]),
-      group("Other Himalayan Regions", [
-        "Makalu",
-        "Kanchenjunga",
-        "Dolpo",
-        "Nar Phu Valley",
+      group("Himalayan Multi-Countries Tour", [
+        "Nepal Bhutan Tibet",
+        "Nepal & Bhutan Tour",
+        "Nepal & Tibet Tour",
+        "Bhutan Tibet Journey",
       ]),
     ],
   },

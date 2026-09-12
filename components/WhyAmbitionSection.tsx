@@ -5,7 +5,7 @@ import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
 
 function GoldRing({ children }: { children: React.ReactNode }) {
   return (
-    <span className="mx-auto flex h-[3.35rem] w-[3.35rem] items-center justify-center rounded-full border border-[#e0c45a] bg-black/35 text-[#e4c35a] shadow-[0_0_18px_rgba(201,162,39,0.28)]">
+    <span className="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center rounded-full border border-[#e0c45a] bg-black/35 text-[#e4c35a] shadow-[0_0_18px_rgba(201,162,39,0.28)]">
       {children}
     </span>
   );
@@ -207,17 +207,19 @@ export default function WhyAmbitionSection() {
                       "linear-gradient(to top, #0c0906 0%, rgba(12,9,6,0.94) 38%, rgba(12,9,6,0.2) 58%, transparent 76%)",
                   }}
                 />
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-16 text-center">
-                  <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
-                  <h3 className="mt-3 text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
+                <div className="absolute inset-x-0 bottom-0 grid grid-rows-[3.35rem_3.9rem_5.1rem_2rem] justify-items-center gap-y-2.5 px-3 pb-4 pt-16 text-center">
+                  <div className="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center">
+                    <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
+                  </div>
+                  <h3 className="flex h-full w-full items-center justify-center text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
                     {card.title}
                   </h3>
-                  <p className="mt-2 min-h-[4.2rem] text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.74rem]">
+                  <p className="line-clamp-4 h-full w-full text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.74rem]">
                     {card.body}
                   </p>
                   <Link
                     href={card.href || "/about-us"}
-                    className="focus-ring mt-2 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#e4c35a] hover:text-[#f0d36a]"
+                    className="focus-ring inline-flex h-full items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#e4c35a] hover:text-[#f0d36a]"
                   >
                     {card.ctaLabel || "LEARN MORE"}
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#e0c45a]/80">
