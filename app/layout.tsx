@@ -61,6 +61,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preload" as="image" href="/images/hero-video-poster.jpg" />
+        <link rel="preload" as="image" href="/images/atmosphere/himalaya-dusk-peaks-v3.jpg" />
       </head>
       <body className={`${outfit.variable} ${manrope.variable} ${cormorant.variable} antialiased`}>
         {children}
