@@ -400,7 +400,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   hero: {
     visible: true,
-    taglineWords: ["Discover", "Your", "Luxury", "Trek"],
+    taglineWords: ["Discover", "Your", "Luxury", "Tour", "&", "Trek"],
     headline: "Start Planning Your Journey",
     searchPlaceholder: "Find an Adventure",
     videoSrc: "/videos/hero-bg.mp4",

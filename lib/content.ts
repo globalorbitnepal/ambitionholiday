@@ -96,6 +96,11 @@ export async function readContent(): Promise<SiteContent> {
         ...DEFAULT_CONTENT.hero,
         ...parsed.hero,
         stats: parsed.hero?.stats ?? DEFAULT_CONTENT.hero.stats,
+        taglineWords:
+          !parsed.hero?.taglineWords?.length ||
+          parsed.hero.taglineWords.join(" ") === "Discover Your Luxury Trek"
+            ? DEFAULT_CONTENT.hero.taglineWords
+            : parsed.hero.taglineWords,
       },
       signature: {
         ...DEFAULT_CONTENT.signature,

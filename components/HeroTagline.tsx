@@ -12,7 +12,7 @@ type Props = {
 
 export default function HeroTagline({ words }: Props) {
   const [visibleWords, setVisibleWords] = useState(0);
-  const safeWords = words.length ? words : ["Discover", "Your", "Luxury", "Trek"];
+  const safeWords = words.length ? words : ["Discover", "Your", "Luxury", "Tour", "&", "Trek"];
 
   const wordsKey = safeWords.join("|");
 
@@ -59,7 +59,7 @@ export default function HeroTagline({ words }: Props) {
 
   return (
     <p
-      className="mb-1.5 text-center text-[0.88rem] font-semibold tracking-[0.1em] text-gold sm:mb-2 sm:text-[1.05rem]"
+      className="mb-1.5 text-center text-[1.18rem] font-bold tracking-[0.08em] text-gold sm:mb-2.5 sm:text-[1.55rem] lg:text-[1.75rem]"
       aria-label={safeWords.join(" ")}
     >
       <span className="inline-flex flex-wrap items-baseline justify-center gap-x-[0.35em]">
