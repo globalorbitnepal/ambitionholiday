@@ -9,6 +9,16 @@ export type SignatureImage = {
   id: string;
   src: string;
   alt: string;
+  kicker?: string;
+  title?: string;
+  href?: string;
+};
+
+export type SignatureHighlight = {
+  id: string;
+  icon: "peaks" | "compass" | "heart";
+  title: string;
+  subtitle: string;
 };
 
 export type SignatureFeature = {
@@ -16,6 +26,7 @@ export type SignatureFeature = {
   icon: "hiker" | "peaks" | "lodge";
   title: string;
   subtitle: string;
+  href?: string;
 };
 
 export type JourneyCategoryIcon = "peaks" | "helicopter";
@@ -366,6 +377,7 @@ export type SiteContent = {
     ctaLabel: string;
     ctaHref: string;
     images: SignatureImage[];
+    highlights: SignatureHighlight[];
     features: SignatureFeature[];
   };
   journeys: JourneysContent;
@@ -408,34 +420,57 @@ export const DEFAULT_CONTENT: SiteContent = {
     images: [
       {
         id: "sig-1",
-        src: "/images/signature/sig-live-1.webp",
-        alt: "Trekker on a stone path toward Himalayan peaks",
+        src: "/images/signature/sig-card-everest.jpg",
+        alt: "Helicopter flying past snow-capped Everest peaks",
+        kicker: "Scenic Flights",
+        title: "Everest Region",
+        href: "/everest-region",
       },
       {
         id: "sig-3",
-        src: "/images/signature/sig-live-2.webp",
-        alt: "Traditional Nepalese temple against mountains",
+        src: "/images/signature/sig-card-annapurna.jpg",
+        alt: "Trekker on iconic trails in the Annapurna range",
+        kicker: "Iconic Trails",
+        title: "Annapurna Region",
+        href: "/annapurna-region",
       },
       {
         id: "sig-1786895806235",
-        src: "/images/signature/sig-live-3.jpg",
-        alt: "Signature image",
+        src: "/images/signature/sig-card-mustang.jpg",
+        alt: "Luxury terrace overlooking a Himalayan lake in Mustang",
+        kicker: "Exclusive Journeys",
+        title: "Mustang Region",
+        href: "/mustang",
       },
       {
         id: "sig-1786895886212",
         src: "/images/signature/sig-live-4.jpg",
         alt: "Signature image",
+        kicker: "Private Trails",
+        title: "Himalayan Escapes",
+        href: "/luxury-treks",
       },
       {
         id: "sig-1786897478111",
         src: "/images/signature/sig-live-5.jpg",
         alt: "Signature image",
+        kicker: "Refined Stays",
+        title: "Luxury Lodges",
+        href: "/luxury-lodges-stays",
       },
       {
         id: "sig-1786897672121",
         src: "/images/signature/sig-live-6.jpg",
         alt: "Signature image",
+        kicker: "Cultural Journeys",
+        title: "Hidden Nepal",
+        href: "/destinations",
       },
+    ],
+    highlights: [
+      { id: "hi-1", icon: "peaks", title: "100+", subtitle: "Curated Routes" },
+      { id: "hi-2", icon: "compass", title: "Expert", subtitle: "Local Guides" },
+      { id: "hi-3", icon: "heart", title: "Unforgettable", subtitle: "Experiences" },
     ],
     features: [
       {
@@ -443,18 +478,21 @@ export const DEFAULT_CONTENT: SiteContent = {
         icon: "hiker",
         title: "Private Journeys",
         subtitle: "Tailored Exclusively to You",
+        href: "/luxury-treks",
       },
       {
         id: "feat-2",
         icon: "peaks",
         title: "Expert Local Guides",
         subtitle: "Local Knowledge, Exceptional Care",
+        href: "/about-us",
       },
       {
         id: "feat-3",
         icon: "lodge",
         title: "Handpicked Stays",
         subtitle: "Refined Comfort in the Himalayas",
+        href: "/luxury-lodges-stays",
       },
     ],
   },

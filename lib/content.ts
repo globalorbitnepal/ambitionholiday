@@ -30,8 +30,35 @@ export async function readContent(): Promise<SiteContent> {
       signature: {
         ...DEFAULT_CONTENT.signature,
         ...parsed.signature,
-        images: parsed.signature?.images ?? DEFAULT_CONTENT.signature.images,
-        features: parsed.signature?.features ?? DEFAULT_CONTENT.signature.features,
+        images: (parsed.signature?.images ?? DEFAULT_CONTENT.signature.images).map(
+          (image, index) => {
+            const fallback = DEFAULT_CONTENT.signature.images[index];
+            const legacy =
+              image.src === "/images/signature/sig-live-1.webp" ||
+              image.src === "/images/signature/sig-live-2.webp" ||
+              image.src === "/images/signature/sig-live-3.jpg";
+            return {
+              ...fallback,
+              ...image,
+              src: legacy && fallback ? fallback.src : image.src,
+              kicker: image.kicker || fallback?.kicker,
+              title: image.title || fallback?.title,
+              href: image.href || fallback?.href,
+            };
+          },
+        ),
+        highlights:
+          parsed.signature?.highlights ?? DEFAULT_CONTENT.signature.highlights,
+        features: (parsed.signature?.features ?? DEFAULT_CONTENT.signature.features).map(
+          (feature, index) => {
+            const fallback = DEFAULT_CONTENT.signature.features[index];
+            return {
+              ...fallback,
+              ...feature,
+              href: feature.href || fallback?.href,
+            };
+          },
+        ),
       },
       journeys: {
         ...DEFAULT_CONTENT.journeys,

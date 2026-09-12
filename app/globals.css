@@ -118,6 +118,39 @@ li {
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif !important;
 }
 
+.home-light .signature-section .sig-display,
+.home-light .signature-section .sig-display span {
+  font-family: var(--font-cormorant), "Times New Roman", serif !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.home-light .signature-section .sig-copy {
+  background: linear-gradient(
+    165deg,
+    rgba(12, 10, 8, 0.38) 0%,
+    rgba(10, 8, 7, 0.32) 100%
+  );
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 236, 190, 0.16);
+}
+
+.home-light .signature-section .sig-chip {
+  background: linear-gradient(
+    165deg,
+    rgba(16, 12, 8, 0.46) 0%,
+    rgba(10, 8, 7, 0.4) 100%
+  );
+  backdrop-filter: blur(16px) saturate(1.18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.18);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 236, 190, 0.14);
+}
+
 /* Soft glass wash on every post-hero section */
 .home-light > section,
 .home-light > footer {

@@ -10,6 +10,7 @@ type Props = {
   sizes: string;
   priority?: boolean;
   objectPosition?: string;
+  quality?: number;
 };
 
 function isRuntimeUpload(src: string) {
@@ -24,9 +25,11 @@ export default function MediaImage({
   sizes,
   priority = false,
   objectPosition = "center 28%",
+  quality,
 }: Props) {
   const resolved = mediaSrc(src);
   const style = { objectPosition };
+  const imageQuality = quality ?? (priority ? 74 : 68);
 
   if (isRuntimeUpload(resolved)) {
     return (
@@ -51,7 +54,7 @@ export default function MediaImage({
       alt={alt}
       fill
       sizes={sizes}
-      quality={priority ? 74 : 68}
+      quality={imageQuality}
       priority={priority}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
