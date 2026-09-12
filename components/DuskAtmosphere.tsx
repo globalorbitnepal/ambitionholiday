@@ -1,10 +1,15 @@
-/** Himalayan gold-dusk wallpaper (hero excluded via HomePage wrapper). */
+/** Real Himalayan photo, clipped to post-hero so it continues the hero look. */
 export default function DuskAtmosphere() {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-[url('/images/atmosphere/himalaya-gold-dusk-v2.jpg')] bg-cover bg-[center_32%] bg-fixed max-md:bg-scroll" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,8,6,0.22)_0%,rgba(20,14,10,0.38)_45%,rgba(10,8,6,0.58)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_42%_at_88%_18%,rgba(232,190,90,0.22),transparent_58%)]" />
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/hero-video-poster.jpg"
+        alt=""
+        className="h-full w-full object-cover object-[center_28%] sm:object-center"
+      />
+      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/38" />
     </div>
   );
 }

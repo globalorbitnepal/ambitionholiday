@@ -18,7 +18,7 @@ function HomeSections() {
   return (
     <>
       <Hero />
-      <div className="home-light relative isolate overflow-x-clip text-[#f7f4ef]">
+      <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
         <SignatureSection content={content.signature} />
         <LuxuryTreksSection />

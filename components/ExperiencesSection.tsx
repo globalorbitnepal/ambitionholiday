@@ -39,7 +39,7 @@ export default function ExperiencesSection() {
       : theme.mutedTextColor;
   const cardBg =
     !theme?.cardBg || theme.cardBg.includes("255,250,240") || theme.cardBg.includes("255,252,247")
-      ? "rgba(18,14,10,0.55)"
+      ? "rgba(12,10,8,0.4)"
       : theme.cardBg;
 
   return (

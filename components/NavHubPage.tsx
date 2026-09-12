@@ -78,7 +78,7 @@ export default function NavHubPage({ item }: { item: NavItem }) {
 
   return (
     <main className="home-light min-h-screen min-w-0 overflow-x-clip pb-[env(safe-area-inset-bottom)] text-[#f7f4ef]">
-      <div className="relative isolate">
+      <div className="relative isolate [clip-path:inset(0)]">
         <DuskAtmosphere />
         <Header />
 

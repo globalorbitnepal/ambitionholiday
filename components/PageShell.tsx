@@ -10,7 +10,7 @@ type Props = {
 export default function PageShell({ title, description }: Props) {
   return (
     <main className="home-light min-h-screen overflow-x-clip text-[#f7f4ef]">
-      <div className="relative isolate">
+      <div className="relative isolate [clip-path:inset(0)]">
         <DuskAtmosphere />
         <Header />
         <section className="relative mx-auto max-w-4xl px-5 pb-[max(6rem,calc(env(safe-area-inset-bottom)+4rem))] pt-[max(8.5rem,calc(env(safe-area-inset-top)+6.5rem))] sm:px-6 sm:pt-40 lg:px-8">

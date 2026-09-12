@@ -349,7 +349,7 @@ export default function LuxuryTreksSection() {
         </div>
 
         <div className="mt-7 flex justify-center sm:mt-8">
-          <div className="inline-flex max-w-full gap-2 overflow-x-auto rounded-full border border-gold/25 bg-white/20 p-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="inline-flex max-w-full gap-2 overflow-x-auto rounded-full border border-gold/30 bg-black/25 p-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {filters.map((item) => {
               const on = filter === item.id;
               return (

@@ -189,7 +189,7 @@ export default function SiteFooter() {
 
   return (
     <footer className="relative border-t border-gold/25 bg-transparent text-white">
-      <div className="border-b border-gold/25 bg-[linear-gradient(180deg,rgba(18,14,10,0.55),rgba(12,10,8,0.48))] backdrop-blur-md">
+      <div className="border-b border-gold/25 bg-black/30 backdrop-blur-md">
         <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-4 px-4 py-3.5 sm:px-8 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-4">
           <div className="lg:border-r lg:border-gold/15 lg:pr-6">
             <div className="mb-2 flex flex-col items-center text-center">
@@ -451,8 +451,8 @@ export default function SiteFooter() {
       </div>
 
       {/* Copyright bar */}
-      <div className="border-t border-gold/20 bg-[linear-gradient(180deg,rgba(236,242,248,0.65),rgba(245,240,230,0.5))] backdrop-blur-md">
-        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.74rem] font-semibold text-[color:var(--hl-ink,#151820)]/70 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
+      <div className="border-t border-gold/20 bg-black/35 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.74rem] font-semibold text-white/70 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
           <p>{footer.copyright}</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             {(footer.legalLinks ?? []).map((l, i) => (
