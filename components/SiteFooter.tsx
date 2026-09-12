@@ -77,7 +77,7 @@ function FooterLandscape({
   updatedAt: string;
 }) {
   return (
-    <div className="relative w-full overflow-hidden bg-[#e4ecf4]" aria-hidden="true">
+    <div className="relative w-full overflow-hidden bg-[#1a140c]" aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={mediaSrc(src)}
@@ -86,7 +86,7 @@ function FooterLandscape({
           decoding="async"
           className="block h-auto w-full max-w-none object-contain object-center"
         />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-[#e8eef5] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-[#1a140c] to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-gradient-to-t from-[#12161c]/60 to-transparent" />
     </div>
   );
@@ -188,9 +188,8 @@ export default function SiteFooter() {
   }
 
   return (
-    <footer className="relative border-t border-gold/25 bg-transparent text-[color:var(--hl-ink,#151820)]">
-      {/* Trust / social / payments — cream-sky glass bar */}
-      <div className="border-b border-gold/20 bg-[linear-gradient(180deg,rgba(236,242,248,0.55),rgba(245,240,230,0.42))] backdrop-blur-md">
+    <footer className="relative border-t border-gold/25 bg-transparent text-white">
+      <div className="border-b border-gold/25 bg-[linear-gradient(180deg,rgba(18,14,10,0.55),rgba(12,10,8,0.48))] backdrop-blur-md">
         <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-4 px-4 py-3.5 sm:px-8 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-4">
           <div className="lg:border-r lg:border-gold/15 lg:pr-6">
             <div className="mb-2 flex flex-col items-center text-center">
@@ -225,7 +224,7 @@ export default function SiteFooter() {
                   key={s.id}
                   href={s.href || "#"}
                   aria-label={s.label}
-                  className={`${TRUST_H} ${TRUST_W} flex items-center justify-center rounded text-[color:var(--hl-ink,#151820)]/85 transition-colors hover:text-[color:var(--hl-gold,#9a7b18)]`}
+                  className={`${TRUST_H} ${TRUST_W} flex items-center justify-center rounded text-white/85 transition-colors hover:text-gold`}
                 >
                   {s.iconSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element

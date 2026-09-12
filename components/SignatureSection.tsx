@@ -55,7 +55,7 @@ export default function SignatureSection({ content }: Props) {
     <section className="relative text-white">
       <div className="relative mx-auto max-w-[88rem] px-4 pb-5 pt-8 sm:px-8 sm:pb-6 sm:pt-11 lg:px-10 lg:pb-7 lg:pt-12">
         <div className="grid items-center gap-7 md:gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.15fr)] lg:gap-10 xl:gap-12">
-          <div className="max-w-xl">
+          <div className="hl-panel max-w-xl rounded-[1.25rem] border border-gold/30 px-5 py-6 sm:px-7 sm:py-7">
             <div className="mb-3 flex items-center gap-3">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-gold sm:text-[0.7rem] sm:tracking-[0.18em]">
                 {content.eyebrow}
@@ -76,7 +76,7 @@ export default function SignatureSection({ content }: Props) {
 
             <Link
               href={content.ctaHref || "/luxury-treks"}
-              className="focus-ring mt-6 inline-flex items-center gap-2.5 border border-gold/85 bg-transparent px-4 py-2.5 text-[0.78rem] font-semibold tracking-[0.06em] text-gold transition-colors hover:border-gold hover:bg-gold/10 sm:mt-7 sm:px-5 sm:text-[0.82rem]"
+              className="focus-ring mt-6 inline-flex items-center gap-2.5 border border-gold/85 bg-gold/10 px-4 py-2.5 text-[0.78rem] font-semibold tracking-[0.06em] text-gold transition-colors hover:border-gold hover:bg-gold/20 sm:mt-7 sm:px-5 sm:text-[0.82rem]"
             >
               {content.ctaLabel}
               <span aria-hidden="true">→</span>
@@ -87,13 +87,11 @@ export default function SignatureSection({ content }: Props) {
         </div>
 
         <div className="mt-8 border-t border-gold/25 pt-6 sm:mt-10 sm:pt-8">
-          <ul className="grid gap-5 sm:grid-cols-3 sm:gap-0">
-            {content.features.map((feature, index) => (
+          <ul className="grid gap-3 sm:grid-cols-3 sm:gap-4">
+            {content.features.map((feature) => (
               <li
                 key={feature.id}
-                className={`flex items-start gap-3 sm:px-4 lg:px-7 ${
-                  index > 0 ? "sm:border-l sm:border-gold/25" : ""
-                }`}
+                className="hl-card flex items-start gap-3 rounded-2xl border border-gold/30 px-4 py-4 sm:px-5"
               >
                 <span className="mt-0.5 shrink-0 text-gold">
                   <FeatureIcon icon={feature.icon} />

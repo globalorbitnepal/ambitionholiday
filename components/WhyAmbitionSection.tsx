@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
 import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
@@ -173,8 +174,12 @@ export default function WhyAmbitionSection() {
   const { why } = useSiteContent();
   if (!why?.visible) return null;
 
+  const words = why.headline.trim().split(/\s+/);
+  const goldWords = words.length > 1 ? words.slice(-2).join(" ") : why.headline;
+  const whiteWords = words.length > 1 ? words.slice(0, -2).join(" ") : "";
+
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-10 pt-10 sm:px-8 sm:pb-12 sm:pt-12 lg:px-10">
+    <section className="relative border-t border-gold/20 px-4 pb-10 pt-10 sm:px-8 sm:pb-12 sm:pt-12 lg:px-10">
       <div className="mx-auto max-w-[88rem]">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-2 flex flex-col items-center">
@@ -183,42 +188,58 @@ export default function WhyAmbitionSection() {
             </svg>
             <div className="flex items-center justify-center gap-4">
               <span className="h-px w-10 bg-gold/70 sm:w-16" aria-hidden="true" />
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-gold sm:text-[0.72rem] sm:tracking-[0.22em]">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-gold sm:text-[0.72rem] sm:tracking-[0.26em]">
                 {why.eyebrow}
               </p>
               <span className="h-px w-10 bg-gold/70 sm:w-16" aria-hidden="true" />
             </div>
           </div>
-          <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.9rem,5.5vw,3.35rem)] font-semibold leading-[1.12] tracking-tight text-white">
-            {why.headline}
+          <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.9rem,5.5vw,3.35rem)] font-semibold leading-[1.12] tracking-tight">
+            {whiteWords ? <span className="text-white">{whiteWords} </span> : null}
+            <span className="text-gold">{goldWords}</span>
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-[0.9rem] leading-relaxed text-white/80 sm:text-[1rem]">
             {why.body}
           </p>
         </div>
 
-        <div className="relative z-0 mt-8 grid grid-cols-1 gap-3 overflow-visible sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-3.5">
+        <div className="relative z-0 mt-8 grid grid-cols-1 gap-3.5 overflow-visible sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-3.5">
           {why.cards?.map((card) => (
             <article
               key={card.id}
-              className="hl-card group flex h-full min-w-0 origin-center flex-col overflow-hidden rounded-[0.9rem] border border-gold/45 transition-transform duration-500 ease-out [@media(hover:hover)]:hover:z-10 [@media(hover:hover)]:hover:scale-[1.06] [@media(hover:hover)]:hover:border-gold [@media(hover:hover)]:hover:overflow-visible"
+              className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.15rem] border border-gold/65 shadow-[0_18px_40px_rgba(0,0,0,0.32)]"
             >
-              <div className="flex flex-1 flex-col px-3.5 pb-3 pt-5 text-center sm:px-4">
-                <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
-                <h3 className="mt-3 font-[family-name:var(--font-cormorant)] text-[1.12rem] font-semibold leading-snug text-white sm:text-[1.18rem]">
-                  {card.title}
-                </h3>
-                <p className="mt-2 text-[0.74rem] leading-relaxed text-white/72 sm:text-[0.78rem]">
-                  {card.body}
-                </p>
-              </div>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-b-[0.85rem]">
+              <div className="relative aspect-[3/4] w-full min-h-[19.5rem]">
                 <MediaImage
                   src={card.imageSrc}
                   alt={card.imageAlt}
                   sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 18vw"
                   className="object-cover transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
                 />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-[#120e0a] via-[#120e0a]/90 to-black/10"
+                />
+                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-16 text-center">
+                  <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
+                  <h3 className="mt-3 font-[family-name:var(--font-cormorant)] text-[1.08rem] font-semibold leading-snug text-white sm:text-[1.14rem]">
+                    {card.title}
+                  </h3>
+                  <p className="mt-2 min-h-[3.4rem] text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.76rem]">
+                    {card.body}
+                  </p>
+                  <Link
+                    href={card.href || "/about-us"}
+                    className="focus-ring mt-3 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-soft"
+                  >
+                    {card.ctaLabel || "LEARN MORE"}
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-gold/80">
+                      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" aria-hidden="true">
+                        <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  </Link>
+                </div>
               </div>
             </article>
           ))}
@@ -265,3 +286,4 @@ export default function WhyAmbitionSection() {
     </section>
   );
 }
+

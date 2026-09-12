@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DuskAtmosphere from "@/components/DuskAtmosphere";
 import Header from "@/components/Header";
 import type { NavGroup, NavItem } from "@/lib/nav";
 
@@ -39,20 +40,17 @@ function GroupPanel({ group, compact }: { group: NavGroup; compact?: boolean }) 
   return (
     <section
       id={group.href.replace(/^\//, "")}
-      className={`rounded-[1.15rem] border border-[#c9a227]/30 ${compact ? "p-3.5" : "p-4 sm:p-5"}`}
-      style={{
-        background: "linear-gradient(165deg, #eef5fa 0%, #e8f0f6 55%, #f3eee6 100%)",
-      }}
+      className={`hl-card rounded-[1.15rem] border border-[#c9a227]/35 ${compact ? "p-3.5" : "p-4 sm:p-5"}`}
     >
       <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-[#c9a227]/22 pb-2.5">
         <h2
-          className={`font-extrabold tracking-tight text-[#12151c] ${
+          className={`font-extrabold tracking-tight text-white ${
             compact ? "text-[1rem]" : "text-[1.08rem]"
           }`}
         >
           {group.title}
         </h2>
-        <Link href={group.href} className="focus-ring text-[0.7rem] font-bold text-[#7a5e0c]">
+        <Link href={group.href} className="focus-ring text-[0.7rem] font-bold text-gold">
           View all →
         </Link>
       </div>
@@ -61,7 +59,7 @@ function GroupPanel({ group, compact }: { group: NavGroup; compact?: boolean }) 
           <li key={child.href}>
             <Link
               href={child.href}
-              className="focus-ring group inline-flex items-center gap-2 rounded-lg px-2 py-2 text-[0.88rem] font-semibold text-[#1a1f27] hover:bg-[#fbfcfe] hover:text-[#8f6f12]"
+              className="focus-ring group inline-flex items-center gap-2 rounded-lg px-2 py-2 text-[0.88rem] font-semibold text-white/90 hover:bg-white/10 hover:text-gold"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[#c9a227]" aria-hidden="true" />
               {child.label}
@@ -79,14 +77,9 @@ export default function NavHubPage({ item }: { item: NavItem }) {
   const compact = item.label === "Experiences" || item.label === "Travel Guide";
 
   return (
-    <main
-      className="min-h-screen min-w-0 overflow-x-clip pb-[env(safe-area-inset-bottom)]"
-      style={{
-        background: "linear-gradient(180deg, #d8ebf6 0%, #e8eef4 50%, #f2eee6 100%)",
-        fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
-      }}
-    >
+    <main className="home-light min-h-screen min-w-0 overflow-x-clip pb-[env(safe-area-inset-bottom)] text-[#f7f4ef]">
       <div className="relative isolate">
+        <DuskAtmosphere />
         <Header />
 
         <section
@@ -94,12 +87,7 @@ export default function NavHubPage({ item }: { item: NavItem }) {
             compact ? "max-w-3xl" : "max-w-6xl"
           }`}
         >
-          <div
-            className="overflow-hidden rounded-[1.15rem] border border-[#c9a227]/35 shadow-[0_20px_50px_rgba(28,48,72,0.14)]"
-            style={{
-              background: "linear-gradient(148deg, #d8ebf6 0%, #e8f2f8 48%, #f2eee4 100%)",
-            }}
-          >
+          <div className="hl-panel relative overflow-hidden rounded-[1.25rem] border border-gold/40">
             <div
               className="h-[2px] w-full"
               style={{
@@ -109,13 +97,13 @@ export default function NavHubPage({ item }: { item: NavItem }) {
               aria-hidden="true"
             />
             <div className="px-5 py-5 sm:px-7 sm:py-6">
-              <p className="text-[0.64rem] font-bold uppercase tracking-[0.18em] text-[#7a5e0c]">
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.18em] text-gold">
                 {copy.eyebrow}
               </p>
-              <h1 className="mt-1.5 text-[clamp(1.7rem,4.5vw,2.45rem)] font-extrabold tracking-tight text-[#12151c]">
+              <h1 className="mt-1.5 text-[clamp(1.7rem,4.5vw,2.45rem)] font-extrabold tracking-tight text-white">
                 {item.label}
               </h1>
-              <p className="mt-2 max-w-2xl text-[0.92rem] font-medium leading-relaxed text-[#2a3340]/85">
+              <p className="mt-2 max-w-2xl text-[0.92rem] font-medium leading-relaxed text-white/80">
                 {copy.body}
               </p>
             </div>
@@ -130,7 +118,7 @@ export default function NavHubPage({ item }: { item: NavItem }) {
           <div className="mt-7 flex flex-wrap gap-2.5">
             <Link
               href="/"
-              className="focus-ring inline-flex min-h-10 items-center rounded-md border border-[#c9a227]/55 bg-[#fbfcfe] px-4 py-2 text-sm font-bold text-[#7a5e0c]"
+              className="focus-ring inline-flex min-h-10 items-center rounded-md border border-gold/55 bg-gold/10 px-4 py-2 text-sm font-bold text-gold"
             >
               Back to home
             </Link>

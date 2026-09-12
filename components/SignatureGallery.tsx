@@ -115,7 +115,7 @@ export default function SignatureGallery({ images }: Props) {
         {slots.map((image, index) => (
           <figure
             key={image.id}
-            className={`relative shrink-0 snap-start overflow-hidden rounded-[0.85rem] border border-[#c9a227]/65 shadow-[0_12px_28px_rgba(40,50,70,0.18)] ${
+            className={`relative shrink-0 snap-start overflow-hidden rounded-[0.85rem] border border-[#c9a227]/70 shadow-[0_14px_32px_rgba(120,90,28,0.2)] ${
               index % 3 === 1
                 ? "mt-3 sm:mt-5 lg:mt-6"
                 : index % 3 === 2

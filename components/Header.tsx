@@ -54,14 +54,14 @@ function flattenNavLinks(item: NavItem) {
   return [];
 }
 
-/** Solid sky–cream glass — frosted feel, not see-through */
+/** Cream–gold frosted glass — not see-through */
 const MEGA_SHELL =
-  "linear-gradient(148deg, #d8ebf6 0%, #e8f2f8 48%, #f2eee4 100%)";
+  "linear-gradient(148deg, rgba(255,252,245,0.94) 0%, rgba(247,236,210,0.9) 48%, rgba(232,208,150,0.78) 100%)";
 const MEGA_SIDE =
-  "linear-gradient(185deg, #e8d9a4 0%, #c5dff0 42%, #dceaf4 100%)";
-const MEGA_MAIN = "linear-gradient(180deg, #eef5fa 0%, #e2eef7 100%)";
+  "linear-gradient(185deg, #f0e2b8 0%, #f6edd8 42%, #efe6d0 100%)";
+const MEGA_MAIN = "linear-gradient(180deg, rgba(255,252,247,0.82) 0%, rgba(245,232,198,0.72) 100%)";
 const DROP_SHELL =
-  "linear-gradient(180deg, #f8fbfd 0%, #eef4f8 55%, #f5f0e6 100%)";
+  "linear-gradient(180deg, rgba(255,252,247,0.94) 0%, rgba(247,236,214,0.88) 55%, rgba(236,214,160,0.78) 100%)";
 
 function StackGlassDropdown({
   links,

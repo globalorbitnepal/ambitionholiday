@@ -93,6 +93,24 @@ function HeartIcon({ filled }: { filled: boolean }) {
   );
 }
 
+function GoldOrnament() {
+  return (
+    <div className="mb-4 flex items-center justify-center gap-3 text-gold" aria-hidden="true">
+      <span className="h-px w-10 bg-gradient-to-r from-transparent to-current opacity-70 sm:w-16" />
+      <svg viewBox="0 0 56 18" className="h-4 w-14" fill="none">
+        <path
+          d="M2 13.5 14 5.5 28 13.5 42 5.5 54 13.5"
+          stroke="currentColor"
+          strokeWidth="1.35"
+          strokeLinejoin="round"
+        />
+        <circle cx="28" cy="9" r="2" fill="currentColor" />
+      </svg>
+      <span className="h-px w-10 bg-gradient-to-l from-transparent to-current opacity-70 sm:w-16" />
+    </div>
+  );
+}
+
 function PackageCard({
   pkg,
   saved,
@@ -105,21 +123,31 @@ function PackageCard({
   priority?: boolean;
 }) {
   return (
-    <article className="hl-card flex h-full min-w-0 snap-start flex-col overflow-hidden rounded-[1.15rem] border border-gold/40 shadow-[0_14px_40px_rgba(40,55,75,0.1)]">
-      <div className="relative mx-3 mt-3 overflow-hidden rounded-[0.9rem] border border-gold/25">
+    <article className="hl-card group relative flex h-full min-w-0 snap-start flex-col overflow-hidden rounded-[1.25rem] border border-gold/45">
+      <span className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gold/80 to-transparent" aria-hidden="true" />
+      <span className="pointer-events-none absolute left-3 top-3 h-3.5 w-3.5 border-l border-t border-gold/70" aria-hidden="true" />
+      <span className="pointer-events-none absolute right-3 top-3 h-3.5 w-3.5 border-r border-t border-gold/70" aria-hidden="true" />
+      <span className="pointer-events-none absolute bottom-3 left-3 h-3.5 w-3.5 border-b border-l border-gold/55" aria-hidden="true" />
+      <span className="pointer-events-none absolute bottom-3 right-3 h-3.5 w-3.5 border-b border-r border-gold/55" aria-hidden="true" />
+
+      <div className="relative mx-3.5 mt-3.5 overflow-hidden rounded-[0.95rem] border border-gold/30 shadow-[0_10px_28px_rgba(120,90,28,0.12)]">
         <div className="relative aspect-[16/10] w-full sm:aspect-[16/9.4]">
           <MediaImage
             src={pkg.imageSrc}
             alt={pkg.imageAlt}
             sizes="(max-width: 640px) 86vw, (max-width: 1024px) 50vw, 640px"
             priority={priority}
-            className="object-cover"
+            className="object-cover transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-[1.04]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1a1610]/35 via-transparent to-white/10"
           />
         </div>
 
         {pkg.badge ? (
           <div className="absolute left-0 top-4">
-            <span className="relative inline-flex items-center gap-1.5 bg-gold py-1.5 pl-3 pr-3.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[#1a1f27] shadow-[2px_2px_0_rgba(0,0,0,0.18)]">
+            <span className="relative inline-flex items-center gap-1.5 bg-gold py-1.5 pl-3 pr-3.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[#1a1610] shadow-[2px_2px_0_rgba(80,60,10,0.22)]">
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
                 <path d="m3 18 6.2-9.5 3.1 4.4L16 8l5 10H3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
               </svg>
@@ -136,7 +164,7 @@ function PackageCard({
           type="button"
           onClick={onToggleSave}
           aria-label={saved ? `Remove ${pkg.title} from saved` : `Save ${pkg.title}`}
-          className={`focus-ring absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white transition-colors ${
+          className={`focus-ring absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-[#1a1610]/50 text-white backdrop-blur-md transition-colors ${
             saved ? "text-gold" : "hover:text-gold"
           }`}
         >
@@ -157,21 +185,21 @@ function PackageCard({
           {pkg.location}
         </p>
 
-        <div className="mt-3.5 grid grid-cols-3 gap-1.5 border-y border-white/12 py-3 sm:gap-2">
+        <div className="mt-3.5 grid grid-cols-3 gap-1.5 rounded-xl border border-gold/20 bg-white/25 px-2 py-2.5 backdrop-blur-sm sm:gap-2 sm:px-3">
           <div className="flex min-w-0 items-start gap-1.5 sm:gap-2">
             <CalendarIcon />
             <div className="min-w-0">
               <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.days} Days</p>
             </div>
           </div>
-          <div className="flex min-w-0 items-start gap-1.5 border-l border-white/12 pl-1.5 sm:gap-2 sm:pl-3">
+          <div className="flex min-w-0 items-start gap-1.5 border-l border-gold/20 pl-1.5 sm:gap-2 sm:pl-3">
             <PeakIcon />
             <div className="min-w-0">
               <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.maxAltitude}</p>
               <p className="mt-0.5 text-[0.58rem] text-white/50 sm:text-[0.62rem]">Max Altitude</p>
             </div>
           </div>
-          <div className="flex min-w-0 items-start gap-1.5 border-l border-white/12 pl-1.5 sm:gap-2 sm:pl-3">
+          <div className="flex min-w-0 items-start gap-1.5 border-l border-gold/20 pl-1.5 sm:gap-2 sm:pl-3">
             <SignalIcon />
             <div className="min-w-0">
               <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.difficulty}</p>
@@ -187,7 +215,7 @@ function PackageCard({
         <div className="mt-auto flex justify-end pt-4">
           <Link
             href={pkg.href}
-            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/80 px-3.5 py-2 text-[0.78rem] font-semibold tracking-wide text-gold transition-colors hover:border-gold hover:bg-gold/10"
+            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/80 bg-gold/10 px-3.5 py-2 text-[0.78rem] font-semibold tracking-wide text-gold transition-colors hover:border-gold hover:bg-gold/20"
           >
             <EyeIcon />
             View Package
@@ -296,30 +324,32 @@ export default function LuxuryTreksSection() {
   if (!journeys.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-5 pt-10 sm:px-8 sm:pb-6 sm:pt-12 lg:px-10">
+    <section className="relative border-t border-gold/20 px-4 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12 lg:px-10">
       <div className="mx-auto max-w-[88rem]">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-3 flex items-center justify-center gap-4">
-            <span className="h-px w-10 bg-gold/70 sm:w-16" aria-hidden="true" />
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-gold sm:text-[0.72rem] sm:tracking-[0.22em]">
-              {journeys.eyebrow}
-            </p>
-            <span className="h-px w-10 bg-gold/70 sm:w-16" aria-hidden="true" />
-          </div>
-          <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.9rem,5.5vw,3.35rem)] font-semibold leading-[1.12] tracking-tight">
+        <div className="hl-panel relative mx-auto max-w-3xl overflow-hidden rounded-[1.4rem] border border-gold/35 px-5 py-7 text-center sm:px-10 sm:py-9">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-10 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent"
+          />
+          <GoldOrnament />
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-gold sm:text-[0.74rem] sm:tracking-[0.26em]">
+            {journeys.eyebrow}
+          </p>
+          <h2 className="mt-2.5 font-[family-name:var(--font-cormorant)] text-[clamp(1.95rem,5.6vw,3.5rem)] font-semibold leading-[1.1] tracking-tight">
             <span className="text-gold">{journeys.headlineGold}</span>
             <span className="text-white"> {journeys.headlineWhite}</span>
           </h2>
-          <p className="mt-3 text-[0.9rem] leading-relaxed text-white/80 sm:text-[1rem]">
+          <div className="mx-auto mt-3 h-px w-16 bg-gold/55" aria-hidden="true" />
+          <p className="mt-3.5 text-[0.92rem] leading-relaxed text-white/80 sm:text-[1.02rem]">
             {journeys.line1}
           </p>
-          <p className="mt-1 text-[0.9rem] leading-relaxed text-white/80 sm:text-[1rem]">
+          <p className="mt-1 text-[0.9rem] leading-relaxed text-white/70 sm:text-[0.98rem]">
             {journeys.line2}
           </p>
         </div>
 
         <div className="mt-7 flex justify-center sm:mt-8">
-          <div className="inline-flex max-w-full gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="inline-flex max-w-full gap-2 overflow-x-auto rounded-full border border-gold/25 bg-white/20 p-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {filters.map((item) => {
               const on = filter === item.id;
               return (
@@ -329,8 +359,8 @@ export default function LuxuryTreksSection() {
                   onClick={() => setFilter(item.id)}
                   className={`focus-ring inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[0.78rem] font-semibold transition-colors sm:px-4 ${
                     on
-                      ? "border-gold bg-gold text-[#1a1f27]"
-                      : "border-gold/70 bg-transparent text-white hover:border-gold hover:bg-gold/10"
+                      ? "border-gold bg-gold text-[#1a1610] shadow-[0_6px_18px_rgba(201,162,39,0.28)]"
+                      : "border-transparent bg-transparent text-white hover:border-gold/50 hover:bg-white/25"
                   }`}
                 >
                   <span className={on ? "text-[#1a1f27]" : "text-gold"}>

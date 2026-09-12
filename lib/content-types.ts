@@ -71,6 +71,8 @@ export type WhyCard = {
   imageAlt: string;
   icon: WhyCardIcon;
   iconSrc?: string;
+  href?: string;
+  ctaLabel?: string;
 };
 
 export type WhyRating = {
@@ -568,6 +570,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/years-photo.jpg",
         imageAlt: "Hiker watching a Himalayan sunrise",
         icon: "years",
+        href: "/about-us",
+        ctaLabel: "LEARN MORE",
       },
       {
         id: "reviews",
@@ -576,6 +580,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/reviews-photo.jpg",
         imageAlt: "Luxury lodge terrace at dusk",
         icon: "tripadvisor",
+        href: "/about-us",
+        ctaLabel: "LEARN MORE",
       },
       {
         id: "guides",
@@ -584,6 +590,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/guides-photo.jpg",
         imageAlt: "Trekkers walking toward a snow peak",
         icon: "guide",
+        href: "/about-us",
+        ctaLabel: "LEARN MORE",
       },
       {
         id: "stays",
@@ -592,6 +600,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/stays-photo.jpg",
         imageAlt: "Warmly lit mountain lodge at night",
         icon: "stay",
+        href: "/luxury-lodge-treks",
+        ctaLabel: "LEARN MORE",
       },
       {
         id: "support",
@@ -600,6 +610,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/support-photo.jpg",
         imageAlt: "Guest support planning a Himalayan journey",
         icon: "support",
+        href: "/contact",
+        ctaLabel: "LEARN MORE",
       },
       {
         id: "responsible",
@@ -608,6 +620,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/why/responsible-photo.jpg",
         imageAlt: "Local community in a Himalayan village",
         icon: "responsible",
+        href: "/about-us",
+        ctaLabel: "LEARN MORE",
       },
     ],
     ratings: [
@@ -627,11 +641,11 @@ export const DEFAULT_CONTENT: SiteContent = {
     ctaHref: "/luxury-treks",
     theme: {
       sectionBg: "transparent",
-      cardBg: "rgba(255,252,247,0.48)",
-      textColor: "#151820",
-      mutedTextColor: "rgba(21,24,32,0.72)",
-      goldColor: "#9a7b18",
-      borderColor: "rgba(154,123,24,0.42)",
+      cardBg: "rgba(18,14,10,0.55)",
+      textColor: "#f7f4ef",
+      mutedTextColor: "rgba(247,244,239,0.78)",
+      goldColor: "#e0c45a",
+      borderColor: "rgba(201,162,39,0.55)",
       backgroundImageSrc: "",
       showBackgroundArt: true,
     },

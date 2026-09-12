@@ -24,21 +24,22 @@ export default function ExperiencesSection() {
   if (!experiences?.visible) return null;
 
   const theme = experiences.theme;
-  const gold = theme?.goldColor && theme.goldColor !== "#c9a227" ? theme.goldColor : "#9a7b18";
-  const border = theme?.borderColor?.includes("201,162,39")
-    ? "rgba(154,123,24,0.5)"
-    : theme?.borderColor || "rgba(154,123,24,0.5)";
+  const gold = theme?.goldColor && !["#9a7b18", "#7a5e0c"].includes(theme.goldColor) ? theme.goldColor : "#e0c45a";
+  const border =
+    !theme?.borderColor || theme.borderColor.includes("154,123,24")
+      ? "rgba(201,162,39,0.55)"
+      : theme.borderColor;
   const textColor =
-    !theme?.textColor || theme.textColor === "#ffffff" || theme.textColor === "#fff"
-      ? "#151820"
+    !theme?.textColor || theme.textColor === "#151820" || theme.textColor === "#12151c"
+      ? "#f7f4ef"
       : theme.textColor;
   const muted =
-    !theme?.mutedTextColor || theme.mutedTextColor.includes("255,255,255")
-      ? "rgba(21,24,32,0.72)"
+    !theme?.mutedTextColor || theme.mutedTextColor.includes("21,24,32")
+      ? "rgba(247,244,239,0.78)"
       : theme.mutedTextColor;
   const cardBg =
-    !theme?.cardBg || theme.cardBg === "#121820" || theme.cardBg === "#0c1016"
-      ? "rgba(255,252,247,0.48)"
+    !theme?.cardBg || theme.cardBg.includes("255,250,240") || theme.cardBg.includes("255,252,247")
+      ? "rgba(18,14,10,0.55)"
       : theme.cardBg;
 
   return (
