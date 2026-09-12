@@ -305,7 +305,7 @@ export default function LuxuryTreksSection() {
           </div>
         </div>
 
-        <div className="relative mt-8">
+        <div className="relative mt-8 sm:px-14">
           <button
             type="button"
             aria-label="Previous packages"
@@ -329,25 +329,27 @@ export default function LuxuryTreksSection() {
             </svg>
           </button>
 
-          <div
-            ref={trackRef}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain [touch-action:pan-x_pan-y] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-14"
-          >
-            {packages.map((pkg, index) => (
-              <div
-                key={pkg.id}
-                className="w-[min(88vw,22.5rem)] shrink-0 snap-start lg:w-[calc((100%-2.5rem)/3)]"
-              >
-                <PackageCard
-                  pkg={pkg}
-                  priority={index < 3}
-                  saved={Boolean(saved[pkg.id])}
-                  onToggleSave={() =>
-                    setSaved((prev) => ({ ...prev, [pkg.id]: !prev[pkg.id] }))
-                  }
-                />
-              </div>
-            ))}
+          <div className="overflow-hidden">
+            <div
+              ref={trackRef}
+              className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain [touch-action:pan-x_pan-y] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {packages.map((pkg, index) => (
+                <div
+                  key={pkg.id}
+                  className="w-[min(88vw,22.5rem)] shrink-0 snap-start lg:w-[calc((100%-2.5rem)/3)]"
+                >
+                  <PackageCard
+                    pkg={pkg}
+                    priority={index < 3}
+                    saved={Boolean(saved[pkg.id])}
+                    onToggleSave={() =>
+                      setSaved((prev) => ({ ...prev, [pkg.id]: !prev[pkg.id] }))
+                    }
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
