@@ -10,7 +10,7 @@ export type MediaItem = {
   kind: MediaKind;
   bytes: number;
   updatedAt: string;
-  collection: "uploads" | "site";
+  collection: "uploads" | "site" | "remote";
 };
 
 export function kindFromName(name: string): MediaKind {
@@ -131,4 +131,38 @@ export async function listSiteMedia(): Promise<MediaItem[]> {
   const images = await walkPublic(path.join(process.cwd(), "public", "images"), "/images");
   const videos = await walkPublic(path.join(process.cwd(), "public", "videos"), "/videos");
   return [...images, ...videos].sort((a, b) => a.path.localeCompare(b.path));
+}
+
+export function collectLinkedMedia(data: unknown, updatedAt: string): MediaItem[] {
+  const found: MediaItem[] = [];
+  const seen = new Set<string>();
+
+  function walk(node: unknown) {
+    if (typeof node === "string") {
+      const value = node.trim();
+      if (!value || seen.has(value)) return;
+      if (/youtube\.com|youtu\.be|vimeo\.com/i.test(value)) {
+        seen.add(value);
+        found.push({
+          path: value,
+          name: value.replace(/^https?:\/\//, "").slice(0, 80),
+          kind: "video",
+          bytes: 0,
+          updatedAt,
+          collection: "remote",
+        });
+      }
+      return;
+    }
+    if (Array.isArray(node)) {
+      node.forEach(walk);
+      return;
+    }
+    if (node && typeof node === "object") {
+      Object.values(node).forEach(walk);
+    }
+  }
+
+  walk(data);
+  return found;
 }

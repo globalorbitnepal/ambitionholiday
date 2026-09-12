@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readContent, scrubUploadRefs, writeContent } from "@/lib/content";
 import { uploadDirs, safeUploadName } from "@/lib/uploads";
-import { listSiteMedia, listUploadMedia } from "@/lib/media-library";
+import { listSiteMedia, listUploadMedia, collectLinkedMedia } from "@/lib/media-library";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
@@ -75,9 +75,11 @@ export async function GET(req: Request) {
 
   const uploads = await listUploadMedia();
   const site = await listSiteMedia();
+  const content = await readContent();
+  const remote = collectLinkedMedia(content, content.updatedAt);
 
   return NextResponse.json({
     files: uploads.map((item) => item.path),
-    items: [...uploads, ...site],
+    items: [...uploads, ...remote, ...site],
   });
 }

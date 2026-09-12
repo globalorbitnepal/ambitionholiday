@@ -1,86 +1,52 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
 import type { JournalVideo } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
-
-function youtubeId(src: string): string | null {
-  if (!src) return null;
-  const trimmed = src.trim();
-  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
-  try {
-    const url = new URL(trimmed);
-    if (url.hostname.includes("youtu.be")) {
-      const id = url.pathname.replace("/", "").slice(0, 11);
-      return id || null;
-    }
-    if (url.hostname.includes("youtube.com") || url.hostname.includes("youtube-nocookie.com")) {
-      const v = url.searchParams.get("v");
-      if (v) return v;
-      const embed = url.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
-      if (embed) return embed[1];
-      const shorts = url.pathname.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
-      if (shorts) return shorts[1];
-    }
-  } catch {
-    // not a URL
-  }
-  return null;
-}
-
-function vimeoId(src: string): string | null {
-  if (!src) return null;
-  try {
-    const url = new URL(src.trim());
-    if (!url.hostname.includes("vimeo.com")) return null;
-    const match = url.pathname.match(/\/(?:video\/)?(\d+)/);
-    return match?.[1] ?? null;
-  } catch {
-    return null;
-  }
-}
-
-function isFileVideo(src: string) {
-  return (
-    src.startsWith("/uploads/") ||
-    src.startsWith("/api/media/") ||
-    src.startsWith("/videos/") ||
-    /\.(mp4|webm|mov)(\?|$)/i.test(src)
-  );
-}
+import {
+  isFileVideo,
+  vimeoEmbedSrc,
+  vimeoId,
+  youtubeEmbedSrc,
+  youtubeId,
+} from "@/lib/video-embed";
 
 function VideoLightbox({
   video,
-  updatedAt,
   onClose,
 }: {
   video: JournalVideo;
-  updatedAt: string;
   onClose: () => void;
 }) {
   const titleId = useId();
   const yt = youtubeId(video.videoSrc);
   const vimeo = vimeoId(video.videoSrc);
   const file = isFileVideo(video.videoSrc);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
   }, [onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/92 p-2 sm:p-4"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/92 p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -89,44 +55,47 @@ function VideoLightbox({
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-[91] rounded-full border border-white/25 bg-black/50 px-3 py-1.5 text-xs font-semibold text-white hover:border-gold/60 hover:text-gold sm:right-5 sm:top-5"
+        className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-[201] rounded-full border border-white/25 bg-black/50 px-3 py-1.5 text-xs font-semibold text-white hover:border-gold/60 hover:text-gold"
       >
         Close ✕
       </button>
       <div
-        className="relative flex h-[min(92dvh,100%)] w-full max-w-6xl flex-col overflow-hidden rounded-lg border border-gold/25 bg-black shadow-2xl"
+        className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-lg border border-gold/25 bg-black shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
           <div className="min-w-0">
-            <p id={titleId} className="line-clamp-2 font-[family-name:var(--font-cormorant)] text-base text-white sm:text-lg">
+            <p
+              id={titleId}
+              className="line-clamp-2 font-[family-name:var(--font-cormorant)] text-base text-white sm:text-lg"
+            >
               {video.title}
             </p>
             <p className="line-clamp-1 text-[0.7rem] text-gold/90">{video.subtitle}</p>
           </div>
         </div>
-        <div className="relative min-h-0 flex-1 bg-black">
+        <div className="relative aspect-video w-full bg-black">
           {yt ? (
             <iframe
               title={video.title}
-              src={`https://www.youtube.com/embed/${yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+              src={youtubeEmbedSrc(yt)}
               className="absolute inset-0 h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
             />
           ) : vimeo ? (
             <iframe
               title={video.title}
-              src={`https://player.vimeo.com/video/${vimeo}?autoplay=1`}
+              src={vimeoEmbedSrc(vimeo)}
               className="absolute inset-0 h-full w-full"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
             />
           ) : file ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
             <video
               className="absolute inset-0 h-full w-full object-contain"
-              src={mediaSrc(video.videoSrc, updatedAt)}
+              src={mediaSrc(video.videoSrc)}
               controls
               autoPlay
               playsInline
@@ -134,18 +103,19 @@ function VideoLightbox({
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
               <p className="max-w-md text-sm text-white/80">
-                Orbit mein is card ke liye YouTube / Vimeo link ya MP4 upload add karo — phir yahan fullscreen play hoga.
+                This card needs a YouTube / Vimeo link or an MP4 in the media library.
               </p>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
 export default function VideoJournalSection() {
-  const { journal, updatedAt } = useSiteContent();
+  const { journal } = useSiteContent();
   const [active, setActive] = useState<JournalVideo | null>(null);
   if (!journal?.visible) return null;
 
@@ -190,7 +160,6 @@ export default function VideoJournalSection() {
                 className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15"
                 aria-hidden="true"
               />
-              {/* Single gold play button — thumbnail images must stay clean (no baked-in play) */}
               <span
                 className="pointer-events-none absolute left-1/2 top-1/2 flex h-[3.35rem] w-[3.35rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-gold bg-black/55 shadow-[0_0_20px_rgba(201,162,39,0.28)] transition-transform duration-300 [@media(hover:hover)]:group-hover:scale-110 sm:h-14 sm:w-14"
                 aria-hidden="true"
@@ -222,9 +191,7 @@ export default function VideoJournalSection() {
         </div>
       </div>
 
-      {active ? (
-        <VideoLightbox video={active} updatedAt={updatedAt} onClose={() => setActive(null)} />
-      ) : null}
+      {active ? <VideoLightbox video={active} onClose={() => setActive(null)} /> : null}
     </section>
   );
 }

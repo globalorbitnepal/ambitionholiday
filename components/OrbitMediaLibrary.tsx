@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { mediaSrc } from "@/lib/media-src";
+import { youtubeEmbedSrc, youtubeId } from "@/lib/video-embed";
 
 type MediaKind = "image" | "video" | "other";
 
@@ -11,10 +12,10 @@ type MediaItem = {
   kind: MediaKind;
   bytes: number;
   updatedAt: string;
-  collection: "uploads" | "site";
+  collection: "uploads" | "site" | "remote";
 };
 
-type Filter = "all" | "uploads" | "site" | "image" | "video";
+type Filter = "all" | "uploads" | "site" | "remote" | "image" | "video";
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -58,6 +59,7 @@ export default function OrbitMediaLibrary() {
     return items.filter((item) => {
       if (filter === "uploads" && item.collection !== "uploads") return false;
       if (filter === "site" && item.collection !== "site") return false;
+      if (filter === "remote" && item.collection !== "remote") return false;
       if (filter === "image" && item.kind !== "image") return false;
       if (filter === "video" && item.kind !== "video") return false;
       if (q && !item.path.toLowerCase().includes(q) && !item.name.toLowerCase().includes(q)) {
@@ -72,6 +74,7 @@ export default function OrbitMediaLibrary() {
       all: items.length,
       uploads: items.filter((i) => i.collection === "uploads").length,
       site: items.filter((i) => i.collection === "site").length,
+      remote: items.filter((i) => i.collection === "remote").length,
       image: items.filter((i) => i.kind === "image").length,
       video: items.filter((i) => i.kind === "video").length,
     };
@@ -146,6 +149,7 @@ export default function OrbitMediaLibrary() {
             ["all", `All (${counts.all})`],
             ["uploads", `Uploads (${counts.uploads})`],
             ["site", `Site files (${counts.site})`],
+            ["remote", `YouTube / Vimeo (${counts.remote})`],
             ["image", `Images (${counts.image})`],
             ["video", `Videos (${counts.video})`],
           ] as const
@@ -182,7 +186,10 @@ export default function OrbitMediaLibrary() {
 
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((item) => {
-          const src = mediaSrc(item.path);
+          const yt = youtubeId(item.path);
+          const src = yt
+            ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`
+            : mediaSrc(item.path);
           return (
             <li
               key={item.path}
@@ -193,7 +200,7 @@ export default function OrbitMediaLibrary() {
                 onClick={() => setPreview(item)}
                 className="relative block aspect-video w-full overflow-hidden bg-[#0b1018]"
               >
-                {item.kind === "video" ? (
+                {item.kind === "video" && item.collection !== "remote" ? (
                   <video
                     src={src}
                     muted
@@ -214,22 +221,22 @@ export default function OrbitMediaLibrary() {
                 <span className="absolute left-2 top-2 rounded-full border border-gold/40 bg-black/65 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-gold">
                   {item.kind}
                 </span>
-                {item.collection === "site" ? (
-                  <span className="absolute right-2 top-2 rounded-full border border-white/20 bg-black/65 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-white/70">
-                    Site
-                  </span>
-                ) : (
-                  <span className="absolute right-2 top-2 rounded-full border border-gold/30 bg-black/65 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-gold/90">
-                    Upload
-                  </span>
-                )}
+                <span className="absolute right-2 top-2 rounded-full border border-gold/30 bg-black/65 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-gold/90">
+                  {item.collection === "site"
+                    ? "Site"
+                    : item.collection === "remote"
+                      ? "YouTube"
+                      : "Upload"}
+                </span>
               </button>
               <div className="space-y-2 p-3">
                 <p className="truncate text-[0.78rem] font-medium text-white" title={item.path}>
                   {item.name}
                 </p>
                 <p className="text-[0.68rem] text-white/45">
-                  {formatBytes(item.bytes)} · {formatWhen(item.updatedAt)}
+                  {item.collection === "remote"
+                    ? "Stored in CMS · Video Journal"
+                    : `${formatBytes(item.bytes)} · ${formatWhen(item.updatedAt)}`}
                 </p>
                 <p className="truncate text-[0.65rem] text-white/35">{item.path}</p>
                 <button
@@ -270,20 +277,28 @@ export default function OrbitMediaLibrary() {
                 Close
               </button>
             </div>
-            <div className="flex max-h-[80dvh] items-center justify-center bg-black p-3">
-              {preview.kind === "video" ? (
+            <div className="relative aspect-video w-full bg-black">
+              {youtubeId(preview.path) ? (
+                <iframe
+                  title={preview.name}
+                  src={youtubeEmbedSrc(youtubeId(preview.path) as string)}
+                  className="absolute inset-0 h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allowFullScreen
+                />
+              ) : preview.kind === "video" ? (
                 <video
                   src={mediaSrc(preview.path)}
                   controls
                   playsInline
-                  className="max-h-[76dvh] w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={mediaSrc(preview.path)}
                   alt={preview.name}
-                  className="max-h-[76dvh] w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
               )}
             </div>
