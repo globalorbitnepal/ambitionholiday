@@ -2,6 +2,7 @@
 
 import type { SiteContent, WhyCard, WhyCardIcon, WhyRating } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -86,11 +87,18 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
           onChange={(e) => patch({ eyebrow: e.target.value })}
         />
       </Field>
-      <Field label="Headline">
+      <Field label="Headline (white)">
         <input
           className={inputClass}
-          value={why.headline}
-          onChange={(e) => patch({ headline: e.target.value })}
+          value={why.headlineWhite}
+          onChange={(e) => patch({ headlineWhite: e.target.value, headline: `${e.target.value} ${why.headlineGold}`.trim() })}
+        />
+      </Field>
+      <Field label="Headline (gold)">
+        <input
+          className={inputClass}
+          value={why.headlineGold}
+          onChange={(e) => patch({ headlineGold: e.target.value, headline: `${why.headlineWhite} ${e.target.value}`.trim() })}
         />
       </Field>
       <Field label="Intro text">
@@ -100,6 +108,22 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
           onChange={(e) => patch({ body: e.target.value })}
         />
       </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Button label">
+          <input
+            className={inputClass}
+            value={why.ctaLabel}
+            onChange={(e) => patch({ ctaLabel: e.target.value })}
+          />
+        </Field>
+        <Field label="Button link">
+          <input
+            className={inputClass}
+            value={why.ctaHref}
+            onChange={(e) => patch({ ctaHref: e.target.value })}
+          />
+        </Field>
+      </div>
 
       <div>
         <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
@@ -141,6 +165,15 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
                   }}
                 />
               </label>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const cards = [...why.cards];
+                  cards[index] = { ...card, imageSrc: url };
+                  const next = { ...content, why: { ...why, cards } };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
               <Field label="Title">
                 <input
                   className={inputClass}
@@ -162,6 +195,22 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
                   onChange={(e) => updateCard(index, { ...card, imageAlt: e.target.value })}
                 />
               </Field>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Box button label">
+                  <input
+                    className={inputClass}
+                    value={card.ctaLabel || "LEARN MORE"}
+                    onChange={(e) => updateCard(index, { ...card, ctaLabel: e.target.value })}
+                  />
+                </Field>
+                <Field label="Box link">
+                  <input
+                    className={inputClass}
+                    value={card.href || ""}
+                    onChange={(e) => updateCard(index, { ...card, href: e.target.value })}
+                  />
+                </Field>
+              </div>
               <Field label="Icon style">
                 <select
                   className={inputClass}
@@ -197,9 +246,39 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
                   }}
                 />
               </label>
+              <button
+                type="button"
+                className="rounded-md border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
+                onClick={() => patch({ cards: why.cards.filter((_, i) => i !== index) })}
+              >
+                Delete box
+              </button>
             </div>
           ))}
         </div>
+        <button
+          type="button"
+          className="mt-3 rounded-md border border-white/20 px-3 py-2 text-xs"
+          onClick={() =>
+            patch({
+              cards: [
+                ...why.cards,
+                {
+                  id: `why-${Date.now()}`,
+                  title: "New highlight",
+                  body: "Add a short description for this box.",
+                  imageSrc: why.cards[0]?.imageSrc || "/images/why/years-v2.jpg",
+                  imageAlt: "Heritage highlight",
+                  icon: "years",
+                  href: "/about-us",
+                  ctaLabel: "LEARN MORE",
+                },
+              ],
+            })
+          }
+        >
+          Add box
+        </button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

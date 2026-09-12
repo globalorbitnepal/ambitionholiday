@@ -120,8 +120,8 @@ export default function OrbitMediaLibrary() {
           Every image, video, and upload — kept forever
         </h2>
         <p className="mt-1.5 max-w-2xl text-sm text-white/55">
-          Orbit copies files into durable folders so deploys cannot wipe them. Built-in site
-          media is read-only. Uploads are never deleted from this library.
+          Orbit copies files into durable folders so deploys cannot wipe them. Site images and videos
+          from /images and /videos are listed here. Use Copy path or pick files from each section editor.
         </p>
       </div>
 
@@ -239,6 +239,7 @@ export default function OrbitMediaLibrary() {
                     : `${formatBytes(item.bytes)} · ${formatWhen(item.updatedAt)}`}
                 </p>
                 <p className="truncate text-[0.65rem] text-white/35">{item.path}</p>
+                <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => void copyPath(item.path)}
@@ -246,6 +247,28 @@ export default function OrbitMediaLibrary() {
                 >
                   {copied === item.path ? "Copied" : "Copy path"}
                 </button>
+                {item.collection === "uploads" ? (
+                  <button
+                    type="button"
+                    className="rounded-md border border-red-400/30 px-2.5 py-1 text-[0.68rem] font-semibold text-red-200"
+                    onClick={async () => {
+                      if (!window.confirm(`Remove ${item.name} from uploads?`)) return;
+                      const res = await fetch("/api/orbit/media", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ path: item.path }),
+                      });
+                      if (!res.ok) {
+                        setStatus("Could not delete this file.");
+                        return;
+                      }
+                      await refresh();
+                    }}
+                  >
+                    Delete upload
+                  </button>
+                ) : null}
+                </div>
               </div>
             </li>
           );

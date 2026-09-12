@@ -10,8 +10,10 @@ import OrbitJournalEditor from "@/components/OrbitJournalEditor";
 import OrbitBlogEditor from "@/components/OrbitBlogEditor";
 import OrbitFooterEditor from "@/components/OrbitFooterEditor";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type {
   SignatureFeature,
+  SignatureHighlight,
   SiteContent,
   StatItem,
 } from "@/lib/content-types";
@@ -136,6 +138,10 @@ export default function OrbitDashboard({ initial }: Props) {
         <div className="mb-6 flex flex-wrap gap-2">
           {(
             [
+              ["hero", "Hero"],
+              ["header", "Header / Logo"],
+              ["stats", "Trust bar"],
+              ["signature", "Signature"],
               ["journeys", "Luxury treks"],
               ["why", "Why Ambition"],
               ["experiences", "Experiences"],
@@ -143,10 +149,6 @@ export default function OrbitDashboard({ initial }: Props) {
               ["journal", "Video Journal"],
               ["blog", "Blog"],
               ["footer", "Footer"],
-              ["signature", "Signature"],
-              ["hero", "Hero"],
-              ["header", "Header / Logo"],
-              ["stats", "Trust bar"],
               ["media", "Media library"],
             ] as const
           ).map(([id, label]) => (
@@ -228,6 +230,33 @@ export default function OrbitDashboard({ initial }: Props) {
                   Reset to default logo
                 </button>
               </div>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const next = { ...content, header: { logoSrc: url } };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
+              <Field label="Below-hero wallpaper">
+                <div className="relative h-28 overflow-hidden rounded-md border border-white/10 bg-black/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={content.atmosphere?.imageSrc || "/images/atmosphere/himalaya-dusk-peaks-v3.jpg"}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </Field>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const next = {
+                    ...content,
+                    atmosphere: { imageSrc: url },
+                  };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
             </div>
           ) : null}
 
@@ -331,6 +360,17 @@ export default function OrbitDashboard({ initial }: Props) {
                       }}
                     />
                   </label>
+                  <OrbitMediaButtons
+                    kind="video"
+                    onPicked={async (url) => {
+                      const next = {
+                        ...content,
+                        hero: { ...content.hero, videoSrc: url },
+                      };
+                      setContent(next);
+                      await save(next);
+                    }}
+                  />
                 </div>
                 <div className="space-y-2">
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
@@ -368,6 +408,16 @@ export default function OrbitDashboard({ initial }: Props) {
                       }}
                     />
                   </label>
+                  <OrbitMediaButtons
+                    onPicked={async (url) => {
+                      const next = {
+                        ...content,
+                        hero: { ...content.hero, posterSrc: url },
+                      };
+                      setContent(next);
+                      await save(next);
+                    }}
+                  />
                 </div>
               </div>
 
@@ -672,6 +722,7 @@ export default function OrbitDashboard({ initial }: Props) {
                       <input
                         className={inputClass}
                         value={image.alt}
+                        placeholder="Alt text"
                         onChange={(e) => {
                           const images = [...content.signature.images];
                           images[index] = { ...image, alt: e.target.value };
@@ -679,6 +730,58 @@ export default function OrbitDashboard({ initial }: Props) {
                             ...content,
                             signature: { ...content.signature, images },
                           });
+                        }}
+                      />
+                      <input
+                        className={inputClass}
+                        value={image.kicker || ""}
+                        placeholder="Kicker (small gold label)"
+                        onChange={(e) => {
+                          const images = [...content.signature.images];
+                          images[index] = { ...image, kicker: e.target.value };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, images },
+                          });
+                        }}
+                      />
+                      <input
+                        className={inputClass}
+                        value={image.title || ""}
+                        placeholder="Card title"
+                        onChange={(e) => {
+                          const images = [...content.signature.images];
+                          images[index] = { ...image, title: e.target.value };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, images },
+                          });
+                        }}
+                      />
+                      <input
+                        className={inputClass}
+                        value={image.href || ""}
+                        placeholder="/link"
+                        onChange={(e) => {
+                          const images = [...content.signature.images];
+                          images[index] = { ...image, href: e.target.value };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, images },
+                          });
+                        }}
+                      />
+                      <OrbitMediaButtons
+                        crop="9x16"
+                        onPicked={async (url) => {
+                          const images = [...content.signature.images];
+                          images[index] = { ...image, src: url };
+                          const next = {
+                            ...content,
+                            signature: { ...content.signature, images },
+                          };
+                          setContent(next);
+                          await save(next);
                         }}
                       />
                       <div className="flex flex-wrap gap-2">
@@ -764,6 +867,101 @@ export default function OrbitDashboard({ initial }: Props) {
 
               <div>
                 <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                  Highlights
+                </p>
+                <div className="space-y-3">
+                  {content.signature.highlights.map((item, index) => (
+                    <div key={item.id} className="grid gap-3 rounded-lg border border-white/10 p-3 sm:grid-cols-3">
+                      <select
+                        className={inputClass}
+                        value={item.icon}
+                        onChange={(e) => {
+                          const highlights = [...content.signature.highlights];
+                          highlights[index] = {
+                            ...item,
+                            icon: e.target.value as SignatureHighlight["icon"],
+                          };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, highlights },
+                          });
+                        }}
+                      >
+                        <option value="peaks">peaks</option>
+                        <option value="compass">compass</option>
+                        <option value="heart">heart</option>
+                      </select>
+                      <input
+                        className={inputClass}
+                        value={item.title}
+                        onChange={(e) => {
+                          const highlights = [...content.signature.highlights];
+                          highlights[index] = { ...item, title: e.target.value };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, highlights },
+                          });
+                        }}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          className={inputClass}
+                          value={item.subtitle}
+                          onChange={(e) => {
+                            const highlights = [...content.signature.highlights];
+                            highlights[index] = { ...item, subtitle: e.target.value };
+                            setContent({
+                              ...content,
+                              signature: { ...content.signature, highlights },
+                            });
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="shrink-0 rounded-md border border-red-400/30 px-2 text-xs text-red-200"
+                          onClick={() =>
+                            setContent({
+                              ...content,
+                              signature: {
+                                ...content.signature,
+                                highlights: content.signature.highlights.filter((_, i) => i !== index),
+                              },
+                            })
+                          }
+                        >
+                          Del
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="mt-3 rounded-md border border-white/20 px-3 py-2 text-xs"
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      signature: {
+                        ...content.signature,
+                        highlights: [
+                          ...content.signature.highlights,
+                          {
+                            id: `hi-${Date.now()}`,
+                            icon: "peaks",
+                            title: "New",
+                            subtitle: "Highlight",
+                          },
+                        ],
+                      },
+                    })
+                  }
+                >
+                  Add highlight
+                </button>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
                   Features
                 </p>
                 <div className="space-y-3">
@@ -807,21 +1005,37 @@ export default function OrbitDashboard({ initial }: Props) {
                         }}
                       />
                       <div className="flex gap-2">
-                        <input
-                          className={inputClass}
-                          value={feature.subtitle}
-                          onChange={(e) => {
-                            const features = [...content.signature.features];
-                            features[index] = {
-                              ...feature,
-                              subtitle: e.target.value,
-                            };
-                            setContent({
-                              ...content,
-                              signature: { ...content.signature, features },
-                            });
-                          }}
-                        />
+                      <input
+                        className={inputClass}
+                        value={feature.subtitle}
+                        onChange={(e) => {
+                          const features = [...content.signature.features];
+                          features[index] = {
+                            ...feature,
+                            subtitle: e.target.value,
+                          };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, features },
+                          });
+                        }}
+                      />
+                      <input
+                        className={inputClass}
+                        value={feature.href || ""}
+                        placeholder="/link"
+                        onChange={(e) => {
+                          const features = [...content.signature.features];
+                          features[index] = {
+                            ...feature,
+                            href: e.target.value,
+                          };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, features },
+                          });
+                        }}
+                      />
                         <button
                           type="button"
                           className="shrink-0 rounded-md border border-red-400/30 px-2 text-xs text-red-200"

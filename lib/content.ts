@@ -66,8 +66,8 @@ function decorateWhyCards(cards: WhyCard[]): WhyCard[] {
       imageSrc: fromUpload
         ? card.imageSrc
         : LEGACY_WHY_IMAGES[card.imageSrc] || fallback?.imageSrc || card.imageSrc,
-      title: fallback?.title || card.title,
-      body: fallback?.body || card.body,
+      title: card.title || fallback?.title || "",
+      body: card.body || fallback?.body || "",
     };
   });
 }
@@ -92,6 +92,7 @@ export async function readContent(): Promise<SiteContent> {
       ...DEFAULT_CONTENT,
       ...parsed,
       header: { ...DEFAULT_CONTENT.header, ...parsed.header },
+      atmosphere: { ...DEFAULT_CONTENT.atmosphere, ...parsed.atmosphere },
       hero: {
         ...DEFAULT_CONTENT.hero,
         ...parsed.hero,
@@ -105,13 +106,14 @@ export async function readContent(): Promise<SiteContent> {
       signature: {
         ...DEFAULT_CONTENT.signature,
         ...parsed.signature,
-        images: (parsed.signature?.images ?? DEFAULT_CONTENT.signature.images).map(
-          (image, index) => {
+        images: (parsed.signature?.images ?? DEFAULT_CONTENT.signature.images)
+          .map((image, index) => {
             const fallback = DEFAULT_CONTENT.signature.images[index];
             const legacy =
               image.src === "/images/signature/sig-live-1.webp" ||
               image.src === "/images/signature/sig-live-2.webp" ||
-              image.src === "/images/signature/sig-live-3.jpg";
+              image.src === "/images/signature/sig-live-3.jpg" ||
+              /sig-live-[456]\.(jpg|webp)$/.test(image.src);
             return {
               ...fallback,
               ...image,
@@ -120,8 +122,12 @@ export async function readContent(): Promise<SiteContent> {
               title: image.title || fallback?.title,
               href: image.href || fallback?.href,
             };
-          },
-        ),
+          })
+          .filter((image, index, list) => {
+            if (!image.src) return false;
+            if (/\/images\/signature\/sig-live-[456]\./.test(image.src)) return false;
+            return list.findIndex((item) => item.src === image.src && item.id === image.id) === index;
+          }),
         highlights:
           parsed.signature?.highlights ?? DEFAULT_CONTENT.signature.highlights,
         features: (parsed.signature?.features ?? DEFAULT_CONTENT.signature.features).map(
@@ -163,8 +169,9 @@ export async function readContent(): Promise<SiteContent> {
           !parsed.why?.headline || parsed.why.headline === "Why Ambition Holidays"
             ? DEFAULT_CONTENT.why.headline
             : parsed.why.headline,
-        headlineWhite: DEFAULT_CONTENT.why.headlineWhite,
-        headlineGold: DEFAULT_CONTENT.why.headlineGold,
+        headlineWhite:
+          parsed.why?.headlineWhite || DEFAULT_CONTENT.why.headlineWhite,
+        headlineGold: parsed.why?.headlineGold || DEFAULT_CONTENT.why.headlineGold,
         body:
           !parsed.why?.body || parsed.why.body.includes("We don't just organize trips")
             ? DEFAULT_CONTENT.why.body
@@ -322,6 +329,12 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     ...content,
     header: {
       logoSrc: content.header.logoSrc === publicPath ? fallbackLogo : content.header.logoSrc,
+    },
+    atmosphere: {
+      imageSrc:
+        content.atmosphere?.imageSrc === publicPath
+          ? DEFAULT_CONTENT.atmosphere.imageSrc
+          : content.atmosphere?.imageSrc || DEFAULT_CONTENT.atmosphere.imageSrc,
     },
     hero: {
       ...content.hero,

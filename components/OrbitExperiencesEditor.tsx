@@ -2,6 +2,7 @@
 
 import { DEFAULT_CONTENT, type ExperienceCard, type ExperiencesTheme, type SiteContent } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -329,6 +330,15 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
                   }}
                 />
               </label>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const cards = [...experiences.cards];
+                  cards[index] = { ...card, imageSrc: url };
+                  const next = { ...content, experiences: { ...experiences, cards } };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
               <Field label="Image URL">
                 <input
                   className={inputClass}

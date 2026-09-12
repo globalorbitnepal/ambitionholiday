@@ -362,6 +362,9 @@ export type SiteContent = {
   header: {
     logoSrc: string;
   };
+  atmosphere: {
+    imageSrc: string;
+  };
   hero: {
     visible: boolean;
     taglineWords: string[];
@@ -397,6 +400,9 @@ export const DEFAULT_CONTENT: SiteContent = {
   updatedAt: new Date(0).toISOString(),
   header: {
     logoSrc: "/images/ambition-holiday-logo.png",
+  },
+  atmosphere: {
+    imageSrc: "/images/atmosphere/himalaya-dusk-peaks-v3.jpg",
   },
   hero: {
     visible: true,
@@ -445,30 +451,6 @@ export const DEFAULT_CONTENT: SiteContent = {
         kicker: "Exclusive Journeys",
         title: "Mustang Region",
         href: "/mustang",
-      },
-      {
-        id: "sig-1786895886212",
-        src: "/images/signature/sig-live-4.jpg",
-        alt: "Signature image",
-        kicker: "Private Trails",
-        title: "Himalayan Escapes",
-        href: "/luxury-treks",
-      },
-      {
-        id: "sig-1786897478111",
-        src: "/images/signature/sig-live-5.jpg",
-        alt: "Signature image",
-        kicker: "Refined Stays",
-        title: "Luxury Lodges",
-        href: "/luxury-lodges-stays",
-      },
-      {
-        id: "sig-1786897672121",
-        src: "/images/signature/sig-live-6.jpg",
-        alt: "Signature image",
-        kicker: "Cultural Journeys",
-        title: "Hidden Nepal",
-        href: "/destinations",
       },
     ],
     highlights: [

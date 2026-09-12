@@ -8,6 +8,7 @@ import {
   type SiteContent,
 } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -127,6 +128,11 @@ function PostEditor({
           }}
         />
       </label>
+      <OrbitMediaButtons
+        onPicked={async (url) => {
+          onChange({ ...post, imageSrc: url });
+        }}
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Title">

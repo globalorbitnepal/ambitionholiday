@@ -6,6 +6,7 @@ import type {
   SiteContent,
 } from "@/lib/content-types";
 import { slugify } from "@/lib/nav";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -289,6 +290,18 @@ export default function OrbitJourneysEditor({ content, setContent, save }: Props
                       }}
                     />
                   </label>
+                  <OrbitMediaButtons
+                    onPicked={async (url) => {
+                      const packages = [...journeys.packages];
+                      packages[index] = { ...pkg, imageSrc: url };
+                      const next = {
+                        ...content,
+                        journeys: { ...journeys, packages },
+                      };
+                      setContent(next);
+                      await save(next);
+                    }}
+                  />
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">

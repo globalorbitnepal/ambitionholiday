@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
+import { mediaSrc } from "@/lib/media-src";
 import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
 
 function GoldRing({ children }: { children: React.ReactNode }) {
@@ -11,8 +12,16 @@ function GoldRing({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CardIcon({ icon }: { icon: WhyCardIcon; iconSrc?: string }) {
+function CardIcon({ icon, iconSrc }: { icon: WhyCardIcon; iconSrc?: string }) {
   const cls = "h-6 w-6";
+  if ((icon === "custom" || iconSrc) && iconSrc) {
+    return (
+      <GoldRing>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={mediaSrc(iconSrc)} alt="" className="h-6 w-6 object-contain" />
+      </GoldRing>
+    );
+  }
   if (icon === "years") {
     return (
       <GoldRing>
@@ -189,9 +198,9 @@ export default function WhyAmbitionSection() {
           </Link>
         </div>
 
-        <div className="mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-3.5">
+        <div className="mt-9 flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-3 2xl:grid-cols-6 xl:gap-3.5 [&::-webkit-scrollbar]:hidden">
           {why.cards?.map((card) => (
-            <article key={card.id} className="why-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] border border-[#e0c45a]/80">
+            <article key={card.id} className="why-card group relative flex h-full min-w-[78vw] snap-center flex-col overflow-hidden rounded-[1.35rem] border border-[#e0c45a]/80 sm:min-w-0">
               <div className="relative aspect-[3/4.15] w-full min-h-[22rem]">
                 <MediaImage
                   src={card.imageSrc}

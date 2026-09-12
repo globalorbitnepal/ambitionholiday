@@ -526,3 +526,36 @@ li {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
+
+/* App-like phone/tablet: full-bleed safe padding, no horizontal bounce, larger tap targets */
+@media (max-width: 1023px) {
+  .home-light > section {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .home-light button,
+  .home-light a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 767px) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  .home-light {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  .home-light .hl-card,
+  .home-light .why-card {
+    border-radius: 1.15rem;
+  }
+
+  .why-section .why-card {
+    scroll-snap-align: center;
+  }
+}

@@ -7,6 +7,7 @@ import {
   type SiteContent,
 } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
+import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -195,6 +196,25 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const videos = [...journal.videos];
+                  videos[index] = { ...video, imageSrc: url };
+                  const next = { ...content, journal: { ...journal, videos } };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
+              <OrbitMediaButtons
+                kind="video"
+                onPicked={async (url) => {
+                  const videos = [...journal.videos];
+                  videos[index] = { ...video, videoSrc: url };
+                  const next = { ...content, journal: { ...journal, videos } };
+                  setContent(next);
+                  await save(next);
+                }}
+              />
               <div className="flex flex-wrap gap-2">
                 <label
                   className={`inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold ${

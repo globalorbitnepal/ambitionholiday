@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { mediaSrc } from "@/lib/media-src";
+
+const FALLBACK_SRC = "/images/atmosphere/himalaya-dusk-peaks-v3.jpg";
 
 type Props = {
   src: string;
@@ -27,9 +30,17 @@ export default function MediaImage({
   objectPosition = "center 28%",
   quality,
 }: Props) {
-  const resolved = mediaSrc(src);
+  const initial = mediaSrc(src) || FALLBACK_SRC;
+  const [current, setCurrent] = useState(initial);
+  useEffect(() => {
+    setCurrent(mediaSrc(src) || FALLBACK_SRC);
+  }, [src]);
+  const resolved = current || FALLBACK_SRC;
   const style = { objectPosition };
   const imageQuality = quality ?? (priority ? 74 : 68);
+  const onError = () => {
+    if (resolved !== FALLBACK_SRC) setCurrent(FALLBACK_SRC);
+  };
 
   if (isRuntimeUpload(resolved)) {
     return (
@@ -44,6 +55,7 @@ export default function MediaImage({
         fetchPriority={priority ? "high" : "low"}
         decoding="async"
         draggable={false}
+        onError={onError}
       />
     );
   }
@@ -61,6 +73,7 @@ export default function MediaImage({
       draggable={false}
       className={className}
       style={style}
+      onError={onError}
     />
   );
 }

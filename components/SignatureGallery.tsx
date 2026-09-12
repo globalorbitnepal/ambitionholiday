@@ -24,7 +24,7 @@ function GoldArrow({ className = "" }: { className?: string }) {
 }
 
 export default function SignatureGallery({ images }: Props) {
-  const slots = images.slice(0, 3);
+  const slots = images.filter((image) => Boolean(image.src));
   const [start, setStart] = useState(0);
 
   const visibleCount = Math.min(3, slots.length);
