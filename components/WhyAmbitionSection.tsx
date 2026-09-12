@@ -17,7 +17,9 @@ function CardIcon({ icon }: { icon: WhyCardIcon; iconSrc?: string }) {
     return (
       <GoldRing>
         <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <path d="M6 10.2 12 4.5 18 10.2v3.4L12 20 6 13.6v-3.4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M5.8 8.2h12.4L16.6 11H7.4L5.8 8.2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M7.6 11h8.8v7.2H7.6V11Z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M12 4.8 13.6 8H10.4L12 4.8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
       </GoldRing>
     );
@@ -198,7 +200,13 @@ export default function WhyAmbitionSection() {
                   quality={86}
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0906] via-[#0c0906]/88 to-black/10" />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, #0c0906 0%, rgba(12,9,6,0.94) 38%, rgba(12,9,6,0.2) 58%, transparent 76%)",
+                  }}
+                />
                 <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-16 text-center">
                   <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
                   <h3 className="mt-3 text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
