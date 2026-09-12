@@ -46,7 +46,7 @@ function VideoLightbox({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/92 p-3 sm:p-6"
+      className="fixed inset-0 z-[200] bg-black/92 p-3 sm:p-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -60,53 +60,56 @@ function VideoLightbox({
         Close ✕
       </button>
       <div
-        className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-lg border border-gold/25 bg-black shadow-2xl"
+        className="flex h-full w-full items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
-          <div className="min-w-0">
+        <div className="w-full max-w-6xl">
+          <div className="mb-3 min-w-0">
             <p
               id={titleId}
-              className="line-clamp-2 font-[family-name:var(--font-cormorant)] text-base text-white sm:text-lg"
+              className="font-[family-name:var(--font-cormorant)] text-lg text-white sm:text-xl"
             >
               {video.title}
             </p>
-            <p className="line-clamp-1 text-[0.7rem] text-gold/90">{video.subtitle}</p>
+            <p className="text-[0.75rem] text-gold/90">{video.subtitle}</p>
           </div>
-        </div>
-        <div className="relative aspect-video w-full bg-black">
-          {yt ? (
-            <iframe
-              title={video.title}
-              src={youtubeEmbedSrc(yt)}
-              className="absolute inset-0 h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          ) : vimeo ? (
-            <iframe
-              title={video.title}
-              src={vimeoEmbedSrc(vimeo)}
-              className="absolute inset-0 h-full w-full"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          ) : file ? (
-            <video
-              className="absolute inset-0 h-full w-full object-contain"
-              src={mediaSrc(video.videoSrc)}
-              controls
-              autoPlay
-              playsInline
-            />
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
-              <p className="max-w-md text-sm text-white/80">
-                This card needs a YouTube / Vimeo link or an MP4 in the media library.
-              </p>
-            </div>
-          )}
+          <div
+            className="relative w-full overflow-hidden rounded-lg border border-gold/25 bg-black"
+            style={{ aspectRatio: "16 / 9" }}
+          >
+            {yt ? (
+              <iframe
+                title={video.title}
+                src={youtubeEmbedSrc(yt)}
+                className="absolute inset-0 h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            ) : vimeo ? (
+              <iframe
+                title={video.title}
+                src={vimeoEmbedSrc(vimeo)}
+                className="absolute inset-0 h-full w-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            ) : file ? (
+              <video
+                className="absolute inset-0 h-full w-full object-contain"
+                src={mediaSrc(video.videoSrc)}
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                <p className="max-w-md text-sm text-white/80">
+                  This card needs a YouTube / Vimeo link or an MP4 in the media library.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>,
