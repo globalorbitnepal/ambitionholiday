@@ -26,7 +26,7 @@ function ClockIcon() {
 
 function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }) {
   return (
-    <article className="hl-card group flex flex-col overflow-hidden rounded-[0.9rem] border border-gold/30">
+    <article className="hl-card group flex flex-col overflow-hidden rounded-[1.25rem] border border-[#e0c45a]/80">
       <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[16/9]">
         <MediaImage
           src={post.imageSrc}
@@ -53,7 +53,7 @@ function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }
         {post.category ? (
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold">{post.category}</p>
         ) : null}
-        <h3 className="font-[family-name:var(--font-cormorant)] text-[1.28rem] font-semibold leading-snug text-white sm:text-[1.45rem]">
+        <h3 className="text-[1.28rem] font-semibold leading-snug text-white sm:text-[1.45rem]">
           {post.title}
         </h3>
         {post.excerpt ? (
@@ -106,7 +106,7 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
   return (
     <Link
       href={post.href || "#"}
-      className="group flex gap-3 rounded-lg border border-gold/30 bg-white/75 p-2.5 shadow-[0_8px_24px_rgba(40,55,75,0.06)] transition-colors hover:border-gold/55 hover:bg-white/90 sm:gap-3.5 sm:p-3"
+      className="hl-card group flex gap-3 rounded-[1.15rem] border border-[#e0c45a]/80 p-2.5 transition-colors hover:border-[#e0c45a] sm:gap-3.5 sm:p-3"
     >
       <div className="relative h-[4.6rem] w-[4.6rem] shrink-0 overflow-hidden rounded-md border border-white/10 sm:h-[5.1rem] sm:w-[5.1rem]">
         <MediaImage
@@ -120,10 +120,10 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
         {post.category ? (
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-gold">{post.category}</p>
         ) : null}
-        <h3 className="mt-1 font-[family-name:var(--font-cormorant)] text-[1.02rem] font-semibold leading-snug text-white transition-colors group-hover:text-gold sm:text-[1.08rem]">
+        <h3 className="mt-1 text-[1.02rem] font-semibold leading-snug text-white transition-colors group-hover:text-[#e4c35a] sm:text-[1.08rem]">
           {post.title}
         </h3>
-        <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.68rem] text-white/55">
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.68rem] text-white/70">
           {post.date ? (
             <span className="inline-flex items-center gap-1">
               <CalendarIcon />
@@ -147,7 +147,7 @@ export default function BlogSection() {
   if (!blog?.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-6 pt-8 sm:px-8 sm:pb-7 sm:pt-10 lg:px-10">
+    <section className="blog-section relative px-4 pb-6 pt-8 sm:px-8 sm:pb-7 sm:pt-10 lg:px-10">
       <div className="relative mx-auto max-w-[88rem]">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-3 flex items-center justify-center gap-3">
@@ -159,14 +159,14 @@ export default function BlogSection() {
             <span className="h-1 w-1 rotate-45 bg-gold" aria-hidden="true" />
             <span className="h-px w-10 bg-gold/70 sm:w-14" aria-hidden="true" />
           </div>
-          <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5.6vw,3.35rem)] font-semibold leading-[1.12] tracking-tight text-white">
+          <h2 className="blog-display text-[clamp(2rem,5.6vw,3.35rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white">
             {blog.headlineBefore}{" "}
-            <em className="font-[family-name:var(--font-cormorant)] text-[0.72em] font-medium italic text-gold sm:text-[0.78em]">
+            <em className="blog-display text-[0.78em] font-medium italic text-[#e4c35a] sm:text-[0.82em]">
               {blog.headlineScript}
             </em>{" "}
             {blog.headlineAfter}
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-[0.9rem] leading-relaxed text-white/75 sm:text-[0.98rem]">
+          <p className="mx-auto mt-3 max-w-2xl text-[0.9rem] leading-relaxed text-[#efe9dc]/90 sm:text-[0.98rem]">
             {blog.body}
           </p>
           <div className="mx-auto mt-4 flex max-w-xs items-center gap-3" aria-hidden="true">
@@ -193,7 +193,7 @@ export default function BlogSection() {
           <span className="hidden h-px w-16 bg-gold/40 sm:block" aria-hidden="true" />
           <Link
             href={blog.ctaHref || "#"}
-            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/70 bg-white/80 px-6 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-[color:var(--hl-ink,#151820)] transition-colors hover:border-gold hover:bg-gold/10 hover:text-[color:var(--hl-gold,#9a7b18)]"
+            className="focus-ring inline-flex items-center gap-2 rounded-full border border-[#e0c45a] bg-black/35 px-6 py-2.5 text-[0.8rem] font-semibold tracking-[0.08em] text-[#e4c35a] backdrop-blur-md transition-colors hover:bg-[#e0c45a]/12"
           >
             {blog.ctaLabel} <span aria-hidden="true">→</span>
           </Link>
