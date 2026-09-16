@@ -47,10 +47,6 @@ export async function DELETE(req: Request) {
 
   const content = await readContent();
   const cleaned = scrubUploadRefs(content, publicPath);
-  // Also remove matching signature images by src
-  cleaned.signature.images = cleaned.signature.images.filter(
-    (img) => img.src !== publicPath,
-  );
   cleaned.hero.stats = cleaned.hero.stats.map((stat) =>
     stat.iconSrc === publicPath ? { ...stat, iconSrc: undefined } : stat,
   );

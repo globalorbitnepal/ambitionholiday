@@ -11,18 +11,17 @@ import AvailabilitySection from "@/components/AvailabilitySection";
 import VideoJournalSection from "@/components/VideoJournalSection";
 import BlogSection from "@/components/BlogSection";
 import SiteFooter from "@/components/SiteFooter";
-import SiteContentProvider, { useSiteContent } from "@/components/SiteContentProvider";
+import SiteContentProvider from "@/components/SiteContentProvider";
 import type { SiteContent } from "@/lib/content-types";
 
 function HomeSections() {
-  const content = useSiteContent();
   return (
     <>
       <Hero />
       <ExploreHubSection />
+      <SignatureSection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
-        <SignatureSection content={content.signature} />
         <LuxuryTreksSection />
         <WhyAmbitionSection />
         <ExperiencesSection />

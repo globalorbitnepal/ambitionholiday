@@ -357,6 +357,58 @@ export type FooterContent = {
   creditHref: string;
 };
 
+export type SignatureStatIcon = "luggage" | "tripadvisor" | "headset" | "guide" | "custom";
+export type SignatureCardIcon = "peaks" | "heli" | "lodge" | "temple" | "custom";
+export type SignatureFootIcon = "leaf" | "people" | "shield" | "pin" | "globe" | "custom";
+
+export type SignatureStat = {
+  id: string;
+  icon: SignatureStatIcon;
+  iconSrc?: string;
+  value: string;
+  title: string;
+  subtitle: string;
+};
+
+export type SignatureStoryCard = {
+  id: string;
+  badge: string;
+  title: string;
+  subtitle: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  icon: SignatureCardIcon;
+  iconSrc?: string;
+};
+
+export type SignatureFootItem = {
+  id: string;
+  icon: SignatureFootIcon;
+  iconSrc?: string;
+  title: string;
+  subtitle: string;
+};
+
+export type SignatureContent = {
+  visible: boolean;
+  wallpaperSrc: string;
+  kicker: string;
+  scriptRight: string;
+  eyebrow: string;
+  headlineWhite: string;
+  headlineGold: string;
+  sisterLabel: string;
+  sisterName: string;
+  body: string;
+  ctaLabel: string;
+  ctaHref: string;
+  stats: SignatureStat[];
+  cards: SignatureStoryCard[];
+  footItems: SignatureFootItem[];
+  footScript: string;
+};
+
 export type ExploreHubPillarIcon =
   | "diamond"
   | "people"
@@ -436,18 +488,7 @@ export type SiteContent = {
     stats: StatItem[];
   };
   exploreHub: ExploreHubContent;
-  signature: {
-    visible: boolean;
-    eyebrow: string;
-    headlineWhite: string;
-    headlineGold: string;
-    body: string;
-    ctaLabel: string;
-    ctaHref: string;
-    images: SignatureImage[];
-    highlights: SignatureHighlight[];
-    features: SignatureFeature[];
-  };
+  signature: SignatureContent;
   journeys: JourneysContent;
   why: WhyContent;
   experiences: ExperiencesContent;
@@ -482,66 +523,122 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   signature: {
     visible: true,
-    eyebrow: "OUR SIGNATURE OF ADVENTURE",
-    headlineWhite: "Beyond the Trail.",
-    headlineGold: "Luxury Meets Ambition",
-    body: "Experience Nepal through the art of luxury trekking. From private Himalayan trails and secluded mountain escapes to exceptional stays and authentic local encounters, Ambition Holidays curates extraordinary journeys where adventure meets refined comfort, every step of the way.",
-    ctaLabel: "Explore Luxury Treks",
+    wallpaperSrc: "/images/signature/sig-wallpaper.jpg",
+    kicker: "EXPLORE  |  EXPERIENCE  |  BELONG",
+    scriptRight: "More Than a Trip, A Deeper Connection.",
+    eyebrow: "LUXURY TRAVEL EXPERIENCES",
+    headlineWhite: "Ambition",
+    headlineGold: "Holidays",
+    sisterLabel: "Sister Company of",
+    sisterName: "Ambition Himalaya Treks and Expeditions",
+    body: "Your gateway to extraordinary journeys across Nepal, Bhutan, Tibet and beyond. Curated luxury experiences with local expertise, authentic encounters and unforgettable memories.",
+    ctaLabel: "Explore All Packages",
     ctaHref: "/luxury-treks",
-    images: [
+    stats: [
       {
-        id: "sig-1",
-        src: "/images/signature/sig-card-everest.jpg",
-        alt: "Helicopter flying past snow-capped Everest peaks",
-        kicker: "Scenic Flights",
+        id: "st-packages",
+        icon: "luggage",
+        value: "40+",
+        title: "Luxury Packages",
+        subtitle: "Handpicked for You",
+      },
+      {
+        id: "st-reviews",
+        icon: "tripadvisor",
+        value: "415+",
+        title: "Tripadvisor Reviews",
+        subtitle: "4.9/5",
+      },
+      {
+        id: "st-support",
+        icon: "headset",
+        value: "24/7",
+        title: "Customer Support",
+        subtitle: "Always Here for You",
+      },
+      {
+        id: "st-guides",
+        icon: "guide",
+        value: "Expert",
+        title: "Local Guides",
+        subtitle: "Born in the Himalayas",
+      },
+    ],
+    cards: [
+      {
+        id: "sc-everest",
+        badge: "12+ Packages",
         title: "Everest Region",
+        subtitle: "Trek to the Top of the World",
         href: "/everest-region",
-      },
-      {
-        id: "sig-3",
-        src: "/images/signature/sig-card-annapurna.jpg",
-        alt: "Trekker on iconic trails in the Annapurna range",
-        kicker: "Iconic Trails",
-        title: "Annapurna Region",
-        href: "/annapurna-region",
-      },
-      {
-        id: "sig-1786895806235",
-        src: "/images/signature/sig-card-mustang.jpg",
-        alt: "Luxury terrace overlooking a Himalayan lake in Mustang",
-        kicker: "Exclusive Journeys",
-        title: "Mustang Region",
-        href: "/mustang",
-      },
-    ],
-    highlights: [
-      { id: "hi-1", icon: "peaks", title: "100+", subtitle: "Curated Routes" },
-      { id: "hi-2", icon: "compass", title: "Expert", subtitle: "Local Guides" },
-      { id: "hi-3", icon: "heart", title: "Unforgettable", subtitle: "Experiences" },
-    ],
-    features: [
-      {
-        id: "feat-1",
-        icon: "hiker",
-        title: "Private Journeys",
-        subtitle: "Tailored Exclusively to You",
-        href: "/luxury-treks",
-      },
-      {
-        id: "feat-2",
+        imageSrc: "/images/signature/sig-everest.jpg",
+        imageAlt: "Trekker on a ridge facing Everest peaks",
         icon: "peaks",
-        title: "Expert Local Guides",
-        subtitle: "Local Knowledge, Exceptional Care",
-        href: "/about-us",
       },
       {
-        id: "feat-3",
-        icon: "lodge",
-        title: "Handpicked Stays",
-        subtitle: "Refined Comfort in the Himalayas",
+        id: "sc-heli",
+        badge: "8+ Packages",
+        title: "Helicopter Tours",
+        subtitle: "See the Himalayas Like Never Before",
+        href: "/luxury-helicopter-treks",
+        imageSrc: "/images/signature/sig-heli.jpg",
+        imageAlt: "Helicopter flying over Himalayan peaks",
+        icon: "heli",
+      },
+      {
+        id: "sc-lodge",
+        badge: "10+ Packages",
+        title: "Luxury Getaways",
+        subtitle: "Premium Stays in Breathtaking Locations",
         href: "/luxury-lodges-stays",
+        imageSrc: "/images/signature/sig-lodge.jpg",
+        imageAlt: "Luxury lodge infinity pool facing snow mountains",
+        icon: "lodge",
+      },
+      {
+        id: "sc-culture",
+        badge: "10+ Packages",
+        title: "Cultural Journeys",
+        subtitle: "Heritage, Spirituality and Living Traditions",
+        href: "/cultural-tours",
+        imageSrc: "/images/signature/sig-culture.jpg",
+        imageAlt: "Buddhist stupa with prayer flags in the Himalayas",
+        icon: "temple",
       },
     ],
+    footItems: [
+      {
+        id: "sf-1",
+        icon: "leaf",
+        title: "Sustainable Travel",
+        subtitle: "Leave a Positive Impact",
+      },
+      {
+        id: "sf-2",
+        icon: "people",
+        title: "Small Groups",
+        subtitle: "More Personal Experiences",
+      },
+      {
+        id: "sf-3",
+        icon: "shield",
+        title: "Safe & Hassle-Free",
+        subtitle: "Your Safety, Our Priority",
+      },
+      {
+        id: "sf-4",
+        icon: "pin",
+        title: "Local Communities",
+        subtitle: "Travel with a Purpose",
+      },
+      {
+        id: "sf-5",
+        icon: "globe",
+        title: "Multi-Country Tours",
+        subtitle: "Nepal, Bhutan, Tibet & Beyond",
+      },
+    ],
+    footScript: "Extraordinary Journeys Await",
   },
   exploreHub: {
     visible: true,

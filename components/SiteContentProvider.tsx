@@ -41,6 +41,13 @@ export default function SiteContentProvider({
       const merged: SiteContent = {
         ...DEFAULT_CONTENT,
         ...data,
+        signature: {
+          ...DEFAULT_CONTENT.signature,
+          ...data.signature,
+          stats: data.signature?.stats ?? DEFAULT_CONTENT.signature.stats,
+          cards: data.signature?.cards ?? DEFAULT_CONTENT.signature.cards,
+          footItems: data.signature?.footItems ?? DEFAULT_CONTENT.signature.footItems,
+        },
         why: {
           ...DEFAULT_CONTENT.why,
           ...data.why,

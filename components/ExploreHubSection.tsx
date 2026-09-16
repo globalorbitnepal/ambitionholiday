@@ -175,66 +175,48 @@ export default function ExploreHubSection() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,16,26,0.12)_0%,rgba(8,18,28,0.08)_45%,rgba(6,14,22,0.28)_100%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1280px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="explore-hub-glass rounded-[2rem] px-4 py-6 sm:px-7 sm:py-8 lg:px-9 lg:py-9">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.2fr)] lg:items-start">
-            <div>
-              <p className="text-[0.68rem] font-semibold tracking-[0.28em] text-[#d8c37a]">
-                {exploreHub.eyebrow}
-              </p>
-              <h2 className="mt-2 font-[family-name:var(--font-cormorant)] text-[2.15rem] leading-[1.12] font-semibold text-white sm:text-[2.7rem]">
+      <div className="explore-hub-shell relative mx-auto">
+        <div className="explore-hub-glass">
+          <div className="explore-hub-top">
+            <div className="min-w-0">
+              <p className="explore-hub-eyebrow">{exploreHub.eyebrow}</p>
+              <h2 className="explore-hub-title font-[family-name:var(--font-cormorant)] font-semibold text-white">
                 {exploreHub.headline}
                 <br />
                 {exploreHub.headlineLine2}
               </h2>
-              <p className="mt-3 max-w-md text-[0.95rem] leading-relaxed text-white/78">
-                {exploreHub.body}
-              </p>
+              <p className="explore-hub-body">{exploreHub.body}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-5 sm:gap-0">
+            <div className="explore-hub-pillars">
               {exploreHub.pillars.map((pillar, index) => (
                 <div
                   key={pillar.id}
-                  className={`flex flex-col items-center px-1 text-center sm:px-2 ${
-                    index < exploreHub.pillars.length - 1
-                      ? "sm:border-r sm:border-white/18"
-                      : ""
+                  className={`explore-hub-pillar ${
+                    index < exploreHub.pillars.length - 1 ? "explore-hub-pillar-split" : ""
                   }`}
                 >
-                  <span
-                    className="flex h-12 w-12 items-center justify-center rounded-full border text-[color:var(--icon)]"
-                    style={{
-                      borderColor: "rgba(232,208,122,0.55)",
-                      background: "rgba(255,255,255,0.06)",
-                      color: GOLD,
-                      boxShadow: "0 0 18px rgba(201,162,39,0.18)",
-                    }}
-                  >
+                  <span className="explore-hub-pillar-icon" style={{ color: GOLD }}>
                     <PillarIcon icon={pillar.icon} iconSrc={pillar.iconSrc} />
                   </span>
-                  <p className="mt-2.5 max-w-[7.6rem] text-[0.72rem] font-medium leading-snug text-white/88">
-                    {pillar.title}
-                  </p>
+                  <p>{pillar.title}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-wrap items-center gap-2 rounded-full border border-white/12 bg-black/10 p-1.5">
+          <div className="explore-hub-tabs-row">
+            <div className="explore-hub-tabs" role="tablist">
               {tabs.map((tab) => {
                 const on = tab.id === active.id;
                 return (
                   <button
                     key={tab.id}
                     type="button"
+                    role="tab"
+                    aria-selected={on}
                     onClick={() => setActiveId(tab.id)}
-                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.8rem] font-semibold transition ${
-                      on
-                        ? "bg-[#e7c45a] text-[#2a2414] shadow-[0_8px_20px_rgba(201,162,39,0.35)]"
-                        : "text-white/80 hover:bg-white/8 hover:text-white"
-                    }`}
+                    className={`explore-hub-tab ${on ? "is-on" : ""}`}
                   >
                     <span className={on ? "text-[#2a2414]" : "text-[#e7c45a]"}>
                       {TAB_ICONS[tab.id]}
@@ -244,43 +226,39 @@ export default function ExploreHubSection() {
                 );
               })}
             </div>
-            <p className="hidden font-[family-name:var(--font-cormorant)] text-[1.05rem] italic text-white/70 lg:block">
+            <p className="explore-hub-hint font-[family-name:var(--font-cormorant)]">
               {exploreHub.tabHint}
             </p>
           </div>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="explore-hub-cards">
             {active.cards.map((card) => (
-              <Link
-                key={card.id}
-                href={card.href}
-                className="group relative isolate overflow-hidden rounded-[1.35rem] border border-white/18 shadow-[0_16px_40px_rgba(0,0,0,0.28)]"
-              >
-                <div className="relative aspect-[16/11]">
+              <Link key={card.id} href={card.href} className="explore-hub-card group">
+                <div className="explore-hub-card-media">
                   <MediaImage
                     src={card.imageSrc}
                     alt={card.imageAlt}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                    sizes="(max-width: 700px) 100vw, (max-width: 1180px) 50vw, 25vw"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                     objectPosition="center 40%"
                     priority
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_12%,rgba(8,16,24,0.22)_58%,rgba(6,12,20,0.72)_100%)]" />
+                  <div className="explore-hub-card-shade" />
                 </div>
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4">
-                  <div>
-                    <h3 className="font-[family-name:var(--font-cormorant)] text-[1.45rem] leading-none font-semibold text-white">
+                <div className="explore-hub-card-copy">
+                  <div className="min-w-0">
+                    <h3 className="font-[family-name:var(--font-cormorant)] font-semibold text-white">
                       {card.title}
                     </h3>
-                    <p className="mt-1 text-[0.78rem] text-white/78">{card.subtitle}</p>
-                    <p className="mt-2 inline-flex items-center gap-1.5 text-[0.72rem] font-medium text-white/80">
+                    <p className="explore-hub-card-sub">{card.subtitle}</p>
+                    <p className="explore-hub-card-meta">
                       <span className="text-[#e7c45a]">
                         <CardMetaIcon icon={card.icon} iconSrc={card.iconSrc} />
                       </span>
                       {card.meta}
                     </p>
                   </div>
-                  <span className="mb-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/35 bg-white/12 text-white backdrop-blur-md transition group-hover:border-[#e7c45a]/70 group-hover:text-[#e7c45a]">
+                  <span className="explore-hub-card-go">
                     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
                       <path d="M9 6.8 15.2 12 9 17.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -290,20 +268,13 @@ export default function ExploreHubSection() {
             ))}
           </div>
 
-          <div className="mt-7 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-            <p className="text-[0.68rem] font-semibold tracking-[0.22em] text-white/45">
-              {exploreHub.footLeft}
-            </p>
-            <Link
-              href={exploreHub.ctaHref}
-              className="inline-flex items-center gap-2 rounded-full border border-[#e7c45a]/80 bg-[rgba(20,28,22,0.35)] px-7 py-2.5 text-[0.92rem] font-semibold text-white shadow-[0_0_0_1px_rgba(231,196,90,0.15)] backdrop-blur-md transition hover:bg-[#e7c45a] hover:text-[#2a2414]"
-            >
+          <div className="explore-hub-foot">
+            <p>{exploreHub.footLeft}</p>
+            <Link href={exploreHub.ctaHref} className="explore-hub-cta">
               {exploreHub.ctaLabel}
               <span aria-hidden="true">→</span>
             </Link>
-            <p className="text-[0.68rem] font-semibold tracking-[0.22em] text-white/45">
-              {exploreHub.footRight}
-            </p>
+            <p>{exploreHub.footRight}</p>
           </div>
         </div>
       </div>

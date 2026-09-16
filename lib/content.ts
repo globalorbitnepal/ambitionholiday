@@ -144,40 +144,64 @@ export async function readContent(): Promise<SiteContent> {
       signature: {
         ...DEFAULT_CONTENT.signature,
         ...parsed.signature,
-        images: (parsed.signature?.images ?? DEFAULT_CONTENT.signature.images)
-          .map((image, index) => {
-            const fallback = DEFAULT_CONTENT.signature.images[index];
-            const legacy =
-              image.src === "/images/signature/sig-live-1.webp" ||
-              image.src === "/images/signature/sig-live-2.webp" ||
-              image.src === "/images/signature/sig-live-3.jpg" ||
-              /sig-live-[456]\.(jpg|webp)$/.test(image.src);
-            return {
-              ...fallback,
-              ...image,
-              src: legacy && fallback ? fallback.src : image.src,
-              kicker: image.kicker || fallback?.kicker,
-              title: image.title || fallback?.title,
-              href: image.href || fallback?.href,
-            };
-          })
-          .filter((image, index, list) => {
-            if (!image.src) return false;
-            if (/\/images\/signature\/sig-live-[456]\./.test(image.src)) return false;
-            return list.findIndex((item) => item.src === image.src && item.id === image.id) === index;
-          }),
-        highlights:
-          parsed.signature?.highlights ?? DEFAULT_CONTENT.signature.highlights,
-        features: (parsed.signature?.features ?? DEFAULT_CONTENT.signature.features).map(
-          (feature, index) => {
-            const fallback = DEFAULT_CONTENT.signature.features[index];
-            return {
-              ...fallback,
-              ...feature,
-              href: feature.href || fallback?.href,
-            };
-          },
-        ),
+        wallpaperSrc:
+          parsed.signature && "wallpaperSrc" in parsed.signature && parsed.signature.wallpaperSrc
+            ? parsed.signature.wallpaperSrc
+            : DEFAULT_CONTENT.signature.wallpaperSrc,
+        kicker: parsed.signature?.kicker || DEFAULT_CONTENT.signature.kicker,
+        scriptRight: parsed.signature?.scriptRight || DEFAULT_CONTENT.signature.scriptRight,
+        eyebrow:
+          !parsed.signature?.eyebrow ||
+          parsed.signature.eyebrow === "OUR SIGNATURE OF ADVENTURE"
+            ? DEFAULT_CONTENT.signature.eyebrow
+            : parsed.signature.eyebrow,
+        headlineWhite:
+          !parsed.signature?.headlineWhite ||
+          parsed.signature.headlineWhite === "Beyond the Trail."
+            ? DEFAULT_CONTENT.signature.headlineWhite
+            : parsed.signature.headlineWhite,
+        headlineGold:
+          !parsed.signature?.headlineGold ||
+          parsed.signature.headlineGold === "Luxury Meets Ambition"
+            ? DEFAULT_CONTENT.signature.headlineGold
+            : parsed.signature.headlineGold,
+        sisterLabel: parsed.signature?.sisterLabel || DEFAULT_CONTENT.signature.sisterLabel,
+        sisterName: parsed.signature?.sisterName || DEFAULT_CONTENT.signature.sisterName,
+        body:
+          !parsed.signature?.body ||
+          parsed.signature.body.startsWith("Experience Nepal through the art of luxury trekking")
+            ? DEFAULT_CONTENT.signature.body
+            : parsed.signature.body,
+        ctaLabel:
+          !parsed.signature?.ctaLabel || parsed.signature.ctaLabel === "Explore Luxury Treks"
+            ? DEFAULT_CONTENT.signature.ctaLabel
+            : parsed.signature.ctaLabel,
+        stats:
+          parsed.signature?.stats?.length
+            ? parsed.signature.stats.map((stat, index) => ({
+                ...DEFAULT_CONTENT.signature.stats[index],
+                ...stat,
+              }))
+            : DEFAULT_CONTENT.signature.stats,
+        cards:
+          parsed.signature?.cards?.length
+            ? parsed.signature.cards.map((card, index) => ({
+                ...DEFAULT_CONTENT.signature.cards[index],
+                ...card,
+                imageSrc:
+                  card.imageSrc ||
+                  DEFAULT_CONTENT.signature.cards[index]?.imageSrc ||
+                  DEFAULT_CONTENT.signature.wallpaperSrc,
+              }))
+            : DEFAULT_CONTENT.signature.cards,
+        footItems:
+          parsed.signature?.footItems?.length
+            ? parsed.signature.footItems.map((item, index) => ({
+                ...DEFAULT_CONTENT.signature.footItems[index],
+                ...item,
+              }))
+            : DEFAULT_CONTENT.signature.footItems,
+        footScript: parsed.signature?.footScript || DEFAULT_CONTENT.signature.footScript,
       },
       journeys: {
         ...DEFAULT_CONTENT.journeys,
@@ -416,7 +440,27 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     signature: {
       ...content.signature,
-      images: content.signature.images.filter((img) => img.src !== publicPath),
+      wallpaperSrc:
+        content.signature?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.signature.wallpaperSrc
+          : content.signature?.wallpaperSrc ?? DEFAULT_CONTENT.signature.wallpaperSrc,
+      stats: (content.signature?.stats ?? []).map((stat) => ({
+        ...stat,
+        iconSrc: stat.iconSrc === publicPath ? undefined : stat.iconSrc,
+      })),
+      cards: (content.signature?.cards ?? []).map((card, index) => ({
+        ...card,
+        imageSrc:
+          card.imageSrc === publicPath
+            ? DEFAULT_CONTENT.signature.cards[index]?.imageSrc ??
+              DEFAULT_CONTENT.signature.wallpaperSrc
+            : card.imageSrc,
+        iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
+      })),
+      footItems: (content.signature?.footItems ?? []).map((item) => ({
+        ...item,
+        iconSrc: item.iconSrc === publicPath ? undefined : item.iconSrc,
+      })),
     },
     journeys: {
       ...content.journeys,
