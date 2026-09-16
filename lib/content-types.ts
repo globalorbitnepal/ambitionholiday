@@ -1031,6 +1031,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         ratingCount: "From 295+ Tripadvisor Reviews",
         ctaLabel: "View All on Tripadvisor",
         ctaHref: "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
+        logoSrc: "/images/reviews/tripadvisor-owl.png",
       },
     ],
     reviews: [

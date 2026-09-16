@@ -17,18 +17,12 @@ function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
   );
 }
 
+const TRIPADVISOR_OWL = "/images/reviews/tripadvisor-owl.png";
+
 function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <circle cx="16.2" cy="24.2" r="8.4" fill="#00AA6C" />
-      <circle cx="31.8" cy="24.2" r="8.4" fill="#00AA6C" />
-      <circle cx="16.2" cy="24.2" r="3.15" fill="#fff" />
-      <circle cx="31.8" cy="24.2" r="3.15" fill="#fff" />
-      <circle cx="16.2" cy="24.2" r="1.55" fill="#034833" />
-      <circle cx="31.8" cy="24.2" r="1.55" fill="#034833" />
-      <path d="M24 16.4c1.7-3.4 5.2-6.1 9.7-6.4" fill="none" stroke="#00AA6C" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M33.8 10h6.2l-2.4 4.4" fill="none" stroke="#00AA6C" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={TRIPADVISOR_OWL} alt="Tripadvisor" className={`${className} object-contain`} />
   );
 }
 

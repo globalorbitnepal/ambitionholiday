@@ -64,11 +64,19 @@ function decorateJourneyPackages(packages: JourneyPackage[]): JourneyPackage[] {
 
 function decorateReviewBoards(boards: ReviewBoard[]): ReviewBoard[] {
   if (!boards.length) return DEFAULT_CONTENT.why.boards;
-  return boards.map((board, index) => ({
-    ...DEFAULT_CONTENT.why.boards[index],
-    ...board,
-    platform: board.platform === "tripadvisor" ? "tripadvisor" : "google",
-  }));
+  return boards.map((board, index) => {
+    const fallback = DEFAULT_CONTENT.why.boards[index];
+    const platform = board.platform === "tripadvisor" ? "tripadvisor" : "google";
+    return {
+      ...fallback,
+      ...board,
+      platform,
+      logoSrc:
+        board.logoSrc ||
+        fallback?.logoSrc ||
+        (platform === "tripadvisor" ? "/images/reviews/tripadvisor-owl.png" : undefined),
+    };
+  });
 }
 
 function decorateReviews(reviews: TravelerReview[]): TravelerReview[] {
