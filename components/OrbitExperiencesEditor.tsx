@@ -100,6 +100,23 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
         Show Signature Experiences section
       </label>
 
+      <Field label="Wallpaper image">
+        <div className="space-y-2">
+          <input
+            className={inputClass}
+            value={experiences.wallpaperSrc}
+            onChange={(e) => patch({ wallpaperSrc: e.target.value })}
+          />
+          <OrbitMediaButtons
+            onPicked={async (url) => {
+              const next = { ...content, experiences: { ...experiences, wallpaperSrc: url } };
+              setContent(next);
+              await save(next);
+            }}
+          />
+        </div>
+      </Field>
+
       <div className="rounded-lg border border-white/10 p-4">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-gold">
           Section text

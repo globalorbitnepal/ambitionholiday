@@ -1660,3 +1660,135 @@ body.nav-mega-open .hero-copy {
     display: none;
   }
 }
+
+.exp-hub .explore-hub-shell {
+  padding-top: clamp(0.45rem, 1.2vw, 1.15rem);
+}
+
+.exp-head {
+  text-align: center;
+  max-width: 46rem;
+  margin: 0 auto clamp(1.15rem, 2.4vw, 2rem);
+}
+
+.exp-title {
+  margin-top: 0.35rem;
+  font-size: clamp(1.85rem, 3.7vw, 3.45rem);
+  line-height: 1.08;
+  font-weight: 600;
+  color: #f7f4ef;
+}
+
+.exp-title span {
+  display: inline;
+  color: #e8d07a;
+  font-style: italic;
+}
+
+.exp-body {
+  margin-top: 0.55rem;
+  color: rgba(237, 232, 222, 0.84);
+  font-size: clamp(0.82rem, 1.05vw, 0.95rem);
+  line-height: 1.55;
+}
+
+.exp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(0.85rem, 1.5vw, 1.2rem);
+}
+
+.exp-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: clamp(1rem, 1.4vw, 1.25rem);
+  border: 1px solid rgba(232, 208, 122, 0.55);
+  background: linear-gradient(180deg, rgba(10, 18, 28, 0.35) 0%, rgba(8, 14, 22, 0.82) 100%);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+.exp-card-media {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+}
+
+.exp-card-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.95rem 0.95rem 1.1rem;
+  text-align: center;
+}
+
+.exp-card-copy h3 {
+  color: #f7f4ef;
+  font-size: clamp(1.18rem, 1.5vw, 1.42rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.exp-count {
+  margin-top: 0.28rem;
+  color: #e8d07a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.exp-card-copy p:last-of-type {
+  margin-top: 0.45rem;
+  flex: 1;
+  color: rgba(232, 224, 210, 0.78);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.exp-card-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.9rem auto 0;
+  min-width: 9.5rem;
+  border-radius: 999px;
+  border: 1.5px solid #e8d07a;
+  padding: 0.48rem 1rem;
+  color: #e8d07a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.exp-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+}
+
+.exp-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f0d78a 0%, #c9a24a 100%);
+  padding: 0.7rem 1.35rem;
+  color: #2a2414;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+@media (min-width: 700px) {
+  .exp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .exp-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

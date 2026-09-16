@@ -150,6 +150,7 @@ export type ExperiencesTheme = {
 
 export type ExperiencesContent = {
   visible: boolean;
+  wallpaperSrc: string;
   eyebrow: string;
   headlineWhite: string;
   headlineGold: string;
@@ -1094,11 +1095,12 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   experiences: {
     visible: true,
+    wallpaperSrc: "/images/experiences/exp-wallpaper.jpg",
     eyebrow: "OUR SIGNATURE EXPERIENCES",
     headlineWhite: "More Than Treks.",
     headlineGold: "Extraordinary Experiences.",
     body: "Go beyond the ordinary and discover the Himalayas in the most exclusive ways. Curated experiences that elevate your journey and create memories for a lifetime.",
-    ctaLabel: "EXPLORE ALL EXPERIENCES",
+    ctaLabel: "Explore All Experiences",
     ctaHref: "/luxury-treks",
     theme: {
       sectionBg: "transparent",
@@ -1114,32 +1116,32 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         id: "lodges",
         title: "Luxury Lodges & Stays",
-        countLabel: "10 Experiences",
-        body: "Handpicked luxury lodges and hotels offering comfort, elegance and world-class hospitality.",
-        imageSrc: "/images/experiences/lodges-photo.jpg",
-        imageAlt: "Luxury mountain lodge interior with a fireplace and peak views",
+        countLabel: "10+ EXPERIENCES",
+        body: "Handpicked luxury lodges and boutique hotels offering comfort, elegance and world-class hospitality in the Himalayas.",
+        imageSrc: "/images/experiences/exp-lodges.jpg",
+        imageAlt: "Luxury Himalayan lodge bedroom with mountain views",
         icon: "lodge",
-        href: "/luxury-treks",
+        href: "/luxury-lodge-treks",
         ctaLabel: "EXPLORE MORE",
       },
       {
         id: "culture",
         title: "Private Cultural Journeys",
-        countLabel: "9 Experiences",
-        body: "Immerse in authentic local culture, heritage sites and spiritual experiences with private guides.",
-        imageSrc: "/images/experiences/culture-photo.jpg",
-        imageAlt: "Nepalese stupa and temples at sunset",
+        countLabel: "9+ EXPERIENCES",
+        body: "Immerse in authentic local culture, heritage sites and spiritual experiences with private guides and curated itineraries.",
+        imageSrc: "/images/experiences/exp-culture.jpg",
+        imageAlt: "Travelers at Kathmandu temples with a private guide",
         icon: "culture",
-        href: "/luxury-treks",
+        href: "/cultural-journeys",
         ctaLabel: "EXPLORE MORE",
       },
       {
         id: "flights",
         title: "Mountain Flights",
-        countLabel: "8 Experiences",
-        body: "Breathtaking scenic flights over Everest and the Himalayas for unforgettable views.",
-        imageSrc: "/images/experiences/flights-photo.jpg",
-        imageAlt: "Small aircraft flying past Himalayan snow peaks",
+        countLabel: "8+ EXPERIENCES",
+        body: "Breathtaking scenic flights over Everest and the Himalayas for unforgettable panoramic views.",
+        imageSrc: "/images/experiences/exp-flights.jpg",
+        imageAlt: "Airplane window view of Himalayan snow peaks",
         icon: "flight",
         href: "/luxury-helicopter-treks",
         ctaLabel: "EXPLORE MORE",
@@ -1147,10 +1149,10 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         id: "wildlife",
         title: "Wildlife & Jungle Safaris",
-        countLabel: "6 Experiences",
-        body: "Explore Nepal's rich wildlife with private jungle safaris in Chitwan and beyond.",
-        imageSrc: "/images/experiences/wildlife-photo.jpg",
-        imageAlt: "Rhinoceros in tall grass during a jungle safari",
+        countLabel: "6+ EXPERIENCES",
+        body: "Explore Nepal's rich wildlife with private jungle safaris in Chitwan, Bardia and beyond.",
+        imageSrc: "/images/experiences/exp-wildlife.jpg",
+        imageAlt: "Rhino on a jungle safari track in Nepal",
         icon: "wildlife",
         href: "/luxury-treks",
         ctaLabel: "EXPLORE MORE",

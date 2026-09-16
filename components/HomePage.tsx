@@ -22,9 +22,9 @@ function HomeSections() {
       <SignatureSection />
       <LuxuryTreksSection />
       <WhyAmbitionSection />
+      <ExperiencesSection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
-        <ExperiencesSection />
         <AvailabilitySection />
         <VideoJournalSection />
         <BlogSection />

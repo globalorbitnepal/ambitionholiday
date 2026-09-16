@@ -289,10 +289,17 @@ export async function readContent(): Promise<SiteContent> {
       experiences: {
         ...DEFAULT_CONTENT.experiences,
         ...parsed.experiences,
+        wallpaperSrc:
+          parsed.experiences && "wallpaperSrc" in parsed.experiences && parsed.experiences.wallpaperSrc
+            ? parsed.experiences.wallpaperSrc
+            : DEFAULT_CONTENT.experiences.wallpaperSrc,
+        ctaLabel:
+          !parsed.experiences?.ctaLabel || parsed.experiences.ctaLabel === "EXPLORE ALL EXPERIENCES"
+            ? DEFAULT_CONTENT.experiences.ctaLabel
+            : parsed.experiences.ctaLabel,
         theme: {
           ...DEFAULT_CONTENT.experiences.theme,
           ...parsed.experiences?.theme,
-          // Homepage light luxury theme: coerce legacy dark CMS colors.
           sectionBg: "transparent",
           cardBg:
             !parsed.experiences?.theme?.cardBg ||
@@ -323,28 +330,32 @@ export async function readContent(): Promise<SiteContent> {
               : parsed.experiences.theme.borderColor,
         },
         cards: (() => {
+          const defaults = DEFAULT_CONTENT.experiences.cards;
           const removed = new Set(["heli", "wellness"]);
-          const fromSaved = (parsed.experiences?.cards ?? [])
-            .filter((card) => !removed.has(card.id))
-            .filter(
-              (card) =>
-                !/helicopter experience/i.test(card.title) &&
-                !/wellness journey/i.test(card.title),
-            );
-          const source =
-            fromSaved.length > 0 ? fromSaved : DEFAULT_CONTENT.experiences.cards;
-          return source.map((card, index) => ({
-            ...DEFAULT_CONTENT.experiences.cards[index],
-            ...card,
-            countLabel:
-              card.countLabel ??
-              DEFAULT_CONTENT.experiences.cards[index]?.countLabel ??
-              "",
-            ctaLabel:
-              card.ctaLabel ??
-              DEFAULT_CONTENT.experiences.cards[index]?.ctaLabel ??
-              "EXPLORE MORE",
-          }));
+          const fromSaved = (parsed.experiences?.cards ?? []).filter(
+            (card) =>
+              !removed.has(card.id) &&
+              !/helicopter experience/i.test(card.title) &&
+              !/wellness journey/i.test(card.title),
+          );
+          const byId = new Map(fromSaved.map((card) => [card.id, card]));
+          const merged = defaults.map((def) => {
+            const card = byId.get(def.id);
+            if (!card) return def;
+            const fromUpload =
+              card.imageSrc.startsWith("/uploads/") || card.imageSrc.startsWith("/api/media/");
+            const staleImage = !fromUpload && !card.imageSrc.includes("/images/experiences/exp-");
+            const staleCopy = !card.countLabel?.includes("+");
+            return {
+              ...def,
+              ...card,
+              imageSrc: fromUpload ? card.imageSrc : staleImage ? def.imageSrc : card.imageSrc,
+              countLabel: staleCopy ? def.countLabel : card.countLabel,
+              body: staleCopy ? def.body : card.body,
+            };
+          });
+          const extras = fromSaved.filter((card) => !defaults.some((def) => def.id === card.id));
+          return [...merged, ...extras];
         })(),
       },
       availability: {
@@ -529,6 +540,10 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     experiences: {
       ...content.experiences,
+      wallpaperSrc:
+        content.experiences?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.experiences.wallpaperSrc
+          : content.experiences?.wallpaperSrc ?? DEFAULT_CONTENT.experiences.wallpaperSrc,
       theme: {
         ...content.experiences?.theme,
         backgroundImageSrc:
