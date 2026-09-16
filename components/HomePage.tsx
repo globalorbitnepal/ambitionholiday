@@ -20,9 +20,9 @@ function HomeSections() {
       <Hero />
       <ExploreHubSection />
       <SignatureSection />
+      <LuxuryTreksSection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
-        <LuxuryTreksSection />
         <WhyAmbitionSection />
         <ExperiencesSection />
         <AvailabilitySection />

@@ -9,49 +9,56 @@ import {
   type WhyCard,
 } from "@/lib/content-types";
 
-const FEATURED_JOURNEY_ORDER = ["ebc", "abc", "mustang"];
+const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
 
-const LEGACY_PACKAGE_IMAGES: Record<string, string> = {
-  "/images/packages/everest.jpg": "/images/packages/everest-v2.jpg",
-  "/images/packages/annapurna.jpg": "/images/packages/annapurna-v2.jpg",
-  "/images/packages/mustang.jpg": "/images/packages/mustang-v2.jpg",
-};
+function isUploadSrc(src: string) {
+  return src.startsWith("/uploads/") || src.startsWith("/api/media/");
+}
 
 function decorateJourneyPackages(packages: JourneyPackage[]): JourneyPackage[] {
-  const mapped = packages.map((pkg) => {
-    const fallback = DEFAULT_CONTENT.journeys.packages.find((item) => item.id === pkg.id);
-    const fromUpload = pkg.imageSrc.startsWith("/uploads/") || pkg.imageSrc.startsWith("/api/media/");
-    const imageSrc = fromUpload
-      ? pkg.imageSrc
-      : LEGACY_PACKAGE_IMAGES[pkg.imageSrc] || fallback?.imageSrc || pkg.imageSrc;
+  const defaults = DEFAULT_CONTENT.journeys.packages;
+  const hasGrid =
+    packages.some((pkg) => pkg.id === "langtang") &&
+    packages.some((pkg) => pkg.id === "gokyo") &&
+    packages.some((pkg) => pkg.id === "mardi");
+  const byId = new Map(packages.map((pkg) => [pkg.id, pkg]));
+
+  const merged = defaults.map((def) => {
+    const pkg = byId.get(def.id);
+    if (!pkg) return def;
+    const fromUpload = isUploadSrc(pkg.imageSrc);
+    const staleImage = !fromUpload && (pkg.imageSrc.startsWith("/images/packages/") || !pkg.imageSrc);
     return {
-      ...fallback,
+      ...def,
       ...pkg,
-      imageSrc,
-      badge: pkg.id === "mustang" && !pkg.badge ? fallback?.badge || pkg.badge : pkg.badge,
-      subtitle: pkg.id === "mustang" && pkg.subtitle === "Luxury Journey" ? fallback?.subtitle || pkg.subtitle : pkg.subtitle,
-      description:
-        pkg.id === "ebc" && pkg.description.includes("private Himalayan trails")
-          ? fallback?.description || pkg.description
-          : pkg.id === "mustang" && pkg.description.includes("forbidden kingdom")
-            ? fallback?.description || pkg.description
-            : pkg.description,
-      days: pkg.id === "mustang" && pkg.days === 11 ? fallback?.days || pkg.days : pkg.days,
-      maxAltitude:
-        pkg.id === "mustang" && pkg.maxAltitude === "4,200 m"
-          ? fallback?.maxAltitude || pkg.maxAltitude
-          : pkg.maxAltitude,
+      imageSrc: fromUpload ? pkg.imageSrc : staleImage ? def.imageSrc : pkg.imageSrc || def.imageSrc,
+      title: hasGrid ? pkg.title : def.title,
+      subtitle: hasGrid ? pkg.subtitle : def.subtitle,
+      badge: hasGrid ? pkg.badge : def.badge,
+      days: hasGrid ? pkg.days : def.days,
+      maxAltitude: hasGrid ? pkg.maxAltitude : def.maxAltitude,
+      difficulty: hasGrid ? pkg.difficulty : def.difficulty,
+      description: hasGrid ? pkg.description : def.description,
+      location: hasGrid ? pkg.location : def.location,
     };
   });
 
-  return mapped.sort((a, b) => {
-    const ai = FEATURED_JOURNEY_ORDER.indexOf(a.id);
-    const bi = FEATURED_JOURNEY_ORDER.indexOf(b.id);
-    if (ai === -1 && bi === -1) return 0;
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
+  const extras = hasGrid
+    ? packages
+        .filter((pkg) => !GRID_JOURNEY_IDS.includes(pkg.id))
+        .map((pkg) => {
+          const fromUpload = isUploadSrc(pkg.imageSrc);
+          return {
+            ...pkg,
+            imageSrc:
+              fromUpload || pkg.imageSrc
+                ? pkg.imageSrc
+                : DEFAULT_CONTENT.journeys.packages[0].imageSrc,
+          };
+        })
+    : [];
+
+  return [...merged, ...extras];
 }
 
 const LEGACY_WHY_IMAGES: Record<string, string> = {
@@ -206,20 +213,35 @@ export async function readContent(): Promise<SiteContent> {
       journeys: {
         ...DEFAULT_CONTENT.journeys,
         ...parsed.journeys,
+        wallpaperSrc:
+          parsed.journeys && "wallpaperSrc" in parsed.journeys && parsed.journeys.wallpaperSrc
+            ? parsed.journeys.wallpaperSrc
+            : DEFAULT_CONTENT.journeys.wallpaperSrc,
         categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
         packages: decorateJourneyPackages(
           parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
         ),
+        eyebrow:
+          !parsed.journeys?.eyebrow || parsed.journeys.eyebrow === "OUR SIGNATURE JOURNEYS"
+            ? DEFAULT_CONTENT.journeys.eyebrow
+            : parsed.journeys.eyebrow,
         headlineGold:
           !parsed.journeys?.headlineGold ||
           parsed.journeys.headlineGold === "Luxury Treks" ||
           parsed.journeys.headlineGold === "Luxury Treks & Tour"
             ? DEFAULT_CONTENT.journeys.headlineGold
             : parsed.journeys.headlineGold,
-        headlineWhite:
-          !parsed.journeys?.headlineWhite || parsed.journeys.headlineWhite === "in Nepal"
-            ? DEFAULT_CONTENT.journeys.headlineWhite
-            : parsed.journeys.headlineWhite,
+        headlineWhite: parsed.journeys?.headlineWhite || DEFAULT_CONTENT.journeys.headlineWhite,
+        line1:
+          !parsed.journeys?.line1 ||
+          parsed.journeys.line1.includes("Handpicked routes")
+            ? DEFAULT_CONTENT.journeys.line1
+            : parsed.journeys.line1,
+        line2:
+          !parsed.journeys?.line2 ||
+          parsed.journeys.line2.includes("most loved luxury")
+            ? DEFAULT_CONTENT.journeys.line2
+            : parsed.journeys.line2,
       },
       why: {
         ...DEFAULT_CONTENT.why,
@@ -464,9 +486,18 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     journeys: {
       ...content.journeys,
-      packages: content.journeys.packages.map((pkg) =>
+      wallpaperSrc:
+        content.journeys?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.journeys.wallpaperSrc
+          : content.journeys?.wallpaperSrc ?? DEFAULT_CONTENT.journeys.wallpaperSrc,
+      packages: content.journeys.packages.map((pkg, index) =>
         pkg.imageSrc === publicPath
-          ? { ...pkg, imageSrc: DEFAULT_CONTENT.journeys.packages[0]?.imageSrc ?? pkg.imageSrc }
+          ? {
+              ...pkg,
+              imageSrc:
+                DEFAULT_CONTENT.journeys.packages[index]?.imageSrc ??
+                DEFAULT_CONTENT.journeys.packages[0].imageSrc,
+            }
           : pkg,
       ),
     },

@@ -53,11 +53,6 @@ export async function DELETE(req: Request) {
   if (cleaned.header.logoSrc === publicPath) {
     cleaned.header.logoSrc = "/images/ambition-holiday-logo.png";
   }
-  cleaned.journeys.packages = cleaned.journeys.packages.map((pkg) =>
-    pkg.imageSrc === publicPath
-      ? { ...pkg, imageSrc: "/images/packages/everest.jpg" }
-      : pkg,
-  );
 
   const saved = await writeContent(cleaned);
   revalidatePath("/");

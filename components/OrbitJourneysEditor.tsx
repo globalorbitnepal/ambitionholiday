@@ -41,7 +41,7 @@ function blankPackage(): JourneyPackage {
   return {
     id: `pkg-${Date.now()}`,
     title: "New Luxury Trek",
-    subtitle: "Luxury Trek",
+    subtitle: "Luxury Package",
     location: "Nepal",
     categoryIds: [],
     badge: "",
@@ -50,7 +50,7 @@ function blankPackage(): JourneyPackage {
     difficulty: "Moderate",
     description: "Describe this luxury journey.",
     href: "/luxury-treks",
-    imageSrc: "/images/packages/everest.jpg",
+    imageSrc: "/images/journeys/j-ebc.jpg",
     imageAlt: "Luxury trek in Nepal",
   };
 }
@@ -87,6 +87,23 @@ export default function OrbitJourneysEditor({ content, setContent, save }: Props
         />
         Show luxury treks section
       </label>
+
+      <Field label="Wallpaper image">
+        <div className="space-y-2">
+          <input
+            className={inputClass}
+            value={journeys.wallpaperSrc}
+            onChange={(e) => patch({ wallpaperSrc: e.target.value })}
+          />
+          <OrbitMediaButtons
+            onPicked={async (url) => {
+              const next = { ...content, journeys: { ...journeys, wallpaperSrc: url } };
+              setContent(next);
+              await save(next);
+            }}
+          />
+        </div>
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Eyebrow">
