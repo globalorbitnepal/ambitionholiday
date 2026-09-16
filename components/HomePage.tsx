@@ -23,9 +23,9 @@ function HomeSections() {
       <LuxuryTreksSection />
       <WhyAmbitionSection />
       <ExperiencesSection />
+      <AvailabilitySection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
-        <AvailabilitySection />
         <VideoJournalSection />
         <BlogSection />
         <SiteFooter />

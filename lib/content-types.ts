@@ -175,6 +175,8 @@ export type AvailabilityCard = {
   monthShort: string;
   monthFull: string;
   badge: string;
+  title: string;
+  body: string;
   imageSrc: string;
   imageAlt: string;
   routes: AvailabilityRoute[];
@@ -182,6 +184,10 @@ export type AvailabilityCard = {
   availableLabel: string;
   ctaLabel: string;
   ctaHref: string;
+  /** Animated LIVE badge on the card */
+  live: boolean;
+  /** Show this month on the homepage */
+  visible: boolean;
 };
 
 export type AvailabilityFootItem = {
@@ -194,11 +200,14 @@ export type AvailabilityFootItem = {
 
 export type AvailabilityContent = {
   visible: boolean;
+  wallpaperSrc: string;
   eyebrow: string;
   headlineBefore: string;
   headlineGold: string;
   headlineAfter: string;
   body: string;
+  ctaLabel: string;
+  ctaHref: string;
   cards: AvailabilityCard[];
   footItems: AvailabilityFootItem[];
   liveLabel: string;
@@ -1161,19 +1170,24 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   availability: {
     visible: true,
+    wallpaperSrc: "/images/availability/avail-wallpaper.jpg",
     eyebrow: "LIVE AVAILABILITY",
     headlineBefore: "YOUR",
     headlineGold: "JOURNEY",
     headlineAfter: "AWAITS",
     body: "Secure your private Himalayan escape while your preferred dates are available.",
+    ctaLabel: "Explore All Experiences",
+    ctaHref: "/luxury-treks",
     cards: [
       {
         id: "sep",
         monthShort: "SEP",
         monthFull: "September",
         badge: "PEAK SEASON",
-        imageSrc: "/images/availability/sep.jpg",
-        imageAlt: "Luxury lodge patio with fire pit overlooking Himalayan peaks at dusk",
+        title: "Luxury Lodges & Stays",
+        body: "Handpicked luxury lodges and boutique hotels offering comfort, elegance and world-class hospitality in the Himalayas.",
+        imageSrc: "/images/availability/avail-sep.jpg",
+        imageAlt: "Luxury Himalayan lodge bedroom with mountain views",
         routes: [
           { id: "sep-1", label: "Everest Base Camp", icon: "peaks" },
           { id: "sep-2", label: "Annapurna Luxury Trek", icon: "temple" },
@@ -1184,14 +1198,18 @@ export const DEFAULT_CONTENT: SiteContent = {
         availableLabel: "JOURNEYS AVAILABLE",
         ctaLabel: "VIEW AVAILABILITY",
         ctaHref: "/luxury-treks",
+        live: true,
+        visible: true,
       },
       {
         id: "oct",
         monthShort: "OCT",
         monthFull: "October",
         badge: "PRIME SEASON",
-        imageSrc: "/images/availability/oct.jpg",
-        imageAlt: "Mountain terrace with stupa overlooking a Himalayan valley",
+        title: "Private Cultural Journeys",
+        body: "Immerse in authentic local culture, heritage sites and spiritual experiences with private guides and curated itineraries.",
+        imageSrc: "/images/availability/avail-oct.jpg",
+        imageAlt: "Candlelit lodge terrace dining at golden hour",
         routes: [
           { id: "oct-1", label: "Everest Region", icon: "peaks" },
           { id: "oct-2", label: "Annapurna Region", icon: "temple" },
@@ -1202,24 +1220,30 @@ export const DEFAULT_CONTENT: SiteContent = {
         availableLabel: "JOURNEYS AVAILABLE",
         ctaLabel: "VIEW AVAILABILITY",
         ctaHref: "/luxury-treks",
+        live: true,
+        visible: true,
       },
       {
         id: "nov",
         monthShort: "NOV",
         monthFull: "November",
         badge: "GOLDEN SEASON",
-        imageSrc: "/images/availability/nov.jpg",
-        imageAlt: "Helicopter flying beside a sunlit Himalayan peak",
+        title: "Wildlife & Jungle Safaris",
+        body: "Explore Nepal's rich wildlife with private jungle safaris in Chitwan, Bardia and beyond.",
+        imageSrc: "/images/availability/avail-nov.jpg",
+        imageAlt: "Sunset terrace dining above Himalayan clouds",
         routes: [
           { id: "nov-1", label: "Everest", icon: "peaks" },
           { id: "nov-2", label: "Annapurna", icon: "temple" },
-          { id: "nov-3", label: "Luxury Cultural Journeys", icon: "trek" },
+          { id: "nov-3", label: "Unique Cultural Journeys", icon: "trek" },
           { id: "nov-4", label: "Private Mountain Escapes", icon: "heli" },
         ],
         availableCount: 14,
         availableLabel: "JOURNEYS AVAILABLE",
         ctaLabel: "VIEW AVAILABILITY",
         ctaHref: "/luxury-treks",
+        live: true,
+        visible: true,
       },
     ],
     footItems: [

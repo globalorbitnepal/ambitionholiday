@@ -103,6 +103,23 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
         Show Live Availability section
       </label>
 
+      <Field label="Wallpaper image">
+        <div className="space-y-2">
+          <input
+            className={inputClass}
+            value={availability.wallpaperSrc}
+            onChange={(e) => patch({ wallpaperSrc: e.target.value })}
+          />
+          <OrbitMediaButtons
+            onPicked={async (url) => {
+              const next = { ...content, availability: { ...availability, wallpaperSrc: url } };
+              setContent(next);
+              await save(next);
+            }}
+          />
+        </div>
+      </Field>
+
       <Field label="Eyebrow">
         <input
           className={inputClass}
@@ -140,6 +157,22 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
           onChange={(e) => patch({ body: e.target.value })}
         />
       </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Bottom button label">
+          <input
+            className={inputClass}
+            value={availability.ctaLabel}
+            onChange={(e) => patch({ ctaLabel: e.target.value })}
+          />
+        </Field>
+        <Field label="Bottom button link">
+          <input
+            className={inputClass}
+            value={availability.ctaHref}
+            onChange={(e) => patch({ ctaHref: e.target.value })}
+          />
+        </Field>
+      </div>
 
       <div>
         <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
@@ -148,8 +181,10 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
         <div className="space-y-5">
           {availability.cards.map((card, index) => (
             <div key={card.id} className="space-y-3 rounded-lg border border-white/10 p-4">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-gold">Card {index + 1}</p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-gold">
+                  {card.monthShort} · {card.monthFull}
+                </p>
                 <button
                   type="button"
                   className="rounded border border-red-400/30 px-2 py-1 text-[0.65rem] text-red-200"
@@ -157,8 +192,26 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
                     patch({ cards: availability.cards.filter((_, i) => i !== index) })
                   }
                 >
-                  Remove card
+                  Remove month
                 </button>
+              </div>
+              <div className="flex flex-wrap gap-5 text-sm">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={card.visible !== false}
+                    onChange={(e) => updateCard(index, { ...card, visible: e.target.checked })}
+                  />
+                  Show on homepage
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={card.live !== false}
+                    onChange={(e) => updateCard(index, { ...card, live: e.target.checked })}
+                  />
+                  LIVE badge (animated)
+                </label>
               </div>
               <div className="relative aspect-[16/10] overflow-hidden rounded-md bg-black/40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -228,6 +281,13 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
                     onChange={(e) => updateCard(index, { ...card, badge: e.target.value })}
                   />
                 </Field>
+                <Field label="Card title">
+                  <input
+                    className={inputClass}
+                    value={card.title}
+                    onChange={(e) => updateCard(index, { ...card, title: e.target.value })}
+                  />
+                </Field>
                 <Field label="Available count">
                   <input
                     className={inputClass}
@@ -270,6 +330,13 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
                   />
                 </Field>
               </div>
+              <Field label="Card body">
+                <textarea
+                  className={`${inputClass} min-h-20`}
+                  value={card.body}
+                  onChange={(e) => updateCard(index, { ...card, body: e.target.value })}
+                />
+              </Field>
 
               <div className="space-y-3">
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/45">
@@ -353,6 +420,8 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
                   monthShort: "DEC",
                   monthFull: "December",
                   badge: "WINTER SEASON",
+                  title: "New month journeys",
+                  body: "Describe this month’s available luxury journeys.",
                   imageSrc: DEFAULT_CONTENT.availability.cards[0].imageSrc,
                   imageAlt: "Availability image",
                   routes: [
@@ -362,6 +431,8 @@ export default function OrbitAvailabilityEditor({ content, setContent, save }: P
                   availableLabel: "JOURNEYS AVAILABLE",
                   ctaLabel: "VIEW AVAILABILITY",
                   ctaHref: "/luxury-treks",
+                  live: true,
+                  visible: true,
                 },
               ],
             })

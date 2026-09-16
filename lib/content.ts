@@ -361,7 +361,46 @@ export async function readContent(): Promise<SiteContent> {
       availability: {
         ...DEFAULT_CONTENT.availability,
         ...parsed.availability,
-        cards: parsed.availability?.cards ?? DEFAULT_CONTENT.availability.cards,
+        wallpaperSrc:
+          parsed.availability && "wallpaperSrc" in parsed.availability && parsed.availability.wallpaperSrc
+            ? parsed.availability.wallpaperSrc
+            : DEFAULT_CONTENT.availability.wallpaperSrc,
+        ctaLabel: parsed.availability?.ctaLabel || DEFAULT_CONTENT.availability.ctaLabel,
+        ctaHref: parsed.availability?.ctaHref || DEFAULT_CONTENT.availability.ctaHref,
+        cards: (() => {
+          const defaults = DEFAULT_CONTENT.availability.cards;
+          const saved = parsed.availability?.cards ?? [];
+          const byId = new Map(saved.map((card) => [card.id, card]));
+          const merged = defaults.map((def) => {
+            const card = byId.get(def.id);
+            if (!card) return def;
+            const fromUpload =
+              card.imageSrc.startsWith("/uploads/") || card.imageSrc.startsWith("/api/media/");
+            const staleImage =
+              !fromUpload &&
+              (card.imageSrc === `/images/availability/${def.id}.jpg` ||
+                !card.imageSrc.includes("/images/availability/avail-"));
+            return {
+              ...def,
+              ...card,
+              imageSrc: fromUpload ? card.imageSrc : staleImage ? def.imageSrc : card.imageSrc,
+              title: card.title || def.title,
+              body: card.body || def.body,
+              live: card.live !== false,
+              visible: card.visible !== false,
+            };
+          });
+          const extras = saved
+            .filter((card) => !defaults.some((def) => def.id === card.id))
+            .map((card) => ({
+              ...card,
+              title: card.title || card.monthFull,
+              body: card.body || "",
+              live: card.live !== false,
+              visible: card.visible !== false,
+            }));
+          return [...merged, ...extras];
+        })(),
         footItems: parsed.availability?.footItems ?? DEFAULT_CONTENT.availability.footItems,
       },
       journal: {
@@ -563,6 +602,10 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     availability: {
       ...content.availability,
+      wallpaperSrc:
+        content.availability?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.availability.wallpaperSrc
+          : content.availability?.wallpaperSrc ?? DEFAULT_CONTENT.availability.wallpaperSrc,
       cards: (content.availability?.cards ?? []).map((card, index) => ({
         ...card,
         imageSrc:
