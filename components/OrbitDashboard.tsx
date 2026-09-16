@@ -142,7 +142,7 @@ export default function OrbitDashboard({ initial }: Props) {
               ["signature", "Ambition glass"],
               ["exploreHub", "Explore Hub"],
               ["journeys", "Handcrafted journeys"],
-              ["why", "Why Ambition"],
+              ["why", "Traveler reviews"],
               ["experiences", "Experiences"],
               ["availability", "Availability"],
               ["journal", "Video Journal"],

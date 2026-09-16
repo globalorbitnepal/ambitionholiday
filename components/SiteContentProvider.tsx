@@ -51,8 +51,9 @@ export default function SiteContentProvider({
         why: {
           ...DEFAULT_CONTENT.why,
           ...data.why,
-          cards: data.why?.cards ?? DEFAULT_CONTENT.why.cards,
-          ratings: data.why?.ratings ?? DEFAULT_CONTENT.why.ratings,
+          boards: data.why?.boards ?? DEFAULT_CONTENT.why.boards,
+          reviews: data.why?.reviews ?? DEFAULT_CONTENT.why.reviews,
+          stats: data.why?.stats ?? DEFAULT_CONTENT.why.stats,
         },
         experiences: {
           ...DEFAULT_CONTENT.experiences,

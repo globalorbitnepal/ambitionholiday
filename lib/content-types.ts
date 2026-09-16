@@ -66,48 +66,51 @@ export type JourneysContent = {
   packages: JourneyPackage[];
 };
 
-export type WhyCardIcon =
-  | "years"
-  | "tripadvisor"
-  | "guide"
-  | "stay"
-  | "support"
-  | "responsible"
-  | "custom";
+export type ReviewPlatform = "google" | "tripadvisor";
 
-export type WhyCard = {
+export type ReviewBoard = {
   id: string;
+  platform: ReviewPlatform;
   title: string;
-  body: string;
-  imageSrc: string;
-  imageAlt: string;
-  icon: WhyCardIcon;
-  iconSrc?: string;
-  href?: string;
-  ctaLabel?: string;
+  ratingValue: string;
+  ratingCount: string;
+  ctaLabel: string;
+  ctaHref: string;
+  logoSrc?: string;
 };
 
-export type WhyRating = {
+export type TravelerReview = {
   id: string;
-  label: string;
-  value: string;
-  brand: "tripadvisor" | "google" | "facebook" | "instagram" | "custom";
-  logoSrc?: string;
+  platform: ReviewPlatform;
+  name: string;
+  avatarSrc: string;
+  avatarAlt: string;
+  meta: string;
+  rating: number;
+  dateLabel: string;
+  title: string;
+  body: string;
+  moreLabel: string;
+  moreHref: string;
+  trekEyebrow: string;
+  trekName: string;
 };
 
 export type WhyContent = {
   visible: boolean;
+  wallpaperSrc: string;
+  kickerLeft: string;
+  kickerRight: string;
   eyebrow: string;
-  headline: string;
   headlineWhite: string;
   headlineGold: string;
-  body: string;
-  ctaLabel: string;
-  ctaHref: string;
-  cards: WhyCard[];
-  awardTitle: string;
-  awardSubtitle: string;
-  ratings: WhyRating[];
+  subtitle: string;
+  sisterLine: string;
+  stats: string[];
+  boards: ReviewBoard[];
+  reviews: TravelerReview[];
+  quote: string;
+  quoteBy: string;
 };
 
 export type ExperienceIcon =
@@ -987,84 +990,107 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   why: {
     visible: true,
-    eyebrow: "OUR HERITAGE",
-    headline: "Backed by Himalayan Experience",
-    headlineWhite: "Backed by",
-    headlineGold: "Himalayan Experience",
-    body: "Ambition Holidays is the sister company of Ambition Himalaya Treks & Expeditions — a trusted name in Himalayan travel since 2009.\nFor years, Ambition Himalaya has welcomed travellers from around the world with experienced local guides, carefully planned journeys and genuine Himalayan hospitality.\nAmbition Holidays builds on that foundation with a new vision of refined, private and luxury travel across Nepal.",
-    ctaLabel: "Explore Ambition Holidays",
-    ctaHref: "/about-us",
-    awardTitle: "Proud Heritage. Brighter Journeys.",
-    awardSubtitle:
-      "Our sister company, Ambition Himalaya Treks & Expeditions, has earned 400+ traveller reviews on TripAdvisor.",
-    cards: [
+    wallpaperSrc: "/images/reviews/reviews-wallpaper.jpg",
+    kickerLeft: "Authentic Reviews from Real Journeys",
+    kickerRight: "Mountains Create Better Humans",
+    eyebrow: "REAL TRAVELERS. REAL STORIES",
+    headlineWhite: "What Our",
+    headlineGold: "Travelers Say",
+    subtitle: "Reviews for Ambition Himalaya Treks and Expeditions",
+    sisterLine: "Proud sister company of Ambition Holidays",
+    stats: [
+      "10+ Years of Experience",
+      "Thousands of Happy Travelers",
+      "Trusted by Adventurers Worldwide",
+    ],
+    boards: [
       {
-        id: "years",
-        title: "15+ Years of Himalayan Experience",
-        body: "A legacy of creating extraordinary journeys with excellence and trust.",
-        imageSrc: "/images/why/years-v2.jpg",
-        imageAlt: "Trekker watching a Himalayan sunrise",
-        icon: "years",
-        href: "/about-us",
-        ctaLabel: "LEARN MORE",
+        id: "google",
+        platform: "google",
+        title: "Google Reviews",
+        ratingValue: "4.9/5",
+        ratingCount: "From 120+ Google Reviews",
+        ctaLabel: "View All on Google",
+        ctaHref: "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
       },
       {
-        id: "reviews",
-        title: "400+ TripAdvisor Reviews",
-        body: "Consistently trusted by hundreds of happy travellers who recommend Ambition Himalaya for our service and reliability.",
-        imageSrc: "/images/why/reviews-v2.jpg",
-        imageAlt: "Trekking group walking toward Himalayan peaks",
-        icon: "tripadvisor",
-        href: "/about-us",
-        ctaLabel: "LEARN MORE",
-      },
-      {
-        id: "guides",
-        title: "Expert Local Guides",
-        body: "Our professional, certified local guides ensure your journey is safe, insightful, and unforgettable.",
-        imageSrc: "/images/why/guides-v2.jpg",
-        imageAlt: "Local Himalayan guide on a snow trail",
-        icon: "guide",
-        href: "/about-us",
-        ctaLabel: "LEARN MORE",
-      },
-      {
-        id: "stays",
-        title: "Handpicked Stays",
-        body: "Carefully selected luxury lodges and hotels that offer comfort, character, and exceptional service.",
-        imageSrc: "/images/why/stays-v2.jpg",
-        imageAlt: "Luxury Himalayan lodge bedroom with mountain views",
-        icon: "stay",
-        href: "/luxury-lodge-treks",
-        ctaLabel: "LEARN MORE",
-      },
-      {
-        id: "support",
-        title: "24/7 Guest Support",
-        body: "We're with you at every step of your journey with round-the-clock care and personal attention.",
-        imageSrc: "/images/why/support-v2.jpg",
-        imageAlt: "Guides reviewing a trail map in the forest",
-        icon: "support",
-        href: "/contact",
-        ctaLabel: "LEARN MORE",
-      },
-      {
-        id: "responsible",
-        title: "Responsible Tourism",
-        body: "We travel with purpose—supporting local communities and preserving the natural beauty of Nepal.",
-        imageSrc: "/images/why/responsible-v2.jpg",
-        imageAlt: "Stupa and prayer flags on a Himalayan hillside",
-        icon: "responsible",
-        href: "/about-us",
-        ctaLabel: "LEARN MORE",
+        id: "tripadvisor",
+        platform: "tripadvisor",
+        title: "Tripadvisor Reviews",
+        ratingValue: "4.8/5",
+        ratingCount: "From 295+ Tripadvisor Reviews",
+        ctaLabel: "View All on Tripadvisor",
+        ctaHref: "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
       },
     ],
-    ratings: [
-      { id: "ta", label: "Tripadvisor", value: "400+ Reviews", brand: "tripadvisor" },
-      { id: "google", label: "Google", value: "4.9 Rating", brand: "google" },
-      { id: "facebook", label: "Facebook", value: "4.8 Rating", brand: "facebook" },
-      { id: "instagram", label: "Instagram", value: "4.9 Rating", brand: "instagram" },
+    reviews: [
+      {
+        id: "g-alexandra",
+        platform: "google",
+        name: "Alexandra G",
+        avatarSrc: "",
+        avatarAlt: "Alexandra G",
+        meta: "Local Guide · 21 reviews · 13 photos",
+        rating: 5,
+        dateLabel: "4 months ago",
+        title: "",
+        body: "One of the most memorable experiences of my life. From day one, Shishir was incredibly welcoming and friendly, organising a fantastic day tour of Kathmandu for us...",
+        moreLabel: "Read more",
+        moreHref: "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
+        trekEyebrow: "Traveled with Ambition Himalaya",
+        trekName: "Everest Base Camp Trek",
+      },
+      {
+        id: "g-robert",
+        platform: "google",
+        name: "Robert McCann",
+        avatarSrc: "",
+        avatarAlt: "Robert McCann",
+        meta: "Local Guide · 20 reviews · 53 photos",
+        rating: 5,
+        dateLabel: "Edited a year ago",
+        title: "",
+        body: "I used Ambition Himalaya for an Everest Base Camp trek recently and it was the perfect trip from start to finish. Shishir was very quick and helpful in answering my questions...",
+        moreLabel: "Read more",
+        moreHref: "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
+        trekEyebrow: "Traveled with Ambition Himalaya",
+        trekName: "Everest Base Camp Trek",
+      },
+      {
+        id: "ta-wanda",
+        platform: "tripadvisor",
+        name: "Wanda J Estes",
+        avatarSrc: "/images/reviews/avatar-wanda.jpg",
+        avatarAlt: "Wanda J Estes",
+        meta: "1 contribution",
+        rating: 5,
+        dateLabel: "Sep 2026 · Friends",
+        title: "Never thought my first trek would Be ebc",
+        body: "I never thought my first trek would turn out this good. everest base camp was challenging for me, but having the ambition himalaya team made a big difference...",
+        moreLabel: "Read more",
+        moreHref: "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
+        trekEyebrow: "Traveled with Ambition Himalaya",
+        trekName: "14 days Everest Base Camp Trek",
+      },
+      {
+        id: "ta-daniel",
+        platform: "tripadvisor",
+        name: "Daniel",
+        avatarSrc: "/images/reviews/avatar-daniel.jpg",
+        avatarAlt: "Daniel",
+        meta: "4 contributions",
+        rating: 5,
+        dateLabel: "Jul 2026 · Friends",
+        title: "45 Days in nepal, and this became my...",
+        body: "After 45 days of traveling around nepal, this trek was easily one of my favorite experiences. the annapurna views were incredible, and the people we met were so warm and welcoming...",
+        moreLabel: "Read more",
+        moreHref: "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
+        trekEyebrow: "Traveled with Ambition Himalaya",
+        trekName: "Annapurna Base Camp Trek",
+      },
     ],
+    quote: "More than a trek, it's a connection to a bigger you.",
+    quoteBy: "Ambition Himalaya Treks and Expeditions",
   },
   experiences: {
     visible: true,

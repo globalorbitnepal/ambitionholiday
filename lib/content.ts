@@ -5,8 +5,9 @@ import {
   type ExploreHubTab,
   type ExploreHubTabId,
   type JourneyPackage,
+  type ReviewBoard,
   type SiteContent,
-  type WhyCard,
+  type TravelerReview,
 } from "@/lib/content-types";
 
 const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
@@ -61,27 +62,25 @@ function decorateJourneyPackages(packages: JourneyPackage[]): JourneyPackage[] {
   return [...merged, ...extras];
 }
 
-const LEGACY_WHY_IMAGES: Record<string, string> = {
-  "/images/why/years-photo.jpg": "/images/why/years-v2.jpg",
-  "/images/why/reviews-photo.jpg": "/images/why/reviews-v2.jpg",
-  "/images/why/guides-photo.jpg": "/images/why/guides-v2.jpg",
-  "/images/why/stays-photo.jpg": "/images/why/stays-v2.jpg",
-  "/images/why/support-photo.jpg": "/images/why/support-v2.jpg",
-  "/images/why/responsible-photo.jpg": "/images/why/responsible-v2.jpg",
-};
+function decorateReviewBoards(boards: ReviewBoard[]): ReviewBoard[] {
+  if (!boards.length) return DEFAULT_CONTENT.why.boards;
+  return boards.map((board, index) => ({
+    ...DEFAULT_CONTENT.why.boards[index],
+    ...board,
+    platform: board.platform === "tripadvisor" ? "tripadvisor" : "google",
+  }));
+}
 
-function decorateWhyCards(cards: WhyCard[]): WhyCard[] {
-  return cards.map((card) => {
-    const fallback = DEFAULT_CONTENT.why.cards.find((item) => item.id === card.id);
-    const fromUpload = card.imageSrc.startsWith("/uploads/") || card.imageSrc.startsWith("/api/media/");
+function decorateReviews(reviews: TravelerReview[]): TravelerReview[] {
+  if (!reviews.length) return DEFAULT_CONTENT.why.reviews;
+  return reviews.map((review) => {
+    const fallback = DEFAULT_CONTENT.why.reviews.find((item) => item.id === review.id);
+    const fromUpload = review.avatarSrc.startsWith("/uploads/") || review.avatarSrc.startsWith("/api/media/");
     return {
       ...fallback,
-      ...card,
-      imageSrc: fromUpload
-        ? card.imageSrc
-        : LEGACY_WHY_IMAGES[card.imageSrc] || fallback?.imageSrc || card.imageSrc,
-      title: card.title || fallback?.title || "",
-      body: card.body || fallback?.body || "",
+      ...review,
+      platform: review.platform === "tripadvisor" ? "tripadvisor" : "google",
+      avatarSrc: fromUpload || review.avatarSrc ? review.avatarSrc : fallback?.avatarSrc || "",
     };
   });
 }
@@ -246,37 +245,46 @@ export async function readContent(): Promise<SiteContent> {
       why: {
         ...DEFAULT_CONTENT.why,
         ...parsed.why,
+        wallpaperSrc:
+          parsed.why && "wallpaperSrc" in parsed.why && parsed.why.wallpaperSrc
+            ? parsed.why.wallpaperSrc
+            : DEFAULT_CONTENT.why.wallpaperSrc,
         eyebrow:
-          !parsed.why?.eyebrow || parsed.why.eyebrow === "WHY TRAVEL WITH US"
+          !parsed.why?.eyebrow ||
+          parsed.why.eyebrow === "OUR HERITAGE" ||
+          parsed.why.eyebrow === "WHY TRAVEL WITH US"
             ? DEFAULT_CONTENT.why.eyebrow
             : parsed.why.eyebrow,
-        headline:
-          !parsed.why?.headline || parsed.why.headline === "Why Ambition Holidays"
-            ? DEFAULT_CONTENT.why.headline
-            : parsed.why.headline,
         headlineWhite:
-          parsed.why?.headlineWhite || DEFAULT_CONTENT.why.headlineWhite,
-        headlineGold: parsed.why?.headlineGold || DEFAULT_CONTENT.why.headlineGold,
-        body:
-          !parsed.why?.body || parsed.why.body.includes("We don't just organize trips")
-            ? DEFAULT_CONTENT.why.body
-            : parsed.why.body,
-        ctaLabel: parsed.why?.ctaLabel || DEFAULT_CONTENT.why.ctaLabel,
-        ctaHref: parsed.why?.ctaHref || DEFAULT_CONTENT.why.ctaHref,
-        awardTitle:
-          !parsed.why?.awardTitle || parsed.why.awardTitle === "Proudly Recognized for Excellence"
-            ? DEFAULT_CONTENT.why.awardTitle
-            : parsed.why.awardTitle,
-        awardSubtitle:
-          !parsed.why?.awardSubtitle || parsed.why.awardSubtitle.includes("Awarded by TripAdvisor")
-            ? DEFAULT_CONTENT.why.awardSubtitle
-            : parsed.why.awardSubtitle,
-        cards: decorateWhyCards(parsed.why?.cards ?? DEFAULT_CONTENT.why.cards),
-        ratings: (parsed.why?.ratings ?? DEFAULT_CONTENT.why.ratings).map((rating) =>
-          rating.id === "ta" && rating.value === "410+ Reviews"
-            ? { ...rating, value: "400+ Reviews" }
-            : rating,
+          !parsed.why?.headlineWhite ||
+          parsed.why.headlineWhite === "Backed by" ||
+          parsed.why.headlineWhite === "Why Ambition Holidays"
+            ? DEFAULT_CONTENT.why.headlineWhite
+            : parsed.why.headlineWhite,
+        headlineGold:
+          !parsed.why?.headlineGold || parsed.why.headlineGold === "Himalayan Experience"
+            ? DEFAULT_CONTENT.why.headlineGold
+            : parsed.why.headlineGold,
+        boards: decorateReviewBoards(
+          parsed.why && "boards" in parsed.why && parsed.why.boards?.length
+            ? parsed.why.boards
+            : DEFAULT_CONTENT.why.boards,
         ),
+        reviews: decorateReviews(
+          parsed.why && "reviews" in parsed.why && parsed.why.reviews?.length
+            ? parsed.why.reviews
+            : DEFAULT_CONTENT.why.reviews,
+        ),
+        stats:
+          parsed.why && "stats" in parsed.why && parsed.why.stats?.length
+            ? parsed.why.stats
+            : DEFAULT_CONTENT.why.stats,
+        quote: parsed.why && "quote" in parsed.why && parsed.why.quote
+          ? parsed.why.quote
+          : DEFAULT_CONTENT.why.quote,
+        quoteBy: parsed.why && "quoteBy" in parsed.why && parsed.why.quoteBy
+          ? parsed.why.quoteBy
+          : DEFAULT_CONTENT.why.quoteBy,
       },
       experiences: {
         ...DEFAULT_CONTENT.experiences,
@@ -503,17 +511,20 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     why: {
       ...content.why,
-      cards: content.why.cards.map((card, index) => ({
-        ...card,
-        imageSrc:
-          card.imageSrc === publicPath
-            ? DEFAULT_CONTENT.why.cards[index]?.imageSrc ?? DEFAULT_CONTENT.why.cards[0].imageSrc
-            : card.imageSrc,
-        iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
+      wallpaperSrc:
+        content.why?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.why.wallpaperSrc
+          : content.why?.wallpaperSrc ?? DEFAULT_CONTENT.why.wallpaperSrc,
+      boards: (content.why?.boards ?? []).map((board) => ({
+        ...board,
+        logoSrc: board.logoSrc === publicPath ? undefined : board.logoSrc,
       })),
-      ratings: content.why.ratings.map((rating) => ({
-        ...rating,
-        logoSrc: rating.logoSrc === publicPath ? undefined : rating.logoSrc,
+      reviews: (content.why?.reviews ?? []).map((review, index) => ({
+        ...review,
+        avatarSrc:
+          review.avatarSrc === publicPath
+            ? DEFAULT_CONTENT.why.reviews[index]?.avatarSrc ?? ""
+            : review.avatarSrc,
       })),
     },
     experiences: {

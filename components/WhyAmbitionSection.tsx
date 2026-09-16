@@ -1,271 +1,304 @@
-import Link from "next/link";
-import { useSiteContent } from "@/components/SiteContentProvider";
+"use client";
+
+import { useMemo, useState } from "react";
 import MediaImage from "@/components/MediaImage";
+import { useSiteContent } from "@/components/SiteContentProvider";
 import { mediaSrc } from "@/lib/media-src";
-import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
+import type { ReviewBoard, ReviewPlatform, TravelerReview } from "@/lib/content-types";
 
-function GoldRing({ children }: { children: React.ReactNode }) {
+function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
-    <span className="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center rounded-full border border-[#e0c45a] bg-black/35 text-[#e4c35a] shadow-[0_0_18px_rgba(201,162,39,0.28)]">
-      {children}
-    </span>
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path fill="#4285F4" d="M23.5 12.27c0-.82-.07-1.6-.21-2.36H12v4.47h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.56-5.17 3.56-8.73Z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3c-1.08.72-2.47 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.09A12 12 0 0 0 12 24Z" />
+      <path fill="#FBBC05" d="M5.27 14.3A7.2 7.2 0 0 1 4.9 12c0-.8.14-1.57.37-2.3V6.61H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.09Z" />
+      <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.43-3.43C17.95 1.19 15.23 0 12 0 7.31 0 3.26 2.69 1.27 6.61l4 3.09C6.22 6.86 8.87 4.75 12 4.75Z" />
+    </svg>
   );
 }
 
-function CardIcon({ icon, iconSrc }: { icon: WhyCardIcon; iconSrc?: string }) {
-  const cls = "h-6 w-6";
-  if ((icon === "custom" || iconSrc) && iconSrc) {
+function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <circle cx="16.2" cy="24.2" r="8.4" fill="#00AA6C" />
+      <circle cx="31.8" cy="24.2" r="8.4" fill="#00AA6C" />
+      <circle cx="16.2" cy="24.2" r="3.15" fill="#fff" />
+      <circle cx="31.8" cy="24.2" r="3.15" fill="#fff" />
+      <circle cx="16.2" cy="24.2" r="1.55" fill="#034833" />
+      <circle cx="31.8" cy="24.2" r="1.55" fill="#034833" />
+      <path d="M24 16.4c1.7-3.4 5.2-6.1 9.7-6.4" fill="none" stroke="#00AA6C" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M33.8 10h6.2l-2.4 4.4" fill="none" stroke="#00AA6C" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PlatformLogo({ board }: { board: ReviewBoard }) {
+  if (board.logoSrc) {
     return (
-      <GoldRing>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mediaSrc(iconSrc)} alt="" className="h-6 w-6 object-contain" />
-      </GoldRing>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={mediaSrc(board.logoSrc)} alt="" className="h-9 w-9 object-contain" />
     );
   }
-  if (icon === "years") {
-    return (
-      <GoldRing>
-        <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <path d="M5.8 8.2h12.4L16.6 11H7.4L5.8 8.2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-          <path d="M7.6 11h8.8v7.2H7.6V11Z" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M12 4.8 13.6 8H10.4L12 4.8Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        </svg>
-      </GoldRing>
-    );
-  }
-  if (icon === "tripadvisor") {
-    return (
-      <GoldRing>
-        <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <circle cx="8.2" cy="13.2" r="3.1" stroke="currentColor" strokeWidth="1.6" />
-          <circle cx="15.8" cy="13.2" r="3.1" stroke="currentColor" strokeWidth="1.6" />
-          <path d="M5.4 13.2h2.8M15.8 10.1V7.6h2.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </GoldRing>
-    );
-  }
-  if (icon === "guide") {
-    return (
-      <GoldRing>
-        <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <circle cx="12" cy="6.2" r="2" stroke="currentColor" strokeWidth="1.6" />
+  return board.platform === "tripadvisor" ? <TripadvisorMark /> : <GoogleMark />;
+}
+
+function GoogleStars({ count }: { count: number }) {
+  return (
+    <span className="rev-stars" aria-label={`${count} stars`}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden="true">
           <path
-            d="M9.6 10.2h4.8l1.4 5.2-2.6 1.3 1.6 5.1h-2l-1.4-4.1-.9.8-1.7 3.3H7.6l2-4.2-2.1-2.4 2.6-1.3 1.1-3.7Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
+            fill={i < count ? "#FABB05" : "rgba(255,255,255,0.22)"}
+            d="M12 3.2 14.5 8.4l5.8.8-4.2 4.1 1 5.8L12 16.3 6.9 19.1l1-5.8L3.7 9.2l5.8-.8L12 3.2Z"
           />
-        </svg>
-      </GoldRing>
-    );
-  }
-  if (icon === "stay") {
-    return (
-      <GoldRing>
-        <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <path d="M4 18V12.2h16V18" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M4 18h16M7 12.2V9.4c0-1.6 1.8-2.8 5-2.8s5 1.2 5 2.8v2.8" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
-      </GoldRing>
-    );
-  }
-  if (icon === "support") {
-    return (
-      <GoldRing>
-        <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-          <path d="M5.8 11.2V10a6.2 6.2 0 0 1 12.4 0v1.2" stroke="currentColor" strokeWidth="1.6" />
-          <rect x="4.2" y="11" width="3.4" height="5.2" rx="1.2" stroke="currentColor" strokeWidth="1.5" />
-          <rect x="16.4" y="11" width="3.4" height="5.2" rx="1.2" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M18.1 16.2v.7a4.1 4.1 0 0 1-4.1 4.1h-.8" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </GoldRing>
-    );
-  }
-  return (
-    <GoldRing>
-      <svg viewBox="0 0 24 24" className={cls} fill="none" aria-hidden="true">
-        <path d="M12 20s-4.2-2.5-6.4-6.1C4.2 11.6 5.2 8.7 8 8.2c1.5-.3 2.8.5 3.5 1.7.7-1.2 2-2 3.5-1.7 2.8.5 3.8 3.4 2.4 5.7C16.2 17.5 12 20 12 20Z" stroke="currentColor" strokeWidth="1.55" strokeLinejoin="round" />
-      </svg>
-    </GoldRing>
-  );
-}
-
-function Stars() {
-  return (
-    <span className="flex items-center justify-center gap-0.5 text-[#e4c35a]" aria-hidden="true">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <svg key={i} viewBox="0 0 20 20" className="h-3 w-3 fill-current">
-          <path d="M10 1.8 12.3 7l5.7.6-4.3 3.7 1.3 5.6L10 14.4 4.99 16.9l1.32-5.6L2 7.6 7.7 7 10 1.8Z" />
         </svg>
       ))}
     </span>
   );
 }
 
-function GoogleMark() {
+function OwlBubbles({ count }: { count: number }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden="true">
-      <path fill="#4285F4" d="M22.5 12.27c0-.78-.07-1.53-.2-2.25H12v4.26h5.9a5.05 5.05 0 0 1-2.19 3.32v2.76h3.54c2.07-1.91 3.25-4.72 3.25-8.09Z" />
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.64l-3.54-2.76c-.98.66-2.23 1.05-3.74 1.05-2.87 0-5.3-1.94-6.17-4.54H2.18v2.85A10.99 10.99 0 0 0 12 23Z" />
-      <path fill="#FBBC05" d="M5.83 13.11A6.61 6.61 0 0 1 5.48 12c0-.39.07-.76.12-1.11V8.04H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.96l3.65-3.85Z" />
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.07.56 4.21 1.64l3.16-3.16C17.45 2.09 14.97 1 12 1 7.31 1 3.26 3.69 2.18 8.04l3.65 2.85C6.7 7.32 9.13 5.38 12 5.38Z" />
-    </svg>
+    <span className="rev-stars" aria-label={`${count} of 5`}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <span key={i} className={`rev-owl ${i < count ? "is-on" : ""}`} />
+      ))}
+    </span>
   );
 }
 
-function FacebookMark() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden="true">
-      <circle cx="12" cy="12" r="11" fill="#1877F2" />
-      <path fill="#fff" d="M13.4 19.2v-6.3h2.1l.3-2.5h-2.4V8.8c0-.7.2-1.2 1.3-1.2h1.3V5.3c-.2 0-1-.1-1.9-.1-1.9 0-3.2 1.2-3.2 3.3v1.9H8.6v2.5h2.3v6.3h2.5Z" />
-    </svg>
-  );
-}
-
-function InstagramMark() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden="true">
-      <defs>
-        <radialGradient id="ig-why" cx="30%" cy="107%" r="150%">
-          <stop offset="0%" stopColor="#fdf497" />
-          <stop offset="45%" stopColor="#fd5949" />
-          <stop offset="60%" stopColor="#d6249f" />
-          <stop offset="90%" stopColor="#285AEB" />
-        </radialGradient>
-      </defs>
-      <rect x="2" y="2" width="20" height="20" rx="5.5" fill="url(#ig-why)" />
-      <rect x="7" y="7" width="10" height="10" rx="5" fill="none" stroke="#fff" strokeWidth="1.7" />
-      <circle cx="17.2" cy="6.8" r="1.05" fill="#fff" />
-    </svg>
-  );
-}
-
-function RatingLogo({ rating }: { rating: WhyRating }) {
-  if (rating.logoSrc) {
+function Avatar({ review }: { review: TravelerReview }) {
+  if (review.avatarSrc) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={rating.logoSrc} alt="" className="h-8 w-8 object-contain" />
+      <span className="rev-avatar">
+        <MediaImage
+          src={review.avatarSrc}
+          alt={review.avatarAlt || review.name}
+          sizes="56px"
+          className="h-full w-full object-cover"
+          objectPosition="center 22%"
+        />
+      </span>
     );
   }
-  if (rating.brand === "tripadvisor") {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src="/images/icons/tripadvisor.png" alt="" className="h-8 w-8 object-contain brightness-0 invert" />
-    );
-  }
-  if (rating.brand === "google") return <GoogleMark />;
-  if (rating.brand === "facebook") return <FacebookMark />;
-  return <InstagramMark />;
+  const letter = review.name.trim().charAt(0).toUpperCase() || "A";
+  const palette = ["#4285F4", "#EA4335", "#FBBC05", "#34A853", "#8ab4f8"];
+  const color = palette[letter.charCodeAt(0) % palette.length];
+  return (
+    <span className="rev-avatar rev-avatar-letter" style={{ background: color }}>
+      {letter}
+    </span>
+  );
+}
+
+function visibleSlice(list: TravelerReview[], start: number, count: number) {
+  if (!list.length) return [];
+  return Array.from({ length: Math.min(count, list.length) }, (_, i) => list[(start + i) % list.length]);
+}
+
+function ReviewCard({ review }: { review: TravelerReview }) {
+  const google = review.platform === "google";
+  return (
+    <article className="rev-card">
+      <div className="rev-card-top">
+        <Avatar review={review} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <p className="rev-name">{review.name}</p>
+            {google ? <GoogleMark className="h-5 w-5 shrink-0" /> : <TripadvisorMark className="h-6 w-6 shrink-0" />}
+          </div>
+          <p className="rev-meta">{review.meta}</p>
+        </div>
+      </div>
+      <div className="rev-rate-row">
+        {google ? <GoogleStars count={review.rating} /> : <OwlBubbles count={review.rating} />}
+        <span>{review.dateLabel}</span>
+      </div>
+      {review.title ? <p className="rev-title">{review.title}</p> : null}
+      <p className="rev-body">
+        {review.body}{" "}
+        {review.moreHref ? (
+          <a href={review.moreHref} target="_blank" rel="noreferrer" className="rev-more">
+            {review.moreLabel || "Read more"}
+          </a>
+        ) : null}
+      </p>
+      <p className="rev-trek">
+        <span className="rev-trek-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+            <path d="m3.5 18 6.4-9.6 3.1 4.4L16.4 8 20.5 18H3.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <span>
+          {review.trekEyebrow}
+          <strong>{review.trekName}</strong>
+        </span>
+      </p>
+    </article>
+  );
+}
+
+function BoardPanel({
+  board,
+  reviews,
+  start,
+  onShift,
+}: {
+  board: ReviewBoard;
+  reviews: TravelerReview[];
+  start: number;
+  onShift: (dir: -1 | 1) => void;
+}) {
+  const shown = visibleSlice(reviews, start, 2);
+  return (
+    <div className={`rev-board rev-board-${board.platform}`}>
+      <div className="rev-board-head">
+        <div className="flex min-w-0 items-center gap-3">
+          <PlatformLogo board={board} />
+          <div className="min-w-0">
+            <p className="rev-board-title">{board.title}</p>
+            <p className="rev-board-score">
+              {board.platform === "google" ? (
+                <GoogleStars count={5} />
+              ) : (
+                <OwlBubbles count={5} />
+              )}
+              <strong>{board.ratingValue}</strong>
+              <span>{board.ratingCount}</span>
+            </p>
+          </div>
+        </div>
+        {board.ctaHref ? (
+          <a href={board.ctaHref} target="_blank" rel="noreferrer" className="rev-board-cta">
+            {board.ctaLabel}
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            </svg>
+          </a>
+        ) : null}
+      </div>
+      <div className="rev-card-grid">
+        {shown.map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
+      </div>
+      {reviews.length > 2 ? (
+        <div className="rev-board-nav">
+          <button type="button" aria-label={`Previous ${board.title}`} onClick={() => onShift(-1)}>
+            ‹
+          </button>
+          <button type="button" aria-label={`Next ${board.title}`} onClick={() => onShift(1)}>
+            ›
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default function WhyAmbitionSection() {
   const { why } = useSiteContent();
+  const [starts, setStarts] = useState<Record<string, number>>({});
+
+  const reviewsByPlatform = useMemo(() => {
+    const map: Record<ReviewPlatform, TravelerReview[]> = { google: [], tripadvisor: [] };
+    for (const review of why.reviews ?? []) {
+      map[review.platform].push(review);
+    }
+    return map;
+  }, [why.reviews]);
+
   if (!why?.visible) return null;
 
-  const paragraphs = why.body.split("\n").filter(Boolean);
+  const shiftAll = (dir: -1 | 1) => {
+    setStarts((prev) => {
+      const next = { ...prev };
+      for (const board of why.boards) {
+        const list = reviewsByPlatform[board.platform];
+        if (!list.length) continue;
+        next[board.id] = ((prev[board.id] ?? 0) + dir + list.length) % list.length;
+      }
+      return next;
+    });
+  };
 
   return (
-    <section className="why-section relative px-4 pb-10 pt-10 sm:px-8 sm:pb-12 sm:pt-12 lg:px-10">
-      <div className="mx-auto max-w-[90rem]">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-3 flex flex-col items-center">
-            <svg viewBox="0 0 48 24" className="mb-2 h-5 w-10 text-[#e4c35a]" fill="none" aria-hidden="true">
-              <path d="m4 20 10.5-14 5 7.2L25 6l19 14H4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-            </svg>
-            <div className="flex items-center justify-center gap-4">
-              <span className="h-px w-12 bg-[#e0c45a]/70 sm:w-16" aria-hidden="true" />
-              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[#e4c35a]">
-                {why.eyebrow}
-              </p>
-              <span className="h-px w-12 bg-[#e0c45a]/70 sm:w-16" aria-hidden="true" />
-            </div>
-          </div>
-          <h2 className="why-display text-[clamp(2.1rem,5.2vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.02em]">
-            <span className="text-white">{why.headlineWhite} </span>
-            <span className="text-[#e4c35a]">{why.headlineGold}</span>
-          </h2>
-          <div className="mx-auto mt-4 max-w-3xl space-y-2 text-[0.9rem] leading-relaxed text-[#efe9dc]/88 sm:text-[0.98rem]">
-            {paragraphs.map((line) => (
-              <p key={line.slice(0, 24)}>{line}</p>
-            ))}
-          </div>
-          <Link
-            href={why.ctaHref || "/about-us"}
-            className="focus-ring mt-6 inline-flex items-center gap-2 rounded-full border border-[#e0c45a] bg-black/35 px-5 py-2.5 text-[0.9rem] font-semibold text-[#e4c35a] backdrop-blur-md transition-colors hover:bg-[#e0c45a]/12"
-          >
-            {why.ctaLabel}
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+    <section className="rev-hub explore-hub relative isolate overflow-hidden">
+      <div className="absolute inset-0">
+        <MediaImage
+          src={why.wallpaperSrc}
+          alt=""
+          sizes="100vw"
+          className="h-full w-full object-cover"
+          objectPosition="center 42%"
+          quality={74}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,16,26,0.16)_0%,rgba(8,18,28,0.1)_45%,rgba(6,14,22,0.32)_100%)]" />
+      </div>
 
-        <div className="mt-9 flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-3 2xl:grid-cols-6 xl:gap-3.5 [&::-webkit-scrollbar]:hidden">
-          {why.cards?.map((card) => (
-            <article key={card.id} className="why-card group relative flex h-full min-w-[78vw] snap-center flex-col overflow-hidden rounded-[1.35rem] border border-[#e0c45a]/80 sm:min-w-0">
-              <div className="relative aspect-[3/4.15] w-full min-h-[22rem]">
-                <MediaImage
-                  src={card.imageSrc}
-                  alt={card.imageAlt}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 16vw"
-                  quality={86}
-                  className="object-cover"
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(to top, #0c0906 0%, rgba(12,9,6,0.94) 36%, rgba(12,9,6,0.18) 58%, transparent 72%), linear-gradient(to bottom, rgba(12,9,6,0.35) 0%, transparent 22%)",
+      <div className="explore-hub-shell relative">
+        <div className="explore-hub-glass">
+          <div className="rev-kickers">
+            <p>{why.kickerLeft}</p>
+            <p className="font-[family-name:var(--font-cormorant)]">{why.kickerRight}</p>
+          </div>
+
+          <header className="rev-head">
+            <p className="explore-hub-eyebrow">{why.eyebrow}</p>
+            <h2 className="rev-title-display font-[family-name:var(--font-cormorant)]">
+              {why.headlineWhite} <span>{why.headlineGold}</span>
+            </h2>
+            <p className="rev-subtitle">{why.subtitle}</p>
+            <p className="rev-sister">{why.sisterLine}</p>
+            {why.stats?.length ? (
+              <p className="rev-stats">
+                {why.stats.map((item, index) => (
+                  <span key={`${item}-${index}`}>
+                    {index > 0 ? <i aria-hidden="true">•</i> : null}
+                    {item}
+                  </span>
+                ))}
+              </p>
+            ) : null}
+          </header>
+
+          <div className="rev-stage">
+            <button type="button" className="rev-arrow rev-arrow-prev" aria-label="Previous reviews" onClick={() => shiftAll(-1)}>
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+                <path d="M14.5 6.8 8.8 12l5.7 5.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            <div className="rev-boards">
+              {(why.boards ?? []).map((board) => (
+                <BoardPanel
+                  key={board.id}
+                  board={board}
+                  reviews={reviewsByPlatform[board.platform]}
+                  start={starts[board.id] ?? 0}
+                  onShift={(dir) => {
+                    const list = reviewsByPlatform[board.platform];
+                    if (!list.length) return;
+                    setStarts((prev) => ({
+                      ...prev,
+                      [board.id]: ((prev[board.id] ?? 0) + dir + list.length) % list.length,
+                    }));
                   }}
                 />
-                <div className="absolute left-1/2 top-4 z-[2] -translate-x-1/2 sm:top-5">
-                  <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
-                </div>
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-10 text-center">
-                  <h3 className="flex min-h-[3.6rem] w-full items-center justify-center text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
-                    {card.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-4 min-h-[5.1rem] w-full text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.74rem]">
-                    {card.body}
-                  </p>
-                  <Link
-                    href={card.href || "/about-us"}
-                    className="focus-ring mt-2.5 inline-flex min-h-8 items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#e4c35a] hover:text-[#f0d36a]"
-                  >
-                    {card.ctaLabel || "LEARN MORE"}
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#e0c45a]/80">
-                      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" aria-hidden="true">
-                        <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                      </svg>
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="why-bar mt-8 rounded-[1.35rem] border border-[#e0c45a]/70 px-5 py-5 sm:px-7 sm:py-6">
-          <div className="flex flex-col items-center justify-between gap-7 lg:flex-row lg:items-center lg:gap-10">
-            <div className="flex max-w-xl items-center gap-4">
-              <svg viewBox="0 0 48 24" className="h-8 w-14 shrink-0 text-[#e4c35a]" fill="none" aria-hidden="true">
-                <path d="m4 20 10.5-14 5 7.2L25 6l19 14H4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-              </svg>
-              <div>
-                <p className="text-[1.02rem] font-semibold text-white">{why.awardTitle}</p>
-                <p className="mt-1 text-[0.82rem] leading-relaxed text-white/70">{why.awardSubtitle}</p>
-              </div>
-            </div>
-
-            <div className="grid w-full max-w-2xl grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-6">
-              {why.ratings?.map((rating) => (
-                <div key={rating.id} className="flex flex-col items-center gap-1.5 text-center">
-                  <RatingLogo rating={rating} />
-                  <p className="text-[0.72rem] font-semibold tracking-wide text-white/90">{rating.label}</p>
-                  <Stars />
-                  <p className="text-[0.7rem] text-white/60">{rating.value}</p>
-                </div>
               ))}
             </div>
+
+            <button type="button" className="rev-arrow rev-arrow-next" aria-label="Next reviews" onClick={() => shiftAll(1)}>
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+                <path d="M9.5 6.8 15.2 12l-5.7 5.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
+
+          <footer className="rev-quote">
+            <p className="font-[family-name:var(--font-cormorant)]">“{why.quote}”</p>
+            <span>— {why.quoteBy}</span>
+          </footer>
         </div>
       </div>
     </section>
