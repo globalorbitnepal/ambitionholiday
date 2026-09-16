@@ -213,22 +213,22 @@ export default function WhyAmbitionSection() {
                   className="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(to top, #0c0906 0%, rgba(12,9,6,0.94) 38%, rgba(12,9,6,0.2) 58%, transparent 76%)",
+                      "linear-gradient(to top, #0c0906 0%, rgba(12,9,6,0.94) 36%, rgba(12,9,6,0.18) 58%, transparent 72%), linear-gradient(to bottom, rgba(12,9,6,0.35) 0%, transparent 22%)",
                   }}
                 />
-                <div className="absolute inset-x-0 bottom-0 grid grid-rows-[3.35rem_3.9rem_5.1rem_2rem] justify-items-center gap-y-2.5 px-3 pb-4 pt-16 text-center">
-                  <div className="flex h-[3.35rem] w-[3.35rem] shrink-0 items-center justify-center">
-                    <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
-                  </div>
-                  <h3 className="flex h-full w-full items-center justify-center text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
+                <div className="absolute left-1/2 top-4 z-[2] -translate-x-1/2 sm:top-5">
+                  <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
+                </div>
+                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-4 pt-10 text-center">
+                  <h3 className="flex min-h-[3.6rem] w-full items-center justify-center text-[1.02rem] font-semibold leading-snug text-white sm:text-[1.06rem]">
                     {card.title}
                   </h3>
-                  <p className="line-clamp-4 h-full w-full text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.74rem]">
+                  <p className="mt-2 line-clamp-4 min-h-[5.1rem] w-full text-[0.72rem] leading-relaxed text-white/78 sm:text-[0.74rem]">
                     {card.body}
                   </p>
                   <Link
                     href={card.href || "/about-us"}
-                    className="focus-ring inline-flex h-full items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#e4c35a] hover:text-[#f0d36a]"
+                    className="focus-ring mt-2.5 inline-flex min-h-8 items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#e4c35a] hover:text-[#f0d36a]"
                   >
                     {card.ctaLabel || "LEARN MORE"}
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#e0c45a]/80">

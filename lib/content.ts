@@ -1,6 +1,13 @@
 import { promises as fs } from "fs";
 import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
-import { DEFAULT_CONTENT, type JourneyPackage, type SiteContent, type WhyCard } from "@/lib/content-types";
+import {
+  DEFAULT_CONTENT,
+  type ExploreHubTab,
+  type ExploreHubTabId,
+  type JourneyPackage,
+  type SiteContent,
+  type WhyCard,
+} from "@/lib/content-types";
 
 const FEATURED_JOURNEY_ORDER = ["ebc", "abc", "mustang"];
 
@@ -103,6 +110,37 @@ export async function readContent(): Promise<SiteContent> {
             ? DEFAULT_CONTENT.hero.taglineWords
             : parsed.hero.taglineWords,
       },
+      exploreHub: {
+        ...DEFAULT_CONTENT.exploreHub,
+        ...parsed.exploreHub,
+        pillars:
+          parsed.exploreHub?.pillars?.length
+            ? parsed.exploreHub.pillars.map((pillar, index) => ({
+                ...DEFAULT_CONTENT.exploreHub.pillars[index],
+                ...pillar,
+              }))
+            : DEFAULT_CONTENT.exploreHub.pillars,
+        tabs: (parsed.exploreHub?.tabs?.length
+          ? parsed.exploreHub.tabs
+          : DEFAULT_CONTENT.exploreHub.tabs
+        ).map((tab, tabIndex) => {
+          const fallback = DEFAULT_CONTENT.exploreHub.tabs[tabIndex] as ExploreHubTab | undefined;
+          return {
+            ...fallback,
+            ...tab,
+            id: (tab.id || fallback?.id || "destinations") as ExploreHubTabId,
+            label: tab.label || fallback?.label || "Tab",
+            cards: (tab.cards?.length ? tab.cards : fallback?.cards ?? []).map((card, cardIndex) => ({
+              ...fallback?.cards?.[cardIndex],
+              ...card,
+              imageSrc:
+                card.imageSrc ||
+                fallback?.cards?.[cardIndex]?.imageSrc ||
+                DEFAULT_CONTENT.exploreHub.wallpaperSrc,
+            })),
+          };
+        }),
+      },
       signature: {
         ...DEFAULT_CONTENT.signature,
         ...parsed.signature,
@@ -150,7 +188,8 @@ export async function readContent(): Promise<SiteContent> {
         ),
         headlineGold:
           !parsed.journeys?.headlineGold ||
-          parsed.journeys.headlineGold === "Luxury Treks"
+          parsed.journeys.headlineGold === "Luxury Treks" ||
+          parsed.journeys.headlineGold === "Luxury Treks & Tour"
             ? DEFAULT_CONTENT.journeys.headlineGold
             : parsed.journeys.headlineGold,
         headlineWhite:
@@ -351,6 +390,29 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
           stat.iconSrc === publicPath ? { ...stat, iconSrc: undefined, iconKey: "custom" as const } : stat,
         )
         .filter((stat) => !(stat.iconSrc === undefined && stat.iconKey === "custom" && !stat.label)),
+    },
+    exploreHub: {
+      ...content.exploreHub,
+      wallpaperSrc:
+        content.exploreHub?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.exploreHub.wallpaperSrc
+          : content.exploreHub?.wallpaperSrc ?? DEFAULT_CONTENT.exploreHub.wallpaperSrc,
+      pillars: (content.exploreHub?.pillars ?? []).map((pillar) => ({
+        ...pillar,
+        iconSrc: pillar.iconSrc === publicPath ? undefined : pillar.iconSrc,
+      })),
+      tabs: (content.exploreHub?.tabs ?? []).map((tab, tabIndex) => ({
+        ...tab,
+        cards: tab.cards.map((card, cardIndex) => ({
+          ...card,
+          imageSrc:
+            card.imageSrc === publicPath
+              ? DEFAULT_CONTENT.exploreHub.tabs[tabIndex]?.cards[cardIndex]?.imageSrc ??
+                DEFAULT_CONTENT.exploreHub.wallpaperSrc
+              : card.imageSrc,
+          iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
+        })),
+      })),
     },
     signature: {
       ...content.signature,

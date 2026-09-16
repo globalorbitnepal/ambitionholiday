@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
+import { DEST_SHOWCASE } from "@/lib/dest-showcase";
+import { LUXURY_MEGA_COUNTRIES, type LuxuryMegaCountryId } from "@/lib/luxury-mega";
 import { useSiteContent } from "@/components/SiteContentProvider";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
@@ -38,12 +40,232 @@ function megaPanelLabels(navLabel: string) {
   return { sidebar: "Categories", content: "Explore" };
 }
 
-function usesSidebarMega(label: string) {
-  return label === "Destinations" || label === "Luxury Tour & Trek";
+function usesLuxuryShowcase(label: string) {
+  return label === "Luxury Tour & Trek";
+}
+
+function usesDestinationsShowcase(label: string) {
+  return label === "Destinations";
 }
 
 function usesStackDropdown(label: string) {
   return label === "Experiences" || label === "Travel Guide";
+}
+
+const FROST_GLASS_CLASS =
+  "relative overflow-hidden rounded-[1.7rem] border border-white/28 shadow-[0_24px_70px_rgba(0,0,0,0.32)]";
+const FROST_GLASS_STYLE = {
+  background:
+    "linear-gradient(165deg, rgba(255,255,255,0.22) 0%, rgba(220,236,255,0.13) 48%, rgba(255,255,255,0.08) 100%)",
+  backdropFilter: "blur(24px) saturate(1.32)",
+  WebkitBackdropFilter: "blur(24px) saturate(1.32)",
+  fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+} as const;
+
+type FrostListItem = {
+  title: string;
+  subtitle: string;
+  href: string;
+  icon: "heli" | "camera" | "peaks" | "hiker" | "stupa" | "visa" | "calendar" | "pack" | "altitude" | "permit";
+};
+
+const EXPERIENCE_LIST: FrostListItem[] = [
+  {
+    title: "Helicopter Tours",
+    subtitle: "Breathtaking views from above",
+    href: "/helicopter-tours",
+    icon: "heli",
+  },
+  {
+    title: "Photography Treks",
+    subtitle: "Capture the Himalayas",
+    href: "/photography-treks",
+    icon: "camera",
+  },
+  {
+    title: "Luxury Mountain Experiences",
+    subtitle: "Premium journeys in nature",
+    href: "/luxury-mountain-experiences",
+    icon: "peaks",
+  },
+  {
+    title: "Private Guided Expeditions",
+    subtitle: "Tailor-made adventures",
+    href: "/private-guided-expeditions",
+    icon: "hiker",
+  },
+  {
+    title: "Cultural Journeys",
+    subtitle: "Tradition, people and heritage",
+    href: "/cultural-journeys",
+    icon: "stupa",
+  },
+];
+
+const TRAVEL_GUIDE_LIST: FrostListItem[] = [
+  {
+    title: "Visa & Entry",
+    subtitle: "Documents and arrival essentials",
+    href: "/visa-and-entry",
+    icon: "visa",
+  },
+  {
+    title: "Best Time to Visit",
+    subtitle: "Seasons across the Himalaya",
+    href: "/best-time-to-visit",
+    icon: "calendar",
+  },
+  {
+    title: "Packing Guide",
+    subtitle: "What to carry on the trail",
+    href: "/packing-guide",
+    icon: "pack",
+  },
+  {
+    title: "Altitude Tips",
+    subtitle: "Stay well on high routes",
+    href: "/altitude-tips",
+    icon: "altitude",
+  },
+  {
+    title: "Permits & Fees",
+    subtitle: "Trek permits made simple",
+    href: "/permits-and-fees",
+    icon: "permit",
+  },
+];
+
+function frostListFor(label: string) {
+  if (label === "Travel Guide") return TRAVEL_GUIDE_LIST;
+  return EXPERIENCE_LIST;
+}
+
+function FrostIcon({ name }: { name: FrostListItem["icon"] }) {
+  const common = "h-[1.35rem] w-[1.35rem] text-[#e4c35a]";
+  if (name === "heli") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M4 10h12M8 10V7m8-2H8m8 5 4 3H5l2-3m1 3v3h8v-3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "camera") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <rect x="3.5" y="7" width="17" height="12.5" rx="2.2" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="12" cy="13.2" r="3.2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M9 7 10.4 4.8h3.2L15 7" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "peaks") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="m3 19 6.2-10 3.3 5.2L15.2 9 21 19H3Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "hiker") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <circle cx="13.2" cy="5.2" r="1.5" stroke="currentColor" strokeWidth="1.7" />
+        <path d="m8 21 3.2-6.2L7 12.5 9.2 8.2l4.4 2.6 2.2 4.8L18 21M11.2 14.8 14 12.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "stupa") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M6 20h12M8 20V16h8v4M9.5 16c0-2.4 1.1-3.6 2.5-4.8 1.4 1.2 2.5 2.4 2.5 4.8M12 11.2V8.6m0 0c1.3 0 2-.7 2-1.5S13.3 5.6 12 5.6 10 6.3 10 7.1s.7 1.5 2 1.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "visa") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="16" height="14" rx="1.8" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="9" cy="11" r="1.7" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M13 10h5M13 13.5h5M6.5 16.5h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "calendar") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "pack") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3A2.5 2.5 0 0 1 16 6.5V8M7 8h10l.8 11.2a1.6 1.6 0 0 1-1.6 1.7H7.8a1.6 1.6 0 0 1-1.6-1.7L7 8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "altitude") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M4 18h16M7 18 12 7l5 11M10.2 13.2h3.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+      <path d="M7 20V6.8A1.8 1.8 0 0 1 8.8 5H16v12.2a1.8 1.8 0 0 1-1.8 1.8H7Z" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M16 8h2.2A1.8 1.8 0 0 1 20 9.8V19" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M9.2 9h4M9.2 12h4M9.2 15h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function FrostListDropdown({
+  items,
+  onNavigate,
+  inline,
+}: {
+  items: FrostListItem[];
+  onNavigate: () => void;
+  inline?: boolean;
+}) {
+  return (
+    <div
+      className={`${inline ? "w-full" : "animate-dropdown absolute left-1/2 top-full z-50 mt-1.5 w-[min(calc(100vw-2rem),22.5rem)] -translate-x-1/2"} px-3.5 py-3.5 ${FROST_GLASS_CLASS}`}
+      style={FROST_GLASS_STYLE}
+      onMouseLeave={inline ? undefined : onNavigate}
+    >
+      <ul role="menu" className="space-y-0.5">
+        {items.map((item) => (
+          <li key={item.href} role="none">
+            <Link
+              href={item.href}
+              role="menuitem"
+              className="focus-ring flex items-center gap-3 rounded-2xl px-2 py-2.5 text-left transition-colors hover:bg-white/10"
+              onClick={onNavigate}
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+                <FrostIcon name={item.icon} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[0.95rem] font-semibold leading-tight text-white">
+                  {item.title}
+                </span>
+                <span className="mt-0.5 block text-[0.74rem] leading-snug text-white/70">
+                  {item.subtitle}
+                </span>
+              </span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/35 text-white/90">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                  <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 function flattenNavLinks(item: NavItem) {
@@ -63,46 +285,271 @@ const MEGA_MAIN = "linear-gradient(180deg, rgba(14,11,8,0.28) 0%, rgba(10,8,7,0.
 const DROP_SHELL =
   "linear-gradient(180deg, rgba(16,12,8,0.96) 0%, rgba(10,8,7,0.94) 100%)";
 
-function StackGlassDropdown({
-  links,
-  onNavigate,
-}: {
-  links: { label: string; href: string }[];
-  onNavigate: () => void;
-}) {
+function DestGoldArrow() {
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[#1a1408] shadow-[0_8px_18px_rgba(201,162,39,0.4)]">
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+        <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </span>
+  );
+}
+
+function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
   return (
     <div
-      className="animate-dropdown absolute left-1/2 top-full z-50 mt-1.5 min-w-[15.5rem] -translate-x-1/2 overflow-hidden rounded-xl border border-[#e0c45a]/70 shadow-[0_0_0_1px_rgba(224,196,90,0.28),0_0_28px_rgba(201,162,39,0.22),0_18px_44px_rgba(0,0,0,0.4)]"
-      style={{
-        background: DROP_SHELL,
-        fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
-      }}
-      onMouseLeave={onNavigate}
+      className={`${FROST_GLASS_CLASS} px-5 py-5 sm:px-7 sm:py-6`}
+      style={FROST_GLASS_STYLE}
     >
-      <div
-        className="h-[2px] w-full"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, #c9a227 25%, #e8d48a 50%, #c9a227 75%, transparent)",
-        }}
-        aria-hidden="true"
-      />
-      <ul role="menu" className="py-1">
-        {links.map((child, index) => (
-          <li key={child.href} role="none">
+      <div className="mb-4 flex flex-col gap-3 lg:mb-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/80">
+            Explore the Himalayas
+          </p>
+          <h3
+            className="mt-1 text-[clamp(1.45rem,2.6vw,2.15rem)] font-semibold leading-tight tracking-[-0.02em] text-white"
+            style={{ fontFamily: "var(--font-cormorant), Times New Roman, serif" }}
+          >
+            Extraordinary Destinations Await
+          </h3>
+        </div>
+        <p className="hidden items-center gap-3 text-[0.92rem] italic text-white/80 lg:flex">
+          <span className="h-px w-10 bg-white/45" aria-hidden="true" />
+          Four Regions. Endless Possibilities.
+        </p>
+      </div>
+
+      <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {DEST_SHOWCASE.map((dest) => (
+          <li key={dest.id}>
             <Link
-              href={child.href}
-              role="menuitem"
-              className={`focus-ring block px-4 py-2.5 text-[0.86rem] font-semibold text-[#f7f4ef] transition-colors hover:bg-[#c9a227]/12 hover:text-[#e4c35a] ${
-                index < links.length - 1 ? "border-b border-dashed border-[#e0c45a]/28" : ""
-              }`}
+              href={dest.href}
               onClick={onNavigate}
+              className="focus-ring group relative block overflow-hidden rounded-[1.15rem] border border-white/15 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
             >
-              {child.label}
+              <span className="relative block aspect-[5/4] w-full">
+                <Image
+                  src={dest.imageSrc}
+                  alt={dest.imageAlt}
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 18vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 sm:p-3.5">
+                  <span>
+                    <span className="block text-[1.05rem] font-semibold tracking-tight text-white sm:text-[1.15rem]">
+                      {dest.title}
+                    </span>
+                    <span className="mt-0.5 block text-[0.7rem] text-white/75 sm:text-[0.74rem]">
+                      {dest.subtitle}
+                    </span>
+                  </span>
+                  <DestGoldArrow />
+                </span>
+              </span>
             </Link>
           </li>
         ))}
       </ul>
+
+      <div className="mt-4 flex justify-center sm:mt-5">
+        <Link
+          href="/destinations"
+          onClick={onNavigate}
+          className="focus-ring inline-flex items-center gap-2 text-[0.82rem] font-semibold text-white/85 hover:text-white"
+        >
+          View All Destinations
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function LuxuryGlassPanel({
+  activeId,
+  onSelect,
+  onNavigate,
+}: {
+  activeId: LuxuryMegaCountryId;
+  onSelect: (id: LuxuryMegaCountryId) => void;
+  onNavigate: () => void;
+}) {
+  const country = LUXURY_MEGA_COUNTRIES.find((item) => item.id === activeId) ?? LUXURY_MEGA_COUNTRIES[0];
+
+  return (
+    <div
+      className={`${FROST_GLASS_CLASS} p-3 sm:p-4`}
+      style={FROST_GLASS_STYLE}
+    >
+      <div className="grid items-stretch gap-4 lg:grid-cols-[20.5rem_1fr]">
+        <aside className="flex min-h-full flex-col rounded-[1.25rem] border border-white/12 bg-black/25 p-4">
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/90">
+            Explore by Country
+          </p>
+          <p className="mt-1.5 max-w-[16rem] text-[0.78rem] leading-snug text-white/70">
+            Choose a destination to view luxury tours & treks.
+          </p>
+          <ul className="mt-4 space-y-2.5">
+            {LUXURY_MEGA_COUNTRIES.map((item) => {
+              const on = item.id === country.id;
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onMouseEnter={() => onSelect(item.id)}
+                    onFocus={() => onSelect(item.id)}
+                    onClick={() => onSelect(item.id)}
+                    className={`focus-ring relative flex h-[4.85rem] w-full items-center overflow-hidden rounded-[1.35rem] border text-left transition-shadow ${
+                      on
+                        ? "border-[#e8d48a]/90 shadow-[0_0_0_1px_rgba(232,212,138,0.35),0_0_22px_rgba(201,162,39,0.28)]"
+                        : "border-white/10 hover:border-white/25"
+                    }`}
+                  >
+                    <span className="absolute inset-0">
+                      <Image src={item.thumbSrc} alt="" fill className="object-cover object-[center_42%]" sizes="330px" />
+                      <span className="absolute inset-0 bg-gradient-to-r from-black/58 via-black/22 to-transparent" />
+                    </span>
+                    <span className="relative z-[1] ml-2.5 h-[2.85rem] w-[2.85rem] shrink-0 overflow-hidden rounded-full border-[1.5px] border-white/70 bg-[#101820] shadow-[0_4px_12px_rgba(0,0,0,0.45)]">
+                      <Image src={item.flagSrc} alt="" fill className="object-cover object-center" sizes="46px" />
+                    </span>
+                    <span className="relative z-[1] min-w-0 flex-1 pl-2.5">
+                      <span className="block text-[0.98rem] font-semibold leading-tight text-white drop-shadow">
+                        {item.title}
+                      </span>
+                      <span className="mt-0.5 block text-[0.72rem] text-white/80">{item.countLabel}</span>
+                    </span>
+                    <span
+                      className={`relative z-[1] mr-2.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                        on ? "bg-[#c9a227] text-[#1a1408]" : "bg-white/18 text-white"
+                      }`}
+                    >
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                        <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-auto flex flex-col items-center px-2 pb-1 pt-7 text-white/70">
+            <svg viewBox="0 0 200 58" className="h-[2.65rem] w-[10.5rem] text-white/72" fill="none" aria-hidden="true">
+              <path
+                d="M8 50 42 22l12 12 22-32 16 20 18-22 20 18 14-10 20 14 20 22H8Z"
+                stroke="currentColor"
+                strokeWidth="1.45"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M76 22 92 4l14 16"
+                stroke="currentColor"
+                strokeWidth="1.35"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M54 34l12-8 10 6M110 18l10 8 12-6"
+                stroke="currentColor"
+                strokeWidth="1.15"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p
+              className="mt-1.5 text-center text-[0.82rem] italic tracking-[0.01em] text-white/75"
+              style={{ fontFamily: "var(--font-cormorant), Times New Roman, serif" }}
+            >
+              One Region. Limitless Journeys.
+            </p>
+          </div>
+        </aside>
+
+        <div className="min-w-0">
+          <div className="mb-3 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#e4c35a]">
+                {country.title}
+              </p>
+              <h3
+                className="mt-0.5 text-[clamp(1.35rem,2.3vw,1.95rem)] font-semibold leading-tight text-white"
+                style={{ fontFamily: "var(--font-cormorant), Times New Roman, serif" }}
+              >
+                Popular Luxury Tours & Treks
+              </h3>
+            </div>
+            <p className="hidden items-center gap-3 text-[0.82rem] italic text-white/75 lg:flex">
+              <span className="text-[0.78rem] font-semibold not-italic text-white/80">{country.countLabel}</span>
+              <span className="h-px w-8 bg-white/35" aria-hidden="true" />
+              {country.tagline}
+            </p>
+          </div>
+
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {country.packages.map((pkg) => (
+              <li key={pkg.title}>
+                <Link
+                  href={pkg.href}
+                  onClick={onNavigate}
+                  className="focus-ring group relative block overflow-hidden rounded-[1.05rem] border border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.28)]"
+                >
+                  <span className="relative block aspect-[16/10] w-full">
+                    <Image
+                      src={pkg.imageSrc}
+                      alt={pkg.imageAlt}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 18vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3">
+                      <span>
+                        <span className="block text-[0.92rem] font-semibold leading-snug text-white">
+                          {pkg.title}
+                        </span>
+                        <span className="mt-1 flex items-center gap-3 text-[0.68rem] text-white/75">
+                          <span className="inline-flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" aria-hidden="true">
+                              <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                            </svg>
+                            {pkg.days}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" aria-hidden="true">
+                              <path d="m3 18 6.5-9 3.5 5 2.5-3.5L21 18H3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                            </svg>
+                            {pkg.difficulty}
+                          </span>
+                        </span>
+                      </span>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/35 bg-black/35 text-white">
+                        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                          <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </span>
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            href={country.href}
+            onClick={onNavigate}
+            className="focus-ring mt-3 flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/18 bg-black/20 text-[0.82rem] font-semibold text-white/90 hover:bg-black/35"
+          >
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="14" y="3" width="7" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="3" y="14" width="7" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="14" y="14" width="7" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+            {country.viewAllLabel}
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
@@ -230,6 +677,7 @@ export default function Header() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const [megaCategory, setMegaCategory] = useState<string | null>(null);
+  const [luxuryCountry, setLuxuryCountry] = useState<LuxuryMegaCountryId>("nepal");
   const [scrolled, setScrolled] = useState(false);
   const navId = useId();
   const headerRef = useRef<HTMLElement>(null);
@@ -254,6 +702,11 @@ export default function Header() {
   }, [mobileOpen]);
 
   useEffect(() => {
+    document.body.classList.toggle("nav-mega-open", Boolean(openDropdown));
+    return () => document.body.classList.remove("nav-mega-open");
+  }, [openDropdown]);
+
+  useEffect(() => {
     function onPointerDown(event: MouseEvent) {
       if (!headerRef.current?.contains(event.target as Node)) {
         setOpenDropdown(null);
@@ -274,7 +727,9 @@ export default function Header() {
   }, []);
 
   const openMegaItem = NAV_ITEMS.find(
-    (item) => item.label === openDropdown && usesSidebarMega(item.label),
+    (item) =>
+      item.label === openDropdown &&
+      (usesLuxuryShowcase(item.label) || usesDestinationsShowcase(item.label)),
   );
 
   useEffect(() => {
@@ -290,16 +745,18 @@ export default function Header() {
     }
   }, [openMegaItem]);
 
-  const isSidebarMega = Boolean(openMegaItem?.groups?.length);
-  const megaLabels = openMegaItem
-    ? megaPanelLabels(openMegaItem.label)
-    : { sidebar: "Categories", content: "Explore" };
+  const isDestShowcase = Boolean(
+    openMegaItem && usesDestinationsShowcase(openMegaItem.label),
+  );
+  const isLuxuryShowcase = Boolean(
+    openMegaItem && usesLuxuryShowcase(openMegaItem.label),
+  );
 
   return (
     <header
       ref={headerRef}
-      className={`absolute inset-x-0 top-0 z-50 pt-[var(--safe-top)] transition-colors duration-300 ${
-        scrolled || mobileOpen
+      className={`absolute inset-x-0 top-0 z-[80] isolate pt-[var(--safe-top)] transition-colors duration-300 ${
+        scrolled || mobileOpen || openDropdown
           ? "bg-[rgba(8,12,18,0.88)] backdrop-blur-md"
           : "bg-transparent"
       }`}
@@ -328,7 +785,11 @@ export default function Header() {
               {NAV_ITEMS.map((item) => {
                 const menu = hasMenu(item);
                 const isOpen = openDropdown === item.label;
-                const isWideMega = usesSidebarMega(item.label);
+                const isWideMega = usesLuxuryShowcase(item.label) || usesDestinationsShowcase(item.label);
+                const destOpen = isOpen && usesDestinationsShowcase(item.label);
+                const luxuryOpen = isOpen && usesLuxuryShowcase(item.label);
+                const stackOpen = isOpen && usesStackDropdown(item.label);
+                const goldLineOpen = luxuryOpen || stackOpen;
                 const isStack = usesStackDropdown(item.label) || Boolean(item.children?.length);
                 const stackLinks = isStack ? flattenNavLinks(item) : [];
 
@@ -338,8 +799,12 @@ export default function Header() {
                       <>
                         <button
                           type="button"
-                          className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem] ${
-                            isOpen ? "text-gold" : ""
+                          className={`focus-ring relative inline-flex items-center gap-1.5 px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] transition-colors duration-200 2xl:px-3 2xl:text-[0.97rem] ${
+                            destOpen
+                              ? "rounded-full bg-[#c9a227] text-[#1a1408] hover:text-[#1a1408]"
+                              : goldLineOpen
+                                ? "rounded-md text-[#e4c35a] hover:text-[#e8d48a]"
+                              : `rounded-md text-white hover:text-gold ${isOpen ? "text-gold" : ""}`
                           }`}
                           aria-expanded={isOpen}
                           aria-haspopup="true"
@@ -352,13 +817,25 @@ export default function Header() {
                         >
                           {item.label}
                           <Chevron open={isOpen} />
+                          {destOpen ? (
+                            <span
+                              className="absolute left-1/2 top-[calc(100%+2px)] z-[61] h-0 w-0 -translate-x-1/2 border-x-[8px] border-b-[9px] border-x-transparent border-b-[#c9a227]"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          {goldLineOpen ? (
+                            <>
+                              <span
+                                className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-[#c9a227]"
+                                aria-hidden="true"
+                              />
+                              <span
+                                className="absolute left-1/2 top-[calc(100%+2px)] z-[61] h-0 w-0 -translate-x-1/2 border-x-[8px] border-b-[9px] border-x-transparent border-b-[#c9a227]"
+                                aria-hidden="true"
+                              />
+                            </>
+                          ) : null}
                         </button>
-                        {isOpen && isStack && stackLinks.length ? (
-                          <StackGlassDropdown
-                            links={stackLinks}
-                            onNavigate={() => setOpenDropdown(null)}
-                          />
-                        ) : null}
                       </>
                     ) : (
                       <Link
@@ -428,19 +905,31 @@ export default function Header() {
 
         {openMegaItem ? (
           <div
-            className="animate-dropdown fixed left-1/2 top-[5rem] z-[60] hidden w-[min(calc(100vw-2rem),64rem)] -translate-x-1/2 pt-1.5 sm:top-[5.25rem] xl:block"
+            className={`animate-dropdown absolute left-1/2 top-full z-[90] hidden w-[min(calc(100vw-2rem),86rem)] -translate-x-1/2 pt-2 xl:block ${
+              isLuxuryShowcase ? "" : "max-w-[74rem]"
+            }`}
             onMouseLeave={() => setOpenDropdown(null)}
           >
-            {isSidebarMega ? (
-              <DestinationsMegaPanel
-                groups={openMegaItem.groups!}
-                activeTitle={megaCategory || openMegaItem.groups![0].title}
-                sidebarLabel={megaLabels.sidebar}
-                contentLabel={megaLabels.content}
-                onSelectCategory={setMegaCategory}
+            {isDestShowcase ? (
+              <DestinationsGlassPanel onNavigate={() => setOpenDropdown(null)} />
+            ) : isLuxuryShowcase ? (
+              <LuxuryGlassPanel
+                activeId={luxuryCountry}
+                onSelect={setLuxuryCountry}
                 onNavigate={() => setOpenDropdown(null)}
               />
             ) : null}
+          </div>
+        ) : openDropdown && usesStackDropdown(openDropdown) ? (
+          <div
+            className="animate-dropdown absolute left-1/2 top-full z-[90] hidden -translate-x-1/2 pt-2 xl:block"
+            onMouseLeave={() => setOpenDropdown(null)}
+          >
+            <FrostListDropdown
+              items={frostListFor(openDropdown)}
+              onNavigate={() => setOpenDropdown(null)}
+              inline
+            />
           </div>
         ) : null}
       </div>
@@ -454,7 +943,8 @@ export default function Header() {
             {NAV_ITEMS.map((item) => {
               const menu = hasMenu(item);
               const expanded = mobileExpanded === item.label;
-              const useSidebarMobile = usesSidebarMega(item.label);
+              const useDestMobile = usesDestinationsShowcase(item.label);
+              const useLuxuryMobile = usesLuxuryShowcase(item.label);
               const useStackMobile = usesStackDropdown(item.label);
               const stackLinks = useStackMobile ? flattenNavLinks(item) : [];
 
@@ -479,7 +969,27 @@ export default function Header() {
                         <Chevron open={expanded} />
                       </button>
                       {expanded ? (
-                        item.groups && useSidebarMobile ? (
+                        useDestMobile ? (
+                          <div className="mb-3">
+                            <DestinationsGlassPanel onNavigate={() => setMobileOpen(false)} />
+                          </div>
+                        ) : useLuxuryMobile ? (
+                          <div className="mb-3">
+                            <LuxuryGlassPanel
+                              activeId={luxuryCountry}
+                              onSelect={setLuxuryCountry}
+                              onNavigate={() => setMobileOpen(false)}
+                            />
+                          </div>
+                        ) : useStackMobile ? (
+                          <div className="mb-3">
+                            <FrostListDropdown
+                              items={frostListFor(item.label)}
+                              onNavigate={() => setMobileOpen(false)}
+                              inline
+                            />
+                          </div>
+                        ) : item.groups ? (
                           <div
                             className="animate-dropdown mb-3 overflow-hidden rounded-[1.15rem] border border-[#e0c45a]/70 p-2.5 shadow-[0_0_0_1px_rgba(224,196,90,0.22),0_14px_36px_rgba(0,0,0,0.35)]"
                             style={{ background: MEGA_SHELL }}

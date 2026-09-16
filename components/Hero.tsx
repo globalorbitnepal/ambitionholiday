@@ -123,9 +123,7 @@ export default function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-black/70 via-black/30 to-transparent"
       />
 
-      <Header />
-
-      <div className="relative z-10 flex flex-1 flex-col">
+      <div className="hero-copy relative z-0 flex flex-1 flex-col">
         <div className="flex flex-1 flex-col items-center justify-center px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(6rem,calc(env(safe-area-inset-top)+4.5rem))] sm:pt-28 lg:pb-8 lg:pt-24">
           <div className="relative w-full max-w-5xl">
             <div className="relative">
@@ -142,6 +140,8 @@ export default function Hero() {
 
         {hero.statsVisible ? <HeroStats stats={hero.stats} /> : null}
       </div>
+
+      <Header />
     </section>
   );
 }

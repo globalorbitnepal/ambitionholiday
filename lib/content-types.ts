@@ -357,6 +357,66 @@ export type FooterContent = {
   creditHref: string;
 };
 
+export type ExploreHubPillarIcon =
+  | "diamond"
+  | "people"
+  | "shield"
+  | "leaf"
+  | "headset"
+  | "custom";
+
+export type ExploreHubCardIcon =
+  | "mountain"
+  | "temple"
+  | "globe"
+  | "calendar"
+  | "tag"
+  | "tent"
+  | "custom";
+
+export type ExploreHubTabId = "destinations" | "types" | "duration" | "offers";
+
+export type ExploreHubPillar = {
+  id: string;
+  title: string;
+  icon: ExploreHubPillarIcon;
+  iconSrc?: string;
+};
+
+export type ExploreHubCard = {
+  id: string;
+  title: string;
+  subtitle: string;
+  meta: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  icon: ExploreHubCardIcon;
+  iconSrc?: string;
+};
+
+export type ExploreHubTab = {
+  id: ExploreHubTabId;
+  label: string;
+  cards: ExploreHubCard[];
+};
+
+export type ExploreHubContent = {
+  visible: boolean;
+  wallpaperSrc: string;
+  eyebrow: string;
+  headline: string;
+  headlineLine2: string;
+  body: string;
+  pillars: ExploreHubPillar[];
+  tabs: ExploreHubTab[];
+  tabHint: string;
+  ctaLabel: string;
+  ctaHref: string;
+  footLeft: string;
+  footRight: string;
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
@@ -375,6 +435,7 @@ export type SiteContent = {
     statsVisible: boolean;
     stats: StatItem[];
   };
+  exploreHub: ExploreHubContent;
   signature: {
     visible: boolean;
     eyebrow: string;
@@ -482,10 +543,216 @@ export const DEFAULT_CONTENT: SiteContent = {
       },
     ],
   },
+  exploreHub: {
+    visible: true,
+    wallpaperSrc: "/images/explore-hub/hub-wallpaper.jpg",
+    eyebrow: "WHY TRAVEL WITH US",
+    headline: "More Than a Trip,",
+    headlineLine2: "A Meaningful Journey",
+    body: "Handpicked experiences, local expertise and dedicated support to make your Himalayan journey unforgettable.",
+    pillars: [
+      { id: "p1", title: "Curated Luxury Experiences", icon: "diamond" },
+      { id: "p2", title: "Local Experts & Guides", icon: "people" },
+      { id: "p3", title: "Safe & Seamless Travel", icon: "shield" },
+      { id: "p4", title: "Responsible Tourism", icon: "leaf" },
+      { id: "p5", title: "24/7 Support", icon: "headset" },
+    ],
+    tabHint: "Explore a world of extraordinary journeys.",
+    ctaLabel: "View All Packages",
+    ctaHref: "/luxury-treks",
+    footLeft: "DISCOVER  ·  EXPLORE  ·  EXPERIENCE",
+    footRight: "JOURNEYS BEYOND LIMITS",
+    tabs: [
+      {
+        id: "destinations",
+        label: "Popular Destinations",
+        cards: [
+          {
+            id: "dest-nepal",
+            title: "Nepal",
+            subtitle: "The Heart of the Himalayas",
+            meta: "20+ Packages",
+            href: "/nepal",
+            imageSrc: "/images/explore-hub/hub-nepal.jpg",
+            imageAlt: "Golden stupa among pines with Himalayan peaks",
+            icon: "mountain",
+          },
+          {
+            id: "dest-bhutan",
+            title: "Bhutan",
+            subtitle: "The Land of Gross National Happiness",
+            meta: "12+ Packages",
+            href: "/bhutan",
+            imageSrc: "/images/explore-hub/hub-bhutan.jpg",
+            imageAlt: "Tiger's Nest monastery on a cliff in Bhutan",
+            icon: "mountain",
+          },
+          {
+            id: "dest-tibet",
+            title: "Tibet",
+            subtitle: "Roof of the World",
+            meta: "10+ Packages",
+            href: "/tibet",
+            imageSrc: "/images/explore-hub/hub-tibet.jpg",
+            imageAlt: "Potala Palace against snow mountains",
+            icon: "temple",
+          },
+          {
+            id: "dest-multi",
+            title: "Multi-Country",
+            subtitle: "One Journey, Many Worlds",
+            meta: "8+ Packages",
+            href: "/himalayan-multi-countries",
+            imageSrc: "/images/explore-hub/hub-multi.jpg",
+            imageAlt: "Stupa with prayer flags and Himalayan peaks",
+            icon: "globe",
+          },
+        ],
+      },
+      {
+        id: "types",
+        label: "Tour Types",
+        cards: [
+          {
+            id: "type-lodge",
+            title: "Luxury Lodge Treks",
+            subtitle: "Refined comfort on the trail",
+            meta: "18+ Packages",
+            href: "/luxury-lodges-stays",
+            imageSrc: "/images/explore-hub/hub-tour-lodge.jpg",
+            imageAlt: "Luxury Himalayan lodge overlooking snow peaks",
+            icon: "tent",
+          },
+          {
+            id: "type-culture",
+            title: "Cultural Tours",
+            subtitle: "Temples, heritage and living tradition",
+            meta: "14+ Packages",
+            href: "/cultural-tours",
+            imageSrc: "/images/explore-hub/hub-tour-culture.jpg",
+            imageAlt: "Historic temple square in Nepal",
+            icon: "temple",
+          },
+          {
+            id: "type-safari",
+            title: "Wildlife Safaris",
+            subtitle: "Jungles, rhinos and river plains",
+            meta: "9+ Packages",
+            href: "/wildlife-safari",
+            imageSrc: "/images/explore-hub/hub-tour-safari.jpg",
+            imageAlt: "One-horned rhino in grassland safari",
+            icon: "mountain",
+          },
+          {
+            id: "type-heli",
+            title: "Helicopter Experiences",
+            subtitle: "Peaks, glaciers and sky-high views",
+            meta: "7+ Packages",
+            href: "/luxury-helicopter-treks",
+            imageSrc: "/images/explore-hub/hub-tour-heli.jpg",
+            imageAlt: "Helicopter flying over Himalayan glaciers",
+            icon: "globe",
+          },
+        ],
+      },
+      {
+        id: "duration",
+        label: "By Duration",
+        cards: [
+          {
+            id: "dur-short",
+            title: "1–3 Days",
+            subtitle: "Short escapes & scenic flights",
+            meta: "16+ Packages",
+            href: "/short-tours",
+            imageSrc: "/images/explore-hub/hub-dur-short.jpg",
+            imageAlt: "Forest trail viewpoint over a Himalayan valley",
+            icon: "calendar",
+          },
+          {
+            id: "dur-week",
+            title: "4–7 Days",
+            subtitle: "Classic week-long journeys",
+            meta: "22+ Packages",
+            href: "/week-tours",
+            imageSrc: "/images/explore-hub/hub-dur-week.jpg",
+            imageAlt: "Alpine meadow with prayer flags and peaks",
+            icon: "calendar",
+          },
+          {
+            id: "dur-fortnight",
+            title: "8–14 Days",
+            subtitle: "Signature treks & circuits",
+            meta: "19+ Packages",
+            href: "/luxury-treks",
+            imageSrc: "/images/explore-hub/hub-dur-fortnight.jpg",
+            imageAlt: "High mountain pass and glaciers",
+            icon: "mountain",
+          },
+          {
+            id: "dur-long",
+            title: "15+ Days",
+            subtitle: "Expeditions without compromise",
+            meta: "8+ Packages",
+            href: "/expeditions",
+            imageSrc: "/images/explore-hub/hub-dur-long.jpg",
+            imageAlt: "High-altitude camp near a snow peak at dusk",
+            icon: "tent",
+          },
+        ],
+      },
+      {
+        id: "offers",
+        label: "Special Offers",
+        cards: [
+          {
+            id: "offer-everest",
+            title: "Early Bird Everest",
+            subtitle: "Reserve the season’s finest lodges",
+            meta: "Limited Season",
+            href: "/luxury-everest-base-camp-trek",
+            imageSrc: "/images/explore-hub/hub-offer-everest.jpg",
+            imageAlt: "Sunrise over Everest region peaks",
+            icon: "tag",
+          },
+          {
+            id: "offer-bhutan",
+            title: "Shoulder Season Bhutan",
+            subtitle: "Quieter trails, richer light",
+            meta: "Save on Festivals",
+            href: "/bhutan",
+            imageSrc: "/images/explore-hub/hub-offer-bhutan.jpg",
+            imageAlt: "Bhutan valley monastery in misty hills",
+            icon: "tag",
+          },
+          {
+            id: "offer-festival",
+            title: "Festival Specials",
+            subtitle: "Sacred days, living colour",
+            meta: "Seasonal Dates",
+            href: "/festivals",
+            imageSrc: "/images/explore-hub/hub-offer-festival.jpg",
+            imageAlt: "Monastery courtyard with prayer flags",
+            icon: "temple",
+          },
+          {
+            id: "offer-honeymoon",
+            title: "Honeymoon Escape",
+            subtitle: "Private lodges and sunset peaks",
+            meta: "Couples Only",
+            href: "/honeymoon",
+            imageSrc: "/images/explore-hub/hub-offer-honeymoon.jpg",
+            imageAlt: "Luxury lodge balcony overlooking snow mountains",
+            icon: "globe",
+          },
+        ],
+      },
+    ],
+  },
   journeys: {
     visible: true,
     eyebrow: "OUR SIGNATURE JOURNEYS",
-    headlineGold: "Luxury Treks & Tour",
+    headlineGold: "Luxury Tour & Treks",
     headlineWhite: "in Nepal",
     line1: "Handpicked routes. Exceptional comfort. Unforgettable experiences.",
     line2: "Explore our most loved luxury trekking packages.",

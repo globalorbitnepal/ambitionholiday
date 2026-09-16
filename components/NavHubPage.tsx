@@ -1,15 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import Header from "@/components/Header";
 import type { NavGroup, NavItem } from "@/lib/nav";
+import { DEST_SHOWCASE } from "@/lib/dest-showcase";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
 
 function hubCopy(label: string) {
   if (label === "Destinations") {
     return {
-      eyebrow: "Explore Nepal",
-      body: "Himalayan regions and curated treks — guided journeys beyond limits.",
+      eyebrow: "Explore the Himalayas",
+      body: "Four regions. Endless possibilities — Nepal, Bhutan, Tibet, and multi-country journeys.",
     };
   }
   if (label === "Luxury Tour & Trek") {
@@ -101,13 +103,40 @@ export default function NavHubPage({ item }: { item: NavItem }) {
                 {copy.eyebrow}
               </p>
               <h1 className="mt-1.5 text-[clamp(1.7rem,4.5vw,2.45rem)] font-extrabold tracking-tight text-white">
-                {item.label}
+                {item.label === "Destinations" ? "Extraordinary Destinations Await" : item.label}
               </h1>
               <p className="mt-2 max-w-2xl text-[0.92rem] font-medium leading-relaxed text-white/80">
                 {copy.body}
               </p>
             </div>
           </div>
+
+          {item.label === "Destinations" ? (
+            <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+              {DEST_SHOWCASE.map((dest) => (
+                <Link
+                  key={dest.id}
+                  href={dest.href}
+                  className="focus-ring group relative overflow-hidden rounded-[1.15rem] border border-white/15"
+                >
+                  <span className="relative block aspect-[5/4] w-full">
+                    <Image
+                      src={dest.imageSrc}
+                      alt={dest.imageAlt}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 22vw"
+                      className="object-cover"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 p-3">
+                      <span className="block text-[1.05rem] font-semibold text-white">{dest.title}</span>
+                      <span className="block text-[0.72rem] text-white/75">{dest.subtitle}</span>
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : null}
 
           <div className={`mt-5 grid grid-cols-1 gap-3.5 ${compact ? "" : "lg:grid-cols-2"}`}>
             {groups.map((group) => (

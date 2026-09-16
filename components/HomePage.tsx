@@ -2,6 +2,7 @@
 
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import Hero from "@/components/Hero";
+import ExploreHubSection from "@/components/ExploreHubSection";
 import LuxuryTreksSection from "@/components/LuxuryTreksSection";
 import SignatureSection from "@/components/SignatureSection";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
@@ -18,6 +19,7 @@ function HomeSections() {
   return (
     <>
       <Hero />
+      <ExploreHubSection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
         <SignatureSection content={content.signature} />

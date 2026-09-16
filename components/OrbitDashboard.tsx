@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
 import OrbitWhyEditor from "@/components/OrbitWhyEditor";
+import OrbitExploreHubEditor from "@/components/OrbitExploreHubEditor";
 import OrbitExperiencesEditor from "@/components/OrbitExperiencesEditor";
 import OrbitAvailabilityEditor from "@/components/OrbitAvailabilityEditor";
 import OrbitJournalEditor from "@/components/OrbitJournalEditor";
@@ -61,6 +62,7 @@ export default function OrbitDashboard({ initial }: Props) {
     | "header"
     | "stats"
     | "signature"
+    | "exploreHub"
     | "journeys"
     | "why"
     | "experiences"
@@ -142,6 +144,7 @@ export default function OrbitDashboard({ initial }: Props) {
               ["header", "Header / Logo"],
               ["stats", "Trust bar"],
               ["signature", "Signature"],
+              ["exploreHub", "Explore Hub"],
               ["journeys", "Luxury treks"],
               ["why", "Why Ambition"],
               ["experiences", "Experiences"],
@@ -550,6 +553,10 @@ export default function OrbitDashboard({ initial }: Props) {
                 Add trust item
               </button>
             </div>
+          ) : null}
+
+          {tab === "exploreHub" ? (
+            <OrbitExploreHubEditor content={content} setContent={setContent} save={save} />
           ) : null}
 
           {tab === "journeys" ? (
