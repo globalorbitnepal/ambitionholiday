@@ -149,29 +149,29 @@ jobs:
               umask 077
               ENV_TMP="$(mktemp .env.local.XXXXXX)"
               ENV_TMP="${ENV_TMP}" node <<'NODE'
-                const fs = require("fs");
-                const path = ".env.local";
-                const tmp = process.env.ENV_TMP;
-                const values = {
-                  ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
-                  ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
-                };
-                const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
-                const lines = source.split(/\r?\n/);
-                for (const [key, value] of Object.entries(values)) {
-                  const replacement = `${key}=${value}`;
-                  let found = false;
-                  for (let i = 0; i < lines.length; i += 1) {
-                    if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
-                      lines[i] = replacement;
-                      found = true;
-                    }
+              const fs = require("fs");
+              const path = ".env.local";
+              const tmp = process.env.ENV_TMP;
+              const values = {
+                ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
+                ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
+              };
+              const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
+              const lines = source.split(/\r?\n/);
+              for (const [key, value] of Object.entries(values)) {
+                const replacement = `${key}=${value}`;
+                let found = false;
+                for (let i = 0; i < lines.length; i += 1) {
+                  if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
+                    lines[i] = replacement;
+                    found = true;
                   }
-                  if (!found) lines.push(replacement);
                 }
-                fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
-                fs.renameSync(tmp, path);
-                NODE
+                if (!found) lines.push(replacement);
+              }
+              fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
+              fs.renameSync(tmp, path);
+            NODE
             else
               echo "Orbit secrets not supplied; preserving existing .env.local."
             fi
