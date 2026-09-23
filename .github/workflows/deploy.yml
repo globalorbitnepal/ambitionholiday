@@ -81,36 +81,36 @@ jobs:
 
             echo "Preserving Orbit CMS content + uploads before sync..."
             CMS_BACKUP="$(mktemp -d /tmp/ambition-cms-XXXXXX)"
-            if [ -f data/site-content.json ]; then
-              cp -aL data/site-content.json "${CMS_BACKUP}/site-content.json" 2>/dev/null || cp -a data/site-content.json "${CMS_BACKUP}/site-content.json"
-              echo "Backed up data/site-content.json"
+            if [ ! -d "${CMS_PATH}" ] || [ ! -r "${CMS_PATH}" ] || [ ! -x "${CMS_PATH}" ]; then
+              echo "ERROR: protected CMS path is missing or unreadable: ${CMS_PATH}"
+              exit 1
             fi
-            if [ -d data/uploads ]; then
-              mkdir -p "${CMS_BACKUP}/data-uploads"
-              cp -aL data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || cp -a data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null
-            fi
-            if [ -d public/uploads ]; then
-              mkdir -p "${CMS_BACKUP}/public-uploads"
-              cp -aL public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || cp -a public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null
-            fi
-
-            # Durable store outside the git tree; any preservation failure aborts deployment.
-            mkdir -p "${CMS_PATH}/uploads" "${CMS_PATH}/data-uploads" "${CMS_PATH}/public-uploads"
-            if [ -f "${CMS_BACKUP}/site-content.json" ]; then
-              cp -a "${CMS_BACKUP}/site-content.json" "${CMS_PATH}/site-content.json"
-            fi
-            if [ -d "${CMS_BACKUP}/data-uploads" ]; then
-              cp -a "${CMS_BACKUP}/data-uploads/." "${CMS_PATH}/data-uploads/" 2>/dev/null
-            fi
-            if [ -d "${CMS_BACKUP}/public-uploads" ]; then
-              cp -a "${CMS_BACKUP}/public-uploads/." "${CMS_PATH}/public-uploads/" 2>/dev/null
-            fi
-
-            STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
             if [ -f "${CMS_PATH}/site-content.json" ]; then
-              mkdir -p "${CMS_PATH}/snapshots"
-              cp -a "${CMS_PATH}/site-content.json" "${CMS_PATH}/snapshots/site-content-${STAMP}.json"
-              ls -1t "${CMS_PATH}/snapshots"/site-content-*.json 2>/dev/null | tail -n +21 | xargs -r rm -f
+              [ -r "${CMS_PATH}/site-content.json" ]
+              cp -aL "${CMS_PATH}/site-content.json" "${CMS_BACKUP}/site-content.json" 2>/dev/null || cp -a "${CMS_PATH}/site-content.json" "${CMS_BACKUP}/site-content.json"
+              echo "Backed up protected CMS site-content.json"
+            elif [ -f data/site-content.json ]; then
+              cp -aL data/site-content.json "${CMS_BACKUP}/site-content.json" 2>/dev/null || cp -a data/site-content.json "${CMS_BACKUP}/site-content.json"
+              echo "Backed up application site-content.json"
+            else
+              echo "ERROR: no readable site-content.json available from CMS or application"
+              exit 1
+            fi
+
+            for source_dir in data-uploads public-uploads; do
+              if [ -e "${CMS_PATH}/${source_dir}" ]; then
+                [ -d "${CMS_PATH}/${source_dir}" ] && [ -r "${CMS_PATH}/${source_dir}" ]
+                mkdir -p "${CMS_BACKUP}/${source_dir}"
+                cp -aL "${CMS_PATH}/${source_dir}/." "${CMS_BACKUP}/${source_dir}/" 2>/dev/null || cp -a "${CMS_PATH}/${source_dir}/." "${CMS_BACKUP}/${source_dir}/"
+              fi
+            done
+            if [ ! -d "${CMS_BACKUP}/data-uploads" ] && [ -d data/uploads ]; then
+              mkdir -p "${CMS_BACKUP}/data-uploads"
+              cp -aL data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || cp -a data/uploads/. "${CMS_BACKUP}/data-uploads/"
+            fi
+            if [ ! -d "${CMS_BACKUP}/public-uploads" ] && [ -d public/uploads ]; then
+              mkdir -p "${CMS_BACKUP}/public-uploads"
+              cp -aL public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || cp -a public/uploads/. "${CMS_BACKUP}/public-uploads/"
             fi
 
             echo "Syncing origin/main..."
@@ -125,26 +125,17 @@ jobs:
             if [ -f "${CMS_BACKUP}/site-content.json" ]; then
               cp -a "${CMS_BACKUP}/site-content.json" data/site-content.json
               echo "Restored data/site-content.json"
-            elif [ -f "${CMS_PATH}/site-content.json" ]; then
-              cp -a "${CMS_PATH}/site-content.json" data/site-content.json
-              echo "Restored site-content.json from durable CMS store"
             fi
             if [ -d "${CMS_BACKUP}/data-uploads" ]; then
               cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/ 2>/dev/null
-            elif [ -d "${CMS_PATH}/data-uploads" ]; then
-              cp -a "${CMS_PATH}/data-uploads/." data/uploads/ 2>/dev/null
             fi
             if [ -d "${CMS_BACKUP}/public-uploads" ]; then
               cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/ 2>/dev/null
-            elif [ -d "${CMS_PATH}/public-uploads" ]; then
-              cp -a "${CMS_PATH}/public-uploads/." public/uploads/ 2>/dev/null
             fi
-            test -d "${CMS_PATH}"
+            test -r "${CMS_PATH}"
             test -d data/uploads
             test -d public/uploads
-            if [ -f "${CMS_PATH}/site-content.json" ] || [ -f data/site-content.json ]; then
-              test -f data/site-content.json
-            fi
+            test -f data/site-content.json
             if [ -n "$(find data/uploads -type f -print -quit)" ]; then
               test -n "$(find data/uploads -type f -print -quit)"
             fi
