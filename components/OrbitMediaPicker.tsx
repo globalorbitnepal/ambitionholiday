@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { mediaSrc } from "@/lib/media-src";
+import { createPortal } from "react-dom";
+import OrbitThumb from "@/components/OrbitThumb";
+import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 type MediaKind = "image" | "video" | "other";
 
@@ -14,14 +16,7 @@ type MediaItem = {
 };
 
 async function uploadFile(file: File, crop?: "9x16"): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  if (crop) form.append("crop", crop);
-  const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
-  if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url?: string; error?: string };
-  if (!data.url) throw new Error(data.error || "Upload failed");
-  return data.url;
+  return postOrbitUpload(file, crop);
 }
 
 export function OrbitMediaPicker({
@@ -40,7 +35,7 @@ export function OrbitMediaPicker({
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
-    const res = await fetch("/api/orbit/media", { cache: "no-store" });
+    const res = await fetch("/api/orbit/media", { cache: "no-store", credentials: "include" });
     if (!res.ok) return;
     const data = (await res.json()) as { items?: MediaItem[] };
     setItems(data.items ?? []);
@@ -52,23 +47,31 @@ export function OrbitMediaPicker({
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return items.filter((item) => {
-      if (item.kind !== kind) return false;
-      if (q && !item.path.toLowerCase().includes(q) && !item.name.toLowerCase().includes(q)) {
-        return false;
-      }
-      return true;
-    });
+    return items
+      .filter((item) => {
+        if (item.kind !== kind) return false;
+        if (q && !item.path.toLowerCase().includes(q) && !item.name.toLowerCase().includes(q)) {
+          return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.collection === b.collection) return a.name.localeCompare(b.name);
+        if (a.collection === "uploads") return -1;
+        if (b.collection === "uploads") return 1;
+        return a.name.localeCompare(b.name);
+      });
   }, [items, kind, query]);
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 p-3 sm:items-center">
+  const panel = (
+    <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 p-3 sm:items-center">
       <div className="flex max-h-[90dvh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#0b1018]">
         <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
           <p className="text-sm font-semibold text-white">
             Choose {kind === "video" ? "video" : "image"} from library
+            {visible.length ? ` · ${visible.length}` : ""}
           </p>
           <button
             type="button"
@@ -110,7 +113,8 @@ export function OrbitMediaPicker({
             />
           </label>
         </div>
-        <div className="grid grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {visible.map((item) => (
             <button
               key={item.path}
@@ -121,20 +125,15 @@ export function OrbitMediaPicker({
               }}
               className="overflow-hidden rounded-lg border border-white/10 bg-black/30 text-left hover:border-gold/50"
             >
-              <div className="relative aspect-video bg-black/50">
+              <span className="relative block h-32 w-full overflow-hidden bg-[#121820]">
                 {item.kind === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={mediaSrc(item.path)}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  <OrbitThumb src={item.path} alt="" />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-[0.65rem] text-white/50">
+                  <span className="flex h-full items-center justify-center text-[0.65rem] text-white/50">
                     VIDEO
-                  </div>
+                  </span>
                 )}
-              </div>
+              </span>
               <p className="truncate px-2 py-1.5 text-[0.62rem] text-white/65">{item.name}</p>
             </button>
           ))}
@@ -143,10 +142,14 @@ export function OrbitMediaPicker({
               No matching files. Upload one to add it to the library.
             </p>
           ) : null}
+          </div>
         </div>
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return panel;
+  return createPortal(panel, document.body);
 }
 
 export function OrbitMediaButtons({

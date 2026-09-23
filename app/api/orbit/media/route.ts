@@ -5,15 +5,12 @@ import { revalidatePath } from "next/cache";
 import { readContent, scrubUploadRefs, writeContent } from "@/lib/content";
 import { uploadDirs, safeUploadName } from "@/lib/uploads";
 import { listSiteMedia, listUploadMedia, collectLinkedMedia } from "@/lib/media-library";
-import {
-  readSessionFromCookieHeader,
-  verifySessionToken,
-} from "@/lib/orbit-auth";
+import { isStaffRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 function isAuthed(req: Request) {
-  return verifySessionToken(readSessionFromCookieHeader(req.headers.get("cookie")));
+  return isStaffRequest(req);
 }
 
 export async function DELETE(req: Request) {
@@ -51,7 +48,7 @@ export async function DELETE(req: Request) {
     stat.iconSrc === publicPath ? { ...stat, iconSrc: undefined } : stat,
   );
   if (cleaned.header.logoSrc === publicPath) {
-    cleaned.header.logoSrc = "/images/ambition-holiday-logo.png";
+    cleaned.header.logoSrc = "/images/ambition-holiday-logo.webp";
   }
 
   const saved = await writeContent(cleaned);
@@ -64,13 +61,32 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const uploads = await listUploadMedia();
-  const site = await listSiteMedia();
-  const content = await readContent();
-  const remote = collectLinkedMedia(content, content.updatedAt);
+  let uploads: Awaited<ReturnType<typeof listUploadMedia>> = [];
+  let site: Awaited<ReturnType<typeof listSiteMedia>> = [];
+  let remote: Awaited<ReturnType<typeof collectLinkedMedia>> = [];
+  try {
+    uploads = await listUploadMedia();
+  } catch (err) {
+    console.error("listUploadMedia", err);
+  }
+  try {
+    site = await listSiteMedia();
+  } catch (err) {
+    console.error("listSiteMedia", err);
+  }
+  try {
+    const content = await readContent();
+    remote = collectLinkedMedia(content, content.updatedAt);
+  } catch (err) {
+    console.error("collectLinkedMedia", err);
+  }
+
+  const items = [...uploads, ...site, ...remote].filter(
+    (item, index, all) => all.findIndex((other) => other.path === item.path) === index,
+  );
 
   return NextResponse.json({
     files: uploads.map((item) => item.path),
-    items: [...uploads, ...remote, ...site],
+    items,
   });
 }

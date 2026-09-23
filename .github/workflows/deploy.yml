@@ -63,8 +63,8 @@ jobs:
             # Durable Orbit CMS store OUTSIDE the git tree — survives every deploy forever.
             CMS_PATH="/var/www/ambition-holidays-cms"
             PM2_APP="ambition-holidays"
-            APP_PORT="3004"
-            EXPECTED_REPO="arnavganguly209-code/ambition-holidays"
+            APP_PORT="3032"
+            EXPECTED_REPO="globalorbitnepal/ambitionholiday"
             PUBLIC_URL="https://ambition.theglobalorbit.com"
 
             cd "${PROJECT_PATH}"

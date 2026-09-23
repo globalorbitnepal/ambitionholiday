@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { mediaSrc } from "@/lib/media-src";
+import { orbitThumbSrc } from "@/lib/media-src";
+import { postOrbitUpload } from "@/lib/orbit-upload-client";
 import { youtubeEmbedSrc, youtubeId } from "@/lib/video-embed";
+import OrbitThumb from "@/components/OrbitThumb";
 
 type MediaKind = "image" | "video" | "other";
 
@@ -33,7 +35,7 @@ function formatWhen(iso: string) {
 
 export default function OrbitMediaLibrary() {
   const [items, setItems] = useState<MediaItem[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("image");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,7 +43,7 @@ export default function OrbitMediaLibrary() {
   const [copied, setCopied] = useState("");
 
   const refresh = useCallback(async () => {
-    const res = await fetch("/api/orbit/media", { cache: "no-store" });
+    const res = await fetch("/api/orbit/media", { cache: "no-store", credentials: "include" });
     if (!res.ok) {
       setStatus("Could not load media library.");
       return;
@@ -86,10 +88,7 @@ export default function OrbitMediaLibrary() {
     setStatus("");
     try {
       for (const file of Array.from(list)) {
-        const form = new FormData();
-        form.append("file", file);
-        const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
-        if (!res.ok) throw new Error(file.name);
+        await postOrbitUpload(file);
       }
       await refresh();
       setStatus(`Saved ${list.length} file${list.length > 1 ? "s" : ""} — kept in durable library.`);
@@ -120,8 +119,8 @@ export default function OrbitMediaLibrary() {
           Every image, video, and upload — kept forever
         </h2>
         <p className="mt-1.5 max-w-2xl text-sm text-white/55">
-          Orbit copies files into durable folders so deploys cannot wipe them. Site images and videos
-          from /images and /videos are listed here. Use Copy path or pick files from each section editor.
+          Every site image under /images, uploads, and videos is listed here — including WebP covers
+          and package photos. Open Media library from any editor to pick one.
         </p>
       </div>
 
@@ -189,7 +188,7 @@ export default function OrbitMediaLibrary() {
           const yt = youtubeId(item.path);
           const src = yt
             ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`
-            : mediaSrc(item.path);
+            : orbitThumbSrc(item.path);
           return (
             <li
               key={item.path}
@@ -198,7 +197,7 @@ export default function OrbitMediaLibrary() {
               <button
                 type="button"
                 onClick={() => setPreview(item)}
-                className="relative block aspect-video w-full overflow-hidden bg-[#0b1018]"
+                className="relative block h-36 w-full overflow-hidden bg-[#0b1018] sm:h-40"
               >
                 {item.kind === "video" && item.collection !== "remote" ? (
                   <video
@@ -208,7 +207,7 @@ export default function OrbitMediaLibrary() {
                     preload="metadata"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
-                ) : (
+                ) : yt ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={src}
@@ -217,6 +216,8 @@ export default function OrbitMediaLibrary() {
                     decoding="async"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
+                ) : (
+                  <OrbitThumb src={item.path} alt={item.name} />
                 )}
                 <span className="absolute left-2 top-2 rounded-full border border-gold/40 bg-black/65 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-gold">
                   {item.kind}
@@ -311,7 +312,7 @@ export default function OrbitMediaLibrary() {
                 />
               ) : preview.kind === "video" ? (
                 <video
-                  src={mediaSrc(preview.path)}
+                  src={orbitThumbSrc(preview.path)}
                   controls
                   playsInline
                   className="absolute inset-0 h-full w-full object-contain"
@@ -319,7 +320,7 @@ export default function OrbitMediaLibrary() {
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={mediaSrc(preview.path)}
+                  src={orbitThumbSrc(preview.path)}
                   alt={preview.name}
                   className="absolute inset-0 h-full w-full object-contain"
                 />

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
+import SectionWallpaper from "@/components/SectionWallpaper";
 import type { JournalVideo } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 import {
@@ -123,24 +124,18 @@ export default function VideoJournalSection() {
   if (!journal?.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-7 lg:px-10">
-      <div className="mx-auto max-w-[88rem]">
+    <section className="explore-hub relative isolate overflow-hidden">
+      <SectionWallpaper />
+      <div className="explore-hub-shell relative">
+        <div className="explore-hub-glass">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-2 flex items-center justify-center gap-3">
-            <span className="h-px w-10 bg-gold/70 sm:w-14" aria-hidden="true" />
-            <span className="h-1 w-1 rotate-45 bg-gold" aria-hidden="true" />
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-gold sm:text-[0.72rem]">
-              {journal.eyebrow}
-            </p>
-            <span className="h-1 w-1 rotate-45 bg-gold" aria-hidden="true" />
-            <span className="h-px w-10 bg-gold/70 sm:w-14" aria-hidden="true" />
-          </div>
-          <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.85rem,5.4vw,3.2rem)] font-semibold leading-[1.12] tracking-tight">
+          <p className="explore-hub-eyebrow">{journal.eyebrow}</p>
+          <h2 className="explore-hub-title font-[family-name:var(--font-cormorant)] font-semibold">
             <span className="text-white">{journal.headlineBefore} </span>
-            <span className="text-gold">{journal.headlineGold} </span>
+            <span className="text-[#e8d07a]">{journal.headlineGold} </span>
             <span className="text-white">{journal.headlineAfter}</span>
           </h2>
-          <p className="mx-auto mt-2 max-w-2xl text-[0.88rem] leading-relaxed text-white/78 sm:text-[0.95rem]">
+          <p className="explore-hub-body mx-auto">
             {journal.body}
           </p>
         </div>
@@ -184,13 +179,14 @@ export default function VideoJournalSection() {
           ))}
         </div>
 
-        <div className="mt-7 flex justify-center">
+        <div className="explore-hub-foot mt-7">
           <Link
             href={journal.ctaHref || "#"}
-            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/80 px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-gold transition-colors hover:bg-gold/10"
+            className="explore-hub-cta"
           >
             {journal.ctaLabel} <span aria-hidden="true">→</span>
           </Link>
+        </div>
         </div>
       </div>
 

@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import path from "path";
-import {
-  readSessionFromCookieHeader,
-  verifySessionToken,
-} from "@/lib/orbit-auth";
+import { isStaffRequest } from "@/lib/admin-auth";
 import { writeUpload } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +9,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 function isAuthed(req: Request) {
-  return verifySessionToken(readSessionFromCookieHeader(req.headers.get("cookie")));
+  return isStaffRequest(req);
 }
 
 /** Center-cover crop to exact 9:16 portrait so frames never show empty bars. */
@@ -52,17 +49,17 @@ async function toNineSixteen(buffer: Buffer): Promise<Buffer> {
       height: Math.min(extractH, height),
     })
     .resize(1080, 1920, { fit: "fill" })
-    .jpeg({ quality: 86, mozjpeg: true })
+    .webp({ quality: 74, effort: 4 })
     .toBuffer();
 }
 
-/** Landscape-friendly web jpeg so Orbit previews and the homepage stay sharp. */
+/** Landscape-friendly webp so Orbit previews and destination covers stay sharp and light. */
 async function toWebPhoto(buffer: Buffer): Promise<Buffer> {
   const sharp = await loadSharp();
   return sharp(buffer, { failOn: "none" })
     .rotate()
-    .resize(1600, 1600, { fit: "inside", withoutEnlargement: true })
-    .jpeg({ quality: 84, mozjpeg: true })
+    .resize(1920, 1920, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 74, effort: 4 })
     .toBuffer();
 }
 
@@ -85,8 +82,8 @@ export async function POST(req: Request) {
     type.startsWith("video/") || /\.(mp4|webm|mov)$/i.test(file.name || "");
 
   if (isVideo) {
-    if (file.size > 32 * 1024 * 1024) {
-      return NextResponse.json({ error: "Video max 32MB" }, { status: 400 });
+    if (file.size > 40 * 1024 * 1024) {
+      return NextResponse.json({ error: "Video max 40MB" }, { status: 400 });
     }
     const ext = path.extname(file.name || "").toLowerCase();
     const safeExt = [".mp4", ".webm", ".mov"].includes(ext) ? ext : ".mp4";
@@ -101,17 +98,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Images or MP4 video only" }, { status: 400 });
   }
 
-  if (file.size > 12 * 1024 * 1024) {
-    return NextResponse.json({ error: "Max 12MB" }, { status: 400 });
+  if (file.size > 40 * 1024 * 1024) {
+    return NextResponse.json({ error: "Max 40MB" }, { status: 400 });
   }
 
   const raw = Buffer.from(await file.arrayBuffer());
-  const name = `upload-${stamp}.jpg`;
+  const name = `upload-${stamp}.webp`;
 
   try {
     const out = crop === "9x16" ? await toNineSixteen(raw) : await toWebPhoto(raw);
-    await writeUpload(crop === "9x16" ? `upload-${stamp}-9x16.jpg` : name, out);
-    const saved = crop === "9x16" ? `upload-${stamp}-9x16.jpg` : name;
+    await writeUpload(crop === "9x16" ? `upload-${stamp}-9x16.webp` : name, out);
+    const saved = crop === "9x16" ? `upload-${stamp}-9x16.webp` : name;
     revalidatePath("/");
     return NextResponse.json({ url: `/uploads/${saved}` });
   } catch {

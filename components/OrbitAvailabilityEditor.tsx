@@ -10,6 +10,7 @@ import {
 } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
+import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -40,13 +41,7 @@ function Field({
 }
 
 async function uploadFile(file: File): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
-  if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url?: string; error?: string };
-  if (!data.url) throw new Error(data.error || "Upload failed");
-  return data.url;
+  return postOrbitUpload(file);
 }
 
 type Props = {

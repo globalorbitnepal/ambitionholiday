@@ -1,10 +1,7 @@
-import OrbitDashboard from "@/components/OrbitDashboard";
-import { readContent } from "@/lib/content";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
-export default async function OrbitPage() {
-  const content = await readContent();
-  return <OrbitDashboard initial={content} />;
+export default function OrbitPage() {
+  redirect("/admin");
 }

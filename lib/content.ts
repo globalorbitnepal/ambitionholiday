@@ -1,5 +1,9 @@
 import { promises as fs } from "fs";
-import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
+import path from "path";
+import { contentFileCandidates } from "@/lib/cms-paths";
+import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
+import { JOURNAL_POSTS } from "@/lib/journal-defaults";
+import { decorateBlogPost } from "@/lib/blog";
 import {
   DEFAULT_CONTENT,
   type ExploreHubTab,
@@ -9,8 +13,99 @@ import {
   type SiteContent,
   type TravelerReview,
 } from "@/lib/content-types";
+import { DEFAULT_NEPAL } from "@/lib/nepal-defaults";
+import { DEFAULT_BHUTAN } from "@/lib/bhutan-defaults";
+import { DEFAULT_TIBET } from "@/lib/tibet-defaults";
+import { DEFAULT_MULTI } from "@/lib/multi-defaults";
+import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
+import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
+import type { NepalContent } from "@/lib/nepal-defaults";
+import { coerceTripPackages } from "@/lib/trip-packages";
 
 const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
+
+function coerceDestinationCatalog(
+  savedRaw: Partial<NepalContent> | undefined,
+  defaults: NepalContent,
+  options?: { flatten?: boolean },
+): NepalContent {
+  const saved = { ...defaults, ...savedRaw };
+  let cats = saved.categories?.length ? saved.categories : defaults.categories;
+  if (options?.flatten && cats.length > 1) {
+    const packages = cats.flatMap((cat) => cat.packages || []);
+    cats = [
+      {
+        id: "all",
+        label: "Luxury Packages",
+        countLabel: `${packages.length} Packages`,
+        packages,
+      },
+    ];
+  }
+  const defById = new Map(defaults.categories.flatMap((cat) => cat.packages.map((pkg) => [pkg.id, pkg])));
+  return {
+    ...saved,
+    coverSrc: saved.coverSrc || defaults.coverSrc,
+    wallpaperSrc: saved.wallpaperSrc || defaults.wallpaperSrc,
+    closeTitle: saved.closeTitle || defaults.closeTitle,
+    closeBody: saved.closeBody || defaults.closeBody,
+    categories: cats.map((cat) => ({
+      ...cat,
+      packages: (cat.packages || []).map((pkg) => {
+        const fallback = defById.get(pkg.id);
+        return {
+          ...fallback,
+          ...pkg,
+          badge: pkg.badge ?? fallback?.badge ?? "",
+          difficulty: pkg.difficulty || fallback?.difficulty || "Moderate",
+          description: pkg.description || fallback?.description || pkg.subtitle,
+          href:
+            fallback?.href &&
+            !fallback.href.includes("interest=") &&
+            (pkg.href || "").includes("interest=")
+              ? fallback.href
+              : pkg.href || fallback?.href || "",
+        };
+      }),
+    })),
+  };
+}
+
+function stripDestinationMedia(content: NepalContent | undefined, defaults: NepalContent, publicPath: string): NepalContent {
+  const page = content ?? defaults;
+  return {
+    ...page,
+    coverSrc: page.coverSrc === publicPath ? defaults.coverSrc : page.coverSrc,
+    wallpaperSrc: page.wallpaperSrc === publicPath ? defaults.wallpaperSrc : page.wallpaperSrc || defaults.wallpaperSrc,
+    categories: (page.categories ?? []).map((cat) => ({
+      ...cat,
+      packages: (cat.packages ?? []).map((pkg) => ({
+        ...pkg,
+        imageSrc: pkg.imageSrc === publicPath ? "" : pkg.imageSrc,
+      })),
+    })),
+  };
+}
+
+function withSharedSectionWallpaper(content: SiteContent): SiteContent {
+  return {
+    ...content,
+    atmosphere: { ...content.atmosphere, imageSrc: SECTION_WALLPAPER },
+    exploreHub: { ...content.exploreHub, wallpaperSrc: SECTION_WALLPAPER },
+    signature: { ...content.signature, wallpaperSrc: SECTION_WALLPAPER },
+    journeys: { ...content.journeys, wallpaperSrc: SECTION_WALLPAPER },
+    why: { ...content.why, wallpaperSrc: SECTION_WALLPAPER },
+    experiences: { ...content.experiences, wallpaperSrc: SECTION_WALLPAPER },
+    availability: { ...content.availability, wallpaperSrc: SECTION_WALLPAPER },
+    about: { ...content.about, wallpaperSrc: SECTION_WALLPAPER },
+    legalDocuments: { ...content.legalDocuments, wallpaperSrc: SECTION_WALLPAPER },
+    visa: { ...content.visa, wallpaperSrc: SECTION_WALLPAPER },
+    bestTime: { ...content.bestTime, wallpaperSrc: SECTION_WALLPAPER },
+    packing: { ...content.packing, wallpaperSrc: SECTION_WALLPAPER },
+    altitude: { ...content.altitude, wallpaperSrc: SECTION_WALLPAPER },
+    permits: { ...content.permits, wallpaperSrc: SECTION_WALLPAPER },
+  };
+}
 
 function isUploadSrc(src: string) {
   return src.startsWith("/uploads/") || src.startsWith("/api/media/");
@@ -94,22 +189,42 @@ function decorateReviews(reviews: TravelerReview[]): TravelerReview[] {
 }
 
 export async function ensureContentFile(): Promise<void> {
-  const DATA_DIR = contentDataDir();
-  const CONTENT_FILE = contentFilePath();
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  try {
-    await fs.access(CONTENT_FILE);
-  } catch {
-    await fs.writeFile(CONTENT_FILE, JSON.stringify(DEFAULT_CONTENT, null, 2), "utf8");
+  for (const file of contentFileCandidates()) {
+    try {
+      await fs.access(file);
+      return;
+    } catch {
+      // try next candidate
+    }
   }
+  const fallback = contentFileCandidates().at(-1);
+  if (!fallback) return;
+  await fs.mkdir(path.dirname(fallback), { recursive: true });
+  await fs.writeFile(fallback, JSON.stringify(DEFAULT_CONTENT, null, 2), "utf8");
+}
+
+async function readNewestContentFile(): Promise<SiteContent> {
+  let best: SiteContent | null = null;
+  for (const file of contentFileCandidates()) {
+    try {
+      const raw = await fs.readFile(file, "utf8");
+      const parsed = JSON.parse(raw) as SiteContent;
+      if (!best || String(parsed.updatedAt || "") > String(best.updatedAt || "")) {
+        best = parsed;
+      }
+    } catch {
+      // unreadable / missing
+    }
+  }
+  if (!best) throw new Error("No site content file");
+  return best;
 }
 
 export async function readContent(): Promise<SiteContent> {
   try {
     await ensureContentFile();
-    const raw = await fs.readFile(contentFilePath(), "utf8");
-    const parsed = JSON.parse(raw) as SiteContent;
-    return {
+    const parsed = await readNewestContentFile();
+    return withSharedSectionWallpaper({
       ...DEFAULT_CONTENT,
       ...parsed,
       header: { ...DEFAULT_CONTENT.header, ...parsed.header },
@@ -147,6 +262,10 @@ export async function readContent(): Promise<SiteContent> {
             cards: (tab.cards?.length ? tab.cards : fallback?.cards ?? []).map((card, cardIndex) => ({
               ...fallback?.cards?.[cardIndex],
               ...card,
+              href:
+                card.href === "/himalayan-multi-countries"
+                  ? "/himalayan-multi-countries-tour"
+                  : card.href || fallback?.cards?.[cardIndex]?.href || "/",
               imageSrc:
                 card.imageSrc ||
                 fallback?.cards?.[cardIndex]?.imageSrc ||
@@ -420,10 +539,103 @@ export async function readContent(): Promise<SiteContent> {
       blog: {
         ...DEFAULT_CONTENT.blog,
         ...parsed.blog,
+        ctaHref:
+          !parsed.blog?.ctaHref || parsed.blog.ctaHref === "/blog"
+            ? "/journal"
+            : parsed.blog.ctaHref,
+        posts: (parsed.blog?.posts?.length ? parsed.blog.posts : JOURNAL_POSTS).map((post) => {
+          const fallback = JOURNAL_POSTS.find((item) => item.id === post.id || item.slug === post.slug);
+          return decorateBlogPost(post, fallback);
+        }),
         featured: parsed.blog?.featured ?? DEFAULT_CONTENT.blog.featured,
         sidePosts: parsed.blog?.sidePosts ?? DEFAULT_CONTENT.blog.sidePosts,
         features: parsed.blog?.features ?? DEFAULT_CONTENT.blog.features,
       },
+      about: {
+        ...DEFAULT_CONTENT.about,
+        ...parsed.about,
+        pillars: parsed.about?.pillars?.length ? parsed.about.pillars : DEFAULT_CONTENT.about.pillars,
+        stats: parsed.about?.stats?.length ? parsed.about.stats : DEFAULT_CONTENT.about.stats,
+        licenses: parsed.about?.licenses?.length ? parsed.about.licenses : DEFAULT_CONTENT.about.licenses,
+      },
+      legalDocuments: {
+        ...DEFAULT_CONTENT.legalDocuments,
+        ...parsed.legalDocuments,
+        documents: parsed.legalDocuments?.documents?.length
+          ? parsed.legalDocuments.documents
+          : DEFAULT_CONTENT.legalDocuments.documents,
+      },
+      visa: (() => {
+        const saved = parsed.visa;
+        const dolpoFee = saved?.restricted?.find((item) => item.id === "udolpo")?.fee || "";
+        const staleFees =
+          !saved ||
+          /500/.test(dolpoFee) ||
+          (saved.restricted?.length || 0) < 12 ||
+          !(saved.parkFees || []).some((row) => row.id === "chitwan") ||
+          !(saved.permitCards || []).some((card) => card.id === "tims");
+        if (staleFees) {
+          return {
+            ...DEFAULT_CONTENT.visa,
+            wallpaperSrc: saved?.wallpaperSrc || DEFAULT_CONTENT.visa.wallpaperSrc,
+            visible: saved?.visible ?? DEFAULT_CONTENT.visa.visible,
+          };
+        }
+        return {
+          ...DEFAULT_CONTENT.visa,
+          ...saved,
+          visaFees: saved.visaFees?.length ? saved.visaFees : DEFAULT_CONTENT.visa.visaFees,
+          permitCards: saved.permitCards?.length ? saved.permitCards : DEFAULT_CONTENT.visa.permitCards,
+          parkFees: saved.parkFees?.length ? saved.parkFees : DEFAULT_CONTENT.visa.parkFees,
+          restricted: saved.restricted?.length ? saved.restricted : DEFAULT_CONTENT.visa.restricted,
+          airportSteps: saved.airportSteps?.length ? saved.airportSteps : DEFAULT_CONTENT.visa.airportSteps,
+          countries: saved.countries?.length ? saved.countries : DEFAULT_CONTENT.visa.countries,
+        };
+      })(),
+      bestTime: {
+        ...DEFAULT_CONTENT.bestTime,
+        ...parsed.bestTime,
+        months: parsed.bestTime?.months?.length ? parsed.bestTime.months : DEFAULT_CONTENT.bestTime.months,
+        seasons: parsed.bestTime?.seasons?.length ? parsed.bestTime.seasons : DEFAULT_CONTENT.bestTime.seasons,
+        regions: parsed.bestTime?.regions?.length ? parsed.bestTime.regions : DEFAULT_CONTENT.bestTime.regions,
+        altitudes: parsed.bestTime?.altitudes?.length
+          ? parsed.bestTime.altitudes
+          : DEFAULT_CONTENT.bestTime.altitudes,
+      },
+      packing: {
+        ...DEFAULT_CONTENT.packing,
+        ...parsed.packing,
+        checks: parsed.packing?.checks?.length ? parsed.packing.checks : DEFAULT_CONTENT.packing.checks,
+        groups: parsed.packing?.groups?.length ? parsed.packing.groups : DEFAULT_CONTENT.packing.groups,
+        documents: parsed.packing?.documents?.length ? parsed.packing.documents : DEFAULT_CONTENT.packing.documents,
+        provided: parsed.packing?.provided?.length ? parsed.packing.provided : DEFAULT_CONTENT.packing.provided,
+        seasons: parsed.packing?.seasons?.length ? parsed.packing.seasons : DEFAULT_CONTENT.packing.seasons,
+      },
+      altitude: {
+        ...DEFAULT_CONTENT.altitude,
+        ...parsed.altitude,
+        checks: parsed.altitude?.checks?.length ? parsed.altitude.checks : DEFAULT_CONTENT.altitude.checks,
+        groups: parsed.altitude?.groups?.length ? parsed.altitude.groups : DEFAULT_CONTENT.altitude.groups,
+        documents: parsed.altitude?.documents?.length ? parsed.altitude.documents : DEFAULT_CONTENT.altitude.documents,
+        provided: parsed.altitude?.provided?.length ? parsed.altitude.provided : DEFAULT_CONTENT.altitude.provided,
+        seasons: parsed.altitude?.seasons?.length ? parsed.altitude.seasons : DEFAULT_CONTENT.altitude.seasons,
+      },
+      permits: {
+        ...DEFAULT_CONTENT.permits,
+        ...parsed.permits,
+        families: parsed.permits?.families?.length ? parsed.permits.families : DEFAULT_CONTENT.permits.families,
+        routes: parsed.permits?.routes?.length ? parsed.permits.routes : DEFAULT_CONTENT.permits.routes,
+        parkFees: parsed.permits?.parkFees?.length ? parsed.permits.parkFees : DEFAULT_CONTENT.permits.parkFees,
+        restricted: parsed.permits?.restricted?.length ? parsed.permits.restricted : DEFAULT_CONTENT.permits.restricted,
+        peaks: parsed.permits?.peaks?.length ? parsed.permits.peaks : DEFAULT_CONTENT.permits.peaks,
+      },
+      nepal: coerceDestinationCatalog(parsed.nepal, DEFAULT_NEPAL),
+      bhutan: coerceDestinationCatalog(parsed.bhutan, DEFAULT_BHUTAN, { flatten: true }),
+      tibet: coerceDestinationCatalog(parsed.tibet, DEFAULT_TIBET, { flatten: true }),
+      multi: coerceDestinationCatalog(parsed.multi, DEFAULT_MULTI, { flatten: true }),
+      helicopter: coerceDestinationCatalog(parsed.helicopter, DEFAULT_HELICOPTER, { flatten: true }),
+      photography: coerceDestinationCatalog(parsed.photography, DEFAULT_PHOTOGRAPHY, { flatten: true }),
+      tripPackages: coerceTripPackages(parsed.tripPackages as SiteContent["tripPackages"]),
       footer: {
         ...DEFAULT_CONTENT.footer,
         ...parsed.footer,
@@ -437,10 +649,27 @@ export async function readContent(): Promise<SiteContent> {
             ? parsed.footer.payments
             : DEFAULT_CONTENT.footer.payments,
         phones: parsed.footer?.phones ?? DEFAULT_CONTENT.footer.phones,
-        usefulLinks: parsed.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks,
+        usefulLinks: (() => {
+          const links = (parsed.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks).map((link) =>
+            link.href === "/about-us" ? { ...link, href: "/company", label: "Company" } : link,
+          );
+          const extras = [
+            { id: "u7", label: "Packing Guide", href: "/packing-guide" },
+            { id: "u8", label: "Altitude Tips", href: "/altitude-tips" },
+            { id: "u9", label: "Permits & Fees", href: "/permits-and-fees" },
+          ];
+          const missing = extras.filter((item) => !links.some((link) => link.href === item.href));
+          return missing.length ? [...links, ...missing] : links;
+        })(),
         adventureLinks: parsed.footer?.adventureLinks ?? DEFAULT_CONTENT.footer.adventureLinks,
         trekLinks: parsed.footer?.trekLinks ?? DEFAULT_CONTENT.footer.trekLinks,
-        legalLinks: parsed.footer?.legalLinks ?? DEFAULT_CONTENT.footer.legalLinks,
+        legalLinks: (parsed.footer?.legalLinks ?? DEFAULT_CONTENT.footer.legalLinks).map((link) =>
+          link.href === "/privacy"
+            ? { ...link, href: "/privacy-policy" }
+            : link.href === "/terms"
+              ? { ...link, href: "/terms-and-conditions" }
+              : link,
+        ),
         landscapeImageSrc:
           !parsed.footer?.landscapeImageSrc ||
           parsed.footer.landscapeImageSrc.includes("luxury-himalaya") ||
@@ -453,23 +682,34 @@ export async function readContent(): Promise<SiteContent> {
         creditName: parsed.footer?.creditName ?? DEFAULT_CONTENT.footer.creditName,
         creditHref: parsed.footer?.creditHref ?? DEFAULT_CONTENT.footer.creditHref,
       },
-    };
+    });
   } catch {
-    return structuredClone(DEFAULT_CONTENT);
+    return withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT));
   }
 }
 
 export async function writeContent(content: SiteContent): Promise<SiteContent> {
-  const DATA_DIR = contentDataDir();
-  const CONTENT_FILE = contentFilePath();
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  const next: SiteContent = {
+  const next: SiteContent = withSharedSectionWallpaper({
     ...content,
     updatedAt: new Date().toISOString(),
-  };
-  const tmp = `${CONTENT_FILE}.${process.pid}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(next, null, 2), "utf8");
-  await fs.rename(tmp, CONTENT_FILE);
+  });
+  const payload = JSON.stringify(next, null, 2);
+  let wrote = 0;
+  let lastError: unknown;
+  for (const CONTENT_FILE of contentFileCandidates()) {
+    try {
+      await fs.mkdir(path.dirname(CONTENT_FILE), { recursive: true });
+      const tmp = `${CONTENT_FILE}.${process.pid}.tmp`;
+      await fs.writeFile(tmp, payload, "utf8");
+      await fs.rename(tmp, CONTENT_FILE);
+      wrote += 1;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  if (!wrote) {
+    throw lastError instanceof Error ? lastError : new Error("Could not save site content");
+  }
   return next;
 }
 
@@ -671,11 +911,126 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
         authorAvatarSrc:
           post.authorAvatarSrc === publicPath ? "" : post.authorAvatarSrc,
       })),
+      posts: (content.blog?.posts ?? []).map((post) => ({
+        ...post,
+        imageSrc: post.imageSrc === publicPath ? JOURNAL_POSTS[0].imageSrc : post.imageSrc,
+        authorAvatarSrc:
+          post.authorAvatarSrc === publicPath
+            ? "/images/ambition-holiday-logo.webp"
+            : post.authorAvatarSrc,
+      })),
       features: (content.blog?.features ?? []).map((feature) => ({
         ...feature,
         iconSrc: feature.iconSrc === publicPath ? undefined : feature.iconSrc,
       })),
     },
+    about: {
+      ...content.about,
+      wallpaperSrc:
+        content.about?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.about.wallpaperSrc
+          : content.about?.wallpaperSrc || DEFAULT_CONTENT.about.wallpaperSrc,
+      storyImageSrc:
+        content.about?.storyImageSrc === publicPath
+          ? DEFAULT_CONTENT.about.storyImageSrc
+          : content.about?.storyImageSrc || DEFAULT_CONTENT.about.storyImageSrc,
+      sisterImageSrc:
+        content.about?.sisterImageSrc === publicPath
+          ? DEFAULT_CONTENT.about.sisterImageSrc
+          : content.about?.sisterImageSrc || DEFAULT_CONTENT.about.sisterImageSrc,
+      pillars: (content.about?.pillars ?? []).map((pillar, index) => ({
+        ...pillar,
+        imageSrc:
+          pillar.imageSrc === publicPath
+            ? DEFAULT_CONTENT.about.pillars[index]?.imageSrc ?? DEFAULT_CONTENT.about.pillars[0].imageSrc
+            : pillar.imageSrc,
+      })),
+    },
+    legalDocuments: {
+      ...content.legalDocuments,
+      wallpaperSrc:
+        content.legalDocuments?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.legalDocuments.wallpaperSrc
+          : content.legalDocuments?.wallpaperSrc || DEFAULT_CONTENT.legalDocuments.wallpaperSrc,
+      documents: (content.legalDocuments?.documents ?? DEFAULT_CONTENT.legalDocuments.documents).map(
+        (doc, index) => ({
+          ...doc,
+          imageSrc:
+            doc.imageSrc === publicPath
+              ? DEFAULT_CONTENT.legalDocuments.documents[index]?.imageSrc ?? ""
+              : doc.imageSrc,
+        }),
+      ),
+    },
+    visa: {
+      ...content.visa,
+      wallpaperSrc:
+        content.visa?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.visa.wallpaperSrc
+          : content.visa?.wallpaperSrc || DEFAULT_CONTENT.visa.wallpaperSrc,
+      visaImageSrc:
+        content.visa?.visaImageSrc === publicPath
+          ? DEFAULT_CONTENT.visa.visaImageSrc
+          : content.visa?.visaImageSrc || DEFAULT_CONTENT.visa.visaImageSrc,
+      permitImageSrc:
+        content.visa?.permitImageSrc === publicPath
+          ? DEFAULT_CONTENT.visa.permitImageSrc
+          : content.visa?.permitImageSrc || DEFAULT_CONTENT.visa.permitImageSrc,
+      restrictedImageSrc:
+        content.visa?.restrictedImageSrc === publicPath
+          ? DEFAULT_CONTENT.visa.restrictedImageSrc
+          : content.visa?.restrictedImageSrc || DEFAULT_CONTENT.visa.restrictedImageSrc,
+      airportImageSrc:
+        content.visa?.airportImageSrc === publicPath
+          ? DEFAULT_CONTENT.visa.airportImageSrc
+          : content.visa?.airportImageSrc || DEFAULT_CONTENT.visa.airportImageSrc,
+      countries: (content.visa?.countries ?? []).map((country, index) => ({
+        ...country,
+        imageSrc:
+          country.imageSrc === publicPath
+            ? DEFAULT_CONTENT.visa.countries[index]?.imageSrc ?? DEFAULT_CONTENT.visa.countries[0].imageSrc
+            : country.imageSrc,
+      })),
+    },
+    bestTime: {
+      ...content.bestTime,
+      wallpaperSrc:
+        content.bestTime?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.bestTime.wallpaperSrc
+          : content.bestTime?.wallpaperSrc || DEFAULT_CONTENT.bestTime.wallpaperSrc,
+    },
+    packing: {
+      ...content.packing,
+      wallpaperSrc:
+        content.packing?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.packing.wallpaperSrc
+          : content.packing?.wallpaperSrc || DEFAULT_CONTENT.packing.wallpaperSrc,
+    },
+    altitude: {
+      ...content.altitude,
+      wallpaperSrc:
+        content.altitude?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.altitude.wallpaperSrc
+          : content.altitude?.wallpaperSrc || DEFAULT_CONTENT.altitude.wallpaperSrc,
+    },
+    permits: {
+      ...content.permits,
+      wallpaperSrc:
+        content.permits?.wallpaperSrc === publicPath
+          ? DEFAULT_CONTENT.permits.wallpaperSrc
+          : content.permits?.wallpaperSrc || DEFAULT_CONTENT.permits.wallpaperSrc,
+    },
+    nepal: stripDestinationMedia(content.nepal, DEFAULT_CONTENT.nepal, publicPath),
+    bhutan: stripDestinationMedia(content.bhutan, DEFAULT_CONTENT.bhutan, publicPath),
+    tibet: stripDestinationMedia(content.tibet, DEFAULT_CONTENT.tibet, publicPath),
+    multi: stripDestinationMedia(content.multi, DEFAULT_CONTENT.multi, publicPath),
+    helicopter: stripDestinationMedia(content.helicopter, DEFAULT_CONTENT.helicopter, publicPath),
+    photography: stripDestinationMedia(content.photography, DEFAULT_CONTENT.photography, publicPath),
+    tripPackages: (content.tripPackages ?? []).map((pkg) => ({
+      ...pkg,
+      heroSrc: pkg.heroSrc === publicPath ? "" : pkg.heroSrc,
+      gallery: (pkg.gallery ?? []).filter((src) => src !== publicPath),
+    })),
     footer: {
       ...content.footer,
       logoSrc: content.footer?.logoSrc === publicPath ? "" : content.footer?.logoSrc ?? "",

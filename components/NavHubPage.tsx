@@ -32,6 +32,12 @@ function hubCopy(label: string) {
       body: "Visas, seasons, packing, altitude, and permits — clear and calm.",
     };
   }
+  if (label === "Company") {
+    return {
+      eyebrow: "The house",
+      body: "About us, how to book, partnerships and the legal pages behind Ambition Holidays.",
+    };
+  }
   return {
     eyebrow: "Ambition Holiday",
     body: "Premium Nepal trekking and adventure travel.",

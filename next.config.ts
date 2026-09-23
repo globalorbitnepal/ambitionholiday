@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
     imageSizes: [96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 7,
   },
+  experimental: {
+    staleTimes: {
+      dynamic: 60,
+      static: 180,
+    },
+    middlewareClientMaxBodySize: "40mb",
+    serverActions: {
+      bodySizeLimit: "40mb",
+    },
+  },
   async headers() {
     // Safari / iOS friendly transport + caching headers (safe defaults).
     return [
@@ -46,7 +56,15 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         {
           source: "/orbit/login",
-          destination: "/orbit-login",
+          destination: "/admin/login",
+        },
+        {
+          source: "/orbit",
+          destination: "/admin",
+        },
+        {
+          source: "/orbit/:path*",
+          destination: "/admin/:path*",
         },
         {
           source: "/uploads/:filename",
@@ -54,6 +72,35 @@ const nextConfig: NextConfig = {
         },
       ],
     };
+  },
+  async redirects() {
+    return [
+      {
+        source: "/trip/:slug",
+        destination: "/:slug",
+        permanent: true,
+      },
+      {
+        source: "/everest-base-camp-luxury-trek",
+        destination: "/everest-base-camp-trek",
+        permanent: true,
+      },
+      {
+        source: "/packages/everest-base-camp-luxury-trek",
+        destination: "/everest-base-camp-trek",
+        permanent: true,
+      },
+      {
+        source: "/packages/everest-base-camp-trek",
+        destination: "/everest-base-camp-trek",
+        permanent: true,
+      },
+      {
+        source: "/luxury-everest-base-camp-trek",
+        destination: "/everest-base-camp-trek",
+        permanent: true,
+      },
+    ];
   },
 };
 

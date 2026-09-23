@@ -10,23 +10,27 @@ import OrbitExperiencesEditor from "@/components/OrbitExperiencesEditor";
 import OrbitAvailabilityEditor from "@/components/OrbitAvailabilityEditor";
 import OrbitJournalEditor from "@/components/OrbitJournalEditor";
 import OrbitBlogEditor from "@/components/OrbitBlogEditor";
+import OrbitAboutEditor from "@/components/OrbitAboutEditor";
+import OrbitLegalEditor from "@/components/OrbitLegalEditor";
+import OrbitVisaEditor from "@/components/OrbitVisaEditor";
+import OrbitBestTimeEditor from "@/components/OrbitBestTimeEditor";
+import OrbitPackingEditor from "@/components/OrbitPackingEditor";
+import OrbitAltitudeEditor from "@/components/OrbitAltitudeEditor";
+import OrbitPermitsEditor from "@/components/OrbitPermitsEditor";
+import OrbitNepalEditor from "@/components/OrbitNepalEditor";
 import OrbitFooterEditor from "@/components/OrbitFooterEditor";
+import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type { SiteContent, StatItem } from "@/lib/content-types";
+import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 type Props = {
   initial: SiteContent;
 };
 
 async function uploadFile(file: File, crop?: "9x16"): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  if (crop) form.append("crop", crop);
-  const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
-  if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url: string };
-  return data.url;
+  return postOrbitUpload(file, crop);
 }
 
 function Field({
@@ -65,6 +69,20 @@ export default function OrbitDashboard({ initial }: Props) {
     | "availability"
     | "journal"
     | "blog"
+    | "about"
+    | "legalDocuments"
+    | "visa"
+    | "bestTime"
+    | "packing"
+    | "altitude"
+    | "permits"
+    | "nepal"
+    | "bhutan"
+    | "tibet"
+    | "multi"
+    | "helicopter"
+    | "photography"
+    | "trekCharts"
     | "footer"
     | "media"
   >("journeys");
@@ -85,12 +103,15 @@ export default function OrbitDashboard({ initial }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(next),
       });
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(err.error || "Save failed");
+      }
       const saved = (await res.json()) as SiteContent;
       setContent(saved);
       setStatus("Saved — live site updates instantly.");
-    } catch {
-      setStatus("Save failed.");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Save failed.");
     } finally {
       setSaving(false);
     }
@@ -146,7 +167,21 @@ export default function OrbitDashboard({ initial }: Props) {
               ["experiences", "Experiences"],
               ["availability", "Availability"],
               ["journal", "Video Journal"],
-              ["blog", "Blog"],
+              ["blog", "Journal / Blog"],
+              ["about", "Company"],
+              ["legalDocuments", "Legal documents"],
+              ["visa", "Visa & Entry"],
+              ["bestTime", "Best Time"],
+              ["packing", "Packing Guide"],
+              ["altitude", "Altitude Tips"],
+              ["permits", "Permits & Fees"],
+              ["nepal", "Nepal packages"],
+              ["bhutan", "Bhutan packages"],
+              ["tibet", "Tibet packages"],
+              ["multi", "Multi-country"],
+              ["helicopter", "Helicopter tours"],
+              ["photography", "Photography treks"],
+              ["trekCharts", "Trek charts"],
               ["footer", "Footer"],
               ["media", "Media library"],
             ] as const
@@ -220,7 +255,7 @@ export default function OrbitDashboard({ initial }: Props) {
                   onClick={async () => {
                     const next = {
                       ...content,
-                      header: { logoSrc: "/images/ambition-holiday-logo.png" },
+                      header: { logoSrc: "/images/ambition-holiday-logo.webp" },
                     };
                     setContent(next);
                     await save(next);
@@ -240,7 +275,7 @@ export default function OrbitDashboard({ initial }: Props) {
                 <div className="relative h-28 overflow-hidden rounded-md border border-white/10 bg-black/40">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={content.atmosphere?.imageSrc || "/images/atmosphere/himalaya-dusk-peaks-v3.jpg"}
+                    src={content.atmosphere?.imageSrc || "/images/atmosphere/ebc-premium-section.webp"}
                     alt=""
                     className="h-full w-full object-cover"
                   />
@@ -582,6 +617,60 @@ export default function OrbitDashboard({ initial }: Props) {
           {tab === "blog" ? (
             <OrbitBlogEditor content={content} setContent={setContent} save={save} />
           ) : null}
+
+          {tab === "about" ? (
+            <OrbitAboutEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "legalDocuments" ? (
+            <OrbitLegalEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "visa" ? (
+            <OrbitVisaEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "bestTime" ? (
+            <OrbitBestTimeEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "packing" ? (
+            <OrbitPackingEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "altitude" ? (
+            <OrbitAltitudeEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "permits" ? (
+            <OrbitPermitsEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "nepal" ? (
+            <OrbitNepalEditor field="nepal" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "bhutan" ? (
+            <OrbitNepalEditor field="bhutan" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "tibet" ? (
+            <OrbitNepalEditor field="tibet" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "multi" ? (
+            <OrbitNepalEditor field="multi" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "helicopter" ? (
+            <OrbitNepalEditor field="helicopter" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "photography" ? (
+            <OrbitNepalEditor field="photography" content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "trekCharts" ? <OrbitTrekChartsEditor content={content} setContent={setContent} /> : null}
 
           {tab === "footer" ? (
             <OrbitFooterEditor content={content} setContent={setContent} save={save} />

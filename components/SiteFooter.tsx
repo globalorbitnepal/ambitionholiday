@@ -115,6 +115,7 @@ function ChevronLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href || "#"}
+      prefetch={false}
       className="group flex items-start gap-2 text-[0.86rem] font-semibold text-white/80 transition-colors hover:text-gold"
     >
       <span className="mt-[0.15rem] text-gold/90 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
@@ -181,7 +182,7 @@ export default function SiteFooter() {
   const { footer, header, updatedAt } = useSiteContent();
   if (!footer?.visible) return null;
 
-  const logoSrc = footer.logoSrc || header.logoSrc || "/images/ambition-holiday-logo.png";
+  const logoSrc = footer.logoSrc || header.logoSrc || "/images/ambition-holiday-logo.webp";
 
   function scrollTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -276,7 +277,7 @@ export default function SiteFooter() {
 
       {footer.showLandscape ? (
         <FooterLandscape
-          src={footer.landscapeImageSrc || "/images/footer/ambition-art-hq.jpg"}
+          src={footer.landscapeImageSrc || "/images/footer/ambition-art-hq.webp"}
           updatedAt={updatedAt}
         />
       ) : null}
@@ -439,7 +440,7 @@ export default function SiteFooter() {
             <div className="mx-auto flex w-full max-w-[14rem] items-center justify-center lg:justify-end">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={mediaSrc(footer.brandArtSrc || "/images/footer/tripadvisor-awards.png")}
+                src={mediaSrc(footer.brandArtSrc || "/images/footer/tripadvisor-awards.webp")}
                 alt="Tripadvisor Travelers' Choice Awards"
                 loading="lazy"
                 decoding="async"
@@ -458,7 +459,7 @@ export default function SiteFooter() {
             {(footer.legalLinks ?? []).map((l, i) => (
               <span key={l.id} className="inline-flex items-center gap-3">
                 {i > 0 ? <span className="text-white/25" aria-hidden="true">|</span> : null}
-                <Link href={l.href || "#"} className="font-semibold hover:text-gold">
+                <Link href={l.href || "#"} prefetch={false} className="font-semibold hover:text-gold">
                   {l.label}
                 </Link>
               </span>

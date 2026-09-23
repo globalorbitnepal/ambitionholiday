@@ -17,7 +17,10 @@ export function contentTypeFor(name: string) {
   const ext = path.extname(name).toLowerCase();
   if (ext === ".png") return "image/png";
   if (ext === ".webp") return "image/webp";
+  if (ext === ".svg") return "image/svg+xml";
+  if (ext === ".ico") return "image/x-icon";
   if (ext === ".gif") return "image/gif";
+  if (ext === ".avif") return "image/avif";
   if (ext === ".mp4") return "video/mp4";
   if (ext === ".webm") return "video/webm";
   if (ext === ".mov") return "video/quicktime";

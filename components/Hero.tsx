@@ -80,7 +80,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative isolate flex min-h-[100dvh] w-full flex-col overflow-hidden bg-black"
+      className="relative isolate flex min-h-[100dvh] w-full flex-col overflow-x-clip bg-black"
     >
       <MediaImage
         src={hero.posterSrc}

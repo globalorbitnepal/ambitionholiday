@@ -16,10 +16,20 @@ export type MediaItem = {
 export function kindFromName(name: string): MediaKind {
   const ext = path.extname(name).toLowerCase();
   if ([".mp4", ".webm", ".mov"].includes(ext)) return "video";
-  if ([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"].includes(ext)) {
+  if (
+    [".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif", ".jfif", ".bmp", ".ico", ".heic"].includes(
+      ext,
+    )
+  ) {
     return "image";
   }
   return "other";
+}
+
+function isMediaFileName(name: string) {
+  if (name.startsWith(".")) return false;
+  if (name === "site-content.json" || name.endsWith(".json")) return false;
+  return kindFromName(name) !== "other";
 }
 
 async function statItem(
@@ -60,10 +70,25 @@ async function walkPublic(
       if (entry.name.startsWith(".")) continue;
       const abs = path.join(dir, entry.name);
       const url = `${prefix}/${entry.name}`;
-      if (entry.isDirectory()) {
+      let isDir = false;
+      try {
+        isDir = entry.isDirectory();
+      } catch {
+        isDir = false;
+      }
+      if (!isDir) {
+        try {
+          const st = await fs.stat(abs);
+          isDir = st.isDirectory();
+        } catch {
+          continue;
+        }
+      }
+      if (isDir) {
         await walk(abs, url);
         continue;
       }
+      if (!isMediaFileName(entry.name)) continue;
       const item = await statItem(abs, url, "site");
       if (item && item.kind !== "other") out.push(item);
     }
@@ -86,7 +111,7 @@ export async function healUploadCopies() {
       continue;
     }
     for (const file of files) {
-      if (file.startsWith(".") || !safeUploadName(file)) continue;
+      if (!isMediaFileName(file) || !safeUploadName(file)) continue;
       if (!sourceByName.has(file)) {
         sourceByName.set(file, path.join(dir, file));
       }
@@ -101,7 +126,11 @@ export async function healUploadCopies() {
         await fs.access(dest);
       } catch {
         if (!buf) buf = await fs.readFile(src);
-        await fs.writeFile(dest, buf);
+        try {
+          await fs.writeFile(dest, buf);
+        } catch {
+          // CMS folders may be root-owned — skip, still list from readable dirs
+        }
       }
     }
   }
@@ -118,7 +147,7 @@ export async function listUploadMedia(): Promise<MediaItem[]> {
       continue;
     }
     for (const file of files) {
-      if (file.startsWith(".") || !safeUploadName(file)) continue;
+      if (!isMediaFileName(file) || !safeUploadName(file)) continue;
       if (seen.has(file)) continue;
       const item = await statItem(path.join(dir, file), `/uploads/${file}`, "uploads");
       if (item) seen.set(file, item);

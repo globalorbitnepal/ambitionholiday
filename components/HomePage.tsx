@@ -24,10 +24,10 @@ function HomeSections() {
       <WhyAmbitionSection />
       <ExperiencesSection />
       <AvailabilitySection />
+      <VideoJournalSection />
+      <BlogSection />
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
         <DuskAtmosphere />
-        <VideoJournalSection />
-        <BlogSection />
         <SiteFooter />
       </div>
     </>

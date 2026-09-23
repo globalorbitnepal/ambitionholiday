@@ -1,8 +1,7 @@
-import OrbitLoginClient from "@/app/orbit-login/OrbitLoginClient";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export default function OrbitLoginPage() {
-  return <OrbitLoginClient />;
+  redirect("/admin/login");
 }

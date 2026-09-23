@@ -3,8 +3,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { mediaSrc } from "@/lib/media-src";
+import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 
-const FALLBACK_SRC = "/images/atmosphere/himalaya-dusk-peaks-v3.jpg";
+const FALLBACK_SRC = SECTION_WALLPAPER;
 
 type Props = {
   src: string;
@@ -14,6 +15,7 @@ type Props = {
   priority?: boolean;
   objectPosition?: string;
   quality?: number;
+  cacheKey?: string;
 };
 
 function isRuntimeUpload(src: string) {
@@ -29,12 +31,13 @@ export default function MediaImage({
   priority = false,
   objectPosition = "center 28%",
   quality,
+  cacheKey,
 }: Props) {
-  const initial = mediaSrc(src) || FALLBACK_SRC;
+  const initial = mediaSrc(src, cacheKey) || FALLBACK_SRC;
   const [current, setCurrent] = useState(initial);
   useEffect(() => {
-    setCurrent(mediaSrc(src) || FALLBACK_SRC);
-  }, [src]);
+    setCurrent(mediaSrc(src, cacheKey) || FALLBACK_SRC);
+  }, [src, cacheKey]);
   const resolved = current || FALLBACK_SRC;
   const style = { objectPosition };
   const imageQuality = quality ?? (priority ? 74 : 68);

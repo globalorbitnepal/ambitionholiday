@@ -24,7 +24,7 @@ function StatIcon({ item }: { item: StatItem }) {
   if (item.iconKey === "tripadvisor") {
     return (
       <Image
-        src="/images/icons/tripadvisor.png"
+        src="/images/icons/tripadvisor.webp"
         alt=""
         width={44}
         height={44}
@@ -87,8 +87,8 @@ function StatIcon({ item }: { item: StatItem }) {
     <span
       className={`${iconClass} bg-white`}
       style={{
-        WebkitMaskImage: "url(/images/icons/responsible-tourism.png)",
-        maskImage: "url(/images/icons/responsible-tourism.png)",
+        WebkitMaskImage: "url(/images/icons/responsible-tourism.webp)",
+        maskImage: "url(/images/icons/responsible-tourism.webp)",
         WebkitMaskSize: "contain",
         maskSize: "contain",
         WebkitMaskRepeat: "no-repeat",

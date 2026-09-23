@@ -52,6 +52,7 @@ yarn-error.log*
 
 # Orbit CMS live content — never overwrite production edits on deploy
 /data/site-content.json
+/data/contact-inquiries.json
 
 # vercel
 .vercel

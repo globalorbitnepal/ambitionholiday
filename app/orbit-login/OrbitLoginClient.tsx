@@ -66,7 +66,7 @@ export default function OrbitLoginClient() {
       <div className="relative z-10 mx-auto grid min-h-screen w-full max-w-6xl items-center gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-10">
         <section className="mx-auto w-full max-w-xl text-center lg:mx-0 lg:text-left">
           <img
-            src="/images/ambition-holiday-logo.png"
+            src="/images/ambition-holiday-logo.webp"
             alt="Ambition Holidays"
             className="mx-auto h-14 w-auto drop-shadow-[0_8px_24px_rgba(201,162,39,0.25)] lg:mx-0 lg:h-[4.5rem]"
           />

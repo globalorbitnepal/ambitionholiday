@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     title: "Ambition Holidays",
   },
   icons: {
-    icon: "/images/ambition-holiday-logo.png",
-    apple: "/images/ambition-holiday-logo.png",
+    icon: "/images/ambition-holiday-logo.webp",
+    apple: "/images/ambition-holiday-logo.webp",
   },
   formatDetection: {
     telephone: true,
@@ -60,8 +60,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preload" as="image" href="/images/hero-video-poster.jpg" />
-        <link rel="preload" as="image" href="/images/atmosphere/himalaya-dusk-peaks-v3.jpg" />
+        <link rel="preload" as="image" href="/images/hero-video-poster.webp" />
       </head>
       <body className={`${outfit.variable} ${manrope.variable} ${cormorant.variable} antialiased`}>
         {children}

@@ -12,12 +12,22 @@ export function cmsRoot(): string {
   return path.join(process.cwd(), "data");
 }
 
-export function contentFilePath(): string {
+export function contentFileCandidates(): string[] {
+  const files: string[] = [];
   const fromEnv = process.env.AMBITION_CMS_DIR?.trim();
   if (fromEnv) {
-    return path.join(path.resolve(fromEnv), "site-content.json");
+    files.push(path.join(path.resolve(fromEnv), "site-content.json"));
   }
-  return path.join(process.cwd(), "data", "site-content.json");
+  files.push(
+    path.join(process.cwd(), "data", "site-content.json"),
+    path.join(process.cwd(), "data", "uploads", "site-content.json"),
+    path.join(process.cwd(), "public", "uploads", "site-content.json"),
+  );
+  return [...new Set(files)];
+}
+
+export function contentFilePath(): string {
+  return contentFileCandidates()[0];
 }
 
 export function contentDataDir(): string {

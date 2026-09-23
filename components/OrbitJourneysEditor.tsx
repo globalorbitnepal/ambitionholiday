@@ -7,6 +7,7 @@ import type {
 } from "@/lib/content-types";
 import { slugify } from "@/lib/nav";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
+import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -29,12 +30,7 @@ function Field({
 }
 
 async function uploadFile(file: File): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
-  if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url: string };
-  return data.url;
+  return postOrbitUpload(file);
 }
 
 function blankPackage(): JourneyPackage {
@@ -50,7 +46,7 @@ function blankPackage(): JourneyPackage {
     difficulty: "Moderate",
     description: "Describe this luxury journey.",
     href: "/luxury-treks",
-    imageSrc: "/images/journeys/j-ebc.jpg",
+    imageSrc: "/images/journeys/j-ebc.webp",
     imageAlt: "Luxury trek in Nepal",
   };
 }

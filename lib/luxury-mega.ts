@@ -28,16 +28,16 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
     countLabel: "20+ Packages",
     tagline: "Mountains. Culture. Wildlife. Extraordinary Journeys.",
     href: "/nepal",
-    flagSrc: "/images/flags/flag-nepal.png",
-    thumbSrc: "/images/luxury/lux-ebc.jpg",
+    flagSrc: "/images/flags/flag-nepal.webp",
+    thumbSrc: "/images/luxury/lux-ebc.webp",
     viewAllLabel: "View All Nepal Packages",
     packages: [
       {
         title: "Everest Base Camp Trek",
         days: "14 Days",
         difficulty: "Moderate",
-        href: "/luxury-everest-base-camp-trek",
-        imageSrc: "/images/luxury/lux-ebc.jpg",
+        href: "/everest-base-camp-trek",
+        imageSrc: "/images/luxury/lux-ebc.webp",
         imageAlt: "Snow peaks of Everest",
       },
       {
@@ -45,7 +45,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "12 Days",
         difficulty: "Moderate",
         href: "/luxury-annapurna-base-camp-trek",
-        imageSrc: "/images/luxury/lux-abc.jpg",
+        imageSrc: "/images/luxury/lux-abc.webp",
         imageAlt: "Annapurna mountain range",
       },
       {
@@ -53,7 +53,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "15 Days",
         difficulty: "Moderate",
         href: "/luxury-upper-mustang-trek",
-        imageSrc: "/images/luxury/lux-mustang.jpg",
+        imageSrc: "/images/luxury/lux-mustang.webp",
         imageAlt: "Mustang monastery in the hills",
       },
       {
@@ -61,7 +61,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "6 Days",
         difficulty: "Easy",
         href: "/kathmandu-valley-tour",
-        imageSrc: "/images/luxury/lux-kathmandu.jpg",
+        imageSrc: "/images/luxury/lux-kathmandu.webp",
         imageAlt: "Kathmandu pagoda temples",
       },
       {
@@ -69,7 +69,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "4 Days",
         difficulty: "Easy",
         href: "/chitwan-wildlife-tour",
-        imageSrc: "/images/luxury/lux-chitwan.jpg",
+        imageSrc: "/images/luxury/lux-chitwan.webp",
         imageAlt: "Rhinos in Chitwan grassland",
       },
       {
@@ -77,7 +77,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "1 Day",
         difficulty: "Easy",
         href: "/luxury-helicopter-treks",
-        imageSrc: "/images/luxury/lux-heli.jpg",
+        imageSrc: "/images/luxury/lux-heli.webp",
         imageAlt: "Helicopter flying past Everest",
       },
     ],
@@ -88,8 +88,8 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
     countLabel: "12+ Packages",
     tagline: "Dzongs. Festivals. Himalayan Happiness.",
     href: "/bhutan",
-    flagSrc: "/images/flags/flag-bhutan.png",
-    thumbSrc: "/images/luxury/lux-bhutan-taktsang.jpg",
+    flagSrc: "/images/flags/flag-bhutan.webp",
+    thumbSrc: "/images/luxury/lux-bhutan-taktsang.webp",
     viewAllLabel: "View All Bhutan Packages",
     packages: [
       {
@@ -97,7 +97,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "8 Days",
         difficulty: "Moderate",
         href: "/paro-taktsang",
-        imageSrc: "/images/luxury/lux-bhutan-taktsang.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-taktsang.webp",
         imageAlt: "Tiger's Nest monastery in Bhutan",
       },
       {
@@ -105,7 +105,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "7 Days",
         difficulty: "Easy",
         href: "/thimphu-and-punakha",
-        imageSrc: "/images/luxury/lux-bhutan-punakha.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-punakha.webp",
         imageAlt: "Punakha Dzong fortress",
       },
       {
@@ -113,7 +113,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "10 Days",
         difficulty: "Easy",
         href: "/bhutan-cultural-tour",
-        imageSrc: "/images/luxury/lux-bhutan-festival.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-festival.webp",
         imageAlt: "Bhutanese festival dancers",
       },
       {
@@ -121,7 +121,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "6 Days",
         difficulty: "Easy",
         href: "/luxury-bhutan-journey",
-        imageSrc: "/images/luxury/lux-bhutan-lodge.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-lodge.webp",
         imageAlt: "Luxury lodge in Bhutan",
       },
       {
@@ -129,7 +129,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "9 Days",
         difficulty: "Moderate",
         href: "/luxury-bhutan-journey",
-        imageSrc: "/images/luxury/lux-bhutan-hike.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-hike.webp",
         imageAlt: "Bhutan forest trail with chortens",
       },
       {
@@ -137,7 +137,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "5 Days",
         difficulty: "Easy",
         href: "/thimphu-and-punakha",
-        imageSrc: "/images/luxury/lux-bhutan-buddha.jpg",
+        imageSrc: "/images/luxury/lux-bhutan-buddha.webp",
         imageAlt: "Giant Buddha statue in Thimphu",
       },
     ],
@@ -148,8 +148,8 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
     countLabel: "10+ Packages",
     tagline: "Palaces. Pilgrimage. Roof of the World.",
     href: "/tibet",
-    flagSrc: "/images/flags/flag-tibet.png",
-    thumbSrc: "/images/luxury/lux-tibet-potala.jpg",
+    flagSrc: "/images/flags/flag-tibet.webp",
+    thumbSrc: "/images/luxury/lux-tibet-potala.webp",
     viewAllLabel: "View All Tibet Packages",
     packages: [
       {
@@ -157,7 +157,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "7 Days",
         difficulty: "Easy",
         href: "/lhasa-cultural-tour",
-        imageSrc: "/images/luxury/lux-tibet-potala.jpg",
+        imageSrc: "/images/luxury/lux-tibet-potala.webp",
         imageAlt: "Potala Palace at sunrise",
       },
       {
@@ -165,7 +165,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "15 Days",
         difficulty: "Challenging",
         href: "/mount-kailash",
-        imageSrc: "/images/luxury/lux-tibet-kailash.jpg",
+        imageSrc: "/images/luxury/lux-tibet-kailash.webp",
         imageAlt: "Mount Kailash and prayer flags",
       },
       {
@@ -173,7 +173,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "6 Days",
         difficulty: "Easy",
         href: "/lhasa-cultural-tour",
-        imageSrc: "/images/luxury/lux-tibet-jokhang.jpg",
+        imageSrc: "/images/luxury/lux-tibet-jokhang.webp",
         imageAlt: "Jokhang Temple golden roofs",
       },
       {
@@ -181,7 +181,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "12 Days",
         difficulty: "Moderate",
         href: "/everest-north-face",
-        imageSrc: "/images/luxury/lux-tibet-everest.jpg",
+        imageSrc: "/images/luxury/lux-tibet-everest.webp",
         imageAlt: "Everest North Face from Tibet",
       },
       {
@@ -189,7 +189,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "8 Days",
         difficulty: "Easy",
         href: "/tibet-overland-journey",
-        imageSrc: "/images/luxury/lux-tibet-yamdrok.jpg",
+        imageSrc: "/images/luxury/lux-tibet-yamdrok.webp",
         imageAlt: "Turquoise Yamdrok Lake",
       },
       {
@@ -197,7 +197,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "10 Days",
         difficulty: "Moderate",
         href: "/tibet-overland-journey",
-        imageSrc: "/images/luxury/lux-tibet-monks.jpg",
+        imageSrc: "/images/luxury/lux-tibet-monks.webp",
         imageAlt: "Tibetan monks and monastery",
       },
     ],
@@ -208,8 +208,8 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
     countLabel: "8+ Packages",
     tagline: "One Journey. Many Worlds.",
     href: "/himalayan-multi-countries-tour",
-    flagSrc: "/images/flags/flag-multi.png",
-    thumbSrc: "/images/luxury/lux-multi-stupa.jpg",
+    flagSrc: "/images/flags/flag-multi.webp",
+    thumbSrc: "/images/luxury/lux-multi-stupa.webp",
     viewAllLabel: "View All Multi-Country Packages",
     packages: [
       {
@@ -217,7 +217,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "18 Days",
         difficulty: "Moderate",
         href: "/nepal-bhutan-tibet",
-        imageSrc: "/images/luxury/lux-multi-three.jpg",
+        imageSrc: "/images/luxury/lux-multi-three.webp",
         imageAlt: "Himalayan multi-country landscape",
       },
       {
@@ -225,7 +225,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "14 Days",
         difficulty: "Easy",
         href: "/nepal-and-bhutan-tour",
-        imageSrc: "/images/luxury/lux-multi-nepal-bhutan.jpg",
+        imageSrc: "/images/luxury/lux-multi-nepal-bhutan.webp",
         imageAlt: "Nepal and Bhutan journey",
       },
       {
@@ -233,7 +233,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "16 Days",
         difficulty: "Moderate",
         href: "/nepal-and-tibet-tour",
-        imageSrc: "/images/luxury/lux-multi-nepal-tibet.jpg",
+        imageSrc: "/images/luxury/lux-multi-nepal-tibet.webp",
         imageAlt: "Nepal Tibet overland peaks",
       },
       {
@@ -241,7 +241,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "15 Days",
         difficulty: "Moderate",
         href: "/bhutan-tibet-journey",
-        imageSrc: "/images/luxury/lux-multi-bhutan-tibet.jpg",
+        imageSrc: "/images/luxury/lux-multi-bhutan-tibet.webp",
         imageAlt: "Bhutan Tibet mountain pass",
       },
       {
@@ -249,7 +249,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "8 Days",
         difficulty: "Easy",
         href: "/luxury-helicopter-treks",
-        imageSrc: "/images/luxury/lux-multi-heli.jpg",
+        imageSrc: "/images/luxury/lux-multi-heli.webp",
         imageAlt: "Helicopter over Himalayan peaks",
       },
       {
@@ -257,7 +257,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         days: "12 Days",
         difficulty: "Easy",
         href: "/himalayan-multi-countries-tour",
-        imageSrc: "/images/luxury/lux-multi-stupa.jpg",
+        imageSrc: "/images/luxury/lux-multi-stupa.webp",
         imageAlt: "Boudhanath stupa and Himalaya",
       },
     ],

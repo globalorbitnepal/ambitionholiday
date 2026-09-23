@@ -4,6 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
+import SectionWallpaper from "@/components/SectionWallpaper";
 import { mediaSrc } from "@/lib/media-src";
 import type {
   ExploreHubCardIcon,
@@ -163,17 +164,7 @@ export default function ExploreHubSection() {
 
   return (
     <section className="explore-hub relative isolate overflow-hidden">
-      <div className="absolute inset-0">
-        <MediaImage
-          src={exploreHub.wallpaperSrc}
-          alt=""
-          sizes="100vw"
-          className="h-full w-full object-cover"
-          objectPosition="center 42%"
-          quality={74}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,16,26,0.12)_0%,rgba(8,18,28,0.08)_45%,rgba(6,14,22,0.28)_100%)]" />
-      </div>
+      <SectionWallpaper />
 
       <div className="explore-hub-shell relative mx-auto">
         <div className="explore-hub-glass">

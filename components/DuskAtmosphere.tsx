@@ -2,8 +2,9 @@
 
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { mediaSrc } from "@/lib/media-src";
+import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 
-const FALLBACK = "/images/atmosphere/himalaya-dusk-peaks-v3.jpg";
+const FALLBACK = SECTION_WALLPAPER;
 
 /** Original dusk Himalayan peaks behind post-hero glass. Not the hero hiker photo. */
 export default function DuskAtmosphere() {
@@ -11,18 +12,20 @@ export default function DuskAtmosphere() {
   const src = mediaSrc(atmosphere?.imageSrc || FALLBACK) || FALLBACK;
 
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""
-        className="h-full w-full object-cover object-center"
+        className="h-full w-full object-cover object-[center_38%]"
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
         onError={(event) => {
           event.currentTarget.src = FALLBACK;
         }}
       />
-      <div className="absolute inset-0 bg-black/22" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-transparent to-black/32" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,12,20,0.32)_0%,rgba(6,14,22,0.26)_45%,rgba(4,10,16,0.48)_100%)]" />
     </div>
   );
 }

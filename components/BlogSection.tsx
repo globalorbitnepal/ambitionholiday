@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import MediaImage from "@/components/MediaImage";
+import SectionWallpaper from "@/components/SectionWallpaper";
 import type { BlogPost } from "@/lib/content-types";
+import { publishedJournalPosts } from "@/lib/blog";
 import { mediaSrc } from "@/lib/media-src";
 
 function CalendarIcon() {
@@ -26,7 +28,7 @@ function ClockIcon() {
 
 function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }) {
   return (
-    <article className="hl-card group flex flex-col overflow-hidden rounded-[1.25rem] border border-[#e0c45a]/80">
+    <article className="explore-hub-glass group flex flex-col overflow-hidden !p-0">
       <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[16/9]">
         <MediaImage
           src={post.imageSrc}
@@ -106,7 +108,7 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
   return (
     <Link
       href={post.href || "#"}
-      className="hl-card group flex gap-3 rounded-[1.15rem] border border-[#e0c45a]/80 p-2.5 transition-colors hover:border-[#e0c45a] sm:gap-3.5 sm:p-3"
+      className="explore-hub-glass group flex gap-3 !p-2.5 transition-colors hover:border-white/50 sm:gap-3.5 sm:p-3"
     >
       <div className="relative h-[4.6rem] w-[4.6rem] shrink-0 overflow-hidden rounded-md border border-white/10 sm:h-[5.1rem] sm:w-[5.1rem]">
         <MediaImage
@@ -145,59 +147,48 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
 export default function BlogSection() {
   const { blog, updatedAt } = useSiteContent();
   if (!blog?.visible) return null;
+  const published = publishedJournalPosts(blog);
+  const featured = published.slice(0, 2);
+  const sidePosts = published.slice(2, 5);
 
   return (
-    <section className="blog-section relative px-4 pb-6 pt-8 sm:px-8 sm:pb-7 sm:pt-10 lg:px-10">
-      <div className="relative mx-auto max-w-[88rem]">
+    <section className="blog-section explore-hub relative isolate overflow-hidden">
+      <SectionWallpaper />
+      <div className="explore-hub-shell relative">
+        <div className="explore-hub-glass">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-3 flex items-center justify-center gap-3">
-            <span className="h-px w-10 bg-gold/70 sm:w-14" aria-hidden="true" />
-            <span className="h-1 w-1 rotate-45 bg-gold" aria-hidden="true" />
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-gold sm:text-[0.72rem]">
-              {blog.eyebrow}
-            </p>
-            <span className="h-1 w-1 rotate-45 bg-gold" aria-hidden="true" />
-            <span className="h-px w-10 bg-gold/70 sm:w-14" aria-hidden="true" />
-          </div>
-          <h2 className="blog-display text-[clamp(2rem,5.6vw,3.35rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white">
+          <p className="explore-hub-eyebrow">{blog.eyebrow}</p>
+          <h2 className="explore-hub-title font-[family-name:var(--font-cormorant)] font-semibold text-white">
             {blog.headlineBefore}{" "}
-            <em className="blog-display text-[0.78em] font-medium italic text-[#e4c35a] sm:text-[0.82em]">
-              {blog.headlineScript}
-            </em>{" "}
+            <span className="text-[#e4c35a]">{blog.headlineScript}</span>{" "}
             {blog.headlineAfter}
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-[0.9rem] leading-relaxed text-[#efe9dc]/90 sm:text-[0.98rem]">
+          <p className="explore-hub-body mx-auto">
             {blog.body}
           </p>
-          <div className="mx-auto mt-4 flex max-w-xs items-center gap-3" aria-hidden="true">
-            <span className="h-px flex-1 bg-gold/35" />
-            <span className="h-1.5 w-1.5 rotate-45 bg-gold/80" />
-            <span className="h-px flex-1 bg-gold/35" />
-          </div>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-2 lg:gap-5">
-            {(blog.featured ?? []).map((post) => (
+            {featured.map((post) => (
               <FeaturedCard key={post.id} post={post} updatedAt={updatedAt} />
             ))}
           </div>
           <div className="flex flex-col gap-3">
-            {(blog.sidePosts ?? []).map((post) => (
+            {sidePosts.map((post) => (
               <SidePostRow key={post.id} post={post} updatedAt={updatedAt} />
             ))}
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-4 sm:mt-7">
-          <span className="hidden h-px w-16 bg-gold/40 sm:block" aria-hidden="true" />
+        <div className="explore-hub-foot mt-6">
           <Link
-            href={blog.ctaHref || "#"}
-            className="focus-ring inline-flex items-center gap-2 rounded-full border border-[#e0c45a] bg-black/35 px-6 py-2.5 text-[0.8rem] font-semibold tracking-[0.08em] text-[#e4c35a] backdrop-blur-md transition-colors hover:bg-[#e0c45a]/12"
+            href={blog.ctaHref || "/journal"}
+            className="explore-hub-cta"
           >
             {blog.ctaLabel} <span aria-hidden="true">→</span>
           </Link>
-          <span className="hidden h-px w-16 bg-gold/40 sm:block" aria-hidden="true" />
+        </div>
         </div>
       </div>
     </section>

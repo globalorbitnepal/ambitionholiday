@@ -4,7 +4,7 @@ export const DEST_SHOWCASE = [
     title: "Nepal",
     subtitle: "The Heart of the Himalayas",
     href: "/nepal",
-    imageSrc: "/images/destinations/dest-nepal.jpg",
+    imageSrc: "/images/destinations/dest-nepal.webp",
     imageAlt: "Trekker walking toward a snow peak in Nepal",
   },
   {
@@ -12,7 +12,7 @@ export const DEST_SHOWCASE = [
     title: "Bhutan",
     subtitle: "The Kingdom of Happiness",
     href: "/bhutan",
-    imageSrc: "/images/destinations/dest-bhutan.jpg",
+    imageSrc: "/images/destinations/dest-bhutan.webp",
     imageAlt: "Tiger's Nest monastery on a cliff in Bhutan",
   },
   {
@@ -20,7 +20,7 @@ export const DEST_SHOWCASE = [
     title: "Tibet",
     subtitle: "Roof of the World",
     href: "/tibet",
-    imageSrc: "/images/destinations/dest-tibet.jpg",
+    imageSrc: "/images/destinations/dest-tibet.webp",
     imageAlt: "Palace monastery and Himalayan peaks in Tibet",
   },
   {
@@ -28,7 +28,7 @@ export const DEST_SHOWCASE = [
     title: "Multi-Country",
     subtitle: "One Journey, Many Worlds",
     href: "/himalayan-multi-countries-tour",
-    imageSrc: "/images/destinations/dest-multi.jpg",
+    imageSrc: "/images/destinations/dest-multi.webp",
     imageAlt: "Golden stupas and prayer flags across the Himalayas",
   },
 ] as const;

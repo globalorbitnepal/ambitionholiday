@@ -2,17 +2,13 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readContent, writeContent } from "@/lib/content";
 import type { SiteContent } from "@/lib/content-types";
-import {
-  readSessionFromCookieHeader,
-  verifySessionToken,
-} from "@/lib/orbit-auth";
+import { isStaffRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function isAuthed(req: Request) {
-  const token = readSessionFromCookieHeader(req.headers.get("cookie"));
-  return verifySessionToken(token);
+  return isStaffRequest(req);
 }
 
 export async function GET() {
@@ -36,9 +32,34 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const saved = await writeContent(body);
+  let saved;
+  try {
+    saved = await writeContent(body);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Save failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
   revalidatePath("/");
+  revalidatePath("/journal", "layout");
+  revalidatePath("/about-us");
+  revalidatePath("/company");
+  revalidatePath("/visa-and-entry");
+  revalidatePath("/best-time-to-visit");
+  revalidatePath("/packing-guide");
+  revalidatePath("/altitude-tips");
+  revalidatePath("/permits-and-fees");
+  revalidatePath("/nepal");
+  revalidatePath("/bhutan");
+  revalidatePath("/tibet");
+  revalidatePath("/himalayan-multi-countries-tour");
+  revalidatePath("/helicopter-tours");
+  revalidatePath("/photography-treks");
   revalidatePath("/orbit");
+  revalidatePath("/admin");
+  revalidatePath("/trip", "layout");
+  revalidatePath("/everest-base-camp-trek");
+  revalidatePath("/everest-base-camp-luxury-trek");
+  revalidatePath("/saved");
   return NextResponse.json(saved, {
     headers: {
       "Cache-Control": "no-store",

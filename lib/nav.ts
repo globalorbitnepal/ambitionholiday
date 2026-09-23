@@ -100,21 +100,6 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    label: "Experiences",
-    href: "/experiences",
-    groups: [
-      group("Adventure", [
-        "Helicopter Tours",
-        "Photography Treks",
-      ]),
-      group("Luxury & Private", [
-        "Luxury Mountain Experiences",
-        "Private Guided Expeditions",
-      ]),
-      group("Culture", ["Cultural Journeys"]),
-    ],
-  },
-  {
     label: "Travel Guide",
     href: "/travel-guide",
     groups: [
@@ -129,7 +114,24 @@ export const NAV_ITEMS: NavItem[] = [
       ]),
     ],
   },
-  { label: "About Us", href: "/about-us" },
+  {
+    label: "Company",
+    href: "/company",
+    groups: [
+      {
+        title: "Company",
+        href: "/company",
+        links: [
+          { label: "About Us", href: "/company" },
+          { label: "Legal Documents", href: "/legal-documents" },
+          { label: "How to Book", href: "/how-to-book" },
+          { label: "Become a Partner", href: "/become-a-partner" },
+          { label: "Privacy Policy", href: "/privacy-policy" },
+          { label: "Terms and Conditions", href: "/terms-and-conditions" },
+        ],
+      },
+    ],
+  },
   { label: "Journal", href: "/journal" },
   { label: "Contact", href: "/contact" },
 ];

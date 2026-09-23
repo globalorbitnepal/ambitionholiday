@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { DEST_SHOWCASE } from "@/lib/dest-showcase";
 import { LUXURY_MEGA_COUNTRIES, type LuxuryMegaCountryId } from "@/lib/luxury-mega";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import { useFavorites } from "@/lib/use-favorites";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
 const PHONE_DISPLAY = "+977 9851148898";
@@ -49,16 +51,16 @@ function usesDestinationsShowcase(label: string) {
 }
 
 function usesStackDropdown(label: string) {
-  return label === "Experiences" || label === "Travel Guide";
+  return label === "Travel Guide" || label === "Company";
 }
 
 const FROST_GLASS_CLASS =
   "relative overflow-hidden rounded-[1.7rem] border border-white/28 shadow-[0_24px_70px_rgba(0,0,0,0.32)]";
 const FROST_GLASS_STYLE = {
   background:
-    "linear-gradient(165deg, rgba(255,255,255,0.22) 0%, rgba(220,236,255,0.13) 48%, rgba(255,255,255,0.08) 100%)",
-  backdropFilter: "blur(24px) saturate(1.32)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.32)",
+    "linear-gradient(165deg, rgba(70,110,130,0.57) 0%, rgba(32,58,76,0.51) 48%, rgba(18,42,58,0.48) 100%)",
+  backdropFilter: "blur(12px) saturate(1.35)",
+  WebkitBackdropFilter: "blur(12px) saturate(1.35)",
   fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
 } as const;
 
@@ -66,7 +68,7 @@ type FrostListItem = {
   title: string;
   subtitle: string;
   href: string;
-  icon: "heli" | "camera" | "peaks" | "hiker" | "stupa" | "visa" | "calendar" | "pack" | "altitude" | "permit";
+  icon: "heli" | "camera" | "peaks" | "hiker" | "stupa" | "visa" | "calendar" | "pack" | "altitude" | "permit" | "about" | "legal" | "book" | "partner" | "privacy" | "terms";
 };
 
 const EXPERIENCE_LIST: FrostListItem[] = [
@@ -99,6 +101,45 @@ const EXPERIENCE_LIST: FrostListItem[] = [
     subtitle: "Tradition, people and heritage",
     href: "/cultural-journeys",
     icon: "stupa",
+  },
+];
+
+const COMPANY_LIST: FrostListItem[] = [
+  {
+    title: "About Us",
+    subtitle: "Our house, sister company and story",
+    href: "/company",
+    icon: "about",
+  },
+  {
+    title: "Legal Documents",
+    subtitle: "Licences and registrations",
+    href: "/legal-documents",
+    icon: "legal",
+  },
+  {
+    title: "How to Book",
+    subtitle: "From first enquiry to the trail",
+    href: "/how-to-book",
+    icon: "book",
+  },
+  {
+    title: "Become a Partner",
+    subtitle: "Agencies and luxury desks",
+    href: "/become-a-partner",
+    icon: "partner",
+  },
+  {
+    title: "Privacy Policy",
+    subtitle: "How we look after your data",
+    href: "/privacy-policy",
+    icon: "privacy",
+  },
+  {
+    title: "Terms and Conditions",
+    subtitle: "Booking terms, clearly written",
+    href: "/terms-and-conditions",
+    icon: "terms",
   },
 ];
 
@@ -137,6 +178,7 @@ const TRAVEL_GUIDE_LIST: FrostListItem[] = [
 
 function frostListFor(label: string) {
   if (label === "Travel Guide") return TRAVEL_GUIDE_LIST;
+  if (label === "Company") return COMPANY_LIST;
   return EXPERIENCE_LIST;
 }
 
@@ -211,6 +253,55 @@ function FrostIcon({ name }: { name: FrostListItem["icon"] }) {
       </svg>
     );
   }
+  if (name === "about") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.1" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M5.5 19.2c.8-3.2 3.3-5 6.5-5s5.7 1.8 6.5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "legal") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M7 20V5.8A1.8 1.8 0 0 1 8.8 4H17v13.4a1.8 1.8 0 0 1-1.8 1.6H7Z" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M9.4 8.2h5M9.4 11.2h5M9.4 14.2h3.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "book") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <rect x="4.2" y="5" width="15.6" height="14.2" rx="2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8 9.2h8M8 12.2h8M8 15.2h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "partner") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <circle cx="8.2" cy="8.2" r="2.3" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="15.8" cy="8.2" r="2.3" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M3.8 19c.7-2.8 2.7-4.3 4.4-4.3 1.3 0 2.4.7 3.2 1.8.8-1.1 1.9-1.8 3.2-1.8 1.7 0 3.7 1.5 4.4 4.3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "privacy") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M12 3.6 5.5 6.4v5.3c0 4.2 2.7 7.2 6.5 8.7 3.8-1.5 6.5-4.5 6.5-8.7V6.4L12 3.6Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "terms") {
+    return (
+      <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
+        <path d="M7 20V6.8A1.8 1.8 0 0 1 8.8 5H16v12.2a1.8 1.8 0 0 1-1.8 1.8H7Z" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M16 8h2.2A1.8 1.8 0 0 1 20 9.8V19" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M9.2 9h4M9.2 12h4M9.2 15h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 24 24" className={common} fill="none" aria-hidden="true">
       <path d="M7 20V6.8A1.8 1.8 0 0 1 8.8 5H16v12.2a1.8 1.8 0 0 1-1.8 1.8H7Z" stroke="currentColor" strokeWidth="1.7" />
@@ -240,6 +331,7 @@ function FrostListDropdown({
           <li key={item.href} role="none">
             <Link
               href={item.href}
+              prefetch={false}
               role="menuitem"
               className="focus-ring flex items-center gap-3 rounded-2xl px-2 py-2.5 text-left transition-colors hover:bg-white/10"
               onClick={onNavigate}
@@ -287,7 +379,7 @@ const DROP_SHELL =
 
 function DestGoldArrow() {
   return (
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[#1a1408] shadow-[0_8px_18px_rgba(201,162,39,0.4)]">
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[#1a1408] shadow-[0_8px_18px_rgba(201,162,39,0.4)] sm:h-9 sm:w-9">
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
         <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       </svg>
@@ -298,7 +390,7 @@ function DestGoldArrow() {
 function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
   return (
     <div
-      className={`${FROST_GLASS_CLASS} px-5 py-5 sm:px-7 sm:py-6`}
+      className={`${FROST_GLASS_CLASS} px-4 py-4 sm:px-7 sm:py-6`}
       style={FROST_GLASS_STYLE}
     >
       <div className="mb-4 flex flex-col gap-3 lg:mb-5 lg:flex-row lg:items-end lg:justify-between">
@@ -319,11 +411,12 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
         </p>
       </div>
 
-      <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+      <ul className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4 lg:gap-4">
         {DEST_SHOWCASE.map((dest) => (
           <li key={dest.id}>
             <Link
               href={dest.href}
+              prefetch={false}
               onClick={onNavigate}
               className="focus-ring group relative block overflow-hidden rounded-[1.15rem] border border-white/15 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
             >
@@ -337,7 +430,7 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
                 />
                 <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 sm:p-3.5">
-                  <span>
+                  <span className="min-w-0">
                     <span className="block text-[1.05rem] font-semibold tracking-tight text-white sm:text-[1.15rem]">
                       {dest.title}
                     </span>
@@ -356,6 +449,7 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
       <div className="mt-4 flex justify-center sm:mt-5">
         <Link
           href="/destinations"
+          prefetch={false}
           onClick={onNavigate}
           className="focus-ring inline-flex items-center gap-2 text-[0.82rem] font-semibold text-white/85 hover:text-white"
         >
@@ -489,6 +583,7 @@ function LuxuryGlassPanel({
               <li key={pkg.title}>
                 <Link
                   href={pkg.href}
+                  prefetch={false}
                   onClick={onNavigate}
                   className="focus-ring group relative block overflow-hidden rounded-[1.05rem] border border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.28)]"
                 >
@@ -536,6 +631,7 @@ function LuxuryGlassPanel({
 
           <Link
             href={country.href}
+            prefetch={false}
             onClick={onNavigate}
             className="focus-ring mt-3 flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/18 bg-black/20 text-[0.82rem] font-semibold text-white/90 hover:bg-black/35"
           >
@@ -639,6 +735,7 @@ function DestinationsMegaPanel({
             {active ? (
               <Link
                 href={active.href}
+                prefetch={false}
                 onClick={onNavigate}
                 className="focus-ring shrink-0 rounded-full border border-[#e0c45a]/70 bg-black/35 px-3 py-1 text-[0.68rem] font-bold text-[#e4c35a] transition-colors hover:bg-[#c9a227]/15"
               >
@@ -652,6 +749,7 @@ function DestinationsMegaPanel({
               <li key={child.label}>
                 <Link
                   href={child.href}
+                  prefetch={false}
                   onClick={onNavigate}
                   className="focus-ring group flex items-center gap-2 rounded-lg border border-transparent px-2.5 py-2.5 text-[0.88rem] font-semibold text-[#f7f4ef] transition-colors hover:border-[#e0c45a]/40 hover:bg-black/30 hover:text-[#e4c35a]"
                 >
@@ -672,6 +770,7 @@ function DestinationsMegaPanel({
 
 export default function Header() {
   const { header } = useSiteContent();
+  const { items: savedTrips } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -679,11 +778,27 @@ export default function Header() {
   const [megaCategory, setMegaCategory] = useState<string | null>(null);
   const [luxuryCountry, setLuxuryCountry] = useState<LuxuryMegaCountryId>("nepal");
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const navId = useId();
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    setMobileOpen(false);
+    setOpenDropdown(null);
+    setMobileExpanded(null);
+    setMobileGroup(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 12);
+        ticking = false;
+      });
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -757,12 +872,12 @@ export default function Header() {
       ref={headerRef}
       className={`absolute inset-x-0 top-0 z-[80] isolate pt-[var(--safe-top)] transition-colors duration-300 ${
         scrolled || mobileOpen || openDropdown
-          ? "bg-[rgba(8,12,18,0.88)] backdrop-blur-md"
+          ? "bg-[rgba(8,12,18,0.91)] backdrop-blur-md"
           : "bg-transparent"
       }`}
     >
       <div className="relative mx-auto max-w-[92rem] px-4 sm:px-5 lg:px-6 xl:px-8">
-        <div className="flex h-[5rem] items-center gap-3 sm:h-[5.25rem] lg:gap-4">
+        <div className="flex h-[5rem] flex-nowrap items-center gap-2 sm:h-[5.25rem] lg:gap-3 xl:gap-4">
           <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
             <Image
               src={header.logoSrc}
@@ -772,16 +887,16 @@ export default function Header() {
               priority
               sizes="180px"
               quality={80}
-              className="h-[2.60rem] w-auto object-contain sm:h-[2.83rem] lg:h-[3.16rem]"
+              className="h-[2.45rem] w-auto object-contain sm:h-[2.7rem] lg:h-[2.55rem] xl:h-[2.9rem] 2xl:h-[3.16rem]"
               key={header.logoSrc}
             />
           </Link>
 
           <nav
-            className="hidden min-w-0 flex-1 items-center justify-center xl:flex"
+            className="hidden min-w-0 flex-1 items-center justify-center lg:flex"
             aria-label="Primary"
           >
-            <ul className="flex items-center gap-0.5 2xl:gap-1">
+            <ul className="flex flex-nowrap items-center justify-center gap-0 xl:gap-0.5 2xl:gap-1">
               {NAV_ITEMS.map((item) => {
                 const menu = hasMenu(item);
                 const isOpen = openDropdown === item.label;
@@ -794,12 +909,12 @@ export default function Header() {
                 const stackLinks = isStack ? flattenNavLinks(item) : [];
 
                 return (
-                  <li key={item.label} className={isWideMega ? undefined : "relative"}>
+                  <li key={item.label} className={`shrink-0 ${isWideMega ? "" : "relative"}`}>
                     {menu ? (
                       <>
                         <button
                           type="button"
-                          className={`focus-ring relative inline-flex items-center gap-1.5 px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] transition-colors duration-200 2xl:px-3 2xl:text-[0.97rem] ${
+                          className={`focus-ring relative inline-flex items-center gap-1 whitespace-nowrap px-1.5 py-2 text-[0.72rem] font-bold tracking-[0.02em] transition-colors duration-200 xl:gap-1.5 xl:px-2 xl:text-[0.82rem] xl:tracking-[0.03em] 2xl:px-3 2xl:text-[0.95rem] 2xl:tracking-[0.04em] ${
                             destOpen
                               ? "rounded-full bg-[#c9a227] text-[#1a1408] hover:text-[#1a1408]"
                               : goldLineOpen
@@ -840,7 +955,7 @@ export default function Header() {
                     ) : (
                       <Link
                         href={item.href}
-                        className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem]"
+                        className="focus-ring inline-flex items-center whitespace-nowrap rounded-md px-1.5 py-2 text-[0.72rem] font-bold tracking-[0.02em] text-white transition-colors duration-200 hover:text-gold xl:px-2 xl:text-[0.82rem] xl:tracking-[0.03em] 2xl:px-3 2xl:text-[0.95rem] 2xl:tracking-[0.04em]"
                       >
                         {item.label}
                       </Link>
@@ -851,19 +966,24 @@ export default function Header() {
             </ul>
           </nav>
 
-          <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:gap-2.5">
-            <button
-              type="button"
-              aria-label="Favourites"
-              className="focus-ring mr-3.5 hidden rounded-full p-2 text-white transition-colors hover:text-gold md:inline-flex lg:mr-5"
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5 lg:gap-2">
+            <Link
+              href="/saved"
+              aria-label="Saved packages"
+              className="focus-ring relative hidden rounded-full p-1.5 text-white transition-colors hover:text-gold md:inline-flex xl:p-2"
             >
-              <svg viewBox="0 0 24 24" className="h-[1.33rem] w-[1.33rem]" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="h-[1.33rem] w-[1.33rem]" fill={savedTrips.length ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
                 <path
                   d="M12 20.4S4.8 15.7 4.8 10.4A3.95 3.95 0 0 1 12 7.35a3.95 3.95 0 0 1 7.2 3.05c0 5.3-7.2 10-7.2 10Z"
                   strokeLinejoin="round"
                 />
               </svg>
-            </button>
+              {savedTrips.length ? (
+                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#c9a227] px-1 text-[0.6rem] font-bold text-[#1a1610]">
+                  {savedTrips.length}
+                </span>
+              ) : null}
+            </Link>
 
             <a
               href={WHATSAPP_URL}
@@ -877,14 +997,14 @@ export default function Header() {
                   <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1H7c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z" />
                 </svg>
               </span>
-              <span className="text-[0.84rem] font-semibold tracking-wide text-gold">
+              <span className="hidden text-[0.78rem] font-semibold tracking-wide text-gold xl:inline 2xl:text-[0.84rem]">
                 {PHONE_DISPLAY}
               </span>
             </a>
 
             <button
               type="button"
-              className="focus-ring inline-flex rounded-md p-2 text-white xl:hidden"
+              className="focus-ring inline-flex rounded-md p-2 text-white lg:hidden"
               aria-expanded={mobileOpen}
               aria-controls={navId}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -905,7 +1025,7 @@ export default function Header() {
 
         {openMegaItem ? (
           <div
-            className={`animate-dropdown absolute left-1/2 top-full z-[90] hidden w-[min(calc(100vw-2rem),86rem)] -translate-x-1/2 pt-2 xl:block ${
+            className={`animate-dropdown absolute left-1/2 top-full z-[90] hidden w-[min(calc(100vw-2rem),86rem)] -translate-x-1/2 pt-2 lg:block ${
               isLuxuryShowcase ? "" : "max-w-[74rem]"
             }`}
             onMouseLeave={() => setOpenDropdown(null)}
@@ -922,7 +1042,7 @@ export default function Header() {
           </div>
         ) : openDropdown && usesStackDropdown(openDropdown) ? (
           <div
-            className="animate-dropdown absolute left-1/2 top-full z-[90] hidden -translate-x-1/2 pt-2 xl:block"
+            className="animate-dropdown absolute left-1/2 top-full z-[90] hidden -translate-x-1/2 pt-2 lg:block"
             onMouseLeave={() => setOpenDropdown(null)}
           >
             <FrostListDropdown
@@ -934,7 +1054,7 @@ export default function Header() {
         ) : null}
       </div>
 
-      <div id={navId} className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}>
+      <div id={navId} className={`lg:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div
           className="max-h-[calc(100dvh-4.75rem-var(--safe-top))] overflow-y-auto overscroll-contain border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-[max(2rem,var(--safe-bottom))] pt-3 backdrop-blur-lg"
           style={{ fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif" }}
