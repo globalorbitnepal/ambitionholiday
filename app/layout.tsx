@@ -1,27 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope, Outfit } from "next/font/google";
 import "./globals.css";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Ambition Holiday | Journeys Beyond Limits",
@@ -62,7 +40,7 @@ export default function RootLayout({
       <head>
         <link rel="preload" as="image" href="/images/hero-video-poster.webp" />
       </head>
-      <body className={`${outfit.variable} ${manrope.variable} ${cormorant.variable} antialiased`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>

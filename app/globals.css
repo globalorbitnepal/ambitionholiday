@@ -12,6 +12,9 @@
   --ink: #f7f4ef;
   --glass: rgba(8, 12, 18, 0.55);
   --glass-border: rgba(201, 162, 39, 0.28);
+  --font-outfit: "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-manrope: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-cormorant: Georgia, "Times New Roman", serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
