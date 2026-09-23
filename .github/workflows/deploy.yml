@@ -158,29 +158,29 @@ jobs:
               umask 077
               ENV_TMP="$(mktemp .env.local.XXXXXX)"
               ENV_TMP="${ENV_TMP}" node <<'NODE'
-const fs = require("fs");
-const path = ".env.local";
-const tmp = process.env.ENV_TMP;
-const values = {
-  ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
-  ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
-};
-const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
-const lines = source.split(/\r?\n/);
-for (const [key, value] of Object.entries(values)) {
-  const replacement = `${key}=${value}`;
-  let found = false;
-  for (let i = 0; i < lines.length; i += 1) {
-    if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
-      lines[i] = replacement;
-      found = true;
-    }
-  }
-  if (!found) lines.push(replacement);
-}
-fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
-fs.renameSync(tmp, path);
-NODE
+                const fs = require("fs");
+                const path = ".env.local";
+                const tmp = process.env.ENV_TMP;
+                const values = {
+                  ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
+                  ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
+                };
+                const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
+                const lines = source.split(/\r?\n/);
+                for (const [key, value] of Object.entries(values)) {
+                  const replacement = `${key}=${value}`;
+                  let found = false;
+                  for (let i = 0; i < lines.length; i += 1) {
+                    if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
+                      lines[i] = replacement;
+                      found = true;
+                    }
+                  }
+                  if (!found) lines.push(replacement);
+                }
+                fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
+                fs.renameSync(tmp, path);
+                NODE
             else
               echo "Orbit secrets not supplied; preserving existing .env.local."
             fi
@@ -247,24 +247,24 @@ NODE
 
             echo "Validating PM2 process ${PM2_APP} before targeted restart..."
             PM2_APP="${PM2_APP}" PROJECT_PATH="${PROJECT_PATH}" APP_PORT="${APP_PORT}" node <<'NODE'
-const { execFileSync } = require("child_process");
-const name = process.env.PM2_APP;
-const expectedCwd = process.env.PROJECT_PATH;
-const expectedPort = process.env.APP_PORT;
-const processes = JSON.parse(execFileSync("pm2", ["jlist"], { encoding: "utf8" }));
-const target = processes.find((entry) => entry.name === name);
-if (!target) throw new Error(`PM2 process ${name} is missing; refusing to create it`);
-const env = target.pm2_env || {};
-if (env.pm_cwd !== expectedCwd) {
-  throw new Error(`PM2 process ${name} has cwd ${env.pm_cwd || "<missing>"}; refusing restart`);
-}
-const args = JSON.stringify(env.args || []);
-const configuredPort = env.PORT || env.port;
-if (String(configuredPort) !== expectedPort &&
-    !new RegExp(`(?:^|[^0-9])${expectedPort}(?:[^0-9]|$)`).test(args)) {
-  throw new Error(`PM2 process ${name} is not configured for port ${expectedPort}; refusing restart`);
-}
-NODE
+            const { execFileSync } = require("child_process");
+            const name = process.env.PM2_APP;
+            const expectedCwd = process.env.PROJECT_PATH;
+            const expectedPort = process.env.APP_PORT;
+            const processes = JSON.parse(execFileSync("pm2", ["jlist"], { encoding: "utf8" }));
+            const target = processes.find((entry) => entry.name === name);
+            if (!target) throw new Error(`PM2 process ${name} is missing; refusing to create it`);
+            const env = target.pm2_env || {};
+            if (env.pm_cwd !== expectedCwd) {
+              throw new Error(`PM2 process ${name} has cwd ${env.pm_cwd || "<missing>"}; refusing restart`);
+            }
+            const args = JSON.stringify(env.args || []);
+            const configuredPort = env.PORT || env.port;
+            if (String(configuredPort) !== expectedPort &&
+                !new RegExp(`(?:^|[^0-9])${expectedPort}(?:[^0-9]|$)`).test(args)) {
+              throw new Error(`PM2 process ${name} is not configured for port ${expectedPort}; refusing restart`);
+            }
+            NODE
             pm2 restart "${PM2_APP}"
 
             echo "Waiting for ${PM2_APP} to come online..."
