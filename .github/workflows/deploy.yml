@@ -33,7 +33,7 @@ jobs:
           request_pty: true
           envs: ORBIT_PASSKEY,ORBIT_SESSION_SECRET
           script: |
-            set -e
+            set -euo pipefail
 
             # Load nvm/node carefully. Do NOT source full bashrc under nounset.
             export NVM_DIR="${HOME}/.nvm"
@@ -66,6 +66,9 @@ jobs:
             APP_PORT="3032"
             EXPECTED_REPO="globalorbitnepal/ambitionholiday"
             PUBLIC_URL="https://ambition.theglobalorbit.com"
+            REMOTE_SCRIPT_PATH="/tmp/ambition-holidays-deploy-${GITHUB_RUN_ID:-manual}-${GITHUB_RUN_ATTEMPT:-1}-$$.sh"
+            trap 'rm -f "${REMOTE_SCRIPT_PATH}"' EXIT
+            : > "${REMOTE_SCRIPT_PATH}"
 
             cd "${PROJECT_PATH}"
 
@@ -84,32 +87,30 @@ jobs:
             fi
             if [ -d data/uploads ]; then
               mkdir -p "${CMS_BACKUP}/data-uploads"
-              cp -aL data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || cp -a data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || true
+              cp -aL data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || cp -a data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null
             fi
             if [ -d public/uploads ]; then
               mkdir -p "${CMS_BACKUP}/public-uploads"
-              cp -aL public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || cp -a public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || true
+              cp -aL public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || cp -a public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null
             fi
 
-            # Optional durable store outside git tree (best-effort; never fail deploy).
-            if mkdir -p "${CMS_PATH}/uploads" "${CMS_PATH}/data-uploads" "${CMS_PATH}/public-uploads" 2>/dev/null; then
-              if [ -f "${CMS_BACKUP}/site-content.json" ]; then
-                cp -a "${CMS_BACKUP}/site-content.json" "${CMS_PATH}/site-content.json" || true
-              fi
-              if [ -d "${CMS_BACKUP}/data-uploads" ]; then
-                cp -a "${CMS_BACKUP}/data-uploads/." "${CMS_PATH}/data-uploads/" 2>/dev/null || true
-              fi
-              if [ -d "${CMS_BACKUP}/public-uploads" ]; then
-                cp -a "${CMS_BACKUP}/public-uploads/." "${CMS_PATH}/public-uploads/" 2>/dev/null || true
-              fi
-            else
-              echo "WARNING: durable CMS path unavailable at ${CMS_PATH}; using deploy backup only."
+            # Durable store outside the git tree; any preservation failure aborts deployment.
+            mkdir -p "${CMS_PATH}/uploads" "${CMS_PATH}/data-uploads" "${CMS_PATH}/public-uploads"
+            if [ -f "${CMS_BACKUP}/site-content.json" ]; then
+              cp -a "${CMS_BACKUP}/site-content.json" "${CMS_PATH}/site-content.json"
+            fi
+            if [ -d "${CMS_BACKUP}/data-uploads" ]; then
+              cp -a "${CMS_BACKUP}/data-uploads/." "${CMS_PATH}/data-uploads/" 2>/dev/null
+            fi
+            if [ -d "${CMS_BACKUP}/public-uploads" ]; then
+              cp -a "${CMS_BACKUP}/public-uploads/." "${CMS_PATH}/public-uploads/" 2>/dev/null
             fi
 
             STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-            if [ -f "${CMS_PATH}/site-content.json" ] && mkdir -p "${CMS_PATH}/snapshots" 2>/dev/null; then
-              cp -a "${CMS_PATH}/site-content.json" "${CMS_PATH}/snapshots/site-content-${STAMP}.json" 2>/dev/null || true
-              ls -1t "${CMS_PATH}/snapshots"/site-content-*.json 2>/dev/null | tail -n +21 | xargs -r rm -f 2>/dev/null || true
+            if [ -f "${CMS_PATH}/site-content.json" ]; then
+              mkdir -p "${CMS_PATH}/snapshots"
+              cp -a "${CMS_PATH}/site-content.json" "${CMS_PATH}/snapshots/site-content-${STAMP}.json"
+              ls -1t "${CMS_PATH}/snapshots"/site-content-*.json 2>/dev/null | tail -n +21 | xargs -r rm -f
             fi
 
             echo "Syncing origin/main..."
@@ -129,29 +130,59 @@ jobs:
               echo "Restored site-content.json from durable CMS store"
             fi
             if [ -d "${CMS_BACKUP}/data-uploads" ]; then
-              cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/ 2>/dev/null || true
+              cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/ 2>/dev/null
             elif [ -d "${CMS_PATH}/data-uploads" ]; then
-              cp -a "${CMS_PATH}/data-uploads/." data/uploads/ 2>/dev/null || true
+              cp -a "${CMS_PATH}/data-uploads/." data/uploads/ 2>/dev/null
             fi
             if [ -d "${CMS_BACKUP}/public-uploads" ]; then
-              cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/ 2>/dev/null || true
+              cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/ 2>/dev/null
             elif [ -d "${CMS_PATH}/public-uploads" ]; then
-              cp -a "${CMS_PATH}/public-uploads/." public/uploads/ 2>/dev/null || true
+              cp -a "${CMS_PATH}/public-uploads/." public/uploads/ 2>/dev/null
+            fi
+            test -d "${CMS_PATH}"
+            test -d data/uploads
+            test -d public/uploads
+            if [ -f "${CMS_PATH}/site-content.json" ] || [ -f data/site-content.json ]; then
+              test -f data/site-content.json
+            fi
+            if [ -n "$(find data/uploads -type f -print -quit)" ]; then
+              test -n "$(find data/uploads -type f -print -quit)"
+            fi
+            if [ -n "$(find public/uploads -type f -print -quit)" ]; then
+              test -n "$(find public/uploads -type f -print -quit)"
             fi
             rm -rf "${CMS_BACKUP}"
 
             if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
-              echo "Writing Orbit CMS env (.env.local)..."
+              echo "Updating Orbit CMS env variables (.env.local)..."
               umask 077
-              if [ -d "${CMS_PATH}" ] && [ -w "${CMS_PATH}" ]; then
-                printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\nAMBITION_CMS_DIR=%s\n' \
-                  "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" "${CMS_PATH}" > .env.local
-              else
-                printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' \
-                  "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > .env.local
-              fi
+              ENV_TMP="$(mktemp .env.local.XXXXXX)"
+              ENV_TMP="${ENV_TMP}" node <<'NODE'
+const fs = require("fs");
+const path = ".env.local";
+const tmp = process.env.ENV_TMP;
+const values = {
+  ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
+  ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
+};
+const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
+const lines = source.split(/\r?\n/);
+for (const [key, value] of Object.entries(values)) {
+  const replacement = `${key}=${value}`;
+  let found = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
+      lines[i] = replacement;
+      found = true;
+    }
+  }
+  if (!found) lines.push(replacement);
+}
+fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
+fs.renameSync(tmp, path);
+NODE
             else
-              echo "WARNING: ORBIT_PASSKEY / ORBIT_SESSION_SECRET secrets missing; /orbit login will stay disabled."
+              echo "Orbit secrets not supplied; preserving existing .env.local."
             fi
 
             if [ -f data/site-content.json ]; then
@@ -214,15 +245,27 @@ jobs:
             fi
             rm -rf .next.deploy-backup
 
-            echo "Updating PM2 process ${PM2_APP} only..."
-            if pm2 describe "${PM2_APP}" >/dev/null 2>&1; then
-              pm2 delete "${PM2_APP}" || true
-              pm2 start npm --name "${PM2_APP}" -- start -- -p "${APP_PORT}"
-            else
-              pm2 start npm --name "${PM2_APP}" -- start -- -p "${APP_PORT}"
-            fi
-
-            pm2 save
+            echo "Validating PM2 process ${PM2_APP} before targeted restart..."
+            PM2_APP="${PM2_APP}" PROJECT_PATH="${PROJECT_PATH}" APP_PORT="${APP_PORT}" node <<'NODE'
+const { execFileSync } = require("child_process");
+const name = process.env.PM2_APP;
+const expectedCwd = process.env.PROJECT_PATH;
+const expectedPort = process.env.APP_PORT;
+const processes = JSON.parse(execFileSync("pm2", ["jlist"], { encoding: "utf8" }));
+const target = processes.find((entry) => entry.name === name);
+if (!target) throw new Error(`PM2 process ${name} is missing; refusing to create it`);
+const env = target.pm2_env || {};
+if (env.pm_cwd !== expectedCwd) {
+  throw new Error(`PM2 process ${name} has cwd ${env.pm_cwd || "<missing>"}; refusing restart`);
+}
+const args = JSON.stringify(env.args || []);
+const configuredPort = env.PORT || env.port;
+if (String(configuredPort) !== expectedPort &&
+    !new RegExp(`(?:^|[^0-9])${expectedPort}(?:[^0-9]|$)`).test(args)) {
+  throw new Error(`PM2 process ${name} is not configured for port ${expectedPort}; refusing restart`);
+}
+NODE
+            pm2 restart "${PM2_APP}"
 
             echo "Waiting for ${PM2_APP} to come online..."
             online_ok=0
