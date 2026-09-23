@@ -224,19 +224,6 @@ jobs:
 
             pm2 save
 
-            echo "Ensuring public nginx + firewall access for ${PUBLIC_URL}..."
-            chmod +x scripts/ensure-public-access.sh
-            if ! bash scripts/ensure-public-access.sh; then
-              echo "WARNING: ensure-public-access script failed; trying inline nginx cleanup..."
-              for conf in $(grep -rl "ambition.theglobalorbit.com" /etc/nginx/sites-enabled /etc/nginx/sites-available /etc/nginx/conf.d 2>/dev/null || true); do
-                echo "Stripping allow/deny in ${conf}"
-                cp -a "${conf}" "${conf}.bak-$(date -u +%Y%m%dT%H%M%SZ)" 2>/dev/null || sudo cp -a "${conf}" "${conf}.bak-$(date -u +%Y%m%dT%H%M%SZ)" 2>/dev/null || true
-                sed -i -E '/^[[:space:]]*(allow|deny)[[:space:]]/d' "${conf}" 2>/dev/null || sudo sed -i -E '/^[[:space:]]*(allow|deny)[[:space:]]/d' "${conf}" 2>/dev/null || true
-              done
-              (nginx -t && systemctl reload nginx) 2>/dev/null || (sudo nginx -t && sudo systemctl reload nginx) 2>/dev/null || echo "WARNING: nginx reload skipped"
-              (ufw allow 80/tcp && ufw allow 443/tcp) 2>/dev/null || (sudo ufw allow 80/tcp && sudo ufw allow 443/tcp) 2>/dev/null || true
-            fi
-
             echo "Waiting for ${PM2_APP} to come online..."
             online_ok=0
             for i in $(seq 1 30); do
