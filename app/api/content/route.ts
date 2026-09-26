@@ -54,8 +54,8 @@ export async function POST(req: Request) {
   revalidatePath("/himalayan-multi-countries-tour");
   revalidatePath("/helicopter-tours");
   revalidatePath("/photography-treks");
-  revalidatePath("/orbit");
-  revalidatePath("/admin");
+  revalidatePath("/orbit", "layout");
+  revalidatePath("/admin", "layout");
   revalidatePath("/trip", "layout");
   revalidatePath("/everest-base-camp-trek");
   revalidatePath("/everest-base-camp-luxury-trek");

@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/orbit", label: "Website editor (Orbit)" },
   { href: "/admin/packages", label: "Packages" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/luxury", label: "Luxury Tour & Trek" },
@@ -58,7 +57,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <input type="search" placeholder="Search packages, bookings, customers…" readOnly />
           <div className="admin-top-user">
             <strong>Admin</strong>
-            <span style={{ color: "#667084" }}>Super Admin</span>
+            <span style={{ color: "#667084" }}>Staff</span>
           </div>
         </header>
         <div className="admin-page">{children}</div>

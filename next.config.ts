@@ -55,18 +55,6 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/orbit/login",
-          destination: "/admin/login",
-        },
-        {
-          source: "/orbit",
-          destination: "/admin",
-        },
-        {
-          source: "/orbit/:path*",
-          destination: "/admin/:path*",
-        },
-        {
           source: "/uploads/:filename",
           destination: "/api/media/:filename",
         },
@@ -99,6 +87,21 @@ const nextConfig: NextConfig = {
         source: "/luxury-everest-base-camp-trek",
         destination: "/everest-base-camp-trek",
         permanent: true,
+      },
+      {
+        source: "/orbit/login",
+        destination: "/orbit-login",
+        permanent: false,
+      },
+      {
+        source: "/admin/orbit",
+        destination: "/admin",
+        permanent: false,
+      },
+      {
+        source: "/admin/orbit/:path*",
+        destination: "/admin",
+        permanent: false,
       },
     ];
   },

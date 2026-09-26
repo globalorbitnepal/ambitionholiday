@@ -125,7 +125,7 @@ export default function AdminDashboardHome() {
           <section className="admin-card">
             <div className="admin-card-head">
               <h2>Departures &amp; bookings</h2>
-              <Link className="admin-text-link" href="/admin/orbit">Edit in Orbit</Link>
+              <Link className="admin-text-link" href="/admin/luxury">Luxury tours</Link>
             </div>
             <p className="admin-muted">Fixed-date groups shown on the homepage availability strip.</p>
             <ul className="admin-booking-list">
@@ -139,13 +139,13 @@ export default function AdminDashboardHome() {
                 </li>
               ))}
             </ul>
-            {departures.length === 0 ? <p className="admin-muted">No departure cards — add them under Orbit → Availability.</p> : null}
+            {departures.length === 0 ? <p className="admin-muted">No departure cards listed yet.</p> : null}
           </section>
 
           <section className="admin-card">
             <div className="admin-card-head">
               <h2>Payment methods</h2>
-              <Link className="admin-text-link" href="/admin/orbit">Footer in Orbit</Link>
+              <Link className="admin-text-link" href="/admin/header">Header &amp; footer</Link>
             </div>
             <p className="admin-muted">{content.footer.paymentsTitle || "We accept"}</p>
             <div className="admin-pay-chips">
@@ -167,7 +167,7 @@ export default function AdminDashboardHome() {
             <div className="admin-chip-row">
               <Link className="admin-chip on" href="/admin/packages">Manage packages</Link>
               <Link className="admin-chip" href="/admin/packages/ebc-lux">Edit EBC Luxury Trek</Link>
-              <Link className="admin-chip" href="/admin/orbit">Website editor (Orbit)</Link>
+              <Link className="admin-chip" href="/admin/media">Media library</Link>
               <Link className="admin-chip" href="/admin/journal">Journal ({posts.length})</Link>
               <Link className="admin-chip" href="/admin/header">Header &amp; menus</Link>
             </div>
