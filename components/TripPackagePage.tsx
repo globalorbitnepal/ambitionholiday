@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
+import DuskAtmosphere from "@/components/DuskAtmosphere";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
@@ -57,9 +58,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     const unique = [pkg.heroSrc, ...raw.filter((src) => src !== pkg.heroSrc)];
     return unique.filter(Boolean);
   }, [pkg.gallery, pkg.heroSrc]);
-  const mosaic = [...gallery];
-  while (mosaic.length < 5) mosaic.push(gallery[mosaic.length % gallery.length] || pkg.heroSrc);
-  const mosaicShow = mosaic.slice(0, 5);
+  const heroStrip = useMemo(() => {
+    const strip = gallery.slice(0, 3);
+    while (strip.length < 3) {
+      strip.push(gallery[strip.length % gallery.length] || pkg.heroSrc);
+    }
+    return strip;
+  }, [gallery, pkg.heroSrc]);
   const groups = pkg.groupPrices?.length
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
@@ -104,30 +109,29 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <main className="lux-root lux-root--sky">
-      <div className="lux-sky-bg" aria-hidden="true" />
+    <main className="lux-root">
       <div className="lux-top">
-        <Header surface="light" />
-        <section className="lux-gallery" aria-label="Journey photos">
+        <Header />
+        <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
           <div className="lux-mosaic-tools">
             <PackageActions pkg={pkg} compact />
           </div>
           <div className="lux-gallery-row">
-            {mosaicShow.map((src, index) => (
+            {heroStrip.map((src, index) => (
               <figure
                 key={`${src}-${index}`}
                 className={`lux-gallery-pane${index === 0 ? " is-lead" : ""}`}
-                onClick={() => setLightIndex(Math.min(index, gallery.length - 1))}
+                onClick={() => setLightIndex(index)}
               >
                 <span className="lux-gallery-media">
                   <MediaImage
                     src={src}
                     alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
-                    sizes={index === 0 ? "42vw" : "18vw"}
-                    priority={index < 2}
+                    sizes={index === 0 ? "44vw" : "22vw"}
+                    priority={index === 0}
                     className="lux-gallery-photo lux-photo"
-                    objectPosition="center 38%"
-                    quality={index === 0 ? 86 : 76}
+                    objectPosition="center 40%"
+                    quality={index === 0 ? 86 : 78}
                   />
                 </span>
                 {index === 0 ? (
@@ -142,9 +146,6 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       View all {gallery.length} photos
                     </button>
                   </div>
-                ) : null}
-                {index === 3 && gallery.length > 5 ? (
-                  <span className="lux-mosaic-count">+{gallery.length - 5} photos</span>
                 ) : null}
               </figure>
             ))}
@@ -185,13 +186,6 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <div className="lux-layout">
           <div className="lux-main">
             <header id="overview" className="lux-card lux-title-card">
-              <p className="lux-breadcrumb">
-                <Link href="/">Home</Link>
-                <span aria-hidden="true">/</span>
-                <Link href={`/${pkg.country || "nepal"}`}>{pkg.countryLabel || "Nepal"}</Link>
-                <span aria-hidden="true">/</span>
-                <span>{pkg.destination?.split("·").pop()?.trim() || "Trek"}</span>
-              </p>
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
@@ -644,8 +638,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       <WhyAmbitionSection />
     </div>
 
-    <div className="home-light lux-foot lux-foot--sky relative isolate [clip-path:inset(0)]">
-      <div className="lux-foot-sky" aria-hidden="true" />
+    <div className="home-light lux-foot relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
+      <DuskAtmosphere />
       <SiteFooter />
     </div>
     </>
