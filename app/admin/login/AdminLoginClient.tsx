@@ -41,11 +41,12 @@ export default function AdminLoginClient() {
       <div className="admin-login-visual">
         <img src="/images/atmosphere/ebc-premium-section.webp" alt="" />
         <div className="admin-login-brand">
-          <img src="/images/ambition-holiday-logo.webp" alt="Ambition Holidays" />
-          <div>
-            <strong>Ambition Holidays</strong>
-            <div style={{ fontSize: "0.78rem", opacity: 0.8 }}>Tours · Treks · Expeditions</div>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="admin-login-logo"
+            src="/images/ambition-holiday-logo.webp"
+            alt="Ambition Holidays"
+          />
         </div>
         <div className="admin-login-quote">
           <p>More than travel. A Himalayan experience.</p>
@@ -53,8 +54,9 @@ export default function AdminLoginClient() {
       </div>
       <div className="admin-login-panel">
         <form className="admin-login-card" onSubmit={onSubmit} autoComplete="off">
+          <p className="admin-login-kicker">Ambition Holidays</p>
           <h1>Welcome back</h1>
-          <p className="sub">Sign in to the Ambition Holidays dashboard.</p>
+          <p className="sub">Sign in to manage treks, enquiries and live content.</p>
           {error ? <div className="admin-error">{error}</div> : null}
           <label className="admin-field">
             <span>User ID</span>

@@ -7,6 +7,6 @@ export default function OrbitProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  redirect("/admin");
+  redirect("/admin/orbit");
   return <>{children}</>;
 }

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/orbit", label: "Website editor (Orbit)" },
   { href: "/admin/packages", label: "Packages" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/luxury", label: "Luxury Tour & Trek" },
@@ -31,14 +32,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     <div className="admin-shell">
       <aside className="admin-side">
         <div className="admin-side-brand">
-          <img src="/images/ambition-holiday-logo.webp" alt="Ambition Holidays" />
-          <div>
-            <strong>Ambition Holidays</strong>
-            <small>Control centre</small>
-          </div>
+          <strong>Ambition Holidays</strong>
+          <small>Control centre</small>
         </div>
         <a href="/" target="_blank" rel="noreferrer">
-          Edit Website
+          View live site
         </a>
         <div className="group-label">Workspace</div>
         {NAV.map((item) => {
