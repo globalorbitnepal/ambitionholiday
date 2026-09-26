@@ -5,7 +5,6 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
-import DuskAtmosphere from "@/components/DuskAtmosphere";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
@@ -105,46 +104,51 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <main className="lux-root">
+    <main className="lux-root lux-root--sky">
+      <div className="lux-sky-bg" aria-hidden="true" />
       <div className="lux-top">
-        <Header />
-        <section className="lux-mosaic" aria-label="Journey photos">
+        <Header surface="light" />
+        <section className="lux-gallery" aria-label="Journey photos">
           <div className="lux-mosaic-tools">
             <PackageActions pkg={pkg} compact />
           </div>
-          {mosaicShow.map((src, index) => (
-            <figure
-              key={`${src}-${index}`}
-              className={index === 0 ? "lux-mosaic-main" : "lux-mosaic-cell"}
-              onClick={() => setLightIndex(Math.min(index, gallery.length - 1))}
-            >
-              <MediaImage
-                src={src}
-                alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
-                sizes={index === 0 ? "60vw" : "28vw"}
-                priority={index === 0}
-                className="lux-photo"
-                objectPosition="center 42%"
-                quality={index === 0 ? 84 : 72}
-              />
-              {index === 0 ? (
-                <div className="lux-mosaic-actions">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setLightIndex(0);
-                    }}
-                  >
-                    View all {gallery.length} photos
-                  </button>
-                </div>
-              ) : null}
-              {index === 3 && gallery.length > 5 ? (
-                <span className="lux-mosaic-count">+{gallery.length - 5} photos</span>
-              ) : null}
-            </figure>
-          ))}
+          <div className="lux-gallery-row">
+            {mosaicShow.map((src, index) => (
+              <figure
+                key={`${src}-${index}`}
+                className={`lux-gallery-pane${index === 0 ? " is-lead" : ""}`}
+                onClick={() => setLightIndex(Math.min(index, gallery.length - 1))}
+              >
+                <span className="lux-gallery-media">
+                  <MediaImage
+                    src={src}
+                    alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
+                    sizes={index === 0 ? "42vw" : "18vw"}
+                    priority={index < 2}
+                    className="lux-gallery-photo lux-photo"
+                    objectPosition="center 38%"
+                    quality={index === 0 ? 86 : 76}
+                  />
+                </span>
+                {index === 0 ? (
+                  <div className="lux-mosaic-actions">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLightIndex(0);
+                      }}
+                    >
+                      View all {gallery.length} photos
+                    </button>
+                  </div>
+                ) : null}
+                {index === 3 && gallery.length > 5 ? (
+                  <span className="lux-mosaic-count">+{gallery.length - 5} photos</span>
+                ) : null}
+              </figure>
+            ))}
+          </div>
         </section>
       </div>
 
@@ -181,6 +185,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <div className="lux-layout">
           <div className="lux-main">
             <header id="overview" className="lux-card lux-title-card">
+              <p className="lux-breadcrumb">
+                <Link href="/">Home</Link>
+                <span aria-hidden="true">/</span>
+                <Link href={`/${pkg.country || "nepal"}`}>{pkg.countryLabel || "Nepal"}</Link>
+                <span aria-hidden="true">/</span>
+                <span>{pkg.destination?.split("·").pop()?.trim() || "Trek"}</span>
+              </p>
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
@@ -633,8 +644,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       <WhyAmbitionSection />
     </div>
 
-    <div className="home-light lux-foot relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
-      <DuskAtmosphere />
+    <div className="home-light lux-foot lux-foot--sky relative isolate [clip-path:inset(0)]">
+      <div className="lux-foot-sky" aria-hidden="true" />
       <SiteFooter />
     </div>
     </>

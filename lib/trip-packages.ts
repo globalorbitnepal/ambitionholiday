@@ -164,8 +164,9 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     status: "published",
     featured: true,
     badge: "Most Popular",
-    title: "Everest Base Camp Luxury Trek",
-    subtitle: "Follow the Khumbu trail to the base of the world’s highest peak, with private lodge nights.",
+    title: "Everest Base Camp Trek",
+    subtitle:
+      "Fourteen days from Kathmandu to the Khumbu Icefall — lodge nights we actually hand-pick, two proper acclimatisation stops, and the Kala Patthar sunrise most people remember more than Base Camp itself.",
     duration: "14 Days / 13 Nights",
     days: 14,
     difficulty: "Challenging",
@@ -187,7 +188,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
       { id: "p4", label: "10–14 Pax", priceUsd: 2190 },
     ],
     overview:
-      "This is Ambition Holidays’ private-lodge Everest Base Camp journey: fourteen days from Kathmandu to the Khumbu Icefall and back, with upgraded rooms, a dedicated guide team, and unhurried acclimatization in Namche Bazaar and Dingboche. You walk the classic trail through Phakding, Namche, Tengboche, Dingboche, Lobuche and Gorakshep. Base Camp itself sits at 5,364 m; the panoramic Everest view is from Kala Patthar at 5,545 m the day before. The walking is not technical, but it is demanding — five to seven hours on most days, thin air above 4,000 m, and a long Day 10 that pairs the glacier walk with the descent. We design the nights around comfort so the trail stays the adventure. Permits for Sagarmatha National Park and the Khumbu Pasang Lhamu Rural Municipality are arranged before you fly. Sister company Ambition Himalaya Treks and Expeditions has worked this route for more than a decade; Ambition Holidays layers private lodges and a quieter guest-to-staff ratio on that same Himalayan experience.",
+      "You fly into Lukla, drop into the Dudh Koshi valley, and climb the Khumbu the way generations of walkers have — through Namche, Tengboche, Dingboche, Lobuche and Gorakshep. We keep the same trail everyone talks about; what changes is how you recover each evening. Rooms are reserved in the better lodges along the route, your guide team stays with you from Kathmandu, and we do not shave acclimatisation nights to save a day.\n\nBase Camp is 5,364 m on the glacier. You will not see the summit from there — the Icefall blocks it — which is why we walk Kala Patthar (5,545 m) for the pyramid view. Most days are five to seven hours on foot, not technical, but the air thins quickly above 4,000 m. Day ten is long: glacier, flags, then down again.\n\nSagarmatha National Park and Khumbu Pasang Lhamu permits are sorted before you board the plane. Our sister company Ambition Himalaya Treks has guided this valley for years; Ambition Holidays runs the same route with fewer guests per departure and the lodge list we would use for our own families.",
     highlights: [
       "Fourteen luxury days on the Khumbu trail, opening with the mountain hop into Lukla — one of the most watched short runways in the Himalaya.",
       "Walk with Sherpa hosts through Namche, Tengboche and Dingboche, and learn the pace of highland life rather than rushing the altitude.",

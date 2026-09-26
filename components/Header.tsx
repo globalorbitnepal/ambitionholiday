@@ -771,7 +771,12 @@ function DestinationsMegaPanel({
   );
 }
 
-export default function Header() {
+type HeaderProps = {
+  /** Trip / content pages on a light sky background — readable nav from the first pixel. */
+  surface?: "dark" | "light";
+};
+
+export default function Header({ surface = "dark" }: HeaderProps) {
   const { header, headerNav, updatedAt } = useSiteContent();
   const logoSrc = headerLogoSrc(header.logoSrc, updatedAt);
   const { items: savedTrips } = useFavorites();
@@ -871,12 +876,18 @@ export default function Header() {
     openMegaItem && usesLuxuryShowcase(openMegaItem.label),
   );
 
+  const onLightSurface = surface === "light";
+  const showBar = onLightSurface || scrolled || mobileOpen || openDropdown;
+
   return (
     <header
       ref={headerRef}
+      data-surface={surface}
       className={`absolute inset-x-0 top-0 z-[80] isolate pt-[var(--safe-top)] transition-colors duration-300 ${
-        scrolled || mobileOpen || openDropdown
-          ? "bg-[rgba(8,12,18,0.91)] backdrop-blur-md"
+        showBar
+          ? onLightSurface
+            ? "border-b border-white/75 bg-white/78 shadow-[0_10px_40px_rgba(24,56,88,0.08)] backdrop-blur-xl"
+            : "bg-[rgba(8,12,18,0.91)] backdrop-blur-md"
           : "bg-transparent"
       }`}
     >
