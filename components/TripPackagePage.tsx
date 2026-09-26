@@ -129,8 +129,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     sizes={index === 0 ? "44vw" : "22vw"}
                     priority
                     className="lux-gallery-photo lux-photo"
-                    objectFit="contain"
-                    objectPosition="center center"
+                    objectFit="cover"
+                    objectPosition="center 38%"
                     quality={index === 0 ? 86 : 78}
                   />
                 </span>
@@ -283,7 +283,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <p className="lux-kicker">Film</p>
                 <h2>Watch video</h2>
                 <button type="button" className="lux-film" style={{ width: "100%" }} onClick={() => openVideo(pkg.watchVideo)}>
-                  <MediaImage src={pkg.watchVideo.imageSrc || pkg.heroSrc} alt={pkg.watchVideo.imageAlt || pkg.watchVideo.title} sizes="80vw" className="lux-photo" />
+                  <FilmStill
+                    src={pkg.watchVideo.imageSrc || pkg.heroSrc}
+                    alt={pkg.watchVideo.imageAlt || pkg.watchVideo.title}
+                  />
                   <span className="lux-film-play" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                       <path d="M9.4 7.6v8.8L17.2 12 9.4 7.6Z" />
@@ -310,7 +313,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       aria-label={`Play video: ${video.title}`}
                       onClick={() => openVideo(video)}
                     >
-                      <MediaImage src={video.imageSrc} alt={video.imageAlt || video.title} sizes="30vw" className="lux-photo" />
+                      <FilmStill
+                        src={video.imageSrc || pkg.heroSrc}
+                        alt={video.imageAlt || video.title}
+                      />
                       <span className="lux-film-play lux-film-play--sm" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                           <path d="M9.4 7.6v8.8L17.2 12 9.4 7.6Z" />
@@ -665,6 +671,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         />
       ) : null}
     </>
+  );
+}
+
+function FilmStill({ src, alt }: { src: string; alt: string }) {
+  const resolved = mediaSrc(src);
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={resolved} alt={alt} className="lux-photo" loading="eager" decoding="async" draggable={false} />
   );
 }
 
