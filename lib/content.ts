@@ -731,6 +731,7 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
 
 export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteContent {
   const fallbackLogo = DEFAULT_CONTENT.header.logoSrc;
+  const nav = mergeHeaderNav(content.headerNav);
 
   return {
     ...content,
@@ -738,14 +739,14 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
       logoSrc: content.header.logoSrc === publicPath ? fallbackLogo : content.header.logoSrc,
     },
     headerNav: {
-      destinations: content.headerNav.destinations.map((dest, index) => ({
+      destinations: nav.destinations.map((dest, index) => ({
         ...dest,
         imageSrc:
           dest.imageSrc === publicPath
             ? DEFAULT_HEADER_NAV.destinations[index]?.imageSrc ?? dest.imageSrc
             : dest.imageSrc,
       })),
-      luxuryCountries: content.headerNav.luxuryCountries.map((country) => {
+      luxuryCountries: nav.luxuryCountries.map((country) => {
         const def = DEFAULT_HEADER_NAV.luxuryCountries.find((c) => c.id === country.id);
         return {
           ...country,

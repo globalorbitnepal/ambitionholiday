@@ -10,11 +10,13 @@ import {
 } from "react";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 import { mergeHeaderNav } from "@/lib/header-nav";
+import { normalizeSiteContent } from "@/lib/normalize-site-content";
 
 const SiteContentContext = createContext<SiteContent | null>(null);
 
 export function useSiteContent() {
-  return useContext(SiteContentContext) ?? DEFAULT_CONTENT;
+  const raw = useContext(SiteContentContext);
+  return normalizeSiteContent(raw ?? DEFAULT_CONTENT);
 }
 
 type Props = {
@@ -29,7 +31,7 @@ export default function SiteContentProvider({
   children,
   pollMs = 0,
 }: Props) {
-  const [content, setContent] = useState(initial);
+  const [content, setContent] = useState(() => normalizeSiteContent(initial));
 
   const refresh = useCallback(async () => {
     if (document.visibilityState === "hidden") return;
@@ -193,7 +195,7 @@ export default function SiteContentProvider({
   }, []);
 
   useEffect(() => {
-    setContent(initial);
+    setContent(normalizeSiteContent(initial));
   }, [initial]);
 
   useEffect(() => {
