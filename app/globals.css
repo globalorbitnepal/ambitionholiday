@@ -5931,3 +5931,92 @@ a.lux-chart-dl {
     min-height: 12rem;
   }
 }
+
+.lux-trip-gallery {
+  margin: 2rem 0 0;
+  padding: 0;
+}
+
+.lux-trip-gallery-title {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: var(--lux-text, #f5f0e8);
+  margin: 0 0 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+.lux-trip-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.lux-trip-gallery-tile {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(212, 175, 106, 0.35);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.45);
+  aspect-ratio: 4 / 3;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lux-trip-gallery-tile:hover {
+  border-color: rgba(212, 175, 106, 0.75);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.lux-trip-gallery-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lux-trip-gallery-mark {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  width: 2.1rem;
+  height: auto;
+  opacity: 0.92;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.65));
+}
+
+.lux-trip-gallery-mark img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.lux-trip-gallery-more::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 14, 0.55);
+}
+
+.lux-trip-gallery-more-label {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 900px) {
+  .lux-trip-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

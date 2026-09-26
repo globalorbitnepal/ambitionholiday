@@ -20,6 +20,7 @@ import OrbitPermitsEditor from "@/components/OrbitPermitsEditor";
 import OrbitNepalEditor from "@/components/OrbitNepalEditor";
 import OrbitFooterEditor from "@/components/OrbitFooterEditor";
 import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
+import OrbitPackageGalleryEditor from "@/components/OrbitPackageGalleryEditor";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type { SiteContent, StatItem } from "@/lib/content-types";
@@ -86,6 +87,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
     | "helicopter"
     | "photography"
     | "trekCharts"
+    | "tripGallery"
     | "footer"
     | "media"
   >("journeys");
@@ -169,6 +171,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
               ["helicopter", "Helicopter tours"],
               ["photography", "Photography treks"],
               ["trekCharts", "Trek charts"],
+              ["tripGallery", "Trip galleries"],
               ["footer", "Footer"],
               ["media", "Media library"],
             ] as const
@@ -585,6 +588,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
           ) : null}
 
           {tab === "trekCharts" ? <OrbitTrekChartsEditor content={content} setContent={setContent} /> : null}
+          {tab === "tripGallery" ? <OrbitPackageGalleryEditor content={content} setContent={setContent} /> : null}
 
           {tab === "footer" ? (
             <OrbitFooterEditor content={content} setContent={setContent} save={save} />

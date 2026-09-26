@@ -27,6 +27,7 @@ const TOC = [
   { id: "altitude", label: "Altitude" },
   { id: "weather", label: "Weather" },
   { id: "includes", label: "Includes" },
+  { id: "trip-gallery", label: "Gallery" },
   { id: "packing", label: "Packing" },
   { id: "notes", label: "Flights" },
   { id: "reviews", label: "Reviews" },
@@ -479,6 +480,52 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 </>
               ) : null}
             </article>
+
+            {gallery.length ? (
+              <section id="trip-gallery" className="lux-trip-gallery" aria-labelledby="trip-gallery-heading">
+                <h2 id="trip-gallery-heading" className="lux-trip-gallery-title">
+                  {pkg.tripGalleryTitle || "Trip Gallery"}
+                </h2>
+                <div className="lux-trip-gallery-grid">
+                  {gallery.slice(0, 7).map((src, index) => (
+                    <button
+                      key={`${src}-${index}`}
+                      type="button"
+                      className="lux-trip-gallery-tile"
+                      onClick={() => setLightIndex(index)}
+                    >
+                      <img
+                        src={mediaSrc(src)}
+                        alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
+                        loading="lazy"
+                        className="lux-trip-gallery-img"
+                      />
+                      <span className="lux-trip-gallery-mark" aria-hidden="true">
+                        <img src="/images/ambition-holiday-logo.webp" alt="" />
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="lux-trip-gallery-tile lux-trip-gallery-more"
+                    onClick={() => setLightIndex(Math.min(7, gallery.length - 1))}
+                  >
+                    {gallery[7] ? (
+                      <img
+                        src={mediaSrc(gallery[7])}
+                        alt=""
+                        loading="lazy"
+                        className="lux-trip-gallery-img"
+                        aria-hidden="true"
+                      />
+                    ) : gallery[0] ? (
+                      <img src={mediaSrc(gallery[0])} alt="" loading="lazy" className="lux-trip-gallery-img" aria-hidden="true" />
+                    ) : null}
+                    <span className="lux-trip-gallery-more-label">More Photos</span>
+                  </button>
+                </div>
+              </section>
+            ) : null}
 
             <article id="packing" className="lux-card">
               <p className="lux-kicker">Gear</p>

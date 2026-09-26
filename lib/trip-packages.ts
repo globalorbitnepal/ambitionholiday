@@ -75,6 +75,7 @@ export type TrekPackage = {
   exclusions: string[];
   gallery: string[];
   galleryAlts: string[];
+  tripGalleryTitle: string;
   heroSrc: string;
   heroAlt: string;
   countryLabel: string;
@@ -209,6 +210,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
       "/images/nepal/nepal-trek-abc.webp",
       "/images/nepal/nepal-trek-manaslu.webp",
     ],
+    tripGalleryTitle: "Trip Gallery",
     galleryAlts: [
       "Khumbu glacier trail toward Everest at dusk",
       "Everest region mountain cover",
@@ -657,6 +659,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       exclusions: item.exclusions?.some((line) => /USD 30|\$ 30 for 15/i.test(line)) ? item.exclusions : def.exclusions,
       gallery: item.gallery?.length ? item.gallery : def.gallery,
       galleryAlts: item.galleryAlts?.length ? item.galleryAlts : def.galleryAlts,
+      tripGalleryTitle: item.tripGalleryTitle?.trim() || def.tripGalleryTitle,
       groupPrices: item.groupPrices?.length ? item.groupPrices : def.groupPrices,
       itinerary: /sightseeing/i.test(item.itinerary?.[1]?.title || "")
         ? item.itinerary.map((day, index) => ({

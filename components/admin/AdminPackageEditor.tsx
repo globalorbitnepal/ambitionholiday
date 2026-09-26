@@ -435,7 +435,16 @@ export default function AdminPackageEditor() {
             <span>Hero alt text</span>
             <input value={pkg.heroAlt} onChange={(e) => patch({ heroAlt: e.target.value })} />
           </label>
-          <p className="admin-lead">Gallery</p>
+          <p className="admin-lead">
+            Gallery — top hero strip and Trip Gallery grid below What&apos;s included (2×4 on desktop; last tile opens all photos).
+          </p>
+          <label className="admin-field">
+            <span>Trip Gallery section title</span>
+            <input
+              value={pkg.tripGalleryTitle || "Trip Gallery"}
+              onChange={(e) => patch({ tripGalleryTitle: e.target.value })}
+            />
+          </label>
           {pkg.gallery.map((src, index) => (
             <div key={`${src}-${index}`}>
               <AdminMediaField
@@ -466,6 +475,19 @@ export default function AdminPackageEditor() {
           >
             Add gallery photo
           </button>
+          {pkg.gallery.length > 1 ? (
+            <button
+              type="button"
+              className="admin-btn admin-btn-ghost"
+              onClick={() => {
+                const gallery = pkg.gallery.slice(0, -1);
+                const galleryAlts = (pkg.galleryAlts || []).slice(0, gallery.length);
+                patch({ gallery, galleryAlts });
+              }}
+            >
+              Remove last photo
+            </button>
+          ) : null}
         </div>
       ) : null}
 
