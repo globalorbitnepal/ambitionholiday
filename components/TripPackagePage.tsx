@@ -113,9 +113,6 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       <div className="lux-top">
         <Header />
         <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
-          <div className="lux-mosaic-tools">
-            <PackageActions pkg={pkg} compact />
-          </div>
           <div className="lux-gallery-row">
             {heroStrip.map((src, index) => (
               <figure

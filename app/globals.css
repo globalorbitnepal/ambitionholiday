@@ -5712,12 +5712,18 @@ a.lux-chart-dl {
 }
 
 .lux-gallery--trip .lux-gallery-photo {
-  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-  transform: scale(1.16);
+  transform: none;
+  transition: none;
 }
 
 .lux-gallery--trip .lux-gallery-pane:hover .lux-gallery-photo {
-  transform: scale(1.04) translate3d(-2%, 0, 0);
+  transform: none;
+}
+
+/* Third panel: widen on row hover only — no extra zoom (ref-style) */
+.lux-gallery--trip .lux-gallery-pane:nth-child(3) .lux-gallery-photo {
+  object-fit: cover;
+  object-position: center center;
 }
 
 @media (max-width: 768px) {
