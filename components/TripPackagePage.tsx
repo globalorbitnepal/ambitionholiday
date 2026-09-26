@@ -359,21 +359,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                             <p key={para.slice(0, 40)}>{para}</p>
                           ))}
                           <div className="lux-info-bar" aria-label="Day details">
-                            <span>
-                              <b>Meals:</b> {day.meals}
-                            </span>
-                            <span>
-                              <b>Accommodation:</b> {day.stay}
-                            </span>
-                            <span>
-                              <b>Duration:</b> {day.duration}
-                            </span>
-                            <span>
-                              <b>Altitude:</b> {day.altitude}
-                            </span>
-                            <span>
-                              <b>Distance:</b> {distance}
-                            </span>
+                            <ItineraryMetaItem icon="meal" label="Meals" value={day.meals} />
+                            <ItineraryMetaItem icon="bed" label="Accommodation" value={day.stay} />
+                            <ItineraryMetaItem icon="duration" label="Duration" value={day.duration} />
+                            <ItineraryMetaItem icon="altitude" label="Altitude" value={day.altitude} />
+                            <ItineraryMetaItem icon="distance" label="Distance" value={distance} />
                           </div>
                         </div>
                       ) : null}
@@ -650,6 +640,79 @@ function GoogleG() {
       <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3c-1.08.72-2.47 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.09A12 12 0 0 0 12 24Z" />
       <path fill="#FBBC05" d="M5.27 14.3A7.2 7.2 0 0 1 4.9 12c0-.8.14-1.57.37-2.3V6.61H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.09Z" />
       <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.43-3.43C17.95 1.19 15.23 0 12 0 7.31 0 3.26 2.69 1.27 6.61l4 3.09C6.22 6.86 8.87 4.75 12 4.75Z" />
+    </svg>
+  );
+}
+
+function ItineraryMetaItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: "meal" | "bed" | "duration" | "altitude" | "distance";
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="lux-info-item">
+      <span className="lux-info-icon" aria-hidden="true">
+        <ItineraryMetaIcon name={icon} />
+      </span>
+      <span className="lux-info-copy">
+        <strong>{label}</strong>
+        <em>{value || "—"}</em>
+      </span>
+    </div>
+  );
+}
+
+function ItineraryMetaIcon({ name }: { name: "meal" | "bed" | "duration" | "altitude" | "distance" }) {
+  const common = {
+    width: 22,
+    height: 22,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.75,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  if (name === "meal") {
+    return (
+      <svg {...common}>
+        <path d="M4 21V8m0 0c0-3 2-5 4-5M8 8v5M12 21V4h2a4 4 0 0 1 0 8h-2" />
+      </svg>
+    );
+  }
+  if (name === "bed") {
+    return (
+      <svg {...common}>
+        <path d="M3 18V9h8a5 5 0 0 1 5 5v4" />
+        <path d="M3 14h18M3 18h18" />
+      </svg>
+    );
+  }
+  if (name === "duration") {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 8v4.2l2.6 1.5" />
+      </svg>
+    );
+  }
+  if (name === "altitude") {
+    return (
+      <svg {...common}>
+        <path d="M4 19l5-9 3 5 2-3 6 7H4z" />
+        <path d="M14 9l2-3 2 3" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <circle cx="6" cy="17" r="2" />
+      <circle cx="18" cy="7" r="2" />
+      <path d="M8 17c2.5-6 6-8 8-8" />
     </svg>
   );
 }
