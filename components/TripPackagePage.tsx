@@ -109,7 +109,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <main className="lux-root">
+    <div className="lux-root">
       <div className="lux-top">
         <Header />
         <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
@@ -632,15 +632,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         </div>
       ) : null}
 
-    </main>
+      <div id="reviews" className="lux-reviews-band relative isolate">
+        <WhyAmbitionSection />
+      </div>
 
-    <div id="reviews" className="home-light relative isolate">
-      <WhyAmbitionSection />
-    </div>
-
-    <div className="home-light lux-foot relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
-      <DuskAtmosphere />
-      <SiteFooter />
+      <div className="lux-foot relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
+        <DuskAtmosphere />
+        <SiteFooter />
+      </div>
     </div>
     </>
   );

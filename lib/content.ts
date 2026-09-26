@@ -222,11 +222,29 @@ async function readNewestContentFile(): Promise<SiteContent> {
   return best;
 }
 
+/** If Orbit edits landed in a secondary JSON path, copy them into the primary CMS file once. */
+async function healStalePrimaryContent(merged: SiteContent): Promise<void> {
+  const packages = merged.tripPackages ?? [];
+  if (!packages.length) return;
+  const primary = contentFileCandidates()[0];
+  try {
+    const raw = await fs.readFile(primary, "utf8");
+    const parsed = JSON.parse(raw) as SiteContent;
+    const primaryCount = parsed.tripPackages?.length ?? 0;
+    const primaryUpdated = String(parsed.updatedAt || "");
+    const mergedUpdated = String(merged.updatedAt || "");
+    if (primaryCount >= packages.length && primaryUpdated >= mergedUpdated) return;
+    await writeContent(merged);
+  } catch {
+    // unreadable primary — writeContent below will create it on next save
+  }
+}
+
 export async function readContent(): Promise<SiteContent> {
   try {
     await ensureContentFile();
     const parsed = await readNewestContentFile();
-    return withSharedSectionWallpaper({
+    const merged = withSharedSectionWallpaper({
       ...DEFAULT_CONTENT,
       ...parsed,
       header: {
@@ -694,6 +712,8 @@ export async function readContent(): Promise<SiteContent> {
         creditHref: parsed.footer?.creditHref ?? DEFAULT_CONTENT.footer.creditHref,
       },
     });
+    await healStalePrimaryContent(merged);
+    return merged;
   } catch {
     return withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT));
   }

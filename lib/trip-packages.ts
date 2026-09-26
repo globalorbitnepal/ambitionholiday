@@ -683,8 +683,23 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       tripadvisorCount: item.tripadvisorCount || def.tripadvisorCount,
       tripadvisorScore: item.tripadvisorScore || def.tripadvisorScore,
       googleCount: item.googleCount || def.googleCount,
-      watchVideo: { ...def.watchVideo, ...item.watchVideo },
-      videoReviews: item.videoReviews?.length ? item.videoReviews : def.videoReviews,
+      watchVideo: (() => {
+        const merged = { ...def.watchVideo, ...item.watchVideo };
+        const src = merged.videoSrc?.trim() || "";
+        if (src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)) {
+          merged.videoSrc = `https://${src.replace(/^\/+/, "")}`;
+        }
+        return merged;
+      })(),
+      videoReviews: (item.videoReviews?.length ? item.videoReviews : def.videoReviews).map((video, index) => {
+        const fallback = def.videoReviews[index];
+        const merged = { ...fallback, ...video };
+        const src = merged.videoSrc?.trim() || "";
+        if (src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)) {
+          merged.videoSrc = `https://${src.replace(/^\/+/, "")}`;
+        }
+        return merged;
+      }),
       reviews: item.reviews?.length ? item.reviews : def.reviews,
       tripInfoTitle: item.tripInfoTitle || def.tripInfoTitle,
       tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,

@@ -4243,9 +4243,53 @@ body.nav-mega-open .hero-copy {
 
 .lux-root > .lux-top,
 .lux-root > .lux-wrap,
+.lux-root > .lux-reviews-band,
 .lux-root > .lux-foot {
   position: relative;
   z-index: 1;
+}
+
+/* Trek package pages: solid dark panels (no sky / white chart blocks) */
+.lux-root .lux-spec,
+.lux-root .lux-card,
+.lux-root .lux-price {
+  background: linear-gradient(165deg, rgba(14, 19, 26, 0.96), rgba(10, 14, 20, 0.94));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: rgba(212, 175, 55, 0.28);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+}
+
+.lux-root .lux-graph {
+  background: linear-gradient(165deg, rgba(14, 19, 26, 0.96), rgba(10, 14, 20, 0.94));
+  color: #e8eef4;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+}
+
+.lux-root .lux-graph h3 {
+  color: #f4f8fb;
+}
+
+.lux-root .lux-graph-legend {
+  color: rgba(232, 238, 244, 0.78);
+}
+
+.lux-root .lux-upload-frame {
+  background: rgba(8, 12, 16, 0.55);
+}
+
+.lux-root .lux-chart-frame {
+  background: rgba(8, 12, 16, 0.45);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+}
+
+.lux-root .lux-mobile-bar {
+  background: rgba(10, 14, 20, 0.94);
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+.lux-root .lux-reviews-band {
+  margin-top: 0.5rem;
 }
 
 .lux-root h1,

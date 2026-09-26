@@ -122,7 +122,7 @@ export function AltitudeProfileChart({ title = "Altitude profile of Everest Base
           Download PNG
         </button>
       </div>
-      <div className="lux-unit lux-unit-light">
+      <div className="lux-unit">
         <span>Altitude in:</span>
         <button type="button" className={unit === "m" ? "on" : ""} onClick={() => setUnit("m")}>
           Meter
@@ -198,7 +198,7 @@ export function MonthlyWeatherChart({ title = "Weather on the Everest Base Camp 
           Download PNG
         </button>
       </div>
-      <div className="lux-unit lux-unit-light">
+      <div className="lux-unit">
         <span>Temperature in:</span>
         <button type="button" className={unit === "c" ? "on" : ""} onClick={() => setUnit("c")}>
           Celsius
