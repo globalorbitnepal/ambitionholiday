@@ -47,7 +47,9 @@ export default function OrbitPackageGalleryEditor({ content, setContent }: Props
           </label>
           {pkg.gallery.map((src, index) => (
             <div key={`${pkg.id}-g-${index}`} className="space-y-2 rounded-xl border border-white/10 p-4">
-              <p className="text-sm font-semibold text-white">Photo {index + 1}</p>
+              <p className="text-sm font-semibold text-white">
+                Trip gallery photo {index + 1} — upload to replace
+              </p>
               {src ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={src} alt="" className="aspect-[4/3] w-full max-w-md rounded-lg object-cover" />

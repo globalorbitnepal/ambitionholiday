@@ -72,11 +72,17 @@ export function reconcileTripPackageForSave(
     return out;
   }
 
-  const watchChanged = JSON.stringify(local.watchVideo ?? null) !== JSON.stringify(baseline.watchVideo ?? null);
+  const localWatchSrc = (local.watchVideo?.videoSrc || "").trim();
+  const baselineWatchSrc = (baseline.watchVideo?.videoSrc || "").trim();
+  const watchChanged =
+    JSON.stringify(local.watchVideo ?? null) !== JSON.stringify(baseline.watchVideo ?? null) ||
+    localWatchSrc !== baselineWatchSrc;
+
   if (!watchChanged) {
     out.watchVideo = server.watchVideo;
   } else {
     out.watchVideo = { ...server.watchVideo, ...local.watchVideo };
+    if (localWatchSrc) out.watchVideo.videoSrc = localWatchSrc;
   }
 
   const reviewsChanged =
@@ -84,7 +90,12 @@ export function reconcileTripPackageForSave(
   if (!reviewsChanged) {
     out.videoReviews = server.videoReviews;
   } else {
-    out.videoReviews = local.videoReviews ?? server.videoReviews;
+    out.videoReviews = (local.videoReviews ?? server.videoReviews).map((video, i) => {
+      const serverVideo = server.videoReviews?.[i];
+      const src = (video.videoSrc || "").trim();
+      if (!src && serverVideo?.videoSrc?.trim()) return { ...serverVideo, ...video, videoSrc: serverVideo.videoSrc };
+      return { ...serverVideo, ...video };
+    });
   }
 
   return out;

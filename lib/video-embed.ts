@@ -65,9 +65,10 @@ export function youtubeEmbedSrc(id: string, origin?: string) {
     modestbranding: "1",
     playsinline: "1",
     enablejsapi: "1",
+    fs: "1",
   });
   if (origin) params.set("origin", origin);
-  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
 }
 
 export function vimeoEmbedSrc(id: string) {

@@ -14,6 +14,7 @@ type Props = {
   sizes: string;
   priority?: boolean;
   objectPosition?: string;
+  objectFit?: "cover" | "contain";
   quality?: number;
   cacheKey?: string;
 };
@@ -30,6 +31,7 @@ export default function MediaImage({
   sizes,
   priority = false,
   objectPosition = "center 28%",
+  objectFit = "cover",
   quality,
   cacheKey,
 }: Props) {
@@ -41,7 +43,7 @@ export default function MediaImage({
     setLoaded(priority);
   }, [src, cacheKey, priority]);
   const resolved = current || FALLBACK_SRC;
-  const style = { objectPosition };
+  const style = { objectPosition, objectFit };
   const imageQuality = quality ?? (priority ? 74 : 68);
   const fadeClass = priority
     ? className ?? ""

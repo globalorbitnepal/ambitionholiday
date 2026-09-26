@@ -757,8 +757,15 @@ export async function readContent(): Promise<SiteContent> {
 
 export async function writeContent(content: SiteContent): Promise<SiteContent> {
   const preservedPackages = await readBestTripPackagesField();
-  const tripPackages =
+  let tripPackages =
     content.tripPackages?.length ? content.tripPackages : preservedPackages ?? content.tripPackages ?? [];
+  if (preservedPackages?.length && tripPackages.length) {
+    tripPackages = tripPackages.map((incoming) => {
+      const preserved = preservedPackages.find((p) => p.id === incoming.id);
+      if (!preserved) return incoming;
+      return mergeTripPackageSnapshots(preserved, incoming);
+    });
+  }
   const next: SiteContent = withSharedSectionWallpaper({
     ...content,
     tripPackages,

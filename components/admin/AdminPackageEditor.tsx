@@ -485,7 +485,7 @@ export default function AdminPackageEditor() {
           {pkg.gallery.map((src, index) => (
             <div key={`${src}-${index}`}>
               <AdminMediaField
-                label={`Photo ${index + 1}`}
+                label={`Trip gallery photo ${index + 1} (upload to replace)`}
                 value={src}
                 onChange={(next) =>
                   patch({ gallery: pkg.gallery.map((item, i) => (i === index ? next : item)) })

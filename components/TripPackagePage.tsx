@@ -12,7 +12,9 @@ import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
 import { TREK_DAY_DISTANCE } from "@/lib/trip-packages";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
+import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
+import { normalizeVideoSrc } from "@/lib/video-embed";
 
 const TOC = [
   { id: "overview", label: "Overview" },
@@ -97,16 +99,15 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (lightIndex === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightIndex(null);
-      if (e.key === "ArrowRight") setLightIndex((i) => (i === null ? i : (i + 1) % gallery.length));
-      if (e.key === "ArrowLeft") setLightIndex((i) => (i === null ? i : (i - 1 + gallery.length) % gallery.length));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lightIndex, gallery.length]);
+  function openVideo(video: TrekVideo) {
+    const videoSrc = normalizeVideoSrc(video.videoSrc || "");
+    if (!videoSrc) return;
+    setActiveVideo({ ...video, videoSrc });
+  }
+
+  function galleryAlt(index: number) {
+    return pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`);
+  }
 
   return (
     <>
@@ -124,11 +125,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <span className="lux-gallery-media">
                   <MediaImage
                     src={src}
-                    alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
+                    alt={galleryAlt(index)}
                     sizes={index === 0 ? "44vw" : "22vw"}
                     priority
                     className="lux-gallery-photo lux-photo"
-                    objectPosition={index === 2 ? "center center" : "center 42%"}
+                    objectFit="contain"
+                    objectPosition="center center"
                     quality={index === 0 ? 86 : 78}
                   />
                 </span>
@@ -211,7 +213,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   </span>
                 </a>
                 {pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc ? (
-                  <button type="button" className="lux-watch-btn" onClick={() => setActiveVideo(pkg.watchVideo)}>
+                  <button type="button" className="lux-watch-btn" onClick={() => openVideo(pkg.watchVideo)}>
                     Watch Video
                   </button>
                 ) : null}
@@ -280,7 +282,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <article id="video" className="lux-card">
                 <p className="lux-kicker">Film</p>
                 <h2>Watch video</h2>
-                <button type="button" className="lux-film" style={{ width: "100%" }} onClick={() => setActiveVideo(pkg.watchVideo)}>
+                <button type="button" className="lux-film" style={{ width: "100%" }} onClick={() => openVideo(pkg.watchVideo)}>
                   <MediaImage src={pkg.watchVideo.imageSrc || pkg.heroSrc} alt={pkg.watchVideo.imageAlt || pkg.watchVideo.title} sizes="80vw" className="lux-photo" />
                   <span className="lux-film-play" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
@@ -306,10 +308,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       type="button"
                       className="lux-film"
                       aria-label={`Play video: ${video.title}`}
-                      disabled={!video.videoSrc?.trim()}
-                      onClick={() => {
-                        if (video.videoSrc?.trim()) setActiveVideo(video);
-                      }}
+                      onClick={() => openVideo(video)}
                     >
                       <MediaImage src={video.imageSrc} alt={video.imageAlt || video.title} sizes="30vw" className="lux-photo" />
                       <span className="lux-film-play lux-film-play--sm" aria-hidden="true">
@@ -511,7 +510,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   <button
                     type="button"
                     className="lux-trip-gallery-tile lux-trip-gallery-more"
-                    onClick={() => setLightIndex(Math.min(7, gallery.length - 1))}
+                    onClick={() => setLightIndex(0)}
                   >
                     {gallery[7] ? (
                       <img
@@ -645,36 +644,6 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <Link href={enquire}>Inquire</Link>
       </div>
 
-      {activeVideo ? <TrekVideoLightbox video={activeVideo} onClose={() => setActiveVideo(null)} /> : null}
-
-      {lightIndex !== null ? (
-        <div className="lux-light" role="dialog" aria-modal="true">
-          <button type="button" className="lux-light-close" onClick={() => setLightIndex(null)}>
-            Close
-          </button>
-          <button
-            type="button"
-            className="lux-light-nav lux-light-prev"
-            aria-label="Previous photo"
-            onClick={() => setLightIndex((i) => (i === null ? 0 : (i - 1 + gallery.length) % gallery.length))}
-          >
-            ‹
-          </button>
-          <img src={mediaSrc(gallery[lightIndex])} alt={`${pkg.title} ${lightIndex + 1}`} />
-          <button
-            type="button"
-            className="lux-light-nav lux-light-next"
-            aria-label="Next photo"
-            onClick={() => setLightIndex((i) => (i === null ? 0 : (i + 1) % gallery.length))}
-          >
-            ›
-          </button>
-          <p className="lux-light-count">
-            {lightIndex + 1} / {gallery.length}
-          </p>
-        </div>
-      ) : null}
-
       <div id="reviews" className="lux-reviews-band relative isolate">
         <WhyAmbitionSection />
       </div>
@@ -684,6 +653,17 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <SiteFooter />
       </div>
     </div>
+
+      {activeVideo ? <TrekVideoLightbox video={activeVideo} onClose={() => setActiveVideo(null)} /> : null}
+      {lightIndex !== null ? (
+        <TripPhotoLightbox
+          images={gallery}
+          index={lightIndex}
+          altForIndex={galleryAlt}
+          onClose={() => setLightIndex(null)}
+          onIndexChange={setLightIndex}
+        />
+      ) : null}
     </>
   );
 }
