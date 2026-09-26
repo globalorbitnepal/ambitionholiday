@@ -345,8 +345,8 @@ jobs:
             ORBIT_HEALTH="$(curl -fsS --max-time 10 "http://127.0.0.1:${APP_PORT}/api/orbit/health" || echo '{"configured":false}')"
             echo "Orbit health: ${ORBIT_HEALTH}"
             if ! printf '%s' "${ORBIT_HEALTH}" | grep -q '"configured":true'; then
-              echo "ERROR: Orbit passkey is not loaded. Add GitHub Actions secrets ORBIT_PASSKEY and ORBIT_SESSION_SECRET, then redeploy."
-              exit 1
+              echo "WARNING: Orbit passkey not loaded — sync ${ORBIT_ENV} or set GitHub secrets ORBIT_PASSKEY + ORBIT_SESSION_SECRET."
+              echo "Site deploy continues; /orbit-login will show Access denied until secrets exist."
             fi
 
             echo "Public HTTPS check (homepage + CSS assets)..."
@@ -435,7 +435,7 @@ jobs:
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
             "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/128.0.0.0 Mobile/15E148 Safari/604.1"
           )
-          PATHS=("/" "/orbit/login" "/api/content")
+          PATHS=("/" "/orbit-login" "/admin/login" "/api/content")
           for ua in "${UAS[@]}"; do
             for path in "${PATHS[@]}"; do
               code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -A "$ua" "${HOST}${path}" || true)"
@@ -445,6 +445,15 @@ jobs:
                 exit 1
               fi
             done
+          done
+          # /orbit/login redirects to passkey page (307); /orbit without session redirects too.
+          for ua in "${UAS[@]}"; do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -A "$ua" "${HOST}/orbit/login" || true)"
+            echo "UA_CHECK path=/orbit/login code=${code}"
+            if [ "${code}" != "200" ] && [ "${code}" != "307" ] && [ "${code}" != "308" ]; then
+              echo "ERROR: Orbit login redirect check failed (code=${code})"
+              exit 1
+            fi
           done
           nc -zv -w 8 200.97.170.235 443
           nc -zv -w 8 200.97.170.235 80
