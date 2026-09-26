@@ -222,6 +222,28 @@ async function readNewestContentFile(): Promise<SiteContent> {
   return best;
 }
 
+/** Package media (hero, gallery, YouTube) often saves to a secondary JSON path — never drop it. */
+async function readBestTripPackagesField(): Promise<SiteContent["tripPackages"] | undefined> {
+  let best: SiteContent["tripPackages"] | undefined;
+  let bestAt = "";
+  for (const file of contentFileCandidates()) {
+    try {
+      const raw = await fs.readFile(file, "utf8");
+      const parsed = JSON.parse(raw) as SiteContent;
+      const pk = parsed.tripPackages;
+      if (!Array.isArray(pk) || !pk.length) continue;
+      const at = String(parsed.updatedAt || "");
+      if (!best || at > bestAt) {
+        best = pk;
+        bestAt = at;
+      }
+    } catch {
+      // unreadable / missing
+    }
+  }
+  return best;
+}
+
 /** If Orbit edits landed in a secondary JSON path, copy them into the primary CMS file once. */
 async function healStalePrimaryContent(merged: SiteContent): Promise<void> {
   const packages = merged.tripPackages ?? [];
@@ -244,6 +266,7 @@ export async function readContent(): Promise<SiteContent> {
   try {
     await ensureContentFile();
     const parsed = await readNewestContentFile();
+    const bestTripPackages = await readBestTripPackagesField();
     const merged = withSharedSectionWallpaper({
       ...DEFAULT_CONTENT,
       ...parsed,
@@ -664,7 +687,9 @@ export async function readContent(): Promise<SiteContent> {
       multi: coerceDestinationCatalog(parsed.multi, DEFAULT_MULTI, { flatten: true }),
       helicopter: coerceDestinationCatalog(parsed.helicopter, DEFAULT_HELICOPTER, { flatten: true }),
       photography: coerceDestinationCatalog(parsed.photography, DEFAULT_PHOTOGRAPHY, { flatten: true }),
-      tripPackages: coerceTripPackages(parsed.tripPackages as SiteContent["tripPackages"]),
+      tripPackages: coerceTripPackages(
+        (bestTripPackages?.length ? bestTripPackages : parsed.tripPackages) as SiteContent["tripPackages"],
+      ),
       footer: {
         ...DEFAULT_CONTENT.footer,
         ...parsed.footer,
@@ -720,8 +745,12 @@ export async function readContent(): Promise<SiteContent> {
 }
 
 export async function writeContent(content: SiteContent): Promise<SiteContent> {
+  const preservedPackages = await readBestTripPackagesField();
+  const tripPackages =
+    content.tripPackages?.length ? content.tripPackages : preservedPackages ?? content.tripPackages ?? [];
   const next: SiteContent = withSharedSectionWallpaper({
     ...content,
+    tripPackages,
     header: {
       ...content.header,
       logoSrc: headerLogoSrc(content.header?.logoSrc),

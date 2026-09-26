@@ -39,5 +39,6 @@ export function normalizeSiteContent(data: SiteContent): SiteContent {
       ...DEFAULT_CONTENT.footer,
       ...data.footer,
     },
+    tripPackages: data.tripPackages?.length ? data.tripPackages : DEFAULT_CONTENT.tripPackages,
   };
 }

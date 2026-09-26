@@ -128,7 +128,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     src={src}
                     alt={pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`)}
                     sizes={index === 0 ? "44vw" : "22vw"}
-                    priority={index === 0}
+                    priority
                     className="lux-gallery-photo lux-photo"
                     objectPosition="center 40%"
                     quality={index === 0 ? 86 : 78}
@@ -212,7 +212,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     </em>
                   </span>
                 </a>
-                {pkg.watchVideo?.imageSrc ? (
+                {pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc ? (
                   <button type="button" className="lux-watch-btn" onClick={() => setActiveVideo(pkg.watchVideo)}>
                     Watch Video
                   </button>
@@ -617,7 +617,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           >
             ‹
           </button>
-          <img src={gallery[lightIndex]} alt={`${pkg.title} ${lightIndex + 1}`} />
+          <img src={mediaSrc(gallery[lightIndex])} alt={`${pkg.title} ${lightIndex + 1}`} />
           <button
             type="button"
             className="lux-light-nav lux-light-next"
