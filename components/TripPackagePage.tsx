@@ -11,7 +11,7 @@ import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart 
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
 import { TREK_DAY_DISTANCE } from "@/lib/trip-packages";
-import { isFileVideo, vimeoEmbedSrc, vimeoId, youtubeEmbedSrc, youtubeId } from "@/lib/video-embed";
+import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import { mediaSrc } from "@/lib/media-src";
 
 const TOC = [
@@ -300,12 +300,22 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <h2>Video reviews</h2>
                 <div className="lux-films">
                   {pkg.videoReviews.map((video) => (
-                    <button key={video.id} type="button" className="lux-film" onClick={() => setActiveVideo(video)}>
+                    <button
+                      key={video.id}
+                      type="button"
+                      className="lux-film"
+                      aria-label={`Play video: ${video.title}`}
+                      onClick={() => setActiveVideo(video)}
+                    >
                       <MediaImage src={video.imageSrc} alt={video.imageAlt || video.title} sizes="30vw" className="lux-photo" />
-                      <span className="lux-yt" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                          <path d="M8 6.8v10.4L18 12 8 6.8Z" />
+                      <span className="lux-film-play lux-film-play--sm" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                          <path d="M9.4 7.6v8.8L17.2 12 9.4 7.6Z" />
                         </svg>
+                      </span>
+                      <span className="lux-film-cap">
+                        <strong>{video.title}</strong>
+                        {video.duration ? <span>{video.duration}</span> : null}
                       </span>
                     </button>
                   ))}
@@ -590,16 +600,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <Link href={enquire}>Inquire</Link>
       </div>
 
-      {activeVideo ? (
-        <div className="lux-light" role="dialog" aria-modal="true" onClick={() => setActiveVideo(null)}>
-          <button type="button" className="lux-light-close" onClick={() => setActiveVideo(null)}>
-            Close
-          </button>
-          <div className="lux-video-frame" onClick={(e) => e.stopPropagation()}>
-            <VideoFrame video={activeVideo} />
-          </div>
-        </div>
-      ) : null}
+      {activeVideo ? <TrekVideoLightbox video={activeVideo} onClose={() => setActiveVideo(null)} /> : null}
 
       {lightIndex !== null ? (
         <div className="lux-light" role="dialog" aria-modal="true">
@@ -651,30 +652,6 @@ function GoogleG() {
       <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.43-3.43C17.95 1.19 15.23 0 12 0 7.31 0 3.26 2.69 1.27 6.61l4 3.09C6.22 6.86 8.87 4.75 12 4.75Z" />
     </svg>
   );
-}
-
-function VideoFrame({ video }: { video: TrekVideo }) {
-  const yt = youtubeId(video.videoSrc);
-  const vimeo = vimeoId(video.videoSrc);
-  const file = isFileVideo(video.videoSrc);
-  if (yt) {
-    return (
-      <iframe
-        title={video.title}
-        src={youtubeEmbedSrc(yt)}
-        className="lux-video-iframe"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-        allowFullScreen
-      />
-    );
-  }
-  if (vimeo) {
-    return <iframe title={video.title} src={vimeoEmbedSrc(vimeo)} className="lux-video-iframe" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />;
-  }
-  if (file) {
-    return <video className="lux-video-iframe" src={mediaSrc(video.videoSrc)} controls autoPlay playsInline />;
-  }
-  return <p className="lux-slot-empty">Add a YouTube link in /admin → Packages → Reviews.</p>;
 }
 
 function CheckMark() {

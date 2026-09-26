@@ -1,6 +1,17 @@
+export function normalizeVideoSrc(src: string): string {
+  const trimmed = (src || "").trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^(www\.)?(youtube\.com|youtu\.be)\//i.test(trimmed) || /^youtu\.be\//i.test(trimmed)) {
+    return `https://${trimmed.replace(/^\/+/, "")}`;
+  }
+  if (/^youtube\.com/i.test(trimmed)) return `https://www.${trimmed}`;
+  return trimmed;
+}
+
 export function youtubeId(src: string): string | null {
   if (!src) return null;
-  const trimmed = src.trim();
+  const trimmed = normalizeVideoSrc(src);
   if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
   try {
     const url = new URL(trimmed);
@@ -29,7 +40,7 @@ export function youtubeId(src: string): string | null {
 export function vimeoId(src: string): string | null {
   if (!src) return null;
   try {
-    const url = new URL(src.trim());
+    const url = new URL(normalizeVideoSrc(src));
     if (!url.hostname.includes("vimeo.com")) return null;
     const match = url.pathname.match(/\/(?:video\/)?(\d+)/);
     return match?.[1] ?? null;
@@ -47,14 +58,16 @@ export function isFileVideo(src: string) {
   );
 }
 
-export function youtubeEmbedSrc(id: string) {
+export function youtubeEmbedSrc(id: string, origin?: string) {
   const params = new URLSearchParams({
     autoplay: "1",
     rel: "0",
     modestbranding: "1",
     playsinline: "1",
+    enablejsapi: "1",
   });
-  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
+  if (origin) params.set("origin", origin);
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
 }
 
 export function vimeoEmbedSrc(id: string) {
