@@ -43,6 +43,102 @@ html {
   overflow-x: clip;
 }
 
+/* Route change feedback — professional feel between App Router pages */
+.route-progress {
+  pointer-events: none;
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 200;
+  height: 2px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 162, 39, 0.35) 18%,
+    #e8d48a 50%,
+    rgba(201, 162, 39, 0.35) 82%,
+    transparent 100%
+  );
+  transition: opacity 0.25s ease;
+}
+
+.route-progress--active {
+  opacity: 1;
+  animation: route-progress 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes route-progress {
+  0% {
+    transform: scaleX(0.08);
+  }
+  45% {
+    transform: scaleX(0.72);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes route-loading-bar {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.route-loading-bar {
+  animation: route-loading-bar 1.05s ease-in-out infinite;
+}
+
+html.is-navigating main {
+  transition: opacity 0.22s ease;
+  opacity: 0.94;
+}
+
+@keyframes page-enter-keyframes {
+  from {
+    opacity: 0.55;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter-keyframes 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.media-image-fade {
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-progress--active {
+    animation: none;
+    transform: scaleX(1);
+  }
+  .route-loading-bar {
+    animation: none;
+  }
+  html.is-navigating main {
+    opacity: 1;
+    transition: none;
+  }
+  .page-enter {
+    animation: none;
+  }
+  .media-image-fade {
+    transition: none;
+  }
+}
+
 @media (min-width: 768px) {
   html {
     scroll-behavior: smooth;

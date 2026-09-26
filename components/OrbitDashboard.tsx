@@ -23,6 +23,7 @@ import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type { SiteContent, StatItem } from "@/lib/content-types";
+import { headerLogoSrc } from "@/lib/media-src";
 import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 type Props = {
@@ -223,7 +224,7 @@ export default function OrbitDashboard({ initial }: Props) {
                   <div className="relative h-20 w-64 overflow-hidden rounded-md border border-white/10 bg-black/40">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={content.header.logoSrc}
+                      src={headerLogoSrc(content.header.logoSrc, content.updatedAt)}
                       alt="Logo"
                       className="h-full w-full object-contain p-2"
                     />

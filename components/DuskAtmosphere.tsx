@@ -17,10 +17,10 @@ export default function DuskAtmosphere() {
       <img
         src={src}
         alt=""
-        className="h-full w-full object-cover object-[center_38%]"
-        loading="lazy"
+        className="media-image-fade h-full w-full object-cover object-[center_38%] opacity-100"
+        loading="eager"
         decoding="async"
-        fetchPriority="low"
+        fetchPriority="high"
         onError={(event) => {
           event.currentTarget.src = FALLBACK;
         }}

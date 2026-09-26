@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { FooterSocialNetwork } from "@/lib/content-types";
-import { mediaSrc } from "@/lib/media-src";
+import { headerLogoSrc, mediaSrc } from "@/lib/media-src";
 
 /** Shared mark size — slightly smaller on phones so 5 logos never crop/scroll */
 const TRUST_H = "h-10 sm:h-[2.88rem]";
@@ -115,7 +115,6 @@ function ChevronLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href || "#"}
-      prefetch={false}
       className="group flex items-start gap-2 text-[0.86rem] font-semibold text-white/80 transition-colors hover:text-gold"
     >
       <span className="mt-[0.15rem] text-gold/90 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
@@ -182,7 +181,7 @@ export default function SiteFooter() {
   const { footer, header, updatedAt } = useSiteContent();
   if (!footer?.visible) return null;
 
-  const logoSrc = footer.logoSrc || header.logoSrc || "/images/ambition-holiday-logo.webp";
+  const logoSrc = headerLogoSrc(footer.logoSrc || header.logoSrc, updatedAt);
 
   function scrollTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -459,7 +458,7 @@ export default function SiteFooter() {
             {(footer.legalLinks ?? []).map((l, i) => (
               <span key={l.id} className="inline-flex items-center gap-3">
                 {i > 0 ? <span className="text-white/25" aria-hidden="true">|</span> : null}
-                <Link href={l.href || "#"} prefetch={false} className="font-semibold hover:text-gold">
+                <Link href={l.href || "#"} className="font-semibold hover:text-gold">
                   {l.label}
                 </Link>
               </span>

@@ -35,14 +35,21 @@ export default function MediaImage({
 }: Props) {
   const initial = mediaSrc(src, cacheKey) || FALLBACK_SRC;
   const [current, setCurrent] = useState(initial);
+  const [loaded, setLoaded] = useState(priority);
   useEffect(() => {
     setCurrent(mediaSrc(src, cacheKey) || FALLBACK_SRC);
-  }, [src, cacheKey]);
+    setLoaded(priority);
+  }, [src, cacheKey, priority]);
   const resolved = current || FALLBACK_SRC;
   const style = { objectPosition };
   const imageQuality = quality ?? (priority ? 74 : 68);
+  const fadeClass = priority
+    ? className ?? ""
+    : `${className ?? ""} media-image-fade ${loaded ? "opacity-100" : "opacity-0"}`.trim();
+  const onLoad = () => setLoaded(true);
   const onError = () => {
     if (resolved !== FALLBACK_SRC) setCurrent(FALLBACK_SRC);
+    setLoaded(true);
   };
 
   if (isRuntimeUpload(resolved)) {
@@ -52,12 +59,13 @@ export default function MediaImage({
       <img
         src={resolved}
         alt={alt}
-        className={`absolute inset-0 h-full w-full ${className ?? ""}`}
+        className={`absolute inset-0 h-full w-full ${fadeClass}`}
         style={style}
         loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "low"}
-        decoding="async"
+        fetchPriority={priority ? "high" : "auto"}
+        decoding={priority ? "sync" : "async"}
         draggable={false}
+        onLoad={onLoad}
         onError={onError}
       />
     );
@@ -74,8 +82,9 @@ export default function MediaImage({
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       draggable={false}
-      className={className}
+      className={fadeClass}
       style={style}
+      onLoad={onLoad}
       onError={onError}
     />
   );

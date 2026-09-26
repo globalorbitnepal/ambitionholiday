@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import NavigationUX from "@/components/NavigationUX";
+import { DEFAULT_SITE_LOGO } from "@/lib/media-src";
+import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -38,9 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preload" as="image" href="/images/hero-video-poster.webp" />
+        <link rel="preload" as="image" href="/images/hero-video-poster.webp" fetchPriority="high" />
+        <link rel="preload" as="image" href={DEFAULT_SITE_LOGO} />
+        <link rel="preload" as="image" href={SECTION_WALLPAPER} />
       </head>
       <body className="antialiased">
+        <NavigationUX />
         {children}
       </body>
     </html>

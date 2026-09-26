@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { contentFileCandidates } from "@/lib/cms-paths";
+import { headerLogoSrc } from "@/lib/media-src";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 import { JOURNAL_POSTS } from "@/lib/journal-defaults";
 import { decorateBlogPost } from "@/lib/blog";
@@ -227,7 +228,11 @@ export async function readContent(): Promise<SiteContent> {
     return withSharedSectionWallpaper({
       ...DEFAULT_CONTENT,
       ...parsed,
-      header: { ...DEFAULT_CONTENT.header, ...parsed.header },
+      header: {
+        ...DEFAULT_CONTENT.header,
+        ...parsed.header,
+        logoSrc: headerLogoSrc(parsed.header?.logoSrc),
+      },
       atmosphere: { ...DEFAULT_CONTENT.atmosphere, ...parsed.atmosphere },
       hero: {
         ...DEFAULT_CONTENT.hero,
@@ -691,6 +696,10 @@ export async function readContent(): Promise<SiteContent> {
 export async function writeContent(content: SiteContent): Promise<SiteContent> {
   const next: SiteContent = withSharedSectionWallpaper({
     ...content,
+    header: {
+      ...content.header,
+      logoSrc: headerLogoSrc(content.header?.logoSrc),
+    },
     updatedAt: new Date().toISOString(),
   });
   const payload = JSON.stringify(next, null, 2);

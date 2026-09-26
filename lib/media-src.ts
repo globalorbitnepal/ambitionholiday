@@ -1,3 +1,11 @@
+export const DEFAULT_SITE_LOGO = "/images/ambition-holiday-logo.webp";
+
+/** Header/footer logo — applies webp rewrites and CMS upload URLs. */
+export function headerLogoSrc(logoSrc?: string, cacheKey?: string) {
+  const raw = (logoSrc || "").trim();
+  return mediaSrc(raw || DEFAULT_SITE_LOGO, cacheKey);
+}
+
 /** Serve CMS uploads through the API so they still load after Next builds. */
 export function mediaSrc(src: string, cacheKey?: string) {
   if (!src) return src;

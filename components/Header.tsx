@@ -8,6 +8,7 @@ import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { DEST_SHOWCASE } from "@/lib/dest-showcase";
 import { LUXURY_MEGA_COUNTRIES, type LuxuryMegaCountryId } from "@/lib/luxury-mega";
 import { useSiteContent } from "@/components/SiteContentProvider";
+import { DEFAULT_SITE_LOGO, headerLogoSrc } from "@/lib/media-src";
 import { useFavorites } from "@/lib/use-favorites";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
@@ -331,7 +332,6 @@ function FrostListDropdown({
           <li key={item.href} role="none">
             <Link
               href={item.href}
-              prefetch={false}
               role="menuitem"
               className="focus-ring flex items-center gap-3 rounded-2xl px-2 py-2.5 text-left transition-colors hover:bg-white/10"
               onClick={onNavigate}
@@ -416,7 +416,6 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
           <li key={dest.id}>
             <Link
               href={dest.href}
-              prefetch={false}
               onClick={onNavigate}
               className="focus-ring group relative block overflow-hidden rounded-[1.15rem] border border-white/15 shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
             >
@@ -449,7 +448,6 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
       <div className="mt-4 flex justify-center sm:mt-5">
         <Link
           href="/destinations"
-          prefetch={false}
           onClick={onNavigate}
           className="focus-ring inline-flex items-center gap-2 text-[0.82rem] font-semibold text-white/85 hover:text-white"
         >
@@ -583,7 +581,6 @@ function LuxuryGlassPanel({
               <li key={pkg.title}>
                 <Link
                   href={pkg.href}
-                  prefetch={false}
                   onClick={onNavigate}
                   className="focus-ring group relative block overflow-hidden rounded-[1.05rem] border border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.28)]"
                 >
@@ -631,7 +628,6 @@ function LuxuryGlassPanel({
 
           <Link
             href={country.href}
-            prefetch={false}
             onClick={onNavigate}
             className="focus-ring mt-3 flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/18 bg-black/20 text-[0.82rem] font-semibold text-white/90 hover:bg-black/35"
           >
@@ -735,7 +731,6 @@ function DestinationsMegaPanel({
             {active ? (
               <Link
                 href={active.href}
-                prefetch={false}
                 onClick={onNavigate}
                 className="focus-ring shrink-0 rounded-full border border-[#e0c45a]/70 bg-black/35 px-3 py-1 text-[0.68rem] font-bold text-[#e4c35a] transition-colors hover:bg-[#c9a227]/15"
               >
@@ -749,7 +744,6 @@ function DestinationsMegaPanel({
               <li key={child.label}>
                 <Link
                   href={child.href}
-                  prefetch={false}
                   onClick={onNavigate}
                   className="focus-ring group flex items-center gap-2 rounded-lg border border-transparent px-2.5 py-2.5 text-[0.88rem] font-semibold text-[#f7f4ef] transition-colors hover:border-[#e0c45a]/40 hover:bg-black/30 hover:text-[#e4c35a]"
                 >
@@ -769,7 +763,8 @@ function DestinationsMegaPanel({
 }
 
 export default function Header() {
-  const { header } = useSiteContent();
+  const { header, updatedAt } = useSiteContent();
+  const logoSrc = headerLogoSrc(header.logoSrc, updatedAt);
   const { items: savedTrips } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -879,16 +874,22 @@ export default function Header() {
       <div className="relative mx-auto max-w-[92rem] px-4 sm:px-5 lg:px-6 xl:px-8">
         <div className="flex h-[5rem] flex-nowrap items-center gap-2 sm:h-[5.25rem] lg:gap-3 xl:gap-4">
           <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
-            <Image
-              src={header.logoSrc}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoSrc}
               alt="Ambition Holidays — Journeys Beyond Limits"
               width={977}
               height={258}
-              priority
-              sizes="180px"
-              quality={80}
+              fetchPriority="high"
+              decoding="async"
               className="h-[2.45rem] w-auto object-contain sm:h-[2.7rem] lg:h-[2.55rem] xl:h-[2.9rem] 2xl:h-[3.16rem]"
-              key={header.logoSrc}
+              key={logoSrc}
+              onError={(event) => {
+                const img = event.currentTarget;
+                if (img.dataset.fallback === "1" || img.src.includes(DEFAULT_SITE_LOGO)) return;
+                img.dataset.fallback = "1";
+                img.src = DEFAULT_SITE_LOGO;
+              }}
             />
           </Link>
 
