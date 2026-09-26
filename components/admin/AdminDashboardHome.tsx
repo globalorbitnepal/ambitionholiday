@@ -50,7 +50,7 @@ export default function AdminDashboardHome() {
               Add journal post
             </Link>
             <Link className="admin-chip" href="/admin/header">
-              Header & logo
+              Header page (logo & menus)
             </Link>
           </div>
         </div>

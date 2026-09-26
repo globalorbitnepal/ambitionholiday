@@ -11,6 +11,9 @@ type MediaKind = "image" | "video" | "other";
 type MediaItem = {
   path: string;
   name: string;
+  label?: string;
+  displayName?: string;
+  altText?: string;
   kind: MediaKind;
   bytes: number;
   updatedAt: string;
@@ -35,12 +38,15 @@ function formatWhen(iso: string) {
 
 export default function OrbitMediaLibrary() {
   const [items, setItems] = useState<MediaItem[]>([]);
-  const [filter, setFilter] = useState<Filter>("image");
+  const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<MediaItem | null>(null);
   const [copied, setCopied] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editAlt, setEditAlt] = useState("");
+  const [savingMeta, setSavingMeta] = useState(false);
 
   const refresh = useCallback(async () => {
     const res = await fetch("/api/orbit/media", { cache: "no-store", credentials: "include" });
@@ -64,7 +70,8 @@ export default function OrbitMediaLibrary() {
       if (filter === "remote" && item.collection !== "remote") return false;
       if (filter === "image" && item.kind !== "image") return false;
       if (filter === "video" && item.kind !== "video") return false;
-      if (q && !item.path.toLowerCase().includes(q) && !item.name.toLowerCase().includes(q)) {
+      const label = (item.label || item.displayName || item.name).toLowerCase();
+      if (q && !item.path.toLowerCase().includes(q) && !label.includes(q)) {
         return false;
       }
       return true;
@@ -196,7 +203,11 @@ export default function OrbitMediaLibrary() {
             >
               <button
                 type="button"
-                onClick={() => setPreview(item)}
+                onClick={() => {
+                  setPreview(item);
+                  setEditName(item.displayName || item.label || item.name);
+                  setEditAlt(item.altText || "");
+                }}
                 className="relative block h-36 w-full overflow-hidden bg-[#0b1018] sm:h-40"
               >
                 {item.kind === "video" && item.collection !== "remote" ? (
@@ -232,7 +243,7 @@ export default function OrbitMediaLibrary() {
               </button>
               <div className="space-y-2 p-3">
                 <p className="truncate text-[0.78rem] font-medium text-white" title={item.path}>
-                  {item.name}
+                  {item.label || item.displayName || item.name}
                 </p>
                 <p className="text-[0.68rem] text-white/45">
                   {item.collection === "remote"
@@ -304,7 +315,7 @@ export default function OrbitMediaLibrary() {
             <div className="relative aspect-video w-full bg-black">
               {youtubeId(preview.path) ? (
                 <iframe
-                  title={preview.name}
+                  title={editAlt || preview.name}
                   src={youtubeEmbedSrc(youtubeId(preview.path) as string)}
                   className="absolute inset-0 h-full w-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
@@ -321,11 +332,95 @@ export default function OrbitMediaLibrary() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={orbitThumbSrc(preview.path)}
-                  alt={preview.name}
+                  alt={editAlt || preview.name}
                   className="absolute inset-0 h-full w-full object-contain"
                 />
               )}
             </div>
+            {preview.kind === "image" ? (
+              <div className="space-y-3 border-t border-white/10 p-4">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold">
+                  Library name & alt text
+                </p>
+                <label className="block text-xs text-white/60">
+                  Display name
+                  <input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="mt-1 w-full rounded-md border border-white/15 bg-black/35 px-2.5 py-2 text-sm text-white outline-none focus:border-gold/50"
+                  />
+                </label>
+                <label className="block text-xs text-white/60">
+                  Alt text (accessibility)
+                  <input
+                    value={editAlt}
+                    onChange={(e) => setEditAlt(e.target.value)}
+                    className="mt-1 w-full rounded-md border border-white/15 bg-black/35 px-2.5 py-2 text-sm text-white outline-none focus:border-gold/50"
+                  />
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={savingMeta}
+                    className="rounded-md border border-gold/50 bg-gold/15 px-3 py-1.5 text-xs font-semibold text-gold disabled:opacity-50"
+                    onClick={async () => {
+                      setSavingMeta(true);
+                      try {
+                        const res = await fetch("/api/orbit/media", {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({
+                            path: preview.path,
+                            displayName: editName,
+                            altText: editAlt,
+                          }),
+                        });
+                        if (!res.ok) {
+                          setStatus("Could not save name / alt text.");
+                          return;
+                        }
+                        setStatus("Saved library details.");
+                        await refresh();
+                        setPreview({
+                          ...preview,
+                          displayName: editName,
+                          altText: editAlt,
+                          label: editName || preview.name,
+                        });
+                      } finally {
+                        setSavingMeta(false);
+                      }
+                    }}
+                  >
+                    {savingMeta ? "Saving…" : "Save details"}
+                  </button>
+                  {preview.collection === "uploads" ? (
+                    <button
+                      type="button"
+                      className="rounded-md border border-red-400/30 px-3 py-1.5 text-xs font-semibold text-red-200"
+                      onClick={async () => {
+                        if (!window.confirm(`Delete ${preview.name} from uploads?`)) return;
+                        const res = await fetch("/api/orbit/media", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({ path: preview.path }),
+                        });
+                        if (!res.ok) {
+                          setStatus("Could not delete this file.");
+                          return;
+                        }
+                        setPreview(null);
+                        await refresh();
+                      }}
+                    >
+                      Delete upload
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -3,7 +3,8 @@ import Image from "next/image";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import Header from "@/components/Header";
 import type { NavGroup, NavItem } from "@/lib/nav";
-import { DEST_SHOWCASE } from "@/lib/dest-showcase";
+import { useSiteContent } from "@/components/SiteContentProvider";
+import { mediaSrc } from "@/lib/media-src";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
 
@@ -80,6 +81,7 @@ function GroupPanel({ group, compact }: { group: NavGroup; compact?: boolean }) 
 }
 
 export default function NavHubPage({ item }: { item: NavItem }) {
+  const { headerNav } = useSiteContent();
   const copy = hubCopy(item.label);
   const groups = item.groups ?? [];
   const compact = item.label === "Experiences" || item.label === "Travel Guide";
@@ -119,7 +121,7 @@ export default function NavHubPage({ item }: { item: NavItem }) {
 
           {item.label === "Destinations" ? (
             <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-              {DEST_SHOWCASE.map((dest) => (
+              {headerNav.destinations.map((dest) => (
                 <Link
                   key={dest.id}
                   href={dest.href}
@@ -127,7 +129,7 @@ export default function NavHubPage({ item }: { item: NavItem }) {
                 >
                   <span className="relative block aspect-[5/4] w-full">
                     <Image
-                      src={dest.imageSrc}
+                      src={mediaSrc(dest.imageSrc)}
                       alt={dest.imageAlt}
                       fill
                       sizes="(max-width: 1024px) 50vw, 22vw"

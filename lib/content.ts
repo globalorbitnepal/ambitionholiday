@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { contentFileCandidates } from "@/lib/cms-paths";
+import { DEFAULT_HEADER_NAV, mergeHeaderNav } from "@/lib/header-nav";
 import { headerLogoSrc } from "@/lib/media-src";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 import { JOURNAL_POSTS } from "@/lib/journal-defaults";
@@ -232,6 +233,11 @@ export async function readContent(): Promise<SiteContent> {
         ...DEFAULT_CONTENT.header,
         ...parsed.header,
         logoSrc: headerLogoSrc(parsed.header?.logoSrc),
+      },
+      headerNav: mergeHeaderNav(parsed.headerNav),
+      mediaCatalog: {
+        ...DEFAULT_CONTENT.mediaCatalog,
+        ...(parsed.mediaCatalog ?? {}),
       },
       atmosphere: { ...DEFAULT_CONTENT.atmosphere, ...parsed.atmosphere },
       hero: {
@@ -700,6 +706,7 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
       ...content.header,
       logoSrc: headerLogoSrc(content.header?.logoSrc),
     },
+    headerNav: mergeHeaderNav(content.headerNav),
     updatedAt: new Date().toISOString(),
   });
   const payload = JSON.stringify(next, null, 2);
@@ -729,6 +736,32 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     ...content,
     header: {
       logoSrc: content.header.logoSrc === publicPath ? fallbackLogo : content.header.logoSrc,
+    },
+    headerNav: {
+      destinations: content.headerNav.destinations.map((dest, index) => ({
+        ...dest,
+        imageSrc:
+          dest.imageSrc === publicPath
+            ? DEFAULT_HEADER_NAV.destinations[index]?.imageSrc ?? dest.imageSrc
+            : dest.imageSrc,
+      })),
+      luxuryCountries: content.headerNav.luxuryCountries.map((country) => {
+        const def = DEFAULT_HEADER_NAV.luxuryCountries.find((c) => c.id === country.id);
+        return {
+          ...country,
+          flagSrc:
+            country.flagSrc === publicPath ? def?.flagSrc ?? country.flagSrc : country.flagSrc,
+          thumbSrc:
+            country.thumbSrc === publicPath ? def?.thumbSrc ?? country.thumbSrc : country.thumbSrc,
+          packages: country.packages.map((pkg, index) => ({
+            ...pkg,
+            imageSrc:
+              pkg.imageSrc === publicPath
+                ? def?.packages[index]?.imageSrc ?? pkg.imageSrc
+                : pkg.imageSrc,
+          })),
+        };
+      }),
     },
     atmosphere: {
       imageSrc:

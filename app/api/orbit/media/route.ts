@@ -64,6 +64,7 @@ export async function GET(req: Request) {
   let uploads: Awaited<ReturnType<typeof listUploadMedia>> = [];
   let site: Awaited<ReturnType<typeof listSiteMedia>> = [];
   let remote: Awaited<ReturnType<typeof collectLinkedMedia>> = [];
+  let catalog: Record<string, { displayName?: string; altText?: string }> = {};
   try {
     uploads = await listUploadMedia();
   } catch (err) {
@@ -76,6 +77,7 @@ export async function GET(req: Request) {
   }
   try {
     const content = await readContent();
+    catalog = content.mediaCatalog ?? {};
     remote = collectLinkedMedia(content, content.updatedAt);
   } catch (err) {
     console.error("collectLinkedMedia", err);
@@ -85,8 +87,49 @@ export async function GET(req: Request) {
     (item, index, all) => all.findIndex((other) => other.path === item.path) === index,
   );
 
+  const enriched = items.map((item) => {
+    const meta = catalog[item.path];
+    return {
+      ...item,
+      displayName: meta?.displayName?.trim() || undefined,
+      altText: meta?.altText?.trim() || undefined,
+      label: meta?.displayName?.trim() || item.name,
+    };
+  });
+
   return NextResponse.json({
     files: uploads.map((item) => item.path),
-    items,
+    items: enriched,
   });
+}
+
+export async function PATCH(req: Request) {
+  if (!isAuthed(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: { path?: string; displayName?: string; altText?: string };
+  try {
+    body = (await req.json()) as { path?: string; displayName?: string; altText?: string };
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const mediaPath = typeof body.path === "string" ? body.path.trim() : "";
+  if (!mediaPath.startsWith("/")) {
+    return NextResponse.json({ error: "Invalid path" }, { status: 400 });
+  }
+
+  const content = await readContent();
+  const mediaCatalog = { ...(content.mediaCatalog ?? {}) };
+  mediaCatalog[mediaPath] = {
+    displayName: typeof body.displayName === "string" ? body.displayName.trim() : "",
+    altText: typeof body.altText === "string" ? body.altText.trim() : "",
+  };
+
+  const saved = await writeContent({ ...content, mediaCatalog });
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/orbit");
+  return NextResponse.json({ ok: true, mediaCatalog: saved.mediaCatalog });
 }

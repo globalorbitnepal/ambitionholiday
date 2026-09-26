@@ -1,3 +1,4 @@
+import { DEFAULT_HEADER_NAV, type HeaderNavContent } from "@/lib/header-nav";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 import { DEFAULT_NEPAL, type NepalContent } from "@/lib/nepal-defaults";
 import { DEFAULT_BHUTAN } from "@/lib/bhutan-defaults";
@@ -864,11 +865,18 @@ export type ExploreHubContent = {
   footRight: string;
 };
 
+export type MediaCatalogEntry = {
+  displayName?: string;
+  altText?: string;
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
     logoSrc: string;
   };
+  headerNav: HeaderNavContent;
+  mediaCatalog: Record<string, MediaCatalogEntry>;
   atmosphere: {
     imageSrc: string;
   };
@@ -912,6 +920,8 @@ export const DEFAULT_CONTENT: SiteContent = {
   header: {
     logoSrc: "/images/ambition-holiday-logo.webp",
   },
+  headerNav: DEFAULT_HEADER_NAV,
+  mediaCatalog: {},
   atmosphere: {
     imageSrc: SECTION_WALLPAPER,
   },

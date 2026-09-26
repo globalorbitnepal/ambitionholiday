@@ -23,7 +23,7 @@ import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type { SiteContent, StatItem } from "@/lib/content-types";
-import { headerLogoSrc } from "@/lib/media-src";
+import OrbitHeaderEditor from "@/components/OrbitHeaderEditor";
 import { postOrbitUpload } from "@/lib/orbit-upload-client";
 
 type Props = {
@@ -159,7 +159,7 @@ export default function OrbitDashboard({ initial }: Props) {
           {(
             [
               ["hero", "Hero"],
-              ["header", "Header / Logo"],
+              ["header", "Header page"],
               ["stats", "Trust bar"],
               ["signature", "Ambition glass"],
               ["exploreHub", "Explore Hub"],
@@ -219,80 +219,7 @@ export default function OrbitDashboard({ initial }: Props) {
 
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
           {tab === "header" ? (
-            <div className="space-y-5">
-              <Field label="Logo preview">
-                  <div className="relative h-20 w-64 overflow-hidden rounded-md border border-white/10 bg-black/40">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={headerLogoSrc(content.header.logoSrc, content.updatedAt)}
-                      alt="Logo"
-                      className="h-full w-full object-contain p-2"
-                    />
-                  </div>
-              </Field>
-              <div className="flex flex-wrap gap-3">
-                <label className="cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
-                  Upload / Replace logo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const url = await uploadFile(file);
-                      const next = {
-                        ...content,
-                        header: { logoSrc: url },
-                      };
-                      setContent(next);
-                      await save(next);
-                    }}
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/70"
-                  onClick={async () => {
-                    const next = {
-                      ...content,
-                      header: { logoSrc: "/images/ambition-holiday-logo.webp" },
-                    };
-                    setContent(next);
-                    await save(next);
-                  }}
-                >
-                  Reset to default logo
-                </button>
-              </div>
-              <OrbitMediaButtons
-                onPicked={async (url) => {
-                  const next = { ...content, header: { logoSrc: url } };
-                  setContent(next);
-                  await save(next);
-                }}
-              />
-              <Field label="Below-hero wallpaper">
-                <div className="relative h-28 overflow-hidden rounded-md border border-white/10 bg-black/40">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={content.atmosphere?.imageSrc || "/images/atmosphere/ebc-premium-section.webp"}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </Field>
-              <OrbitMediaButtons
-                onPicked={async (url) => {
-                  const next = {
-                    ...content,
-                    atmosphere: { imageSrc: url },
-                  };
-                  setContent(next);
-                  await save(next);
-                }}
-              />
-            </div>
+            <OrbitHeaderEditor content={content} onChange={setContent} />
           ) : null}
 
           {tab === "hero" ? (

@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
+import { mergeHeaderNav } from "@/lib/header-nav";
 
 const SiteContentContext = createContext<SiteContent | null>(null);
 
@@ -41,6 +42,8 @@ export default function SiteContentProvider({
       const merged: SiteContent = {
         ...DEFAULT_CONTENT,
         ...data,
+        headerNav: mergeHeaderNav(data.headerNav),
+        mediaCatalog: data.mediaCatalog ?? DEFAULT_CONTENT.mediaCatalog,
         signature: {
           ...DEFAULT_CONTENT.signature,
           ...data.signature,

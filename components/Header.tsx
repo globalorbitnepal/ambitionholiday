@@ -5,8 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
-import { DEST_SHOWCASE } from "@/lib/dest-showcase";
-import { LUXURY_MEGA_COUNTRIES, type LuxuryMegaCountryId } from "@/lib/luxury-mega";
+import { luxuryCountryById, type DestShowcaseCard } from "@/lib/header-nav";
+import type { LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
+import { mediaSrc } from "@/lib/media-src";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { DEFAULT_SITE_LOGO, headerLogoSrc } from "@/lib/media-src";
 import { useFavorites } from "@/lib/use-favorites";
@@ -387,7 +388,13 @@ function DestGoldArrow() {
   );
 }
 
-function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
+function DestinationsGlassPanel({
+  destinations,
+  onNavigate,
+}: {
+  destinations: DestShowcaseCard[];
+  onNavigate: () => void;
+}) {
   return (
     <div
       className={`${FROST_GLASS_CLASS} px-4 py-4 sm:px-7 sm:py-6`}
@@ -412,7 +419,7 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
       </div>
 
       <ul className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-        {DEST_SHOWCASE.map((dest) => (
+        {destinations.map((dest) => (
           <li key={dest.id}>
             <Link
               href={dest.href}
@@ -421,7 +428,7 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
             >
               <span className="relative block aspect-[5/4] w-full">
                 <Image
-                  src={dest.imageSrc}
+                  src={mediaSrc(dest.imageSrc)}
                   alt={dest.imageAlt}
                   fill
                   sizes="(max-width: 1024px) 50vw, 18vw"
@@ -460,15 +467,17 @@ function DestinationsGlassPanel({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function LuxuryGlassPanel({
+  countries,
   activeId,
   onSelect,
   onNavigate,
 }: {
+  countries: LuxuryMegaCountry[];
   activeId: LuxuryMegaCountryId;
   onSelect: (id: LuxuryMegaCountryId) => void;
   onNavigate: () => void;
 }) {
-  const country = LUXURY_MEGA_COUNTRIES.find((item) => item.id === activeId) ?? LUXURY_MEGA_COUNTRIES[0];
+  const country = luxuryCountryById(countries, activeId);
 
   return (
     <div
@@ -484,7 +493,7 @@ function LuxuryGlassPanel({
             Choose a destination to view luxury tours & treks.
           </p>
           <ul className="mt-4 space-y-2.5">
-            {LUXURY_MEGA_COUNTRIES.map((item) => {
+            {countries.map((item) => {
               const on = item.id === country.id;
               return (
                 <li key={item.id}>
@@ -500,11 +509,11 @@ function LuxuryGlassPanel({
                     }`}
                   >
                     <span className="absolute inset-0">
-                      <Image src={item.thumbSrc} alt="" fill className="object-cover object-[center_42%]" sizes="330px" />
+                      <Image src={mediaSrc(item.thumbSrc)} alt="" fill className="object-cover object-[center_42%]" sizes="330px" />
                       <span className="absolute inset-0 bg-gradient-to-r from-black/58 via-black/22 to-transparent" />
                     </span>
                     <span className="relative z-[1] ml-2.5 h-[2.85rem] w-[2.85rem] shrink-0 overflow-hidden rounded-full border-[1.5px] border-white/70 bg-[#101820] shadow-[0_4px_12px_rgba(0,0,0,0.45)]">
-                      <Image src={item.flagSrc} alt="" fill className="object-cover object-center" sizes="46px" />
+                      <Image src={mediaSrc(item.flagSrc)} alt="" fill className="object-cover object-center" sizes="46px" />
                     </span>
                     <span className="relative z-[1] min-w-0 flex-1 pl-2.5">
                       <span className="block text-[0.98rem] font-semibold leading-tight text-white drop-shadow">
@@ -586,7 +595,7 @@ function LuxuryGlassPanel({
                 >
                   <span className="relative block aspect-[16/10] w-full">
                     <Image
-                      src={pkg.imageSrc}
+                      src={mediaSrc(pkg.imageSrc)}
                       alt={pkg.imageAlt}
                       fill
                       sizes="(max-width: 1024px) 50vw, 18vw"
@@ -763,7 +772,7 @@ function DestinationsMegaPanel({
 }
 
 export default function Header() {
-  const { header, updatedAt } = useSiteContent();
+  const { header, headerNav, updatedAt } = useSiteContent();
   const logoSrc = headerLogoSrc(header.logoSrc, updatedAt);
   const { items: savedTrips } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -1032,9 +1041,13 @@ export default function Header() {
             onMouseLeave={() => setOpenDropdown(null)}
           >
             {isDestShowcase ? (
-              <DestinationsGlassPanel onNavigate={() => setOpenDropdown(null)} />
+              <DestinationsGlassPanel
+                destinations={headerNav.destinations}
+                onNavigate={() => setOpenDropdown(null)}
+              />
             ) : isLuxuryShowcase ? (
               <LuxuryGlassPanel
+                countries={headerNav.luxuryCountries}
                 activeId={luxuryCountry}
                 onSelect={setLuxuryCountry}
                 onNavigate={() => setOpenDropdown(null)}
@@ -1092,11 +1105,15 @@ export default function Header() {
                       {expanded ? (
                         useDestMobile ? (
                           <div className="mb-3">
-                            <DestinationsGlassPanel onNavigate={() => setMobileOpen(false)} />
+                            <DestinationsGlassPanel
+                              destinations={headerNav.destinations}
+                              onNavigate={() => setMobileOpen(false)}
+                            />
                           </div>
                         ) : useLuxuryMobile ? (
                           <div className="mb-3">
                             <LuxuryGlassPanel
+                              countries={headerNav.luxuryCountries}
                               activeId={luxuryCountry}
                               onSelect={setLuxuryCountry}
                               onNavigate={() => setMobileOpen(false)}

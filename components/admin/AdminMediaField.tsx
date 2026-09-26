@@ -28,7 +28,7 @@ export default function AdminMediaField({
     setOpen(true);
     const res = await fetch("/api/orbit/media", { credentials: "include" });
     const data = (await res.json()) as { items?: MediaItem[] };
-    setItems((data.items || []).filter((item) => item.kind === "image").slice(0, 180));
+    setItems((data.items || []).filter((item) => item.kind === "image"));
   }
 
   async function onFile(file?: File) {
