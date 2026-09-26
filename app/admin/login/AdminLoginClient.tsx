@@ -39,7 +39,7 @@ export default function AdminLoginClient() {
   return (
     <div className="admin-login">
       <div className="admin-login-visual">
-        <img src="/images/atmosphere/ebc-premium-section.webp" alt="" />
+        <img className="admin-login-bg" src="/images/atmosphere/ebc-premium-section.webp" alt="" />
         <div className="admin-login-brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
