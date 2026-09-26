@@ -716,28 +716,37 @@ function ItineraryMetaItem({
 }
 
 function ItineraryMetaIcon({ name }: { name: "meal" | "bed" | "duration" | "altitude" | "distance" }) {
+  const strokeW = name === "meal" || name === "bed" ? 2 : 1.75;
   const common = {
     width: 22,
     height: 22,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.75,
+    strokeWidth: strokeW,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
   };
   if (name === "meal") {
     return (
       <svg {...common}>
-        <path d="M4 21V8m0 0c0-3 2-5 4-5M8 8v5M12 21V4h2a4 4 0 0 1 0 8h-2" />
+        <path d="M5 2v7.2c0 1.2.9 2.1 2 2.1h0c1.1 0 2-.9 2-2.1V2" />
+        <path d="M7 2v20" />
+        <path d="M17 2v20" />
+        <path d="M21 2v6.8a3.2 3.2 0 0 1-6.4 0V2" />
       </svg>
     );
   }
   if (name === "bed") {
     return (
       <svg {...common}>
-        <path d="M3 18V9h8a5 5 0 0 1 5 5v4" />
-        <path d="M3 14h18M3 18h18" />
+        <path d="M3 11V7.2A2.2 2.2 0 0 1 5.2 5h2.1" />
+        <path d="M3 14.5h18" />
+        <path d="M3 11h10.5a2.8 2.8 0 0 1 2.8 2.8v4.7" />
+        <path d="M19.5 11H21a1.5 1.5 0 0 1 1.5 1.5v7" />
+        <path d="M3 20v-5.5" />
+        <path d="M21 20v-7" />
+        <path d="M5.5 9.2h3.2a1.2 1.2 0 0 1 1.2 1.2v.6H5.5" />
       </svg>
     );
   }
@@ -839,15 +848,23 @@ function FactIcon({ name }: { name: string }) {
   if (name === "bed") {
     return (
       <svg {...common}>
-        <path d="M3 18V9h8a5 5 0 0 1 5 5v4" />
-        <path d="M3 14h18M3 18h18" />
+        <path d="M3 11V7.2A2.2 2.2 0 0 1 5.2 5h2.1" />
+        <path d="M3 14.5h18" />
+        <path d="M3 11h10.5a2.8 2.8 0 0 1 2.8 2.8v4.7" />
+        <path d="M19.5 11H21a1.5 1.5 0 0 1 1.5 1.5v7" />
+        <path d="M3 20v-5.5" />
+        <path d="M21 20v-7" />
+        <path d="M5.5 9.2h3.2a1.2 1.2 0 0 1 1.2 1.2v.6H5.5" />
       </svg>
     );
   }
   if (name === "meal") {
     return (
       <svg {...common}>
-        <path d="M4 21V8m0 0c0-3 2-5 4-5M8 8v5M12 21V4h2a4 4 0 0 1 0 8h-2" />
+        <path d="M5 2v7.2c0 1.2.9 2.1 2 2.1h0c1.1 0 2-.9 2-2.1V2" />
+        <path d="M7 2v20" />
+        <path d="M17 2v20" />
+        <path d="M21 2v6.8a3.2 3.2 0 0 1-6.4 0V2" />
       </svg>
     );
   }
