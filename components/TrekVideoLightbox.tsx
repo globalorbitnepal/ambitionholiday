@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { TrekVideo } from "@/lib/trip-packages";
 import { mediaSrc } from "@/lib/media-src";
@@ -20,11 +20,24 @@ export default function TrekVideoLightbox({ video, onClose }: { video: TrekVideo
   const vimeo = vimeoId(src);
   const file = isFileVideo(src);
   const [mounted, setMounted] = useState(false);
-  const [origin, setOrigin] = useState("");
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "https://ambition.theglobalorbit.com";
 
   useEffect(() => {
     setMounted(true);
-    setOrigin(typeof window !== "undefined" ? window.location.origin : "");
+  }, []);
+
+  const stopPlayback = useCallback(() => {
+    const el = frameRef.current;
+    if (el) {
+      try {
+        el.contentWindow?.postMessage('{"event":"command","func":"stopVideo","args":""}', "*");
+      } catch {
+        // ignore cross-origin
+      }
+      el.src = "about:blank";
+    }
   }, []);
 
   useEffect(() => {
@@ -35,10 +48,11 @@ export default function TrekVideoLightbox({ video, onClose }: { video: TrekVideo
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
+      stopPlayback();
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
-  }, [onClose]);
+  }, [onClose, stopPlayback]);
 
   if (!mounted) return null;
 
@@ -64,6 +78,7 @@ export default function TrekVideoLightbox({ video, onClose }: { video: TrekVideo
         <div className="trek-video-lightbox-frame">
           {yt ? (
             <iframe
+              ref={frameRef}
               key={embedKey}
               title={video.title}
               src={youtubeEmbedSrc(yt, origin)}

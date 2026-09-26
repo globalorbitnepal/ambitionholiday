@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
 import OrbitWhyEditor from "@/components/OrbitWhyEditor";
 import OrbitExploreHubEditor from "@/components/OrbitExploreHubEditor";
@@ -21,6 +21,8 @@ import OrbitNepalEditor from "@/components/OrbitNepalEditor";
 import OrbitFooterEditor from "@/components/OrbitFooterEditor";
 import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
 import OrbitPackageGalleryEditor from "@/components/OrbitPackageGalleryEditor";
+import OrbitPackageVideosEditor from "@/components/OrbitPackageVideosEditor";
+import { reconcileAllTripPackagesForSave } from "@/lib/trip-package-save";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import type { SiteContent, StatItem } from "@/lib/content-types";
@@ -59,6 +61,7 @@ const inputClass =
 
 export default function OrbitDashboard({ initial, embedded = false }: Props) {
   const [content, setContent] = useState(initial);
+  const baselineRef = useRef(initial);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const [tab, setTab] = useState<
@@ -88,6 +91,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
     | "photography"
     | "trekCharts"
     | "tripGallery"
+    | "tripVideos"
     | "footer"
     | "media"
   >("journeys");
@@ -103,10 +107,26 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
     setSaving(true);
     setStatus("");
     try {
+      let payload = next;
+      try {
+        const latestRes = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store", credentials: "include" });
+        if (latestRes.ok) {
+          const latest = (await latestRes.json()) as SiteContent;
+          const tripPackages = reconcileAllTripPackagesForSave(
+            latest.tripPackages,
+            next.tripPackages,
+            baselineRef.current.tripPackages,
+          );
+          payload = { ...latest, ...next, tripPackages };
+        }
+      } catch {
+        // continue with local payload
+      }
       const res = await fetch("/api/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(next),
+        credentials: "include",
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const err = (await res.json().catch(() => ({}))) as { error?: string };
@@ -114,6 +134,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
       }
       const saved = (await res.json()) as SiteContent;
       setContent(saved);
+      baselineRef.current = saved;
       setStatus("Saved — live site updates instantly.");
     } catch (err) {
       setStatus(err instanceof Error ? err.message : "Save failed.");
@@ -172,6 +193,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
               ["photography", "Photography treks"],
               ["trekCharts", "Trek charts"],
               ["tripGallery", "Trip galleries"],
+              ["tripVideos", "Trek videos"],
               ["footer", "Footer"],
               ["media", "Media library"],
             ] as const
@@ -589,6 +611,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
 
           {tab === "trekCharts" ? <OrbitTrekChartsEditor content={content} setContent={setContent} /> : null}
           {tab === "tripGallery" ? <OrbitPackageGalleryEditor content={content} setContent={setContent} /> : null}
+          {tab === "tripVideos" ? <OrbitPackageVideosEditor content={content} setContent={setContent} /> : null}
 
           {tab === "footer" ? (
             <OrbitFooterEditor content={content} setContent={setContent} save={save} />

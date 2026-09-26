@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { reconcileTripPackageForSave } from "@/lib/trip-package-save";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import AdminMediaField from "@/components/admin/AdminMediaField";
@@ -29,12 +30,29 @@ export default function AdminPackageEditor() {
     "basic" | "ratings" | "itinerary" | "media" | "charts" | "guide" | "video" | "reviews" | "info" | "seo"
   >("basic");
   const [pkg, setPkg] = useState<TrekPackage | null>(null);
+  const baselineRef = useRef<TrekPackage | null>(null);
 
   useEffect(() => {
     if (!loaded) return;
     const found = content.tripPackages.find((item) => item.id === params.id);
-    setPkg(found ? { ...found } : null);
-  }, [loaded, content.tripPackages, params.id]);
+    const next = found ? { ...found } : null;
+    setPkg(next);
+    baselineRef.current = next ? structuredClone(next) : null;
+  }, [loaded, params.id]);
+
+  function defaultWatch(cur: TrekPackage) {
+    return (
+      cur.watchVideo ?? {
+        id: `watch-${cur.id}`,
+        title: "Watch video",
+        subtitle: cur.title,
+        duration: "",
+        imageSrc: cur.heroSrc,
+        imageAlt: cur.heroAlt || cur.title,
+        videoSrc: "",
+      }
+    );
+  }
 
   if (!loaded) return <p>Loading editor…</p>;
   if (!pkg) return <p>Package not found.</p>;
@@ -45,22 +63,37 @@ export default function AdminPackageEditor() {
 
   async function onSave() {
     if (!pkg) return;
+    let pkgToSave = pkg;
+    try {
+      const res = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store", credentials: "include" });
+      if (res.ok) {
+        const latest = (await res.json()) as typeof content;
+        const serverPkg = latest.tripPackages.find((item) => item.id === pkg.id);
+        if (serverPkg) {
+          pkgToSave = reconcileTripPackageForSave(serverPkg, pkg, baselineRef.current);
+        }
+      }
+    } catch {
+      // save with local copy if refresh fails
+    }
     const cardPatch = {
-      title: pkg.title,
-      days: pkg.days,
-      difficulty: pkg.difficulty,
-      description: pkg.subtitle,
-      badge: pkg.badge,
-      href: tripPath(pkg),
-      imageSrc: pkg.heroSrc,
-      imageAlt: pkg.heroAlt,
+      title: pkgToSave.title,
+      days: pkgToSave.days,
+      difficulty: pkgToSave.difficulty,
+      description: pkgToSave.subtitle,
+      badge: pkgToSave.badge,
+      href: tripPath(pkgToSave),
+      imageSrc: pkgToSave.heroSrc,
+      imageAlt: pkgToSave.heroAlt,
     };
     const syncDest = (dest: typeof content.nepal) => ({
       ...dest,
       categories: dest.categories.map((cat) => ({
         ...cat,
         packages: cat.packages.map((card) =>
-          card.id === pkg.catalogId || card.href.endsWith(`/${pkg.slug}`) || card.href === tripPath(pkg)
+          card.id === pkgToSave.catalogId ||
+          card.href.endsWith(`/${pkgToSave.slug}`) ||
+          card.href === tripPath(pkgToSave)
             ? { ...card, ...cardPatch }
             : card,
         ),
@@ -68,7 +101,7 @@ export default function AdminPackageEditor() {
     });
     const next = {
       ...content,
-      tripPackages: content.tripPackages.map((item) => (item.id === pkg.id ? pkg : item)),
+      tripPackages: content.tripPackages.map((item) => (item.id === pkgToSave.id ? pkgToSave : item)),
       nepal: syncDest(content.nepal),
       bhutan: syncDest(content.bhutan),
       tibet: syncDest(content.tibet),
@@ -76,24 +109,28 @@ export default function AdminPackageEditor() {
       journeys: {
         ...content.journeys,
         packages: content.journeys.packages.map((card) =>
-          card.href.includes(pkg.slug) || card.id === pkg.catalogId
+          card.href.includes(pkgToSave.slug) || card.id === pkgToSave.catalogId
             ? {
                 ...card,
-                title: pkg.title,
-                href: tripPath(pkg),
-                imageSrc: pkg.heroSrc,
-                imageAlt: pkg.heroAlt,
-                days: pkg.days,
-                difficulty: pkg.difficulty,
-                description: pkg.subtitle,
-                badge: pkg.badge,
+                title: pkgToSave.title,
+                href: tripPath(pkgToSave),
+                imageSrc: pkgToSave.heroSrc,
+                imageAlt: pkgToSave.heroAlt,
+                days: pkgToSave.days,
+                difficulty: pkgToSave.difficulty,
+                description: pkgToSave.subtitle,
+                badge: pkgToSave.badge,
               }
             : card,
         ),
       },
     };
     const ok = await save(next);
-    if (ok) router.refresh();
+    if (ok) {
+      setPkg(pkgToSave);
+      baselineRef.current = structuredClone(pkgToSave);
+      router.refresh();
+    }
   }
 
   return (
@@ -703,27 +740,27 @@ export default function AdminPackageEditor() {
             <span>Title</span>
             <input
               value={pkg.watchVideo?.title || ""}
-              onChange={(e) => patch({ watchVideo: { ...pkg.watchVideo, title: e.target.value } })}
+              onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), title: e.target.value } })}
             />
           </label>
           <label className="admin-field">
             <span>YouTube / Vimeo / MP4 URL</span>
             <input
               value={pkg.watchVideo?.videoSrc || ""}
-              onChange={(e) => patch({ watchVideo: { ...pkg.watchVideo, videoSrc: e.target.value } })}
+              onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), videoSrc: e.target.value } })}
             />
           </label>
           <label className="admin-field">
             <span>Duration</span>
             <input
               value={pkg.watchVideo?.duration || ""}
-              onChange={(e) => patch({ watchVideo: { ...pkg.watchVideo, duration: e.target.value } })}
+              onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), duration: e.target.value } })}
             />
           </label>
           <AdminMediaField
             label="Watch Video thumbnail"
             value={pkg.watchVideo?.imageSrc || ""}
-            onChange={(imageSrc) => patch({ watchVideo: { ...pkg.watchVideo, imageSrc } })}
+            onChange={(imageSrc) => patch({ watchVideo: { ...defaultWatch(pkg), imageSrc } })}
           />
 
           <h2 style={{ marginTop: 24 }}>Video reviews</h2>

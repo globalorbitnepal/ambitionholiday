@@ -22,7 +22,8 @@ import { DEFAULT_MULTI } from "@/lib/multi-defaults";
 import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
-import { coerceTripPackages } from "@/lib/trip-packages";
+import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
+import { mergeTripPackageSnapshots } from "@/lib/trip-package-save";
 
 const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
 
@@ -222,10 +223,9 @@ async function readNewestContentFile(): Promise<SiteContent> {
   return best;
 }
 
-/** Package media (hero, gallery, YouTube) often saves to a secondary JSON path — never drop it. */
+/** Package media often spans multiple JSON paths — merge by package id so YouTube links are not dropped. */
 async function readBestTripPackagesField(): Promise<SiteContent["tripPackages"] | undefined> {
-  let best: SiteContent["tripPackages"] | undefined;
-  let bestAt = "";
+  const versions = new Map<string, { pkg: TrekPackage; at: string }[]>();
   for (const file of contentFileCandidates()) {
     try {
       const raw = await fs.readFile(file, "utf8");
@@ -233,15 +233,26 @@ async function readBestTripPackagesField(): Promise<SiteContent["tripPackages"] 
       const pk = parsed.tripPackages;
       if (!Array.isArray(pk) || !pk.length) continue;
       const at = String(parsed.updatedAt || "");
-      if (!best || at > bestAt) {
-        best = pk;
-        bestAt = at;
+      for (const pkg of pk) {
+        const list = versions.get(pkg.id) ?? [];
+        list.push({ pkg, at });
+        versions.set(pkg.id, list);
       }
     } catch {
       // unreadable / missing
     }
   }
-  return best;
+  if (!versions.size) return undefined;
+  const merged: TrekPackage[] = [];
+  for (const list of versions.values()) {
+    const sorted = [...list].sort((a, b) => a.at.localeCompare(b.at));
+    let acc = sorted[0].pkg;
+    for (let i = 1; i < sorted.length; i++) {
+      acc = mergeTripPackageSnapshots(acc, sorted[i].pkg);
+    }
+    merged.push(acc);
+  }
+  return merged;
 }
 
 /** If Orbit edits landed in a secondary JSON path, copy them into the primary CMS file once. */

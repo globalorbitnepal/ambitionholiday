@@ -306,7 +306,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       type="button"
                       className="lux-film"
                       aria-label={`Play video: ${video.title}`}
-                      onClick={() => setActiveVideo(video)}
+                      disabled={!video.videoSrc?.trim()}
+                      onClick={() => {
+                        if (video.videoSrc?.trim()) setActiveVideo(video);
+                      }}
                     >
                       <MediaImage src={video.imageSrc} alt={video.imageAlt || video.title} sizes="30vw" className="lux-photo" />
                       <span className="lux-film-play lux-film-play--sm" aria-hidden="true">
