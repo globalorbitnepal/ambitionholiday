@@ -5668,39 +5668,44 @@ a.lux-chart-dl {
   }
 }
 
-/* —— Trip hero: 3-panel hover gallery (ref-style, dark page) —— */
+/* —— Trip hero: 3-panel gallery (nepaltrekkingplanner-style: 50/25/25, no image zoom) —— */
 .lux-gallery--trip .lux-gallery-row {
-  display: flex;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.45rem;
   height: clamp(18rem, 54vh, 31rem);
   max-width: 92rem;
   margin: 0 auto;
   padding: calc(5.4rem + env(safe-area-inset-top)) clamp(0.85rem, 2.4vw, 2.4rem) 0.85rem;
+  transition: grid-template-columns 0.4s linear;
+}
+
+.lux-gallery--trip .lux-gallery-row:has(.lux-gallery-pane:nth-child(1):hover) {
+  grid-template-columns: minmax(0, 2.15fr) minmax(0, 0.92fr) minmax(0, 0.92fr);
+}
+
+.lux-gallery--trip .lux-gallery-row:has(.lux-gallery-pane:nth-child(2):hover) {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 2.15fr) minmax(0, 0.92fr);
+}
+
+.lux-gallery--trip .lux-gallery-row:has(.lux-gallery-pane:nth-child(3):hover) {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 0.92fr) minmax(0, 2.15fr);
 }
 
 .lux-gallery--trip .lux-gallery-pane {
   position: relative;
-  flex: 0.72 1 0;
-  min-width: 3.25rem;
+  min-width: 0;
+  min-height: 0;
   border-radius: 1.05rem;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-  transition: flex 0.75s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
-}
-
-.lux-gallery--trip .lux-gallery-pane.is-lead {
-  flex: 1.22 1 0;
-}
-
-.lux-gallery--trip .lux-gallery-row:hover .lux-gallery-pane {
-  flex: 0.55 1 0;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .lux-gallery--trip .lux-gallery-pane:hover {
-  flex: 2.65 1 0 !important;
-  z-index: 4;
+  z-index: 2;
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55);
   border-color: rgba(212, 175, 55, 0.35);
 }
@@ -5711,31 +5716,23 @@ a.lux-chart-dl {
   overflow: hidden;
 }
 
-.lux-gallery--trip .lux-gallery-photo {
-  transform: none;
-  transition: none;
-}
-
-.lux-gallery--trip .lux-gallery-pane:hover .lux-gallery-photo {
-  transform: none;
-}
-
-/* Third panel: widen on row hover only — no extra zoom (ref-style) */
-.lux-gallery--trip .lux-gallery-pane:nth-child(3) .lux-gallery-photo {
+.lux-gallery--trip .lux-gallery-photo,
+.lux-gallery--trip .lux-gallery-pane:hover .lux-gallery-photo,
+.lux-gallery--trip .lux-photo {
+  transform: none !important;
+  transition: none !important;
   object-fit: cover;
-  object-position: center center;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
 }
 
 @media (max-width: 768px) {
   .lux-gallery--trip .lux-gallery-row {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     height: auto;
   }
-  .lux-gallery--trip .lux-gallery-pane,
-  .lux-gallery--trip .lux-gallery-pane.is-lead,
-  .lux-gallery--trip .lux-gallery-pane:hover,
-  .lux-gallery--trip .lux-gallery-row:hover .lux-gallery-pane {
-    flex: none !important;
+  .lux-gallery--trip .lux-gallery-pane {
     min-height: 12rem;
   }
 }

@@ -117,7 +117,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             {heroStrip.map((src, index) => (
               <figure
                 key={`${src}-${index}`}
-                className={`lux-gallery-pane${index === 0 ? " is-lead" : ""}`}
+                className="lux-gallery-pane"
                 onClick={() => setLightIndex(index)}
               >
                 <span className="lux-gallery-media">
@@ -127,7 +127,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     sizes={index === 0 ? "44vw" : "22vw"}
                     priority
                     className="lux-gallery-photo lux-photo"
-                    objectPosition="center 40%"
+                    objectPosition={index === 2 ? "center center" : "center 42%"}
                     quality={index === 0 ? 86 : 78}
                   />
                 </span>
