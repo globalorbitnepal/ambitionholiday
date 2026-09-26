@@ -5307,6 +5307,34 @@ body.nav-mega-open .hero-copy {
   height: auto;
 }
 
+.lux-root .lux-graph--map {
+  background: linear-gradient(165deg, rgba(14, 19, 26, 0.96), rgba(10, 14, 20, 0.94));
+  border-color: rgba(212, 175, 55, 0.32);
+}
+
+.lux-root .lux-graph--map h3 {
+  color: #f4f8fb;
+}
+
+.lux-route-map-frame {
+  margin: 0;
+  padding: 0.35rem;
+  border-radius: 0.85rem;
+  background: #0a0e12;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  overflow: hidden;
+}
+
+.lux-route-map-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center top;
+}
+
 a.lux-chart-dl {
   text-decoration: none;
 }

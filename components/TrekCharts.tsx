@@ -8,27 +8,40 @@ import {
   EBC_MONTHLY_WEATHER,
   metresToFeet,
 } from "@/lib/ebc-charts";
+import { mediaSrc } from "@/lib/media-src";
+
+function downloadExt(src: string) {
+  const path = src.split("?")[0];
+  const ext = path.split(".").pop()?.toLowerCase();
+  if (ext && ["webp", "jpg", "jpeg", "png", "gif"].includes(ext)) return ext === "jpeg" ? "jpg" : ext;
+  return "png";
+}
 
 export function UploadedChart({
   title,
   src,
   file,
+  variant = "chart",
 }: {
   title: string;
   src: string;
   file: string;
+  variant?: "chart" | "map";
 }) {
+  const resolved = mediaSrc(src);
+  const ext = downloadExt(src);
+  const isMap = variant === "map";
   return (
-    <div className="lux-graph">
+    <div className={`lux-graph${isMap ? " lux-graph--map" : ""}`}>
       <div className="lux-graph-head">
         <h3>{title}</h3>
-        <a className="lux-chart-dl" href={src} download={`${file}.png`}>
-          Download PNG
+        <a className="lux-chart-dl" href={resolved} download={`${file}.${ext}`}>
+          {isMap ? "Download map" : "Download PNG"}
         </a>
       </div>
-      <figure className="lux-upload-frame">
+      <figure className={isMap ? "lux-route-map-frame" : "lux-upload-frame"}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={title} />
+        <img src={resolved} alt={title} className={isMap ? "lux-route-map-img" : undefined} loading="lazy" decoding="async" />
       </figure>
     </div>
   );

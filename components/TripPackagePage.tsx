@@ -381,7 +381,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <h2>Trip map</h2>
               <p>The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.</p>
               {pkg.routeMapSrc ? (
-                <UploadedChart title={`${pkg.title} map`} src={pkg.routeMapSrc} file={`${pkg.slug}-route-map`} />
+                <UploadedChart
+                  variant="map"
+                  title={`${pkg.title} map`}
+                  src={pkg.routeMapSrc}
+                  file={pkg.routeMapFile || `${pkg.slug}-route-map`}
+                />
               ) : (
                 <TrekRouteMap title={`${pkg.title} map`} />
               )}

@@ -475,8 +475,8 @@ export default function AdminPackageEditor() {
             Built-in graphs show until you upload a replacement. JPG and PNG only. Empty a field to restore the drawn chart. Same frames on every package.
           </p>
           <AdminMediaField
-            label="Trip map replacement"
-            hint={CHART_FRAMES.map.hint}
+            label="Trip map (full graphic)"
+            hint={`${CHART_FRAMES.map.hint} Shown full width on the trek page with a download button.`}
             accept={CHART_FRAMES.map.accept}
             fit="contain"
             value={pkg.routeMapSrc || ""}

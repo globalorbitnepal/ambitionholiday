@@ -56,7 +56,7 @@ export default function OrbitTrekChartsEditor({ content, setContent }: Props) {
   return (
     <div className="space-y-8">
       <p className="text-sm text-white/65">
-        Replace the three trek graphs on any package. JPG or PNG. Leave empty to keep the drawn chart. Save at the top to publish.
+        Replace trek map and charts on any package. WebP, JPG or PNG. Trip map shows full width with a download button. Save at the top to publish.
       </p>
       <div className="rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm text-gold">
         <p className="font-semibold">Perfect frame sizes</p>

@@ -222,7 +222,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     altitudeChartM: "",
     altitudeChartFt: "",
     altitudeGainSrc: "",
-    routeMapSrc: "",
+    routeMapSrc: "/images/packages/everest-base-camp-luxury-trek-route-map.webp",
     weatherDailySrc: "",
     weatherMonthlySrc: "",
     routeMapFile: "everest-base-camp-trek-route-map",
@@ -706,6 +706,10 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       optionalAddons: item.optionalAddons?.length ? item.optionalAddons : def.optionalAddons,
       includeNote: item.includeNote || def.includeNote,
       luklaNote: item.luklaNote || def.luklaNote,
+      routeMapSrc: item.routeMapSrc || def.routeMapSrc,
+      altitudeChartM: item.altitudeChartM || def.altitudeChartM,
+      altitudeChartFt: item.altitudeChartFt || def.altitudeChartFt,
+      weatherMonthlySrc: item.weatherMonthlySrc || def.weatherMonthlySrc,
       reviewsWallpaperSrc: item.reviewsWallpaperSrc || def.reviewsWallpaperSrc,
     };
   });
