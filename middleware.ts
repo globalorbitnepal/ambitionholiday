@@ -16,7 +16,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/api/orbit/login" || pathname === "/api/orbit/upload" || pathname === "/api/orbit/media-file") {
+  if (
+    pathname === "/api/orbit/login" ||
+    pathname === "/api/orbit/health" ||
+    pathname === "/api/orbit/upload" ||
+    pathname === "/api/orbit/media-file"
+  ) {
     return NextResponse.next();
   }
 

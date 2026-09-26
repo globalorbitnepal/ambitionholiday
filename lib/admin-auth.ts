@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual, randomBytes } from "crypto";
+import { hydrateRuntimeEnv } from "@/lib/load-runtime-env";
 import { verifyPassword } from "@/lib/password";
 import {
   readSessionFromCookieHeader,
@@ -9,10 +10,12 @@ const COOKIE_NAME = "admin_session";
 const MAX_AGE_SEC = 60 * 60 * 8;
 
 function getUsername() {
+  hydrateRuntimeEnv();
   return (process.env.ADMIN_USERNAME ?? "").trim();
 }
 
 function getPasswordHash() {
+  hydrateRuntimeEnv();
   const b64 = process.env.ADMIN_PASSWORD_HASH_B64 ?? "";
   if (b64) {
     try {
@@ -25,6 +28,7 @@ function getPasswordHash() {
 }
 
 function getSecret() {
+  hydrateRuntimeEnv();
   return process.env.ADMIN_SESSION_SECRET || process.env.ORBIT_SESSION_SECRET || "";
 }
 

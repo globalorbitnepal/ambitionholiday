@@ -144,8 +144,12 @@ jobs:
             fi
             rm -rf "${CMS_BACKUP}"
 
-            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
-              echo "Updating Orbit CMS env variables (.env.local)..."
+            ORBIT_ENV="${CMS_PATH}/orbit-secrets.env"
+            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -z "${ORBIT_SESSION_SECRET:-}" ]; then
+              ORBIT_SESSION_SECRET="$(openssl rand -hex 32)"
+              echo "Generated ORBIT_SESSION_SECRET for this deploy."
+            fi
+            write_orbit_env_local() {
               umask 077
               ENV_TMP="$(mktemp .env.local.XXXXXX)"
               ENV_TMP="${ENV_TMP}" node <<'NODE'
@@ -159,6 +163,7 @@ jobs:
               const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
               const lines = source.split(/\r?\n/);
               for (const [key, value] of Object.entries(values)) {
+                if (!value) continue;
                 const replacement = `${key}=${value}`;
                 let found = false;
                 for (let i = 0; i < lines.length; i += 1) {
@@ -172,8 +177,27 @@ jobs:
               fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
               fs.renameSync(tmp, path);
             NODE
+            }
+
+            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
+              echo "Updating Orbit secrets (CMS + app)..."
+              umask 077
+              printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > "${ORBIT_ENV}"
+              chmod 600 "${ORBIT_ENV}"
+              mkdir -p data
+              cp "${ORBIT_ENV}" data/orbit-secrets.env
+              write_orbit_env_local
+            elif [ -f "${ORBIT_ENV}" ]; then
+              echo "Syncing Orbit secrets from ${ORBIT_ENV}..."
+              mkdir -p data
+              cp "${ORBIT_ENV}" data/orbit-secrets.env
+              set -a
+              # shellcheck disable=SC1090
+              . "${ORBIT_ENV}"
+              set +a
+              write_orbit_env_local
             else
-              echo "Orbit secrets not supplied; preserving existing .env.local."
+              echo "WARNING: No Orbit secrets in GitHub or ${ORBIT_ENV}; /orbit login will fail until configured."
             fi
 
             if [ -f data/site-content.json ]; then
@@ -256,7 +280,14 @@ jobs:
               throw new Error(`PM2 process ${name} is not configured for port ${expectedPort}; refusing restart`);
             }
             NODE
-            pm2 restart "${PM2_APP}"
+            export AMBITION_CMS_DIR="${CMS_PATH}"
+            if [ -f "${ORBIT_ENV}" ]; then
+              set -a
+              # shellcheck disable=SC1090
+              . "${ORBIT_ENV}"
+              set +a
+            fi
+            pm2 restart "${PM2_APP}" --update-env
 
             echo "Waiting for ${PM2_APP} to come online..."
             online_ok=0
@@ -307,6 +338,14 @@ jobs:
             done
             if [ "${local_ok}" -ne 1 ]; then
               echo "ERROR: Local health check failed (need home=200)"
+              exit 1
+            fi
+
+            echo "Orbit configuration check..."
+            ORBIT_HEALTH="$(curl -fsS --max-time 10 "http://127.0.0.1:${APP_PORT}/api/orbit/health" || echo '{"configured":false}')"
+            echo "Orbit health: ${ORBIT_HEALTH}"
+            if ! printf '%s' "${ORBIT_HEALTH}" | grep -q '"configured":true'; then
+              echo "ERROR: Orbit passkey is not loaded. Add GitHub Actions secrets ORBIT_PASSKEY and ORBIT_SESSION_SECRET, then redeploy."
               exit 1
             fi
 
