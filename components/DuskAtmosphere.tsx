@@ -7,9 +7,17 @@ import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 const FALLBACK = SECTION_WALLPAPER;
 
 type AtmosphereTone = "dusk" | "bright";
+type AtmosphereFit = "cover" | "contain";
 
 /** Original dusk Himalayan peaks behind post-hero glass. Not the hero hiker photo. */
-export default function DuskAtmosphere({ tone = "dusk" }: { tone?: AtmosphereTone }) {
+export default function DuskAtmosphere({
+  tone = "dusk",
+  fit = "cover",
+}: {
+  tone?: AtmosphereTone;
+  /** contain = full frame, no crop/zoom (trip package page) */
+  fit?: AtmosphereFit;
+}) {
   const { atmosphere } = useSiteContent();
   const src = mediaSrc(atmosphere?.imageSrc || FALLBACK) || FALLBACK;
   const wash =
@@ -23,9 +31,9 @@ export default function DuskAtmosphere({ tone = "dusk" }: { tone?: AtmosphereTon
       <img
         src={src}
         alt=""
-        className={`media-image-fade h-full w-full object-cover object-[center_38%] opacity-100 ${
-          tone === "bright" ? "brightness-[1.18] saturate-[1.08]" : ""
-        }`}
+        className={`media-image-fade h-full w-full opacity-100 ${
+          fit === "contain" ? "object-contain object-center" : "object-cover object-[center_38%]"
+        } ${tone === "bright" ? "brightness-[1.18] saturate-[1.08]" : ""}`}
         loading="eager"
         decoding="async"
         fetchPriority="high"

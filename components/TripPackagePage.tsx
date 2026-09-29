@@ -121,7 +121,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     <>
     <div className="lux-root lux-root--sky home-light min-w-0 overflow-x-clip">
       <div className="lux-dusk-stage" aria-hidden="true">
-        <DuskAtmosphere />
+        <DuskAtmosphere fit="contain" />
       </div>
       <div className="lux-sky-content relative z-[1]">
       <div className="lux-top lux-top--sky">
