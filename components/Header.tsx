@@ -878,6 +878,10 @@ export default function Header({ surface = "dark" }: HeaderProps) {
 
   const onLightSurface = surface === "light";
   const showBar = onLightSurface || scrolled || mobileOpen || openDropdown;
+  const navInk = onLightSurface
+    ? "text-[#142433] hover:text-[#8a6a16]"
+    : "text-white hover:text-gold";
+  const iconInk = onLightSurface ? "text-[#142433] hover:text-[#8a6a16]" : "text-white hover:text-gold";
 
   return (
     <header
@@ -886,7 +890,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
       className={`absolute inset-x-0 top-0 z-[80] isolate pt-[var(--safe-top)] transition-colors duration-300 ${
         showBar
           ? onLightSurface
-            ? "border-b border-white/75 bg-white/78 shadow-[0_10px_40px_rgba(24,56,88,0.08)] backdrop-blur-xl"
+            ? "border-b border-[#c9a227]/35 bg-[rgba(255,255,255,0.78)] shadow-[0_12px_36px_rgba(24,56,88,0.12)] backdrop-blur-xl"
             : "bg-[rgba(8,12,18,0.91)] backdrop-blur-md"
           : "bg-transparent"
       }`}
@@ -940,7 +944,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                               ? "rounded-full bg-[#c9a227] text-[#1a1408] hover:text-[#1a1408]"
                               : goldLineOpen
                                 ? "rounded-md text-[#e4c35a] hover:text-[#e8d48a]"
-                              : `rounded-md text-white hover:text-gold ${isOpen ? "text-gold" : ""}`
+                              : `rounded-md ${navInk} ${isOpen ? "text-[#8a6a16]" : ""}`
                           }`}
                           aria-expanded={isOpen}
                           aria-haspopup="true"
@@ -976,7 +980,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                     ) : (
                       <Link
                         href={item.href}
-                        className="focus-ring inline-flex items-center whitespace-nowrap rounded-md px-1.5 py-2 text-[0.72rem] font-bold tracking-[0.02em] text-white transition-colors duration-200 hover:text-gold xl:px-2 xl:text-[0.82rem] xl:tracking-[0.03em] 2xl:px-3 2xl:text-[0.95rem] 2xl:tracking-[0.04em]"
+                        className={`focus-ring inline-flex items-center whitespace-nowrap rounded-md px-1.5 py-2 text-[0.72rem] font-bold tracking-[0.02em] transition-colors duration-200 xl:px-2 xl:text-[0.82rem] xl:tracking-[0.03em] 2xl:px-3 2xl:text-[0.95rem] 2xl:tracking-[0.04em] ${navInk}`}
                       >
                         {item.label}
                       </Link>
@@ -991,7 +995,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
             <Link
               href="/saved"
               aria-label="Saved packages"
-              className="focus-ring relative hidden rounded-full p-1.5 text-white transition-colors hover:text-gold md:inline-flex xl:p-2"
+              className={`focus-ring relative hidden rounded-full p-1.5 transition-colors md:inline-flex xl:p-2 ${iconInk}`}
             >
               <svg viewBox="0 0 24 24" className="h-[1.33rem] w-[1.33rem]" fill={savedTrips.length ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
                 <path
@@ -1025,7 +1029,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
 
             <button
               type="button"
-              className="focus-ring inline-flex rounded-md p-2 text-white lg:hidden"
+              className={`focus-ring inline-flex rounded-md p-2 lg:hidden ${onLightSurface ? "text-[#142433]" : "text-white"}`}
               aria-expanded={mobileOpen}
               aria-controls={navId}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -1081,7 +1085,11 @@ export default function Header({ surface = "dark" }: HeaderProps) {
 
       <div id={navId} className={`lg:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div
-          className="max-h-[calc(100dvh-4.75rem-var(--safe-top))] overflow-y-auto overscroll-contain border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-[max(2rem,var(--safe-bottom))] pt-3 backdrop-blur-lg"
+          className={`max-h-[calc(100dvh-4.75rem-var(--safe-top))] overflow-y-auto overscroll-contain border-t px-4 pb-[max(2rem,var(--safe-bottom))] pt-3 backdrop-blur-lg ${
+            onLightSurface
+              ? "border-[#c9a227]/25 bg-[rgba(255,255,255,0.94)]"
+              : "border-white/10 bg-[rgba(8,12,18,0.96)]"
+          }`}
           style={{ fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif" }}
         >
           <ul className="space-y-1">
@@ -1094,12 +1102,12 @@ export default function Header({ surface = "dark" }: HeaderProps) {
               const stackLinks = useStackMobile ? flattenNavLinks(item) : [];
 
               return (
-                <li key={item.label} className="border-b border-white/10">
+                <li key={item.label} className={`border-b ${onLightSurface ? "border-[#c9a227]/20" : "border-white/10"}`}>
                   {menu ? (
                     <>
                       <button
                         type="button"
-                        className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[1.05rem] font-bold text-white"
+                        className={`focus-ring flex w-full items-center justify-between py-3.5 text-left text-[1.05rem] font-bold ${onLightSurface ? "text-[#142433]" : "text-white"}`}
                         aria-expanded={expanded}
                         onClick={() => {
                           setMobileExpanded((current) =>
@@ -1252,7 +1260,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                               <li key={child.label}>
                                 <Link
                                   href={child.href}
-                                  className="focus-ring block py-2 text-sm text-white/75 hover:text-gold"
+                                  className={`focus-ring block py-2 text-sm hover:text-gold ${onLightSurface ? "text-[#3d4d5c]" : "text-white/75"}`}
                                   onClick={() => setMobileOpen(false)}
                                 >
                                   {child.label}
@@ -1266,7 +1274,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                   ) : (
                     <Link
                       href={item.href}
-                      className="focus-ring block py-3.5 text-[1.05rem] font-bold text-white hover:text-gold"
+                      className={`focus-ring block py-3.5 text-[1.05rem] font-bold hover:text-gold ${onLightSurface ? "text-[#142433]" : "text-white"}`}
                       onClick={() => setMobileOpen(false)}
                     >
                       {item.label}
@@ -1289,7 +1297,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
               </svg>
             </span>
             <span>
-              <span className="block text-xs text-white/70">Call or WhatsApp 24/7</span>
+              <span className={`block text-xs ${onLightSurface ? "text-[#3d4d5c]" : "text-white/70"}`}>Call or WhatsApp 24/7</span>
               <span className="text-sm font-semibold text-gold">{PHONE_DISPLAY}</span>
             </span>
           </a>

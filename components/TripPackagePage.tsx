@@ -111,9 +111,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <div className="lux-root lux-root--sky home-light min-w-0 text-[#f7f4ef]">
+    <div className="lux-root lux-root--sky min-w-0">
+      <DuskAtmosphere tone="bright" />
+      <div className="lux-sky-content">
       <div className="lux-top lux-top--sky">
-        <Header />
+        <Header surface="light" />
         <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
           <div className="lux-gallery-row">
             {heroStrip.map((src, index) => (
@@ -153,9 +155,6 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         </section>
       </div>
 
-      <div className="lux-sky-stage relative isolate [clip-path:inset(0)]">
-        <DuskAtmosphere />
-        <div className="lux-sky-content relative z-[1]">
       <div className="lux-wrap">
         <section className="lux-spec" aria-label="Trip facts">
           {facts.map((fact) => (
@@ -657,10 +656,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <WhyAmbitionSection />
       </div>
 
-      <div className="lux-foot relative isolate text-[#f7f4ef]">
+      <div className="lux-foot">
         <SiteFooter />
       </div>
-        </div>
       </div>
     </div>
 
