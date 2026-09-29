@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
+import DuskAtmosphere from "@/components/DuskAtmosphere";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
@@ -118,9 +119,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <div className="lux-root lux-root--sky min-w-0">
+    <div className="lux-root lux-root--sky min-w-0 overflow-x-clip">
       <div className="lux-sky-plain" aria-hidden="true" />
-      <div className="lux-sky-content">
+      <div className="lux-sky-content relative z-[1]">
       <div className="lux-top lux-top--sky">
         <Header surface="dark" />
         <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
@@ -663,7 +664,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <WhyAmbitionSection />
       </div>
 
-      <div className="lux-foot">
+      <div className="lux-foot home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
+        <DuskAtmosphere />
         <SiteFooter />
       </div>
       </div>
