@@ -65,6 +65,13 @@ const FROST_GLASS_STYLE = {
   WebkitBackdropFilter: "blur(12px) saturate(1.35)",
   fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
 } as const;
+const FROST_GLASS_SOLID_STYLE = {
+  background:
+    "linear-gradient(165deg, rgba(14,28,42,0.98) 0%, rgba(10,20,32,0.99) 52%, rgba(8,16,26,1) 100%)",
+  backdropFilter: "blur(22px) saturate(1.2)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.2)",
+  fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+} as const;
 
 type FrostListItem = {
   title: string;
@@ -317,15 +324,17 @@ function FrostListDropdown({
   items,
   onNavigate,
   inline,
+  solid,
 }: {
   items: FrostListItem[];
   onNavigate: () => void;
   inline?: boolean;
+  solid?: boolean;
 }) {
   return (
     <div
       className={`${inline ? "w-full" : "animate-dropdown absolute left-1/2 top-full z-50 mt-1.5 w-[min(calc(100vw-2rem),22.5rem)] -translate-x-1/2"} px-3.5 py-3.5 ${FROST_GLASS_CLASS}`}
-      style={FROST_GLASS_STYLE}
+      style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
       onMouseLeave={inline ? undefined : onNavigate}
     >
       <ul role="menu" className="space-y-0.5">
@@ -391,14 +400,16 @@ function DestGoldArrow() {
 function DestinationsGlassPanel({
   destinations,
   onNavigate,
+  solid,
 }: {
   destinations: DestShowcaseCard[];
   onNavigate: () => void;
+  solid?: boolean;
 }) {
   return (
     <div
       className={`${FROST_GLASS_CLASS} px-4 py-4 sm:px-7 sm:py-6`}
-      style={FROST_GLASS_STYLE}
+      style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
     >
       <div className="mb-4 flex flex-col gap-3 lg:mb-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
@@ -471,18 +482,20 @@ function LuxuryGlassPanel({
   activeId,
   onSelect,
   onNavigate,
+  solid,
 }: {
   countries: LuxuryMegaCountry[];
   activeId: LuxuryMegaCountryId;
   onSelect: (id: LuxuryMegaCountryId) => void;
   onNavigate: () => void;
+  solid?: boolean;
 }) {
   const country = luxuryCountryById(countries, activeId);
 
   return (
     <div
       className={`${FROST_GLASS_CLASS} p-3 sm:p-4`}
-      style={FROST_GLASS_STYLE}
+      style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
     >
       <div className="grid items-stretch gap-4 lg:grid-cols-[20.5rem_1fr]">
         <aside className="flex min-h-full flex-col rounded-[1.25rem] border border-white/12 bg-black/25 p-4">
@@ -1060,6 +1073,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
               <DestinationsGlassPanel
                 destinations={headerNav.destinations}
                 onNavigate={() => setOpenDropdown(null)}
+                solid={!isHome}
               />
             ) : isLuxuryShowcase ? (
               <LuxuryGlassPanel
@@ -1067,6 +1081,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                 activeId={luxuryCountry}
                 onSelect={setLuxuryCountry}
                 onNavigate={() => setOpenDropdown(null)}
+                solid={!isHome}
               />
             ) : null}
           </div>
@@ -1079,6 +1094,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
               items={frostListFor(openDropdown)}
               onNavigate={() => setOpenDropdown(null)}
               inline
+              solid={!isHome}
             />
           </div>
         ) : null}
@@ -1128,6 +1144,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                             <DestinationsGlassPanel
                               destinations={headerNav.destinations}
                               onNavigate={() => setMobileOpen(false)}
+                              solid={!isHome}
                             />
                           </div>
                         ) : useLuxuryMobile ? (
@@ -1137,6 +1154,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                               activeId={luxuryCountry}
                               onSelect={setLuxuryCountry}
                               onNavigate={() => setMobileOpen(false)}
+                              solid={!isHome}
                             />
                           </div>
                         ) : useStackMobile ? (
@@ -1145,6 +1163,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                               items={frostListFor(item.label)}
                               onNavigate={() => setMobileOpen(false)}
                               inline
+                              solid={!isHome}
                             />
                           </div>
                         ) : item.groups ? (
