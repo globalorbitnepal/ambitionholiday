@@ -4249,10 +4249,10 @@ body.nav-mega-open .hero-copy {
   z-index: 1;
 }
 
-/* Trek package pages: solid dark panels (no sky / white chart blocks) */
-.lux-root .lux-spec,
-.lux-root .lux-card,
-.lux-root .lux-price {
+/* Trek package pages (legacy dark): solid panels — sky theme uses .lux-root--sky */
+.lux-root:not(.lux-root--sky) .lux-spec,
+.lux-root:not(.lux-root--sky) .lux-card,
+.lux-root:not(.lux-root--sky) .lux-price {
   background: linear-gradient(165deg, rgba(14, 19, 26, 0.96), rgba(10, 14, 20, 0.94));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -4260,30 +4260,30 @@ body.nav-mega-open .hero-copy {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
 }
 
-.lux-root .lux-graph {
+.lux-root:not(.lux-root--sky) .lux-graph {
   background: linear-gradient(165deg, rgba(14, 19, 26, 0.96), rgba(10, 14, 20, 0.94));
   color: #e8eef4;
   border: 1px solid rgba(212, 175, 55, 0.28);
 }
 
-.lux-root .lux-graph h3 {
+.lux-root:not(.lux-root--sky) .lux-graph h3 {
   color: #f4f8fb;
 }
 
-.lux-root .lux-graph-legend {
+.lux-root:not(.lux-root--sky) .lux-graph-legend {
   color: rgba(232, 238, 244, 0.78);
 }
 
-.lux-root .lux-upload-frame {
+.lux-root:not(.lux-root--sky) .lux-upload-frame {
   background: rgba(8, 12, 16, 0.55);
 }
 
-.lux-root .lux-chart-frame {
+.lux-root:not(.lux-root--sky) .lux-chart-frame {
   background: rgba(8, 12, 16, 0.45);
   border: 1px solid rgba(212, 175, 55, 0.16);
 }
 
-.lux-root .lux-mobile-bar {
+.lux-root:not(.lux-root--sky) .lux-mobile-bar {
   background: rgba(10, 14, 20, 0.94);
   border-top: 1px solid rgba(212, 175, 55, 0.22);
 }
@@ -6030,4 +6030,127 @@ a.lux-chart-dl {
   .lux-trip-gallery-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* —— Trip package: homepage-style sky + glass —— */
+.lux-root--sky {
+  background: transparent;
+  color: var(--hl-ink, #f7f4ef);
+}
+
+.lux-root--sky > .lux-top {
+  z-index: 2;
+}
+
+.lux-top--sky {
+  background: transparent;
+}
+
+.lux-top--sky::before {
+  background: linear-gradient(180deg, rgba(6, 14, 22, 0.62), rgba(6, 14, 22, 0.14) 62%, transparent);
+}
+
+.lux-sky-stage {
+  position: relative;
+  min-height: 40vh;
+}
+
+.lux-root--sky .lux-spec,
+.lux-root--sky .lux-card,
+.lux-root--sky .lux-price,
+.lux-root--sky .lux-graph {
+  background: linear-gradient(180deg, rgba(16, 12, 8, 0.42) 0%, rgba(10, 8, 7, 0.5) 100%);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(224, 196, 90, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(224, 196, 90, 0.35),
+    0 0 34px rgba(201, 162, 39, 0.28),
+    0 22px 48px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 236, 190, 0.16);
+}
+
+.lux-root--sky .lux-card p,
+.lux-root--sky .lux-card ul,
+.lux-root--sky .lux-card li,
+.lux-root--sky .lux-lead {
+  color: rgba(247, 244, 239, 0.92);
+}
+
+.lux-root--sky .lux-card h2,
+.lux-root--sky .lux-title-card h1 {
+  color: #f7f4ef;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.lux-root--sky .lux-spec-item span {
+  color: var(--hl-ink-muted, rgba(247, 244, 239, 0.7));
+}
+
+.lux-root--sky .lux-spec-item strong {
+  color: #f7f4ef;
+}
+
+.lux-root--sky .lux-toc {
+  background: linear-gradient(180deg, rgba(12, 10, 8, 0.55), rgba(8, 6, 5, 0.62));
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border: 1px solid rgba(224, 196, 90, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(224, 196, 90, 0.28),
+    0 14px 36px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 236, 190, 0.12);
+}
+
+.lux-root--sky .lux-toc a {
+  color: rgba(247, 244, 239, 0.88);
+}
+
+.lux-root--sky .lux-toc a:hover,
+.lux-root--sky .lux-toc a.is-on {
+  background: rgba(224, 196, 90, 0.2);
+  color: #f7f4ef;
+}
+
+.lux-root--sky .lux-graph {
+  color: rgba(247, 244, 239, 0.9);
+}
+
+.lux-root--sky .lux-graph h3 {
+  color: #f7f4ef;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.lux-root--sky .lux-graph-legend {
+  color: var(--hl-ink-muted, rgba(247, 244, 239, 0.72));
+}
+
+.lux-root--sky .lux-upload-frame {
+  background: rgba(12, 10, 8, 0.38);
+}
+
+.lux-root--sky .lux-chart-frame {
+  background: rgba(10, 8, 7, 0.32);
+  border: 1px solid rgba(224, 196, 90, 0.22);
+}
+
+.lux-root--sky .lux-mobile-bar {
+  background: linear-gradient(180deg, rgba(12, 10, 8, 0.78), rgba(8, 6, 5, 0.88));
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border-top: 1px solid rgba(224, 196, 90, 0.28);
+}
+
+.lux-root--sky .lux-trip-gallery-title {
+  color: #f7f4ef;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.lux-root--sky .lux-day {
+  border-bottom-color: rgba(224, 196, 90, 0.22);
+}
+
+.lux-root--sky .lux-foot {
+  background: transparent;
+  padding-top: 0;
 }
