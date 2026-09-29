@@ -6056,16 +6056,31 @@ a.lux-chart-dl {
 
 .lux-root--sky .lux-dusk-stage {
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   background: #0a1218;
+  overflow: hidden;
+}
+
+.lux-root--sky .lux-dusk-stage > div {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-height: 100%;
 }
 
 .lux-root--sky .lux-dusk-stage img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: center 32%;
   transform: none;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: none;
+  max-height: none;
 }
 
 .lux-root--sky .lux-sky-content {
