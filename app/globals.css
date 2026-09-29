@@ -6032,22 +6032,21 @@ a.lux-chart-dl {
   }
 }
 
-/* —— Trip package: uniform sky + ultra-transparent glass —— */
+/* —— Trip package: homepage dusk + teal glass (not pale sky, not solid black) —— */
 .lux-root--sky {
-  --lux-ink: #091018;
-  --lux-ink-soft: #152536;
-  --lux-ink-muted: #3a5068;
-  --lux-gold: #6b5210;
+  --lux-ink: #f7f4ef;
+  --lux-ink-soft: rgba(247, 244, 239, 0.88);
+  --lux-ink-muted: rgba(232, 224, 210, 0.74);
+  --lux-gold: #e8d07a;
   --lux-glass: linear-gradient(
-    155deg,
-    rgba(255, 255, 255, 0.11) 0%,
-    rgba(255, 255, 255, 0.05) 42%,
-    rgba(210, 235, 255, 0.08) 100%
+    165deg,
+    rgba(70, 110, 130, 0.58) 0%,
+    rgba(32, 58, 76, 0.64) 46%,
+    rgba(18, 42, 58, 0.7) 100%
   );
-  --lux-glass-dark: linear-gradient(180deg, rgba(8, 14, 24, 0.9), rgba(6, 12, 22, 0.86));
   position: relative;
   isolation: isolate;
-  background: #8ec4e3;
+  background: #0a1218;
   color: var(--lux-ink);
   min-height: 100vh;
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
@@ -6055,19 +6054,11 @@ a.lux-chart-dl {
   text-rendering: optimizeLegibility;
 }
 
-.lux-root--sky .lux-sky-plain {
+.lux-root--sky .lux-dusk-stage {
   pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(
-    168deg,
-    #8ec4e3 0%,
-    #7eb8dc 28%,
-    #85c0e6 52%,
-    #7ab5d9 78%,
-    #88c5e8 100%
-  );
 }
 
 .lux-root--sky .lux-sky-content {
@@ -6089,8 +6080,6 @@ a.lux-chart-dl {
   z-index: 70;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(8, 16, 28, 0.82), rgba(10, 20, 34, 0.45) 78%, transparent);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .lux-root--sky header {
@@ -6105,16 +6094,16 @@ a.lux-chart-dl {
 .lux-root--sky .lux-card,
 .lux-root--sky .lux-price,
 .lux-root--sky .lux-graph,
+.lux-root--sky .lux-graph--map,
 .lux-root--sky .lux-inc-box,
 .lux-root--sky .lux-pack-col {
   background: var(--lux-glass);
-  backdrop-filter: blur(32px) saturate(1.55);
-  -webkit-backdrop-filter: blur(32px) saturate(1.55);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(14px) saturate(1.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  border: 1px solid rgba(232, 208, 122, 0.48);
   box-shadow:
-    0 0 0 1px rgba(201, 162, 39, 0.18),
-    0 12px 40px rgba(20, 60, 100, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    0 22px 56px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: var(--lux-ink);
 }
 
@@ -6122,262 +6111,198 @@ a.lux-chart-dl {
   background: var(--lux-glass) !important;
 }
 
-.lux-root--sky .lux-title-card h1 {
-  font-size: clamp(2.35rem, 4.6vw, 3.55rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.02;
-  color: var(--lux-ink);
-}
-
-.lux-root--sky .lux-lead {
-  font-size: 1.1rem;
-  line-height: 1.65;
-  font-weight: 500;
-  color: var(--lux-ink-soft);
-}
-
-.lux-root--sky .lux-card h2 {
-  font-size: clamp(1.72rem, 2.75vw, 2.15rem);
-  font-weight: 800;
-  letter-spacing: -0.032em;
-  line-height: 1.12;
-}
-
-.lux-root--sky .lux-card p,
-.lux-root--sky .lux-card li {
-  font-size: 1.03rem;
-  line-height: 1.74;
-}
-
-.lux-root--sky .lux-kicker {
-  font-size: 0.72rem !important;
-  letter-spacing: 0.2em;
-  font-weight: 800;
-}
-
-.lux-root--sky .lux-watch-btn {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--lux-gold);
-  border-color: rgba(201, 162, 39, 0.45);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.lux-root--sky .lux-rate strong {
-  color: var(--lux-ink);
-}
-
-.lux-root--sky .lux-card p,
-.lux-root--sky .lux-card ul,
-.lux-root--sky .lux-card li,
-.lux-root--sky .lux-lead,
-.lux-root--sky .lux-teaser {
-  color: var(--lux-ink-soft);
-}
-
-.lux-root--sky .lux-card h2,
 .lux-root--sky .lux-title-card h1,
-.lux-root--sky .lux-card h3,
-.lux-root--sky .lux-kicker {
-  color: var(--lux-ink);
-  text-shadow: none;
-}
-
-.lux-root--sky .lux-card h3,
-.lux-root--sky .lux-kicker {
-  color: var(--lux-gold);
-}
-
-.lux-root--sky .lux-spec-item,
-.lux-root--sky .lux-spec-item strong {
-  color: var(--lux-ink);
-}
-
-.lux-root--sky .lux-spec-item span {
-  color: var(--lux-ink-muted);
-}
-
-.lux-root--sky .lux-toc {
-  background: var(--lux-glass);
-  backdrop-filter: blur(28px) saturate(1.45);
-  -webkit-backdrop-filter: blur(28px) saturate(1.45);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow:
-    0 10px 28px rgba(24, 56, 88, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.32);
-}
-
-.lux-root--sky .lux-toc a {
-  color: var(--lux-ink-soft);
-}
-
-.lux-root--sky .lux-toc a:hover,
-.lux-root--sky .lux-toc a.is-on {
-  background: rgba(201, 162, 39, 0.22);
-  color: #142433;
-}
-
-.lux-root--sky .lux-toc.is-floating {
-  background: var(--lux-glass-dark);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid rgba(201, 162, 39, 0.38);
-  box-shadow:
-    0 14px 40px rgba(4, 10, 18, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.lux-root--sky .lux-toc.is-floating a {
-  color: rgba(247, 244, 239, 0.88);
-}
-
-.lux-root--sky .lux-toc.is-floating a:hover,
-.lux-root--sky .lux-toc.is-floating a.is-on {
-  background: rgba(201, 162, 39, 0.28);
-  color: #f7f4ef;
-}
-
-.lux-root--sky .lux-graph,
-.lux-root--sky .lux-graph--map {
-  color: var(--lux-ink-soft);
-}
-
+.lux-root--sky .lux-card h2,
 .lux-root--sky .lux-graph h3,
-.lux-root--sky .lux-graph--map h3 {
-  color: var(--lux-ink);
-  text-shadow: none;
-}
-
-.lux-root--sky .lux-graph-legend {
-  color: var(--lux-ink-muted);
-}
-
-.lux-root--sky .lux-upload-frame,
-.lux-root--sky .lux-chart-frame {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(201, 162, 39, 0.22);
-}
-
-.lux-root--sky .lux-mobile-bar {
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(22px) saturate(1.4);
-  -webkit-backdrop-filter: blur(22px) saturate(1.4);
-  border-top: 1px solid rgba(201, 162, 39, 0.32);
-  color: var(--lux-ink);
-}
-
+.lux-root--sky .lux-graph--map h3,
 .lux-root--sky .lux-trip-gallery-title,
 .lux-root--sky .lux-day button strong,
 .lux-root--sky .lux-day-line strong,
-.lux-root--sky .lux-price-main {
-  color: var(--lux-ink);
-  text-shadow: none;
+.lux-root--sky .lux-price-main,
+.lux-root--sky .lux-spec-item strong,
+.lux-root--sky .lux-rate strong {
+  color: #f7f4ef;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.28);
 }
 
-.lux-root--sky .lux-day {
-  border-bottom-color: rgba(201, 162, 39, 0.28);
+.lux-root--sky .lux-title-card h1 {
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
-.lux-root--sky .lux-day button span:not(.lux-plan-day) {
-  color: var(--lux-ink-muted);
+.lux-root--sky .lux-card h2 {
+  font-size: clamp(1.55rem, 2.5vw, 2.05rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
-.lux-root--sky .lux-day button em,
-.lux-root--sky .lux-more {
-  color: var(--lux-gold);
-}
-
+.lux-root--sky .lux-lead,
+.lux-root--sky .lux-card p,
+.lux-root--sky .lux-card ul,
+.lux-root--sky .lux-card li,
+.lux-root--sky .lux-teaser,
 .lux-root--sky .lux-checks li,
 .lux-root--sky .lux-hi li,
 .lux-root--sky .lux-rate,
 .lux-root--sky .lux-note,
 .lux-root--sky .lux-price-foot,
 .lux-root--sky .lux-slot-empty,
-.lux-root--sky .lux-info-block p {
-  color: var(--lux-ink-soft);
+.lux-root--sky .lux-info-block p,
+.lux-root--sky .lux-inc-box li,
+.lux-root--sky .lux-faq-a,
+.lux-root--sky .lux-graph,
+.lux-root--sky .lux-graph-legend {
+  color: rgba(247, 244, 239, 0.88);
 }
 
+.lux-root--sky .lux-kicker,
+.lux-root--sky .lux-card h3,
 .lux-root--sky .lux-facts span,
 .lux-root--sky .lux-hi em,
 .lux-root--sky .lux-info-block h3,
 .lux-root--sky .lux-tripinfo b,
 .lux-root--sky .lux-rate em,
-.lux-root--sky .lux-wa {
-  color: var(--lux-gold);
+.lux-root--sky .lux-wa,
+.lux-root--sky .lux-day button em,
+.lux-root--sky .lux-more,
+.lux-root--sky .lux-faq button,
+.lux-root--sky .lux-faq button strong,
+.lux-root--sky .lux-faq-icon,
+.lux-root--sky .lux-price-toggle {
+  color: #e8d07a;
   text-shadow: none;
 }
 
-.lux-root--sky .lux-tripinfo span {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(201, 162, 39, 0.28);
-  color: var(--lux-ink);
+.lux-root--sky .lux-kicker {
+  font-size: 0.72rem !important;
+  letter-spacing: 0.22em;
+  font-weight: 700;
 }
 
-.lux-root--sky .lux-inc-box li,
-.lux-root--sky .lux-faq-a {
-  color: var(--lux-ink-soft);
+.lux-root--sky .lux-lead {
+  font-size: 1.08rem;
+  line-height: 1.65;
+  font-weight: 500;
 }
 
-.lux-root--sky .lux-faq button,
-.lux-root--sky .lux-faq button strong,
-.lux-root--sky .lux-faq-icon {
-  color: var(--lux-gold);
+.lux-root--sky .lux-card p,
+.lux-root--sky .lux-card li {
+  font-size: 1.02rem;
+  line-height: 1.72;
 }
 
-.lux-root--sky .lux-faq-icon {
-  background: rgba(201, 162, 39, 0.18);
+.lux-root--sky .lux-watch-btn {
+  background: rgba(8, 14, 22, 0.45);
+  color: #e8d07a;
+  border-color: rgba(232, 208, 122, 0.55);
 }
 
-.lux-root--sky .lux-wa:hover {
-  color: #6e5410;
+.lux-root--sky .lux-spec-item,
+.lux-root--sky .lux-spec-item span {
+  color: rgba(247, 244, 239, 0.78);
+}
+
+.lux-root--sky .lux-toc,
+.lux-root--sky .lux-toc.is-floating {
+  background: var(--lux-glass);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid rgba(232, 208, 122, 0.42);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.lux-root--sky .lux-toc a,
+.lux-root--sky .lux-toc.is-floating a {
+  color: rgba(247, 244, 239, 0.86);
+}
+
+.lux-root--sky .lux-toc a:hover,
+.lux-root--sky .lux-toc a.is-on,
+.lux-root--sky .lux-toc.is-floating a:hover,
+.lux-root--sky .lux-toc.is-floating a.is-on {
+  background: rgba(232, 208, 122, 0.22);
+  color: #f7f4ef;
+}
+
+.lux-root--sky .lux-upload-frame,
+.lux-root--sky .lux-chart-frame {
+  background: rgba(8, 16, 24, 0.28);
+  border: 1px solid rgba(232, 208, 122, 0.22);
+}
+
+.lux-root--sky .lux-mobile-bar {
+  background: linear-gradient(180deg, rgba(18, 42, 58, 0.88), rgba(10, 18, 28, 0.92));
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-top: 1px solid rgba(232, 208, 122, 0.35);
+  color: #f7f4ef;
 }
 
 .lux-root--sky .lux-mobile-bar strong {
-  color: var(--lux-ink);
+  color: #f7f4ef;
 }
 
 .lux-root--sky .lux-mobile-bar span {
-  color: var(--lux-ink-muted);
+  color: rgba(232, 208, 122, 0.9);
+}
+
+.lux-root--sky .lux-day {
+  border-bottom-color: rgba(232, 208, 122, 0.22);
+}
+
+.lux-root--sky .lux-day button span:not(.lux-plan-day) {
+  color: rgba(232, 224, 210, 0.72);
+}
+
+.lux-root--sky .lux-tripinfo span {
+  background: rgba(8, 16, 24, 0.28);
+  border-color: rgba(232, 208, 122, 0.32);
+  color: #f7f4ef;
+}
+
+.lux-root--sky .lux-faq-icon {
+  background: rgba(232, 208, 122, 0.16);
+}
+
+.lux-root--sky .lux-wa:hover {
+  color: #f0d36a;
 }
 
 .lux-root--sky .lux-price-table {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(201, 162, 39, 0.22);
+  background: rgba(8, 16, 24, 0.32);
+  border: 1px solid rgba(232, 208, 122, 0.28);
 }
 
 .lux-root--sky .lux-price-table,
 .lux-root--sky .lux-price-table td {
-  color: #0c1520 !important;
+  color: #f7f4ef !important;
   font-weight: 600;
 }
 
 .lux-root--sky .lux-price-table th {
-  color: #5c4610 !important;
+  color: #e8d07a !important;
   font-weight: 800;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.lux-root--sky .lux-price-toggle {
-  color: #5c4610;
+  background: rgba(8, 16, 24, 0.22);
 }
 
 .lux-root--sky .lux-price-main span {
-  color: var(--lux-ink-muted);
+  color: rgba(247, 244, 239, 0.7);
 }
 
 .lux-root--sky .lux-heart,
 .lux-root--sky .lux-share {
-  background: rgba(255, 255, 255, 0.12);
-  color: #0c1520;
-  border-color: rgba(201, 162, 39, 0.38);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(8, 14, 22, 0.42);
+  color: #f7f4ef;
+  border-color: rgba(232, 208, 122, 0.45);
 }
 
 .lux-root--sky .lux-btn-ghost {
-  color: var(--lux-ink);
-  border-color: rgba(201, 162, 39, 0.65);
+  color: #f7f4ef;
+  border-color: rgba(232, 208, 122, 0.65);
 }
 
 .lux-root--sky .lux-reviews-band {
@@ -6391,21 +6316,18 @@ a.lux-chart-dl {
 
 .lux-root--sky .lux-reviews-band .explore-hub-glass {
   background: var(--lux-glass);
-  backdrop-filter: blur(32px) saturate(1.5);
-  -webkit-backdrop-filter: blur(32px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow:
-    0 0 0 1px rgba(201, 162, 39, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(14px) saturate(1.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  border: 1px solid rgba(232, 208, 122, 0.42);
 }
 
-.lux-root--sky .lux-foot.home-light {
-  margin-top: 2.5rem;
-  padding-top: 0;
+.lux-root--sky .lux-foot {
+  margin-top: 2rem;
   background: transparent;
 }
 
-.lux-root--sky .lux-foot.home-light > footer {
+.lux-root--sky footer {
   position: relative;
   z-index: 1;
+  color: #f7f4ef;
 }

@@ -119,8 +119,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
   return (
     <>
-    <div className="lux-root lux-root--sky min-w-0 overflow-x-clip">
-      <div className="lux-sky-plain" aria-hidden="true" />
+    <div className="lux-root lux-root--sky home-light min-w-0 overflow-x-clip">
+      <div className="lux-dusk-stage" aria-hidden="true">
+        <DuskAtmosphere />
+      </div>
       <div className="lux-sky-content relative z-[1]">
       <div className="lux-top lux-top--sky">
         <Header surface="dark" />
@@ -664,8 +666,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <WhyAmbitionSection />
       </div>
 
-      <div className="lux-foot home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
-        <DuskAtmosphere />
+      <div className="lux-foot">
         <SiteFooter />
       </div>
       </div>
