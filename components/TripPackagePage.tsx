@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
+import DuskAtmosphere from "@/components/DuskAtmosphere";
 import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
@@ -673,7 +674,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <WhyAmbitionSection embedded />
       </div>
 
-      <div className="lux-foot">
+      <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">
+        <DuskAtmosphere />
         <SiteFooter />
       </div>
       </div>
