@@ -53,6 +53,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const [altUnit, setAltUnit] = useState<"m" | "ft">("m");
   const [lightIndex, setLightIndex] = useState<number | null>(null);
   const [activeToc, setActiveToc] = useState("overview");
+  const [tocFloating, setTocFloating] = useState(false);
   const [activeVideo, setActiveVideo] = useState<TrekVideo | null>(null);
   const enquire = `/contact?interest=${pkg.catalogId || pkg.id}`;
   const gallery = useMemo(() => {
@@ -96,6 +97,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     );
     nodes.forEach((n) => obs.observe(n));
     return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setTocFloating(window.scrollY > 320);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   function openVideo(video: TrekVideo) {
@@ -167,7 +175,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           ))}
         </section>
 
-        <nav className="lux-toc" aria-label="On this page">
+        <nav className={`lux-toc${tocFloating ? " is-floating" : ""}`} aria-label="On this page">
           {TOC.map((item) => (
             <a
               key={item.id}

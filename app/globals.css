@@ -6040,13 +6040,20 @@ a.lux-chart-dl {
   --lux-gold: #7a5c10;
   --lux-glass: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.38) 0%,
-    rgba(255, 255, 255, 0.22) 48%,
-    rgba(232, 244, 255, 0.28) 100%
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(220, 240, 255, 0.16) 100%
   );
+  --lux-glass-bright: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.58) 0%,
+    rgba(255, 255, 255, 0.38) 50%,
+    rgba(236, 248, 255, 0.45) 100%
+  );
+  --lux-glass-dark: linear-gradient(180deg, rgba(8, 14, 24, 0.88), rgba(6, 12, 22, 0.82));
   position: relative;
   isolation: isolate;
-  background: #c5e4f5;
+  background: #b4daf0;
   color: var(--lux-ink);
   min-height: 100vh;
 }
@@ -6058,7 +6065,7 @@ a.lux-chart-dl {
   z-index: 0;
   background:
     radial-gradient(ellipse 120% 80% at 50% -10%, rgba(255, 255, 255, 0.85) 0%, transparent 55%),
-    linear-gradient(180deg, #dceefb 0%, #b8ddf0 38%, #a8d4ec 62%, #c8e6f8 100%);
+    linear-gradient(180deg, #e2f3fc 0%, #b8ddf0 32%, #9ecfe8 58%, #c5e8f8 100%);
 }
 
 .lux-root--sky .lux-sky-content {
@@ -6097,14 +6104,35 @@ a.lux-chart-dl {
 .lux-root--sky .lux-price,
 .lux-root--sky .lux-graph {
   background: var(--lux-glass);
-  backdrop-filter: blur(26px) saturate(1.45);
-  -webkit-backdrop-filter: blur(26px) saturate(1.45);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   box-shadow:
-    0 0 0 1px rgba(201, 162, 39, 0.28),
-    0 8px 32px rgba(24, 72, 120, 0.1),
-    0 24px 56px rgba(24, 56, 88, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    0 0 0 1px rgba(201, 162, 39, 0.22),
+    0 8px 28px rgba(24, 72, 120, 0.08),
+    0 20px 48px rgba(24, 56, 88, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  color: var(--lux-ink);
+}
+
+.lux-root--sky .lux-title-card {
+  background: var(--lux-glass-bright) !important;
+  border-color: rgba(255, 255, 255, 0.62);
+  box-shadow:
+    0 0 0 1px rgba(201, 162, 39, 0.3),
+    0 12px 36px rgba(24, 72, 120, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.lux-root--sky .lux-watch-btn {
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--lux-gold);
+  border-color: rgba(201, 162, 39, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.lux-root--sky .lux-rate strong {
   color: var(--lux-ink);
 }
 
@@ -6156,6 +6184,26 @@ a.lux-chart-dl {
 .lux-root--sky .lux-toc a.is-on {
   background: rgba(201, 162, 39, 0.22);
   color: #142433;
+}
+
+.lux-root--sky .lux-toc.is-floating {
+  background: var(--lux-glass-dark);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(201, 162, 39, 0.38);
+  box-shadow:
+    0 14px 40px rgba(4, 10, 18, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.lux-root--sky .lux-toc.is-floating a {
+  color: rgba(247, 244, 239, 0.88);
+}
+
+.lux-root--sky .lux-toc.is-floating a:hover,
+.lux-root--sky .lux-toc.is-floating a.is-on {
+  background: rgba(201, 162, 39, 0.28);
+  color: #f7f4ef;
 }
 
 .lux-root--sky .lux-graph,
@@ -6310,21 +6358,23 @@ a.lux-chart-dl {
 }
 
 .lux-root--sky .lux-foot {
-  background: transparent;
+  margin-top: 2rem;
   padding-top: 0;
-  color: var(--lux-ink);
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.35), rgba(4, 10, 18, 0.92) 18%, rgba(4, 10, 18, 0.96));
+  color: #f7f4ef;
 }
 
 .lux-root--sky footer {
-  color: var(--lux-ink);
+  color: #f7f4ef;
   border-color: rgba(201, 162, 39, 0.32);
+  background: transparent;
 }
 
 .lux-root--sky footer .bg-black\/30,
 .lux-root--sky footer .bg-black\/35 {
-  background: rgba(255, 255, 255, 0.42) !important;
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  background: rgba(6, 12, 22, 0.55) !important;
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .lux-root--sky footer .bg-\[\#1a140c\] {
@@ -6332,12 +6382,16 @@ a.lux-chart-dl {
 }
 
 .lux-root--sky footer [class*="text-white"] {
-  color: var(--lux-ink) !important;
+  color: rgba(247, 244, 239, 0.88) !important;
 }
 
 .lux-root--sky footer .text-gold,
 .lux-root--sky footer [class*="text-gold"] {
-  color: var(--lux-gold) !important;
+  color: #e0c45a !important;
+}
+
+.lux-root--sky footer .group:hover {
+  color: #e8d48a;
 }
 
 .lux-root--sky .lux-reviews-band .rev-hub > .absolute.inset-0 {
