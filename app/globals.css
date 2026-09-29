@@ -6060,40 +6060,29 @@ a.lux-chart-dl {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: #163044;
+  background: #1b445c;
 }
 
-.lux-root--sky .lux-dusk-stage::after {
+.lux-root--sky .lux-dusk-art {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 48% at 50% -8%, rgba(186, 220, 245, 0.35), transparent 58%),
+    linear-gradient(180deg, #4a7fa0 0%, #2c5a78 28%, #1d4560 58%, #16384c 100%);
+}
+
+.lux-root--sky .lux-dusk-art::after {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 80% 42% at 50% 0%, rgba(168, 210, 240, 0.18), transparent 58%),
-    linear-gradient(180deg, rgba(10, 28, 42, 0.22) 0%, rgba(8, 22, 34, 0.38) 45%, rgba(8, 20, 32, 0.55) 100%);
-}
-
-.lux-root--sky .lux-dusk-stage > div {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.lux-root--sky .lux-dusk-stage img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 38%;
-  transform: none;
-  opacity: 0.55;
-  filter: saturate(0.92) contrast(1.04);
-  max-width: none;
-  max-height: none;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: min(42vh, 22rem);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'><path fill='%230c2434' d='M0 320V210L180 140l140 70 200-120 160 90 220-130 180 100 200-70 160 80v160z'/><path fill='%23153448' opacity='0.85' d='M0 320V250l220-90 190 55 210-95 170 70 250-110 180 80 220-40V320z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 100%;
+  opacity: 0.72;
 }
 
 .lux-root--sky .lux-pack-col li,
@@ -6401,4 +6390,11 @@ a.lux-chart-dl {
   position: relative;
   z-index: 1;
   color: #f7f4ef;
+}
+
+header[data-nav-glass="solid"] [data-glass="solid"] {
+  background: #101c2a !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }

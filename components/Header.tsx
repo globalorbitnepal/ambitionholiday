@@ -334,6 +334,7 @@ function FrostListDropdown({
   return (
     <div
       className={`${inline ? "w-full" : "animate-dropdown absolute left-1/2 top-full z-50 mt-1.5 w-[min(calc(100vw-2rem),22.5rem)] -translate-x-1/2"} px-3.5 py-3.5 ${FROST_GLASS_CLASS}`}
+      data-glass={solid ? "solid" : "frost"}
       style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
       onMouseLeave={inline ? undefined : onNavigate}
     >
@@ -409,6 +410,7 @@ function DestinationsGlassPanel({
   return (
     <div
       className={`${FROST_GLASS_CLASS} px-4 py-4 sm:px-7 sm:py-6`}
+      data-glass={solid ? "solid" : "frost"}
       style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
     >
       <div className="mb-4 flex flex-col gap-3 lg:mb-5 lg:flex-row lg:items-end lg:justify-between">
@@ -495,6 +497,7 @@ function LuxuryGlassPanel({
   return (
     <div
       className={`${FROST_GLASS_CLASS} p-3 sm:p-4`}
+      data-glass={solid ? "solid" : "frost"}
       style={solid ? FROST_GLASS_SOLID_STYLE : FROST_GLASS_STYLE}
     >
       <div className="grid items-stretch gap-4 lg:grid-cols-[20.5rem_1fr]">
@@ -901,6 +904,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
     <header
       ref={headerRef}
       data-surface={surface}
+      data-nav-glass={isHome ? "frost" : "solid"}
       className={`absolute inset-x-0 top-0 z-[80] isolate pt-[var(--safe-top)] transition-colors duration-300 ${
         showBar
           ? onLightSurface

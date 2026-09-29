@@ -194,9 +194,12 @@ function BoardPanel({
 export default function WhyAmbitionSection({
   wallpaperSrc,
   reviews: reviewOverride,
+  embedded,
 }: {
   wallpaperSrc?: string;
   reviews?: TravelerReview[];
+  /** Trek package page: no extra wallpaper, no leftover kickers. */
+  embedded?: boolean;
 } = {}) {
   const { why } = useSiteContent();
   const [starts, setStarts] = useState<Record<string, number>>({});
@@ -225,14 +228,16 @@ export default function WhyAmbitionSection({
 
   return (
     <section className="rev-hub explore-hub relative isolate overflow-hidden">
-      <SectionWallpaper src={wallpaperSrc} />
+      {embedded ? null : <SectionWallpaper src={wallpaperSrc} />}
 
       <div className="explore-hub-shell relative">
         <div className="explore-hub-glass">
+          {embedded ? null : (
           <div className="rev-kickers">
             <p>{why.kickerLeft}</p>
             <p className="font-[family-name:var(--font-cormorant)]">{why.kickerRight}</p>
           </div>
+          )}
 
           <header className="rev-head">
             <p className="explore-hub-eyebrow">{why.eyebrow}</p>

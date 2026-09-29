@@ -5,7 +5,6 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
-import DuskAtmosphere from "@/components/DuskAtmosphere";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
@@ -129,7 +128,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     <>
     <div className="lux-root lux-root--sky home-light min-w-0 overflow-x-clip">
       <div className="lux-dusk-stage" aria-hidden="true">
-        <DuskAtmosphere fit="cover" />
+        <div className="lux-dusk-art" />
       </div>
       <div className="lux-sky-content relative z-[1]">
       <div className="lux-top lux-top--sky">
@@ -670,8 +669,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         <Link href={enquire}>Inquire</Link>
       </div>
 
-      <div id="reviews" className="lux-reviews-band relative isolate">
-        <WhyAmbitionSection />
+      <div id="reviews" className="lux-reviews-band">
+        <WhyAmbitionSection embedded />
       </div>
 
       <div className="lux-foot">
