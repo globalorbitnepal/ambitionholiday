@@ -877,7 +877,8 @@ export default function Header({ surface = "dark" }: HeaderProps) {
   );
 
   const onLightSurface = surface === "light";
-  const showBar = onLightSurface || scrolled || mobileOpen || openDropdown;
+  const isHome = pathname === "/";
+  const showBar = !isHome || onLightSurface || scrolled || mobileOpen || openDropdown;
   const navInk = onLightSurface
     ? "text-[#142433] hover:text-[#8a6a16]"
     : "text-white hover:text-gold";
@@ -891,7 +892,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
         showBar
           ? onLightSurface
             ? "border-b border-[#c9a227]/35 bg-[rgba(255,255,255,0.78)] shadow-[0_12px_36px_rgba(24,56,88,0.12)] backdrop-blur-xl"
-            : "bg-[rgba(8,12,18,0.91)] backdrop-blur-md"
+            : "border-b border-white/10 bg-[rgba(8,12,18,0.94)] shadow-[0_12px_32px_rgba(0,0,0,0.28)] backdrop-blur-xl"
           : "bg-transparent"
       }`}
     >

@@ -47,6 +47,14 @@ function scrollToId(id: string) {
   el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+/** Keep altitude units on the same line as the number (e.g. 5,000 m). */
+function preserveListPhrasing(text: string) {
+  return text.replace(
+    /(\d[\d,]*)\s+(m|km|ft|metres?|meters?)\b/gi,
+    (_, num, unit) => `${num}\u00a0${unit}`,
+  );
+}
+
 export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const [openDay, setOpenDay] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
@@ -249,7 +257,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 {pkg.highlights.map((item) => (
                   <li key={item}>
                     <CheckMark />
-                    <span>{item}</span>
+                    <span>{preserveListPhrasing(item)}</span>
                   </li>
                 ))}
               </ul>
@@ -463,7 +471,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   <h3>Includes</h3>
                   <ul>
                     {pkg.inclusions.map((item) => (
-                      <li key={item}>{item}</li>
+                      <li key={item}>{preserveListPhrasing(item)}</li>
                     ))}
                   </ul>
                 </div>
@@ -471,7 +479,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   <h3>Not included</h3>
                   <ul>
                     {pkg.exclusions.map((item) => (
-                      <li key={item}>{item}</li>
+                      <li key={item}>{preserveListPhrasing(item)}</li>
                     ))}
                   </ul>
                 </div>
@@ -482,7 +490,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   <p>Available at extra cost if you wish to upgrade.</p>
                   <ul>
                     {pkg.optionalAddons.map((item) => (
-                      <li key={item}>{item}</li>
+                      <li key={item}>{preserveListPhrasing(item)}</li>
                     ))}
                   </ul>
                 </div>
@@ -560,7 +568,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     <h3>{group.title}</h3>
                     <ul>
                       {group.items.map((item) => (
-                        <li key={item}>{item}</li>
+                        <li key={item}>{preserveListPhrasing(item)}</li>
                       ))}
                     </ul>
                   </div>
