@@ -5,7 +5,6 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
-import DuskAtmosphere from "@/components/DuskAtmosphere";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
@@ -112,10 +111,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   return (
     <>
     <div className="lux-root lux-root--sky min-w-0">
-      <DuskAtmosphere tone="bright" />
+      <div className="lux-sky-plain" aria-hidden="true" />
       <div className="lux-sky-content">
       <div className="lux-top lux-top--sky">
-        <Header surface="light" />
+        <Header surface="dark" />
         <section className="lux-gallery lux-gallery--trip" aria-label="Journey photos">
           <div className="lux-gallery-row">
             {heroStrip.map((src, index) => (
