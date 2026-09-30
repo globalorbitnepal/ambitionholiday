@@ -7,7 +7,9 @@ import {
   EBC_MAP_STOPS,
   EBC_MONTHLY_WEATHER,
   metresToFeet,
+  type AltitudeStop,
 } from "@/lib/ebc-charts";
+import { ABC_MAP_STOPS } from "@/lib/abc-charts";
 import { mediaSrc } from "@/lib/media-src";
 
 function downloadExt(src: string) {
@@ -101,16 +103,25 @@ function Watermark({ w, h }: { w: number; h: number }) {
   );
 }
 
-export function AltitudeProfileChart({ title = "Altitude profile of Everest Base Camp Trek" }: { title?: string }) {
+export function AltitudeProfileChart({
+  title = "Altitude profile of Everest Base Camp Trek",
+  stops = EBC_ALTITUDE_STOPS,
+  maxM = 5800,
+  minM = 800,
+  fileName = "ebc-altitude-profile",
+}: {
+  title?: string;
+  stops?: AltitudeStop[];
+  maxM?: number;
+  minM?: number;
+  fileName?: string;
+}) {
   const [unit, setUnit] = useState<"m" | "ft">("m");
   const svgRef = useRef<SVGSVGElement>(null);
   const gid = useId().replace(/:/g, "");
   const W = 980;
   const H = 520;
   const pad = { l: 56, r: 36, t: 44, b: 118 };
-  const stops = EBC_ALTITUDE_STOPS;
-  const maxM = 5800;
-  const minM = 800;
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
 
@@ -121,7 +132,7 @@ export function AltitudeProfileChart({ title = "Altitude profile of Everest Base
         const y = pad.t + (1 - (stop.m - minM) / (maxM - minM)) * innerH;
         return { ...stop, x, y, value: unit === "m" ? stop.m : metresToFeet(stop.m) };
       }),
-    [innerH, innerW, pad.l, pad.t, stops, unit],
+        [innerH, innerW, pad.l, pad.t, stops, unit, maxM, minM],
   );
 
   const line = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
@@ -131,7 +142,7 @@ export function AltitudeProfileChart({ title = "Altitude profile of Everest Base
     <div className="lux-graph">
       <div className="lux-graph-head">
         <h3>{title}</h3>
-        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, "ebc-altitude-profile")}>
+        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, fileName)}>
           Download PNG
         </button>
       </div>
@@ -273,7 +284,18 @@ export function MonthlyWeatherChart({ title = "Weather on the Everest Base Camp 
   );
 }
 
-export function TrekRouteMap({ title = "Everest Base Camp Luxury Trek map" }: { title?: string }) {
+export function TrekRouteMap({
+  title = "Everest Base Camp Luxury Trek map",
+  variant = "ebc",
+}: {
+  title?: string;
+  variant?: "ebc" | "abc";
+}) {
+  if (variant === "abc") return <AbcRouteMap title={title || "Annapurna Base Camp Luxury Trek map"} />;
+  return <EbcRouteMap title={title} />;
+}
+
+function EbcRouteMap({ title }: { title: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const gid = useId().replace(/:/g, "");
   const trail = EBC_MAP_STOPS.filter((s) => s.id !== "kp");
@@ -346,6 +368,90 @@ export function TrekRouteMap({ title = "Everest Base Camp Luxury Trek map" }: { 
           </text>
           <text x="14" y="78" fontSize="11" fill="#4b5563">
             Flight — Kathmandu ↔ Lukla
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function AbcRouteMap({ title }: { title: string }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gid = useId().replace(/:/g, "");
+  const byId = Object.fromEntries(ABC_MAP_STOPS.map((s) => [s.id, s]));
+  const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
+  const trek = ["ghandruk", "chhomrong", "bamboo", "deurali", "mbc", "abc"]
+    .map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`)
+    .join(" ");
+  const trekReturn = `M${pt("abc")} L${pt("mbc")} L${pt("deurali")} L${pt("bamboo")} L${pt("jhinu")}`;
+
+  return (
+    <div className="lux-graph">
+      <div className="lux-graph-head">
+        <h3>{title}</h3>
+        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, "abc-luxury-route-map")}>
+          Download PNG
+        </button>
+      </div>
+      <svg ref={svgRef} className="lux-graph-svg lux-map-svg" viewBox="0 0 1000 560" role="img" aria-label={title}>
+        <defs>
+          <linearGradient id={`${gid}-sky`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e4eef6" />
+            <stop offset="55%" stopColor="#f4f7f9" />
+            <stop offset="100%" stopColor="#f6f3ea" />
+          </linearGradient>
+          <linearGradient id={`${gid}-peak`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f8fbff" />
+            <stop offset="100%" stopColor="#8aa0b8" />
+          </linearGradient>
+        </defs>
+        <rect width="1000" height="560" fill={`url(#${gid}-sky)`} />
+        <Watermark w={1000} h={560} />
+        <path d="M0 200 L80 140 L150 180 L230 90 L310 160 L400 60 L490 130 L580 40 L670 120 L760 36 L850 110 L1000 70 L1000 560 L0 560 Z" fill={`url(#${gid}-peak)`} opacity="0.45" />
+        <path d="M720 70 L790 12 L860 88 Z" fill="#f4f7fb" opacity="0.85" />
+        <text x="790" y="10" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1a4d8c">
+          Annapurna I
+        </text>
+        <path d="M0 340 C120 300 200 360 320 310 C430 270 500 330 620 300 C740 268 860 320 1000 290 L1000 560 L0 560 Z" fill="#c9d4c0" />
+        <path d={trek} fill="none" stroke="#b42318" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={trekReturn} fill="none" stroke="#b42318" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+        <path d={`M${pt("ktm")} L${pt("pkr")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("pkr")} L${pt("ghandruk")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={`M${pt("jhinu")} L${pt("pkr")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <text x={(byId.ktm.x * 10 + byId.pkr.x * 10) / 2} y={byId.ktm.y * 6 - 10} textAnchor="middle" fontSize="12" fontWeight="700" fill="#1a4d8c">
+          ✈ Flight
+        </text>
+        {ABC_MAP_STOPS.map((stop) => (
+          <g key={stop.id}>
+            <circle
+              cx={stop.x * 10}
+              cy={stop.y * 6}
+              r={stop.id === "abc" ? 7 : 5.5}
+              fill={stop.id === "abc" ? "#1a4d8c" : "#c9a227"}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <text x={stop.x * 10 + 10} y={stop.y * 6 - 8} fontSize="13" fontWeight="700" fill="#111827">
+              {stop.name}
+            </text>
+            <text x={stop.x * 10 + 10} y={stop.y * 6 + 8} fontSize="11" fill="#4b5563">
+              {stop.sub}
+            </text>
+          </g>
+        ))}
+        <g transform="translate(28 28)">
+          <rect width="248" height="102" rx="10" fill="#fff" stroke="#e5d39a" />
+          <text x="14" y="24" fontSize="12" fontWeight="700" fill="#1a2129">
+            Ambition Holidays
+          </text>
+          <text x="14" y="44" fontSize="11" fill="#4b5563">
+            Red — trekking route
+          </text>
+          <text x="14" y="62" fontSize="11" fill="#4b5563">
+            Blue dash — Kathmandu ↔ Pokhara flight
+          </text>
+          <text x="14" y="80" fontSize="11" fill="#4b5563">
+            Gold dash — Pokhara / Ghandruk / Jhinu transfer
           </text>
         </g>
       </svg>

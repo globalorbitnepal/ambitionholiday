@@ -159,10 +159,15 @@ export type TrekPackage = {
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
+export const ABC_PACKAGE_ID = "abc-lux";
 
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
 export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
   return pkg.id === EBC_PACKAGE_ID;
+}
+
+export function isAbcPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
+  return pkg.id === ABC_PACKAGE_ID || /annapurna-base-camp/i.test(pkg.slug || "");
 }
 
 export function packageHeadings(pkg: TrekPackage) {
@@ -805,7 +810,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       };
     }, undefined);
     if (!item) return def;
-    return {
+    const mergedPkg: TrekPackage = {
       ...def,
       ...item,
       slug: item.slug === "everest-base-camp-luxury-trek" || !item.slug ? def.slug : item.slug,
@@ -888,6 +893,60 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       weatherMonthlySrc: item.weatherMonthlySrc || def.weatherMonthlySrc,
       reviewsWallpaperSrc: item.reviewsWallpaperSrc || def.reviewsWallpaperSrc,
     };
+    if (def.id === ABC_PACKAGE_ID) {
+      return {
+        ...mergedPkg,
+        duration: def.duration,
+        days: def.days,
+        itinerary: def.itinerary,
+        itineraryIntro: def.itineraryIntro,
+        inclusions: def.inclusions,
+        exclusions: def.exclusions,
+        optionalAddons: def.optionalAddons,
+        includeNote: def.includeNote,
+        luklaNote: def.luklaNote,
+        highlights: def.highlights,
+        overview: def.overview,
+        faqs: def.faqs,
+        tripInfo: def.tripInfo,
+        tripInfoTitle: def.tripInfoTitle,
+        whyItems: def.whyItems,
+        khumbuBody: def.khumbuBody,
+        flightBody: def.flightBody,
+        bufferBody: def.bufferBody,
+        beforeItems: def.beforeItems,
+        flightTitle: def.flightTitle,
+        notesTitle: def.notesTitle,
+        luklaNoteTitle: def.luklaNoteTitle,
+        aboutTitle: def.aboutTitle,
+        khumbuTitle: def.khumbuTitle,
+        mapBody: def.mapBody,
+        weatherBody: def.weatherBody,
+        altitudeBody: def.altitudeBody,
+        heliBody: def.heliBody,
+        packingItems: def.packingItems,
+        packingIntro: def.packingIntro,
+        packingGroups: def.packingGroups,
+        suitableBody: def.suitableBody,
+        trainingBody: def.trainingBody,
+        startLabel: def.startLabel,
+        accommodationLabel: def.accommodationLabel,
+        mealsLabel: def.mealsLabel,
+        regionLabel: def.regionLabel,
+        permitsLabel: def.permitsLabel,
+        metaTitle: def.metaTitle,
+        metaDescription: def.metaDescription,
+        metaKeywords: def.metaKeywords,
+        focusKeyword: def.focusKeyword,
+        weatherMonthlySrc: "",
+        altitudeChartM: "",
+        altitudeChartFt: "",
+        routeMapSrc: "",
+        groupPrices: item.groupPrices?.length ? item.groupPrices : def.groupPrices,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+      };
+    }
+    return mergedPkg;
   });
   const extras = incoming.filter(
     (pkg) => !usedIds.has(pkg.id) && !DEFAULT_TRIP_PACKAGES.some((d) => packagesSharePage(d, pkg)),

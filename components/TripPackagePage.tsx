@@ -8,9 +8,10 @@ import DuskAtmosphere from "@/components/DuskAtmosphere";
 import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
+import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
-import { isEbcPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
+import { isAbcPackage, isEbcPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
@@ -81,7 +82,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
   const heads = packageHeadings(pkg);
-  const builtInCharts = isEbcPackage(pkg);
+  const builtInCharts = isEbcPackage(pkg) || isAbcPackage(pkg);
+  const abcCharts = isAbcPackage(pkg);
   const packingGroups = pkg.packingGroups?.length
     ? pkg.packingGroups
     : pkg.packingItems?.length
@@ -108,7 +110,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   };
   const toc = TOC.filter((item) => show[item.id]);
   const tocKey = toc.map((item) => item.id).join("|");
-  const hasPrice = pkg.priceUsd > 0;
+  const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
+  const hasFromPrice = Number.isFinite(fromPrice);
+  const hasPrice = hasFromPrice || pkg.priceUsd > 0;
 
   const facts = [
     { icon: "globe", label: "Country", value: pkg.countryLabel || "Nepal" },
@@ -410,7 +414,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <div className="lux-days">
                 {pkg.itinerary.map((day) => {
                   const open = openDay === day.day;
-                  const distance = day.distance || (builtInCharts ? TREK_DAY_DISTANCE[day.day] : "") || "—";
+                  const distance = day.distance || (isEbcPackage(pkg) ? TREK_DAY_DISTANCE[day.day] : "") || "—";
                   return (
                     <div key={day.id} className={`lux-day${open ? " is-open" : ""}`}>
                       <div className="lux-day-line">
@@ -455,7 +459,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   file={pkg.routeMapFile || `${pkg.slug}-route-map`}
                 />
               ) : (
-                <TrekRouteMap title={`${pkg.title} map`} />
+                <TrekRouteMap title={`${pkg.title} map`} variant={abcCharts ? "abc" : "ebc"} />
               )}
             </article>
             ) : null}
@@ -487,7 +491,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   />
                 </>
               ) : builtInCharts ? (
-                <AltitudeProfileChart title={`Altitude profile of ${pkg.title}`} />
+                <AltitudeProfileChart
+                  title={`Altitude profile of ${pkg.title}`}
+                  stops={abcCharts ? ABC_ALTITUDE_STOPS : undefined}
+                  maxM={abcCharts ? 4300 : undefined}
+                  minM={abcCharts ? 700 : undefined}
+                  fileName={abcCharts ? "abc-altitude-profile" : "ebc-altitude-profile"}
+                />
               ) : null}
             </article>
             ) : null}
@@ -500,7 +510,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : builtInCharts ? (
+              ) : isEbcPackage(pkg) ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />
               ) : null}
             </article>
@@ -627,7 +637,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.flightBody ? (
                 <>
                   <h3>{heads.flight}</h3>
-                  <p>{pkg.flightBody}</p>
+                  {pkg.flightBody.split(/\n{2,}/).map((para) => (
+                    <p key={para.slice(0, 48)}>{para}</p>
+                  ))}
                 </>
               ) : null}
               {pkg.bufferBody ? (
@@ -681,7 +693,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             <div className="lux-price">
               <PackageActions pkg={pkg} />
               <p className="lux-price-main">
-                {hasPrice ? (
+                {hasFromPrice ? (
+                  <>
+                    From USD {fromPrice.toLocaleString()} <span>/ person</span>
+                  </>
+                ) : hasPrice ? (
                   <>
                     USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
                   </>
@@ -734,13 +750,24 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
       <div className="lux-mobile-bar">
         <div>
-          <strong>{hasPrice ? `USD ${pkg.priceUsd.toLocaleString()}` : "Price on request"}</strong>
+          <strong>
+            {hasFromPrice
+              ? `From USD ${fromPrice.toLocaleString()}`
+              : hasPrice
+                ? `USD ${pkg.priceUsd.toLocaleString()}`
+                : "Price on request"}
+          </strong>
           {hasPrice ? <span>/ person</span> : null}
         </div>
         <Link href={enquire}>Inquire</Link>
       </div>
 
       <div id="reviews" className="lux-reviews-band">
+        {abcCharts ? (
+          <p className="lux-reviews-note">
+            Guest reviews from Ambition Himalaya Treks and Expeditions, our sister trekking company.
+          </p>
+        ) : null}
         <WhyAmbitionSection embedded />
       </div>
 

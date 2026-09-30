@@ -38,20 +38,21 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   startEndLabel: "Kathmandu",
   groupSize: "Private · 2–10 guests",
   bestSeason: "March–May · September–November",
-  priceUsd: 2180,
+  priceUsd: 2600,
   groupPrices: [
-    { id: "p1", label: "1 Pax", priceUsd: 2380 },
-    { id: "p2", label: "2–3 Pax", priceUsd: 2180 },
-    { id: "p3", label: "4–9 Pax", priceUsd: 2050 },
-    { id: "p4", label: "10–14 Pax", priceUsd: 1920 },
+    { id: "p1", label: "1 Pax", priceUsd: 3800 },
+    { id: "p2", label: "2–3 Pax", priceUsd: 3400 },
+    { id: "p3", label: "4–9 Pax", priceUsd: 3000 },
+    { id: "p4", label: "10–14 Pax", priceUsd: 2600 },
   ],
   overview:
-    "The Annapurna Base Camp Luxury Trek is Ambition Holidays’ twelve-day private journey into the sanctuary — Kathmandu culture, Pokhara’s lakeside calm, then a measured walk through Gurung villages, bamboo forest and alpine basin to 4,130 m beneath Annapurna I, Annapurna South, Hiunchuli and Machapuchare. The walking is moderate: long days on stone steps and forest trail, but no technical climbing and no Lukla lottery. We book the best lodges available on the route, keep group sizes small, and pair the ascent with honest pacing so the sanctuary sunrise feels earned rather than rushed. Sister company Ambition Himalaya Treks and Expeditions has worked the Annapurna for more than a decade; this programme layers private transfers, upgraded hotel nights and a dedicated guide team on that same corridor.",
+    "The Annapurna Base Camp Luxury Trek is Ambition Holidays’ twelve-day, eleven-night private journey into the sanctuary — two nights in Kathmandu, included domestic flights to and from Pokhara, then a measured walk through Gurung villages, bamboo forest and alpine basin to 4,130 m beneath Annapurna I, Annapurna South, Hiunchuli and Machhapuchare. The walking is moderate: long days on stone steps and forest trail, with no technical climbing. We book the best lodges available on the route, keep group sizes small, and pair the ascent with honest pacing so the sanctuary sunrise feels earned rather than rushed. Private pacing, carefully selected lodges and seamless logistics run throughout the Annapurna Sanctuary.",
   highlights: [
-    "Twelve days from Kathmandu to Annapurna Base Camp with private road transfers and lakeside hotel nights in Pokhara.",
-    "Walk through Ghandruk and Chhomrong — stone villages with direct views of Annapurna South and Machapuchare.",
-    "Enter the Modi Khola gorge: bamboo, rhododendron and waterfall days that feel far from the road.",
-    "Sleep inside the Annapurna Sanctuary amphitheatre at 4,130 m with the full ring of peaks above camp.",
+    "Twelve days / eleven nights from Kathmandu to Annapurna Base Camp, with lakeside hotel nights in Pokhara.",
+    "Domestic flights between Kathmandu and Pokhara, with private ground transfers for the trekking approach and return.",
+    "Walk through Ghandruk (1,940 m) and Chhomrong — stone villages with direct views of Annapurna South and Machhapuchare.",
+    "Enter the Modi Khola gorge: bamboo, rhododendron and waterfall days on the sanctuary approach.",
+    "Day 8 reaches Machhapuchare Base Camp (3,700 m) and Annapurna Base Camp (4,130 m) on the same walking day.",
     "Sunrise from Base Camp before the long descent — light on ice and granite you cannot see from Pokhara.",
     "Natural hot springs at Jhinu Danda after the high nights — a quiet reward before returning to the lake.",
     "ACAP permit and TIMS handled before you leave Kathmandu; no queueing at the trail gate.",
@@ -81,7 +82,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   altitudeChartM: "",
   altitudeChartFt: "",
   altitudeGainSrc: "",
-  routeMapSrc: "/images/packages/annapurna-v2.webp",
+  routeMapSrc: "",
   weatherDailySrc: "",
   weatherMonthlySrc: "",
   routeMapFile: "annapurna-base-camp-luxury-trek-route-map",
@@ -98,7 +99,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "What is the highest point?",
-      a: "Annapurna Base Camp at 4,130 m / 13,550 ft. Machapuchare Base Camp is crossed on the way in. There is no glacier climbing — you walk to the camp and back.",
+      a: "Annapurna Base Camp at 4,130 m / 13,550 ft. Machhapuchare Base Camp (3,700 m) is reached on Day 8 before you continue to Base Camp the same day. There is no glacier climbing — you walk to the camp and back.",
     },
     {
       q: "When is the best time to go?",
@@ -109,8 +110,8 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
       a: "Annapurna Conservation Area Permit (ACAP) and TIMS. Ambition Holidays arranges both before you leave Kathmandu.",
     },
     {
-      q: "Do I need a flight to Lukla?",
-      a: "No. This route uses road transfers to Pokhara and private vehicles to trailheads. Optional flights between Kathmandu and Pokhara can shorten travel when weather allows.",
+      q: "How do I travel between Kathmandu and Pokhara?",
+      a: "Domestic flights both ways are included: Kathmandu → Pokhara on Day 3 and Pokhara → Kathmandu on Day 12, with private airport transfers. The package does not use Kathmandu–Pokhara road transport.",
     },
     {
       q: "What does luxury mean on this trek?",
@@ -132,7 +133,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       title: "Lakeside bookends",
-      body: "Pokhara nights are part of the design. You enter the hills rested and return to a real hotel before Kathmandu — not a rushed drive straight to the airport.",
+      body: "Pokhara nights are part of the design. You fly in rested and return to a real hotel before the flight to Kathmandu — not a rush straight to the airport.",
     },
     {
       title: "Lodges chosen, not random",
@@ -144,11 +145,11 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       title: "Permits done in Kathmandu",
-      body: "ACAP and TIMS are on your file before the private vehicle leaves for Pokhara. You walk through the check post with paperwork already stamped.",
+      body: "ACAP and TIMS are on your file before you fly to Pokhara. You walk through the check post with paperwork already stamped.",
     },
     {
-      title: "Sister-company depth",
-      body: "Ambition Himalaya Treks and Expeditions has guided the Annapurna for more than ten years. Ambition Holidays adds private logistics and quieter ratios on the same trail.",
+      title: "Sister-company trail knowledge",
+      body: "Ambition Holidays designs this luxury programme. Guiding on the sanctuary corridor is supported by Ambition Himalaya Treks and Expeditions, our sister trekking company.",
     },
   ],
   weatherBody:
@@ -206,11 +207,11 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   trainingBody:
     "Walk hills with a daypack three or four times a week in the two months before departure. Include long stair sessions — Chhomrong’s steps are the real training test. Cardio that lasts forty-five minutes matters more than gym mirrors. If you can manage six hours on feet with breaks, you are in the right zone.",
   khumbuBody:
-    "The Annapurna Sanctuary is a glacial basin walled by Annapurna I (8,091 m), Annapurna South, Hiunchuli and the sacred fishtail of Machapuchare. Below Deurali the trail is forest and river; inside the basin it is open moraine and vertical granite. Gurung villages on the approach still farm terraces and host guests in stone lodges. You are inside a conservation area, not a national park queue — respect firewood limits and leave no trace above the tree line.",
+    "The Annapurna Sanctuary is a glacial basin walled by Annapurna I (8,091 m), Annapurna South (7,219 m), Hiunchuli (6,441 m) and the sacred fishtail of Machhapuchare (6,993 m). Dhaulagiri (8,167 m) stands west of the range. Below Deurali the trail is forest and river; inside the basin it is open moraine and vertical granite. Gurung villages on the approach still farm terraces and host guests in stone lodges. You are inside a conservation area — respect firewood limits and leave no trace above the tree line.",
   flightBody:
-    "Standard programme uses private road transfer between Kathmandu and Pokhara (about 200 km). Optional domestic flights save a day when the weather window is open; we quote the fare and baggage rules before you confirm.",
+    "Day 3 — Kathmandu → Pokhara, domestic flight.\n\nDay 12 — Pokhara → Kathmandu, domestic flight.\n\nPrivate airport transfers are included. Domestic flight schedules are subject to airline operations and weather conditions.",
   bufferBody:
-    "Hold one spare day at the end of your international ticket if you choose flights on the Kathmandu–Pokhara leg. Road transfers are more predictable but can slow during landslide season (July–September).",
+    "Hold a little flexibility at the end of your international ticket. The included Pokhara–Kathmandu flight can move with weather or airline timing; we rebook the next available seat when that happens.",
   heliBody:
     "Helicopter charters from Pokhara or the sanctuary are available for emergencies or private panorama flights — priced per aircraft and weather. This remains a walking itinerary unless you ask us to redesign it.",
   beforeItems: [
@@ -223,7 +224,14 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   ],
   permitsLabel: "ACAP + TIMS",
   regionLabel: "Annapurna Sanctuary",
-  startLabel: "Kathmandu → Pokhara → ABC",
+  startLabel: "Kathmandu → Pokhara (flight) → ABC",
+  flightTitle: "Flights included",
+  notesTitle: "Flights, buffer days and upgrades",
+  luklaNoteTitle: "Kathmandu ↔ Pokhara flights",
+  aboutTitle: "About this luxury Annapurna trek",
+  khumbuTitle: "The sanctuary you actually walk",
+  mapBody:
+    "Kathmandu and Pokhara are linked by included domestic flights. Private ground transfers cover Pokhara–Ghandruk and Jhinu Danda–Pokhara. The walking route runs Ghandruk–Chhomrong–Bamboo–Deurali–Machhapuchare Base Camp–Annapurna Base Camp and back via Bamboo and Jhinu Danda.",
   metaTitle: "Annapurna Base Camp Luxury Trek 12 Days | Ambition Holidays",
   metaDescription:
     "Private 12-day Annapurna Base Camp luxury trek to 4,130 m. Moderate sanctuary walk via Ghandruk, Chhomrong and Pokhara lakeside hotels. Ambition Holidays, Kathmandu.",
@@ -279,7 +287,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-elev",
       title: "Elevation & distance",
-      body: "Annapurna Base Camp sits at 4,130 m inside the sanctuary. The walking line from Ghandruk through Chhomrong, Bamboo, Deurali and back is roughly 80–90 km depending on the exact lodge stops. Kathmandu and Pokhara nights sit near 1,400 m and 822 m respectively.",
+      body: "Annapurna Base Camp sits at 4,130 m inside the sanctuary. Machhapuchare Base Camp (3,700 m) is reached on the same day (Day 8). Ghandruk is 1,940 m. The walking line from Ghandruk through Chhomrong, Bamboo, Deurali and back is roughly 80–90 km depending on lodge stops. Kathmandu nights sit at 1,400 m; Pokhara nights at 822 m.",
     },
     {
       id: "ti-diff",
@@ -289,7 +297,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-acc",
       title: "Accommodation",
-      body: "Luxury hotels in Kathmandu and Pokhara; premium or best-available mountain lodges from Ghandruk through the sanctuary and on the descent to Jhinu Danda. Rooms are twin-sharing unless you request a single supplement where lodges can provide one.",
+      body: "11 nights in total: Kathmandu 2 nights (Day 1–2), Pokhara 2 nights (Day 3 and Day 11), Ghandruk 1, Chhomrong 1, Bamboo 2, Deurali 1, Annapurna Base Camp 1, Jhinu Danda 1. Luxury hotels in Kathmandu and Pokhara; premium or best-available mountain lodges on trek. Rooms are twin-sharing unless you request a single supplement where lodges can provide one.",
     },
     {
       id: "ti-meals",
@@ -299,7 +307,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-transport",
       title: "Transportation",
-      body: "Private airport transfers, Kathmandu–Pokhara–Kathmandu by road (included), and private vehicles to trailheads. Optional domestic flights on that sector can be added.",
+      body: "Kathmandu → Pokhara — domestic flight (included).\n\nPokhara → Kathmandu — domestic flight (included).\n\nPrivate airport transfers.\n\nPrivate Pokhara → Ghandruk ground transfer.\n\nPrivate Jhinu Danda → Pokhara ground transfer.\n\nTrailhead and local transfers as required by the itinerary.",
     },
     {
       id: "ti-safety",
@@ -314,7 +322,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-lux",
       title: "Optional luxury upgrades",
-      body: "Flight instead of road between Kathmandu and Pokhara, extra hotel nights, spa time in Pokhara, helicopter panorama, or a Chitwan extension. Quote at booking so rooms and guides are held.",
+      body: "Extra hotel nights, spa time in Pokhara, helicopter panorama, or a Chitwan extension. Quote at booking so rooms and guides are held. Kathmandu–Pokhara flights are already in the package.",
     },
   ],
   optionalAddons: ABC_ADDONS,

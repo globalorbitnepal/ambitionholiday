@@ -6425,6 +6425,15 @@ a.lux-chart-dl {
   margin-top: 0.5rem;
 }
 
+.lux-reviews-note {
+  max-width: 72rem;
+  margin: 0 auto 0.85rem;
+  padding: 0 1.25rem;
+  color: #3d4654;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .lux-root--sky .lux-reviews-band .rev-hub {
   background: transparent;
 }
