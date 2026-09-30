@@ -23,6 +23,7 @@ import OrbitFooterEditor from "@/components/OrbitFooterEditor";
 import OrbitTrekChartsEditor from "@/components/OrbitTrekChartsEditor";
 import OrbitPackageGalleryEditor from "@/components/OrbitPackageGalleryEditor";
 import OrbitPackageVideosEditor from "@/components/OrbitPackageVideosEditor";
+import OrbitTripPackageEditor from "@/components/OrbitTripPackageEditor";
 import { reconcileAllTripPackagesForSave } from "@/lib/trip-package-save";
 import OrbitMediaLibrary from "@/components/OrbitMediaLibrary";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
@@ -91,6 +92,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
     | "multi"
     | "helicopter"
     | "photography"
+    | "trekPages"
     | "trekCharts"
     | "tripGallery"
     | "tripVideos"
@@ -155,11 +157,18 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
               <h1 className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold">Ambition Holidays</h1>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <Link
-                href="/admin/packages"
+              <button
+                type="button"
+                onClick={() => setTab("trekPages")}
                 className="rounded-md border border-gold/50 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold hover:bg-gold/20"
               >
-                Package builder
+                Trek pages
+              </button>
+              <Link
+                href="/admin/packages"
+                className="rounded-md border border-white/15 px-3 py-2 text-xs font-semibold text-white/80 hover:border-gold/40"
+              >
+                Admin packages
               </Link>
               <Link
                 href="/admin/journal"
@@ -205,6 +214,7 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
               ["availability", "Availability"],
               ["journal", "Video Journal"],
               ["blog", "Journal / Blog"],
+              ["trekPages", "Trek pages"],
               ["about", "Company"],
               ["legalDocuments", "Legal documents"],
               ["visa", "Visa & Entry"],
@@ -583,6 +593,8 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
           {tab === "blog" ? (
             <OrbitBlogEditor content={content} setContent={setContent} save={save} />
           ) : null}
+
+          {tab === "trekPages" ? <OrbitTripPackageEditor content={content} setContent={setContent} /> : null}
 
           {tab === "about" ? (
             <OrbitAboutEditor content={content} setContent={setContent} save={save} />
