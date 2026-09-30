@@ -4,6 +4,16 @@ import { cmsRoot } from "@/lib/cms-paths";
 
 let hydrated = false;
 
+/** Keys that must always be refreshed from disk (PM2 can keep stale values after deploy). */
+const DISK_OVERRIDE_KEYS = new Set([
+  "ORBIT_PASSKEY",
+  "ORBIT_SESSION_SECRET",
+  "ADMIN_USERNAME",
+  "ADMIN_PASSWORD_HASH",
+  "ADMIN_PASSWORD_HASH_B64",
+  "ADMIN_SESSION_SECRET",
+]);
+
 function parseEnvLine(line: string): { key: string; value: string } | null {
   const trimmed = line.trim();
   if (!trimmed || trimmed.startsWith("#")) return null;
@@ -20,13 +30,14 @@ function parseEnvLine(line: string): { key: string; value: string } | null {
   return { key, value };
 }
 
-function applyEnvFile(filePath: string) {
+function applyEnvFile(filePath: string, forceKeys?: Set<string>) {
   try {
     const raw = fs.readFileSync(filePath, "utf8");
     for (const line of raw.split(/\r?\n/)) {
       const parsed = parseEnvLine(line);
       if (!parsed) continue;
-      if (!process.env[parsed.key]) {
+      const force = forceKeys?.has(parsed.key);
+      if (force || !process.env[parsed.key]) {
         process.env[parsed.key] = parsed.value;
       }
     }
@@ -35,20 +46,30 @@ function applyEnvFile(filePath: string) {
   }
 }
 
-/** Load Orbit/admin secrets from disk when PM2 does not inject process.env (production VPS). */
-export function hydrateRuntimeEnv() {
-  if (hydrated) return;
-  hydrated = true;
-
-  const files = [
+function orbitSecretFiles(): string[] {
+  return [
     path.join(process.cwd(), ".env.local"),
     path.join(process.cwd(), ".env"),
     path.join(process.cwd(), "data", "orbit-secrets.env"),
     path.join(cmsRoot(), "orbit-secrets.env"),
     "/var/www/ambition-holidays-cms/orbit-secrets.env",
   ];
+}
 
-  for (const file of files) {
+/** Re-read Orbit/admin secrets from CMS files (overrides stale PM2 env). */
+export function refreshSecretsFromDisk() {
+  for (const file of orbitSecretFiles()) {
+    applyEnvFile(file, DISK_OVERRIDE_KEYS);
+  }
+}
+
+/** Load Orbit/admin secrets from disk when PM2 does not inject process.env (production VPS). */
+export function hydrateRuntimeEnv() {
+  if (hydrated) return;
+  hydrated = true;
+
+  for (const file of orbitSecretFiles()) {
     applyEnvFile(file);
   }
+  refreshSecretsFromDisk();
 }

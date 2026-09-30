@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { refreshSecretsFromDisk } from "@/lib/load-runtime-env";
 import {
   clearSessionCookieHeader,
   createSessionToken,
@@ -10,6 +11,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  refreshSecretsFromDisk();
   if (!isOrbitConfigured()) {
     return NextResponse.json(
       { error: "Orbit is not configured. Set ORBIT_PASSKEY and ORBIT_SESSION_SECRET." },

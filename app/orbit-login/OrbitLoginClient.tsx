@@ -21,7 +21,22 @@ export default function OrbitLoginClient() {
         body: JSON.stringify({ passkey }),
       });
       if (!res.ok) {
-        setError("Access denied.");
+        let message = "Access denied.";
+        try {
+          const body = (await res.json()) as { error?: string };
+          if (res.status === 503) {
+            message =
+              body.error ||
+              "Orbit is not configured on the server. Set ORBIT_PASSKEY and ORBIT_SESSION_SECRET, then redeploy.";
+          } else if (res.status === 401) {
+            message = "Incorrect passkey. Use the Orbit passkey from your server secrets (GitHub ORBIT_PASSKEY).";
+          } else if (body.error) {
+            message = body.error;
+          }
+        } catch {
+          // keep default
+        }
+        setError(message);
         setPasskey("");
         return;
       }

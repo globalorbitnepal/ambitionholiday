@@ -1,16 +1,18 @@
 import { createHmac, timingSafeEqual, randomBytes } from "crypto";
-import { hydrateRuntimeEnv } from "@/lib/load-runtime-env";
+import { hydrateRuntimeEnv, refreshSecretsFromDisk } from "@/lib/load-runtime-env";
 
 const COOKIE_NAME = "orbit_session";
 const MAX_AGE_SEC = 60 * 60 * 12; // 12 hours
 
 function getPasskey() {
   hydrateRuntimeEnv();
+  refreshSecretsFromDisk();
   return (process.env.ORBIT_PASSKEY ?? "").trim();
 }
 
 function getSecret() {
   hydrateRuntimeEnv();
+  refreshSecretsFromDisk();
   return (process.env.ORBIT_SESSION_SECRET ?? "").trim();
 }
 
@@ -20,10 +22,10 @@ export function isOrbitConfigured() {
 
 export function verifyPasskey(input: string) {
   const expected = getPasskey();
-  const given = (input || "").trim();
+  const given = (input || "").trim().normalize("NFKC");
   if (!expected || !given) return false;
-  const a = Buffer.from(given);
-  const b = Buffer.from(expected);
+  const a = Buffer.from(given, "utf8");
+  const b = Buffer.from(expected.normalize("NFKC"), "utf8");
   if (a.length !== b.length) return false;
   try {
     return timingSafeEqual(a, b);
