@@ -9,36 +9,22 @@ function pickNonempty(...values: (string | undefined)[]): string {
 }
 
 function mergeWatchVideo(a: TrekVideo, b: TrekVideo): TrekVideo {
-  const merged = { ...a, ...b };
-  merged.videoSrc = pickNonempty(b.videoSrc, a.videoSrc);
-  merged.imageSrc = pickNonempty(b.imageSrc, a.imageSrc);
-  merged.imageAlt = pickNonempty(b.imageAlt, a.imageAlt);
-  merged.title = pickNonempty(b.title, a.title);
-  return merged;
+  return {
+    ...a,
+    ...b,
+    videoSrc: b.videoSrc ?? a.videoSrc ?? "",
+    imageSrc: b.imageSrc ?? a.imageSrc ?? "",
+    imageAlt: b.imageAlt || a.imageAlt || "",
+    title: b.title || a.title || "",
+  };
 }
 
+/** Newer list (`b`) is the source of truth — deleted videos stay deleted. */
 function mergeVideoReviewLists(a: TrekVideo[], b: TrekVideo[]): TrekVideo[] {
-  const byId = new Map<string, TrekVideo>();
-  for (const v of a) byId.set(v.id, v);
-  for (const v of b) {
-    const prev = byId.get(v.id);
-    byId.set(v.id, prev ? mergeWatchVideo(prev, v) : v);
-  }
-  const order = [...b.map((v) => v.id), ...a.map((v) => v.id)];
-  const seen = new Set<string>();
-  const out: TrekVideo[] = [];
-  for (const id of order) {
-    if (seen.has(id)) continue;
-    const v = byId.get(id);
-    if (v) {
-      seen.add(id);
-      out.push(v);
-    }
-  }
-  for (const [id, v] of byId) {
-    if (!seen.has(id)) out.push(v);
-  }
-  return out;
+  return b.map((video) => {
+    const prev = a.find((item) => item.id === video.id);
+    return prev ? mergeWatchVideo(prev, video) : video;
+  });
 }
 
 /** Merge two package snapshots (e.g. from different CMS JSON paths). */
@@ -67,36 +53,18 @@ export function reconcileTripPackageForSave(
   const out: TrekPackage = { ...server, ...local };
 
   if (!baseline) {
-    out.watchVideo = { ...server.watchVideo, ...local.watchVideo };
-    out.videoReviews = local.videoReviews?.length ? local.videoReviews : server.videoReviews;
+    out.watchVideo = local.watchVideo ?? server.watchVideo;
+    out.videoReviews = Array.isArray(local.videoReviews) ? local.videoReviews : server.videoReviews;
     return out;
   }
 
-  const localWatchSrc = (local.watchVideo?.videoSrc || "").trim();
-  const baselineWatchSrc = (baseline.watchVideo?.videoSrc || "").trim();
-  const watchChanged =
-    JSON.stringify(local.watchVideo ?? null) !== JSON.stringify(baseline.watchVideo ?? null) ||
-    localWatchSrc !== baselineWatchSrc;
+  const watchChanged = JSON.stringify(local.watchVideo ?? null) !== JSON.stringify(baseline.watchVideo ?? null);
+  out.watchVideo = watchChanged ? local.watchVideo : server.watchVideo;
 
-  if (!watchChanged) {
-    out.watchVideo = server.watchVideo;
-  } else {
-    out.watchVideo = { ...server.watchVideo, ...local.watchVideo };
-    if (localWatchSrc) out.watchVideo.videoSrc = localWatchSrc;
-  }
-
-  const reviewsChanged =
-    JSON.stringify(local.videoReviews ?? null) !== JSON.stringify(baseline.videoReviews ?? null);
-  if (!reviewsChanged) {
-    out.videoReviews = server.videoReviews;
-  } else {
-    out.videoReviews = (local.videoReviews ?? server.videoReviews).map((video, i) => {
-      const serverVideo = server.videoReviews?.[i];
-      const src = (video.videoSrc || "").trim();
-      if (!src && serverVideo?.videoSrc?.trim()) return { ...serverVideo, ...video, videoSrc: serverVideo.videoSrc };
-      return { ...serverVideo, ...video };
-    });
-  }
+  const reviewsChanged = JSON.stringify(local.videoReviews ?? null) !== JSON.stringify(baseline.videoReviews ?? null);
+  out.videoReviews = reviewsChanged
+    ? [...(local.videoReviews ?? [])]
+    : server.videoReviews;
 
   return out;
 }

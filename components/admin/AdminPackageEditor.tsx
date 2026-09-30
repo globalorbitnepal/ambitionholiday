@@ -966,8 +966,23 @@ export default function AdminPackageEditor() {
                   patch({ videoReviews });
                 }}
               />
-              <button type="button" className="admin-btn" onClick={() => patch({ videoReviews: (pkg.videoReviews || []).filter((_, i) => i !== vi) })}>
-                Remove video
+              <label className="admin-field">
+                <span>Duration (shown on thumbnail)</span>
+                <input
+                  value={video.duration || ""}
+                  onChange={(e) => {
+                    const videoReviews = [...(pkg.videoReviews || [])];
+                    videoReviews[vi] = { ...video, duration: e.target.value };
+                    patch({ videoReviews });
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-btn admin-btn-sm admin-btn-danger"
+                onClick={() => patch({ videoReviews: (pkg.videoReviews || []).filter((_, i) => i !== vi) })}
+              >
+                Remove this video
               </button>
             </div>
           ))}

@@ -851,40 +851,31 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       tripadvisorCount: item.tripadvisorCount || def.tripadvisorCount,
       tripadvisorScore: item.tripadvisorScore || def.tripadvisorScore,
       googleCount: item.googleCount || def.googleCount,
-      watchVideo: (() => {
-        const savedSrc = (item.watchVideo?.videoSrc || "").trim();
-        const merged = savedSrc ? { ...def.watchVideo, ...item.watchVideo } : { ...def.watchVideo };
-        const src = (merged.videoSrc || "").trim() || def.watchVideo.videoSrc;
-        merged.videoSrc =
-          src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src) ? `https://${src.replace(/^\/+/, "")}` : src;
-        merged.imageSrc = (merged.imageSrc || "").trim() || def.watchVideo.imageSrc;
-        merged.duration = (merged.duration || "").trim() || def.watchVideo.duration;
-        return merged;
-      })(),
-      videoReviews: (() => {
-        const saved = item.videoReviews || [];
-        const hasFilm = saved.some((video) => (video.videoSrc || "").trim());
-        const source = hasFilm ? saved : def.videoReviews;
-        const count = Math.max(source.length, def.videoReviews.length);
-        return Array.from({ length: count }, (_, index) => {
-          const fallback = def.videoReviews[index];
-          const video = source[index];
-          if (!video && !fallback) return null;
-          const merged = {
-            id: video?.id || fallback?.id || `vr-${index}`,
-            title: (video?.title || fallback?.title || "").trim(),
-            subtitle: (video?.subtitle || fallback?.subtitle || "").trim(),
-            duration: (video?.duration || fallback?.duration || "").trim(),
-            imageSrc: (video?.imageSrc || fallback?.imageSrc || "").trim(),
-            imageAlt: (video?.imageAlt || fallback?.imageAlt || "").trim(),
-            videoSrc: "",
-          };
-          const src = (video?.videoSrc || fallback?.videoSrc || "").trim();
-          merged.videoSrc =
-            src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src) ? `https://${src.replace(/^\/+/, "")}` : src;
-          return merged;
-        }).filter((video): video is NonNullable<typeof video> => Boolean(video?.videoSrc || video?.imageSrc));
-      })(),
+      watchVideo: item.watchVideo
+        ? {
+            ...def.watchVideo,
+            ...item.watchVideo,
+            videoSrc: (() => {
+              const src = (item.watchVideo.videoSrc || "").trim();
+              if (!src) return "";
+              return src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)
+                ? `https://${src.replace(/^\/+/, "")}`
+                : src;
+            })(),
+            imageSrc: (item.watchVideo.imageSrc || "").trim(),
+            duration: (item.watchVideo.duration || "").trim(),
+          }
+        : def.watchVideo,
+      videoReviews: (Array.isArray(item.videoReviews) ? item.videoReviews : def.videoReviews).map((video) => {
+        const src = (video.videoSrc || "").trim();
+        return {
+          ...video,
+          videoSrc:
+            src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)
+              ? `https://${src.replace(/^\/+/, "")}`
+              : src,
+        };
+      }),
       reviews: item.reviews?.length ? item.reviews : def.reviews,
       tripInfoTitle: item.tripInfoTitle || def.tripInfoTitle,
       tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,

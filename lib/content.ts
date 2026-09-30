@@ -764,7 +764,11 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
     tripPackages = tripPackages.map((incoming) => {
       const preserved = preservedPackages.find((p) => p.id === incoming.id);
       if (!preserved) return incoming;
-      return mergeTripPackageSnapshots(preserved, incoming);
+      return {
+        ...mergeTripPackageSnapshots(preserved, incoming),
+        watchVideo: incoming.watchVideo,
+        videoReviews: Array.isArray(incoming.videoReviews) ? incoming.videoReviews : [],
+      };
     });
   }
   const next: SiteContent = withSharedSectionWallpaper({
