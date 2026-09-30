@@ -14,7 +14,7 @@ import { isEbcPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-pac
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
-import { normalizeVideoSrc } from "@/lib/video-embed";
+import { normalizeVideoSrc, youtubeId } from "@/lib/video-embed";
 
 const TOC = [
   { id: "overview", label: "Overview" },
@@ -337,7 +337,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   <FilmStill
                     src={pkg.watchVideo.imageSrc || pkg.heroSrc}
                     alt={pkg.watchVideo.imageAlt || pkg.watchVideo.title}
+                    videoSrc={pkg.watchVideo.videoSrc}
                   />
+                  {pkg.watchVideo.duration ? <span className="lux-film-time">{pkg.watchVideo.duration}</span> : null}
                   <span className="lux-film-play" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                       <path d="M9.4 7.6v8.8L17.2 12 9.4 7.6Z" />
@@ -367,7 +369,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       <FilmStill
                         src={video.imageSrc || pkg.heroSrc}
                         alt={video.imageAlt || video.title}
+                        videoSrc={video.videoSrc}
                       />
+                      {video.duration ? <span className="lux-film-time">{video.duration}</span> : null}
                       <span className="lux-film-play lux-film-play--sm" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                           <path d="M9.4 7.6v8.8L17.2 12 9.4 7.6Z" />
@@ -761,11 +765,23 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   );
 }
 
-function FilmStill({ src, alt }: { src: string; alt: string }) {
+function FilmStill({ src, alt, videoSrc }: { src: string; alt: string; videoSrc?: string }) {
   const resolved = mediaSrc(src);
+  const yt = youtubeId(videoSrc || "");
+  const fallback = yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : "";
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={resolved} alt={alt} className="lux-photo" loading="eager" decoding="async" draggable={false} />
+    <img
+      src={resolved}
+      alt={alt}
+      className="lux-photo"
+      loading="eager"
+      decoding="async"
+      draggable={false}
+      onError={(e) => {
+        if (fallback && e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+      }}
+    />
   );
 }
 

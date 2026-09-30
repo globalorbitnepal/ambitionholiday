@@ -10,6 +10,8 @@ import {
   ABC_SLUG,
 } from "./abc-luxury-content";
 
+import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
+
 const IMG = "/images/nepal/nepal-trek-abc.webp";
 
 /** Default published Annapurna Base Camp Luxury Trek — merged with CMS unless a full custom save exists. */
@@ -238,34 +240,11 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   googleCount: "165+ Reviews",
   googleHref: "https://www.google.com/maps",
   watchVideo: {
+    ...EBC_WATCH_VIDEO,
     id: "abc-watch",
-    title: "Watch the trail",
     subtitle: "Annapurna Base Camp Luxury Trek",
-    duration: "03:52",
-    imageSrc: "/images/journal/annapurna-clean.webp",
-    imageAlt: "Annapurna sanctuary ridge at dawn",
-    videoSrc: "",
   },
-  videoReviews: [
-    {
-      id: "vr-abc",
-      title: "Annapurna Base Camp",
-      subtitle: "12-day sanctuary walk",
-      duration: "03:52",
-      imageSrc: "/images/journal/annapurna-clean.webp",
-      imageAlt: "Annapurna peaks from the trail",
-      videoSrc: "",
-    },
-    {
-      id: "vr-pokhara",
-      title: "Pokhara to the foothills",
-      subtitle: "Guest film",
-      duration: "02:40",
-      imageSrc: IMG,
-      imageAlt: "Machapuchare from the Annapurna trail",
-      videoSrc: "",
-    },
-  ],
+  videoReviews: EBC_VIDEO_REVIEWS.map((video) => ({ ...video })),
   reviews: [
     {
       id: "g-abc-sarah",

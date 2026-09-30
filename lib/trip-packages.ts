@@ -8,6 +8,7 @@ import {
   EBC_LUKLA_NOTE,
 } from "./ebc-luxury-content";
 import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
+import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
   id: string;
@@ -492,44 +493,8 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     googleScore: "5.0",
     googleCount: "210+ Reviews",
     googleHref: "https://www.google.com/maps",
-    watchVideo: {
-      id: "ebc-watch",
-      title: "Watch the trail",
-      subtitle: "Everest Base Camp Luxury Trek",
-      duration: "04:28",
-      imageSrc: "/images/journal/everest-clean.webp",
-      imageAlt: "Watch the Everest Base Camp luxury trek film",
-      videoSrc: "",
-    },
-    videoReviews: [
-      {
-        id: "vr-ebc",
-        title: "Everest Base Camp Trek",
-        subtitle: "14 Days Journey",
-        duration: "04:28",
-        imageSrc: "/images/journal/everest-clean.webp",
-        imageAlt: "Hikers on the Everest Base Camp trail",
-        videoSrc: "",
-      },
-      {
-        id: "vr-namche",
-        title: "Namche & Kala Patthar",
-        subtitle: "Guest film",
-        duration: "03:40",
-        imageSrc: "/images/nepal/nepal-trek-ebc.webp",
-        imageAlt: "Namche Bazaar and high Khumbu views",
-        videoSrc: "",
-      },
-      {
-        id: "vr-lodge",
-        title: "Private lodges on the trail",
-        subtitle: "How the nights feel",
-        duration: "02:55",
-        imageSrc: "/images/nepal/nepal-cover.webp",
-        imageAlt: "Lodge evening on the Khumbu trail",
-        videoSrc: "",
-      },
-    ],
+    watchVideo: EBC_WATCH_VIDEO,
+    videoReviews: EBC_VIDEO_REVIEWS,
     reviews: [
       {
         id: "g-alexandra",
@@ -887,22 +852,39 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       tripadvisorScore: item.tripadvisorScore || def.tripadvisorScore,
       googleCount: item.googleCount || def.googleCount,
       watchVideo: (() => {
-        const merged = { ...def.watchVideo, ...item.watchVideo };
-        const src = merged.videoSrc?.trim() || "";
-        if (src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)) {
-          merged.videoSrc = `https://${src.replace(/^\/+/, "")}`;
-        }
+        const savedSrc = (item.watchVideo?.videoSrc || "").trim();
+        const merged = savedSrc ? { ...def.watchVideo, ...item.watchVideo } : { ...def.watchVideo };
+        const src = (merged.videoSrc || "").trim() || def.watchVideo.videoSrc;
+        merged.videoSrc =
+          src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src) ? `https://${src.replace(/^\/+/, "")}` : src;
+        merged.imageSrc = (merged.imageSrc || "").trim() || def.watchVideo.imageSrc;
+        merged.duration = (merged.duration || "").trim() || def.watchVideo.duration;
         return merged;
       })(),
-      videoReviews: (item.videoReviews?.length ? item.videoReviews : def.videoReviews).map((video, index) => {
-        const fallback = def.videoReviews[index];
-        const merged = { ...fallback, ...video };
-        const src = merged.videoSrc?.trim() || "";
-        if (src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src)) {
-          merged.videoSrc = `https://${src.replace(/^\/+/, "")}`;
-        }
-        return merged;
-      }),
+      videoReviews: (() => {
+        const saved = item.videoReviews || [];
+        const hasFilm = saved.some((video) => (video.videoSrc || "").trim());
+        const source = hasFilm ? saved : def.videoReviews;
+        const count = Math.max(source.length, def.videoReviews.length);
+        return Array.from({ length: count }, (_, index) => {
+          const fallback = def.videoReviews[index];
+          const video = source[index];
+          if (!video && !fallback) return null;
+          const merged = {
+            id: video?.id || fallback?.id || `vr-${index}`,
+            title: (video?.title || fallback?.title || "").trim(),
+            subtitle: (video?.subtitle || fallback?.subtitle || "").trim(),
+            duration: (video?.duration || fallback?.duration || "").trim(),
+            imageSrc: (video?.imageSrc || fallback?.imageSrc || "").trim(),
+            imageAlt: (video?.imageAlt || fallback?.imageAlt || "").trim(),
+            videoSrc: "",
+          };
+          const src = (video?.videoSrc || fallback?.videoSrc || "").trim();
+          merged.videoSrc =
+            src && !/^https?:\/\//i.test(src) && /youtube|youtu\.be/i.test(src) ? `https://${src.replace(/^\/+/, "")}` : src;
+          return merged;
+        }).filter((video): video is NonNullable<typeof video> => Boolean(video?.videoSrc || video?.imageSrc));
+      })(),
       reviews: item.reviews?.length ? item.reviews : def.reviews,
       tripInfoTitle: item.tripInfoTitle || def.tripInfoTitle,
       tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,
