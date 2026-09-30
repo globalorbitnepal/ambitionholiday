@@ -9,11 +9,52 @@ import { CHART_FRAMES, chartFrameLine } from "@/lib/chart-frames";
 import type { SiteContent } from "@/lib/content-types";
 import {
   cleanSlugInput,
+  packageHeadings,
   packageSeoInput,
   tripPath,
   type TrekItineraryDay,
   type TrekPackage,
+  type TrekVideo,
 } from "@/lib/trip-packages";
+
+const HEADING_FIELDS: {
+  key: keyof TrekPackage;
+  label: string;
+  head: keyof ReturnType<typeof packageHeadings>;
+  multiline?: boolean;
+}[] = [
+  { key: "aboutTitle", label: "Overview section title", head: "about" },
+  { key: "whyTitle", label: "Why us section title", head: "why" },
+  { key: "fitTitle", label: "Is this for you? title", head: "fit" },
+  { key: "khumbuTitle", label: "Trail / region notes title", head: "khumbu" },
+  { key: "mapBody", label: "Text above trip map", head: "mapBody", multiline: true },
+  { key: "weatherNote", label: "Small note under weather chart", head: "weatherNote", multiline: true },
+  { key: "luklaNoteTitle", label: "Special note heading (inclusions)", head: "luklaNote" },
+  { key: "notesTitle", label: "Travel notes section title", head: "notes" },
+  { key: "flightTitle", label: "Flights sub-heading", head: "flight" },
+  { key: "bufferTitle", label: "Buffer days sub-heading", head: "buffer" },
+  { key: "heliTitle", label: "Helicopter sub-heading", head: "heli" },
+];
+
+function defaultWatch(pkg: TrekPackage): TrekVideo {
+  return (
+    pkg.watchVideo ?? {
+      id: `watch-${pkg.id}`,
+      title: "Watch video",
+      subtitle: pkg.title,
+      duration: "",
+      imageSrc: pkg.heroSrc,
+      imageAlt: pkg.heroAlt || pkg.title,
+      videoSrc: "",
+    }
+  );
+}
+
+function groupTiers(pkg: TrekPackage) {
+  return pkg.groupPrices?.length
+    ? pkg.groupPrices
+    : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
+}
 
 type Props = {
   content: SiteContent;
@@ -21,26 +62,43 @@ type Props = {
 };
 
 type SubTab =
-  | "basic"
-  | "itinerary"
-  | "photos"
-  | "charts"
-  | "seo"
-  | "faq"
-  | "includes"
+  | "basics"
+  | "pricing"
+  | "facts"
+  | "headings"
+  | "overview"
+  | "why"
+  | "video"
   | "tripinfo"
-  | "guide";
+  | "itinerary"
+  | "charts"
+  | "includes"
+  | "photos"
+  | "packing"
+  | "travel"
+  | "faq"
+  | "ratings"
+  | "seo";
 
+/** Same order as the live trek page menu (Overview → Book → … → FAQ). */
 const SUB_TABS: { id: SubTab; label: string }[] = [
-  { id: "basic", label: "Basics & overview" },
-  { id: "itinerary", label: "Itinerary" },
-  { id: "photos", label: "Hero & gallery" },
-  { id: "charts", label: "Map & charts" },
-  { id: "seo", label: "SEO" },
-  { id: "faq", label: "FAQ" },
-  { id: "includes", label: "Included / excluded" },
-  { id: "tripinfo", label: "Trip information" },
-  { id: "guide", label: "Why, packing & notes" },
+  { id: "basics", label: "1 · Title & URL" },
+  { id: "pricing", label: "2 · Price & groups" },
+  { id: "facts", label: "3 · Trip facts bar" },
+  { id: "headings", label: "4 · Section titles" },
+  { id: "overview", label: "5 · Overview" },
+  { id: "why", label: "6 · Why & fit" },
+  { id: "video", label: "7 · Videos" },
+  { id: "tripinfo", label: "8 · Trip info" },
+  { id: "itinerary", label: "9 · Itinerary" },
+  { id: "charts", label: "10 · Map & charts" },
+  { id: "includes", label: "11 · Includes" },
+  { id: "photos", label: "12 · Gallery" },
+  { id: "packing", label: "13 · Packing" },
+  { id: "travel", label: "14 · Travel notes" },
+  { id: "faq", label: "15 · FAQ" },
+  { id: "ratings", label: "16 · TripAdvisor / Google" },
+  { id: "seo", label: "17 · SEO" },
 ];
 
 function syncCatalog(content: SiteContent, pkg: TrekPackage): SiteContent {
@@ -129,7 +187,7 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
   const defaultId =
     packages.find((p) => p.id === "abc-lux" || p.slug === "annapurna-base-camp-luxury-trek")?.id || packages[0]?.id || "";
   const [packageId, setPackageId] = useState(defaultId);
-  const [subTab, setSubTab] = useState<SubTab>("basic");
+  const [subTab, setSubTab] = useState<SubTab>("basics");
 
   const pkg = packages.find((p) => p.id === packageId);
 
@@ -209,11 +267,12 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
       </div>
 
       <p className="text-sm text-white/60">
-        Edit every section of <strong className="text-white">{pkg.title}</strong> — text, photos, map, itinerary gold
-        boxes, SEO. Click <span className="text-gold">Save changes</span> at the top of Orbit to go live.
+        Full page editor for <strong className="text-white">{pkg.title}</strong> — every block on the live trek page,
+        including sidebar price, group discounts, facts, videos, map, and SEO. Press{" "}
+        <span className="text-gold">Save changes</span> at the top of Orbit when done.
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-white/10 bg-black/20 p-2">
         {SUB_TABS.map((t) => (
           <button
             key={t.id}
@@ -228,7 +287,7 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
         ))}
       </div>
 
-      {subTab === "basic" ? (
+      {subTab === "basics" ? (
         <div className="grid gap-4 lg:grid-cols-2">
           <OrbitField label="Package title">
             <input className={orbitInputClass} value={pkg.title} onChange={(e) => patch({ title: e.target.value })} />
@@ -247,8 +306,30 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
               value={pkg.status}
               onChange={(e) => patch({ status: e.target.value as TrekPackage["status"] })}
             >
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
+              <option value="published">Published (live)</option>
+              <option value="draft">Draft (hidden)</option>
+            </select>
+          </OrbitField>
+          <OrbitField label="Country page">
+            <select
+              className={orbitInputClass}
+              value={pkg.country}
+              onChange={(e) => patch({ country: e.target.value as TrekPackage["country"] })}
+            >
+              <option value="nepal">Nepal</option>
+              <option value="bhutan">Bhutan</option>
+              <option value="tibet">Tibet</option>
+              <option value="multi">Multi country</option>
+            </select>
+          </OrbitField>
+          <OrbitField label="Homepage featured card">
+            <select
+              className={orbitInputClass}
+              value={pkg.featured ? "yes" : "no"}
+              onChange={(e) => patch({ featured: e.target.value === "yes" })}
+            >
+              <option value="yes">Show on homepage</option>
+              <option value="no">Catalog only</option>
             </select>
           </OrbitField>
           <OrbitField label="Badge (e.g. Best Seller)">
@@ -268,45 +349,334 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
               onChange={(e) => patch({ days: Number(e.target.value) || 0 })}
             />
           </OrbitField>
-          <OrbitField label="Duration label">
+          <OrbitField label="Duration label (facts + hero)">
             <input className={orbitInputClass} value={pkg.duration} onChange={(e) => patch({ duration: e.target.value })} />
           </OrbitField>
-          <OrbitField label="Max altitude">
-            <input className={orbitInputClass} value={pkg.maxAltitude} onChange={(e) => patch({ maxAltitude: e.target.value })} />
-          </OrbitField>
-          <OrbitField label="Destination line">
+          <OrbitField label="Destination line (under title)">
             <input className={orbitInputClass} value={pkg.destination} onChange={(e) => patch({ destination: e.target.value })} />
           </OrbitField>
-          <OrbitField label="Price USD (0 = on request)">
+        </div>
+      ) : null}
+
+      {subTab === "pricing" ? (
+        <div className="space-y-5">
+          <p className="text-sm text-white/55">
+            Sidebar &quot;Book now&quot; box — main price and group discount table (0 = &quot;On request&quot;).
+          </p>
+          <OrbitField label="Main price USD per person">
             <input
               type="number"
+              min={0}
               className={orbitInputClass}
               value={pkg.priceUsd}
               onChange={(e) => patch({ priceUsd: Math.max(0, Number(e.target.value) || 0) })}
             />
           </OrbitField>
+          <div className="space-y-3">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Group booking discounts</p>
+            {groupTiers(pkg).map((row, index) => (
+              <div key={row.id} className="grid gap-2 rounded-xl border border-white/10 p-3 lg:grid-cols-[1fr_140px_auto]">
+                <input
+                  className={orbitInputClass}
+                  placeholder="e.g. 2–3 Pax"
+                  value={row.label}
+                  onChange={(e) => {
+                    const groupPrices = groupTiers(pkg).map((item, i) =>
+                      i === index ? { ...item, label: e.target.value } : item,
+                    );
+                    patch({ groupPrices });
+                  }}
+                />
+                <input
+                  type="number"
+                  min={0}
+                  className={orbitInputClass}
+                  placeholder="USD"
+                  value={row.priceUsd}
+                  onChange={(e) => {
+                    const groupPrices = groupTiers(pkg).map((item, i) =>
+                      i === index ? { ...item, priceUsd: Math.max(0, Number(e.target.value) || 0) } : item,
+                    );
+                    patch({ groupPrices });
+                  }}
+                />
+                <button
+                  type="button"
+                  className="rounded-md border border-red-400/30 px-2 py-1 text-xs text-red-200"
+                  onClick={() => patch({ groupPrices: groupTiers(pkg).filter((_, i) => i !== index) })}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold"
+              onClick={() =>
+                patch({
+                  groupPrices: [
+                    ...groupTiers(pkg),
+                    { id: `p-${Date.now()}`, label: "4–6 Pax", priceUsd: pkg.priceUsd },
+                  ],
+                })
+              }
+            >
+              Add group tier
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {subTab === "facts" ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <OrbitField label="Country (facts grid)">
+            <input className={orbitInputClass} value={pkg.countryLabel || ""} onChange={(e) => patch({ countryLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Activity">
+            <input className={orbitInputClass} value={pkg.activityLabel || ""} onChange={(e) => patch({ activityLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Max altitude (facts)">
+            <input className={orbitInputClass} value={pkg.maxAltitude} onChange={(e) => patch({ maxAltitude: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Max altitude (feet label, optional)">
+            <input className={orbitInputClass} value={pkg.maxAltitudeFt || ""} onChange={(e) => patch({ maxAltitudeFt: e.target.value })} />
+          </OrbitField>
           <OrbitField label="Best season">
             <input className={orbitInputClass} value={pkg.bestSeason} onChange={(e) => patch({ bestSeason: e.target.value })} />
           </OrbitField>
-          <div className="lg:col-span-2">
-            <OrbitField label="Overview (main story)">
-              <textarea
-                className={`${orbitTextareaClass} min-h-[200px]`}
-                value={pkg.overview}
-                onChange={(e) => patch({ overview: e.target.value })}
+          <OrbitField label="Accommodation">
+            <input
+              className={orbitInputClass}
+              value={pkg.accommodationLabel || ""}
+              onChange={(e) => patch({ accommodationLabel: e.target.value })}
+            />
+          </OrbitField>
+          <OrbitField label="Meals">
+            <input className={orbitInputClass} value={pkg.mealsLabel || ""} onChange={(e) => patch({ mealsLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Start / end">
+            <input className={orbitInputClass} value={pkg.startEndLabel || ""} onChange={(e) => patch({ startEndLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Group size">
+            <input className={orbitInputClass} value={pkg.groupSize} onChange={(e) => patch({ groupSize: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Permits line">
+            <input className={orbitInputClass} value={pkg.permitsLabel || ""} onChange={(e) => patch({ permitsLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Region label">
+            <input className={orbitInputClass} value={pkg.regionLabel || ""} onChange={(e) => patch({ regionLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Start label">
+            <input className={orbitInputClass} value={pkg.startLabel || ""} onChange={(e) => patch({ startLabel: e.target.value })} />
+          </OrbitField>
+        </div>
+      ) : null}
+
+      {subTab === "headings" ? (
+        <div className="space-y-4">
+          <p className="text-sm text-white/55">Custom section headings on the public page. Leave empty for defaults.</p>
+          {HEADING_FIELDS.map((field) => {
+            const fallback = packageHeadings({ ...pkg, [field.key]: "" })[field.head];
+            const value = (pkg[field.key] as string | undefined) || "";
+            return (
+              <OrbitField key={field.key} label={field.label}>
+                {field.multiline ? (
+                  <textarea
+                    className={orbitTextareaClass}
+                    placeholder={fallback}
+                    value={value}
+                    onChange={(e) => patch({ [field.key]: e.target.value } as Partial<TrekPackage>)}
+                  />
+                ) : (
+                  <input
+                    className={orbitInputClass}
+                    placeholder={fallback}
+                    value={value}
+                    onChange={(e) => patch({ [field.key]: e.target.value } as Partial<TrekPackage>)}
+                  />
+                )}
+              </OrbitField>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {subTab === "overview" ? (
+        <div className="space-y-4">
+          <OrbitField label="Overview (main story under title)">
+            <textarea
+              className={`${orbitTextareaClass} min-h-[220px]`}
+              value={pkg.overview}
+              onChange={(e) => patch({ overview: e.target.value })}
+            />
+          </OrbitField>
+          <OrbitField label="Highlights (one per line)">
+            <textarea
+              className={`${orbitTextareaClass} min-h-[160px]`}
+              value={pkg.highlights.join("\n")}
+              onChange={(e) =>
+                patch({ highlights: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
+              }
+            />
+          </OrbitField>
+        </div>
+      ) : null}
+
+      {subTab === "why" ? (
+        <div className="space-y-4">
+          {(pkg.whyItems || []).map((item, wi) => (
+            <div key={wi} className="rounded-xl border border-white/10 p-4 space-y-2">
+              <OrbitField label="Why — title">
+                <input
+                  className={orbitInputClass}
+                  value={item.title}
+                  onChange={(e) => {
+                    const whyItems = [...(pkg.whyItems || [])];
+                    whyItems[wi] = { ...item, title: e.target.value };
+                    patch({ whyItems });
+                  }}
+                />
+              </OrbitField>
+              <OrbitField label="Why — body">
+                <textarea
+                  className={orbitTextareaClass}
+                  value={item.body}
+                  onChange={(e) => {
+                    const whyItems = [...(pkg.whyItems || [])];
+                    whyItems[wi] = { ...item, body: e.target.value };
+                    patch({ whyItems });
+                  }}
+                />
+              </OrbitField>
+              <button
+                type="button"
+                className="text-xs text-red-300"
+                onClick={() => patch({ whyItems: (pkg.whyItems || []).filter((_, i) => i !== wi) })}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="rounded-md border border-white/20 px-3 py-2 text-xs"
+            onClick={() => patch({ whyItems: [...(pkg.whyItems || []), { title: "New reason", body: "" }] })}
+          >
+            Add why point
+          </button>
+          <OrbitField label="Is this trek for you? (body)">
+            <textarea className={orbitTextareaClass} value={pkg.suitableBody || ""} onChange={(e) => patch({ suitableBody: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="How to train / prepare">
+            <textarea className={orbitTextareaClass} value={pkg.trainingBody || ""} onChange={(e) => patch({ trainingBody: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Trail / region notes (Khumbu / sanctuary text)">
+            <textarea className={orbitTextareaClass} value={pkg.khumbuBody || ""} onChange={(e) => patch({ khumbuBody: e.target.value })} />
+          </OrbitField>
+        </div>
+      ) : null}
+
+      {subTab === "video" ? (
+        <div className="space-y-6">
+          <div className="space-y-3 rounded-xl border border-gold/25 p-4">
+            <p className="text-sm font-semibold text-gold">Watch video (main film)</p>
+            <OrbitField label="Title">
+              <input
+                className={orbitInputClass}
+                value={defaultWatch(pkg).title}
+                onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), title: e.target.value } })}
               />
             </OrbitField>
+            <OrbitField label="YouTube / Vimeo / MP4 URL">
+              <input
+                className={orbitInputClass}
+                value={defaultWatch(pkg).videoSrc}
+                onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), videoSrc: e.target.value } })}
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+            </OrbitField>
+            <OrbitField label="Duration label">
+              <input
+                className={orbitInputClass}
+                value={defaultWatch(pkg).duration}
+                onChange={(e) => patch({ watchVideo: { ...defaultWatch(pkg), duration: e.target.value } })}
+              />
+            </OrbitField>
+            <div className="space-y-2">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Thumbnail</p>
+              {defaultWatch(pkg).imageSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={defaultWatch(pkg).imageSrc} alt="" className="h-32 max-w-sm rounded-lg object-cover" />
+              ) : null}
+              <OrbitMediaButtons
+                onPicked={async (url) => patch({ watchVideo: { ...defaultWatch(pkg), imageSrc: url } })}
+              />
+            </div>
           </div>
-          <div className="lg:col-span-2">
-            <OrbitField label="Highlights (one per line)">
-              <textarea
-                className={`${orbitTextareaClass} min-h-[140px]`}
-                value={pkg.highlights.join("\n")}
-                onChange={(e) =>
-                  patch({ highlights: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
-                }
-              />
-            </OrbitField>
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-white">Video reviews</p>
+            {(pkg.videoReviews || []).map((video, vi) => (
+              <div key={video.id || vi} className="space-y-2 rounded-xl border border-white/10 p-4">
+                <OrbitField label="Title">
+                  <input
+                    className={orbitInputClass}
+                    value={video.title}
+                    onChange={(e) => {
+                      const videoReviews = [...(pkg.videoReviews || [])];
+                      videoReviews[vi] = { ...video, title: e.target.value };
+                      patch({ videoReviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Video URL">
+                  <input
+                    className={orbitInputClass}
+                    value={video.videoSrc}
+                    onChange={(e) => {
+                      const videoReviews = [...(pkg.videoReviews || [])];
+                      videoReviews[vi] = { ...video, videoSrc: e.target.value };
+                      patch({ videoReviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitMediaButtons
+                  onPicked={async (url) => {
+                    const videoReviews = [...(pkg.videoReviews || [])];
+                    videoReviews[vi] = { ...video, imageSrc: url };
+                    patch({ videoReviews });
+                  }}
+                />
+                <button
+                  type="button"
+                  className="text-xs text-red-300"
+                  onClick={() => patch({ videoReviews: (pkg.videoReviews || []).filter((_, i) => i !== vi) })}
+                >
+                  Remove video
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="rounded-md border border-white/20 px-3 py-2 text-xs"
+              onClick={() =>
+                patch({
+                  videoReviews: [
+                    ...(pkg.videoReviews || []),
+                    {
+                      id: `vr-${Date.now()}`,
+                      title: "Guest video",
+                      subtitle: pkg.title,
+                      duration: "03:00",
+                      imageSrc: pkg.heroSrc,
+                      imageAlt: pkg.title,
+                      videoSrc: "",
+                    },
+                  ],
+                })
+              }
+            >
+              Add video review
+            </button>
           </div>
         </div>
       ) : null}
@@ -507,6 +877,12 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
             value={pkg.weatherMonthlySrc || ""}
             onChange={(weatherMonthlySrc) => patch({ weatherMonthlySrc })}
           />
+          <ChartBlock
+            label="Daily weather (optional)"
+            hint="Optional second weather graphic."
+            value={pkg.weatherDailySrc || ""}
+            onChange={(weatherDailySrc) => patch({ weatherDailySrc })}
+          />
           <OrbitField label="Altitude section note">
             <textarea className={orbitTextareaClass} value={pkg.altitudeBody || ""} onChange={(e) => patch({ altitudeBody: e.target.value })} />
           </OrbitField>
@@ -643,6 +1019,16 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
               />
             </OrbitField>
           </div>
+          <div className="lg:col-span-2">
+            <OrbitField label="Important note (under inclusions list)">
+              <textarea className={orbitTextareaClass} value={pkg.includeNote || ""} onChange={(e) => patch({ includeNote: e.target.value })} />
+            </OrbitField>
+          </div>
+          <div className="lg:col-span-2">
+            <OrbitField label="Special flight / travel note (full paragraph)">
+              <textarea className={orbitTextareaClass} value={pkg.luklaNote || ""} onChange={(e) => patch({ luklaNote: e.target.value })} />
+            </OrbitField>
+          </div>
         </div>
       ) : null}
 
@@ -675,6 +1061,13 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
                   }
                 />
               </OrbitField>
+              <button
+                type="button"
+                className="text-xs text-red-300"
+                onClick={() => patch({ tripInfo: (pkg.tripInfo || []).filter((_, i) => i !== bi) })}
+              >
+                Remove block
+              </button>
             </div>
           ))}
           <button
@@ -691,49 +1084,19 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
         </div>
       ) : null}
 
-      {subTab === "guide" ? (
+      {subTab === "packing" ? (
         <div className="space-y-4">
-          {(pkg.whyItems || []).map((item, wi) => (
-            <div key={wi} className="rounded-xl border border-white/10 p-4 space-y-2">
-              <OrbitField label="Why — title">
-                <input
-                  className={orbitInputClass}
-                  value={item.title}
-                  onChange={(e) => {
-                    const whyItems = [...(pkg.whyItems || [])];
-                    whyItems[wi] = { ...item, title: e.target.value };
-                    patch({ whyItems });
-                  }}
-                />
-              </OrbitField>
-              <OrbitField label="Why — body">
-                <textarea
-                  className={orbitTextareaClass}
-                  value={item.body}
-                  onChange={(e) => {
-                    const whyItems = [...(pkg.whyItems || [])];
-                    whyItems[wi] = { ...item, body: e.target.value };
-                    patch({ whyItems });
-                  }}
-                />
-              </OrbitField>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="rounded-md border border-white/20 px-3 py-2 text-xs"
-            onClick={() => patch({ whyItems: [...(pkg.whyItems || []), { title: "New point", body: "" }] })}
-          >
-            Add why point
-          </button>
-          <OrbitField label="Is this trek for you?">
-            <textarea className={orbitTextareaClass} value={pkg.suitableBody || ""} onChange={(e) => patch({ suitableBody: e.target.value })} />
-          </OrbitField>
-          <OrbitField label="Trail / region notes">
-            <textarea className={orbitTextareaClass} value={pkg.khumbuBody || ""} onChange={(e) => patch({ khumbuBody: e.target.value })} />
-          </OrbitField>
-          <OrbitField label="Packing intro">
+          <OrbitField label="Packing list intro">
             <textarea className={orbitTextareaClass} value={pkg.packingIntro || ""} onChange={(e) => patch({ packingIntro: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Simple packing list (one per line, if no groups)">
+            <textarea
+              className={orbitTextareaClass}
+              value={(pkg.packingItems || []).join("\n")}
+              onChange={(e) =>
+                patch({ packingItems: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
+              }
+            />
           </OrbitField>
           {(pkg.packingGroups || []).map((group, gi) => (
             <div key={group.id} className="rounded-xl border border-white/10 p-4 space-y-2">
@@ -762,8 +1125,94 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
                   }}
                 />
               </OrbitField>
+              <button
+                type="button"
+                className="text-xs text-red-300"
+                onClick={() => patch({ packingGroups: (pkg.packingGroups || []).filter((_, i) => i !== gi) })}
+              >
+                Remove group
+              </button>
             </div>
           ))}
+          <button
+            type="button"
+            className="rounded-md border border-white/20 px-3 py-2 text-xs"
+            onClick={() =>
+              patch({
+                packingGroups: [
+                  ...(pkg.packingGroups || []),
+                  { id: `pg-${Date.now()}`, title: "New group", items: [] },
+                ],
+              })
+            }
+          >
+            Add packing group
+          </button>
+        </div>
+      ) : null}
+
+      {subTab === "travel" ? (
+        <div className="space-y-4">
+          <p className="text-sm text-white/55">&quot;Flights&quot; section — transfers, buffer days, helicopter (titles in Section titles tab).</p>
+          <OrbitField label="Flights / transfers body">
+            <textarea className={orbitTextareaClass} value={pkg.flightBody || ""} onChange={(e) => patch({ flightBody: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Buffer days body">
+            <textarea className={orbitTextareaClass} value={pkg.bufferBody || ""} onChange={(e) => patch({ bufferBody: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Helicopter upgrade body">
+            <textarea className={orbitTextareaClass} value={pkg.heliBody || ""} onChange={(e) => patch({ heliBody: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Read before you book (one per line)">
+            <textarea
+              className={orbitTextareaClass}
+              value={(pkg.beforeItems || []).join("\n")}
+              onChange={(e) =>
+                patch({ beforeItems: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
+              }
+            />
+          </OrbitField>
+        </div>
+      ) : null}
+
+      {subTab === "ratings" ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <p className="lg:col-span-2 text-sm text-white/55">
+            Scores under the package title on the live page. Guest review wall uses the shared Reviews tab in Orbit →
+            Traveler reviews.
+          </p>
+          <OrbitField label="Tripadvisor label">
+            <input className={orbitInputClass} value={pkg.tripadvisorLabel || ""} onChange={(e) => patch({ tripadvisorLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Tripadvisor score">
+            <input className={orbitInputClass} value={pkg.tripadvisorScore || ""} onChange={(e) => patch({ tripadvisorScore: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Tripadvisor review count">
+            <input className={orbitInputClass} value={pkg.tripadvisorCount || ""} onChange={(e) => patch({ tripadvisorCount: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Tripadvisor URL">
+            <input className={orbitInputClass} value={pkg.tripadvisorHref || ""} onChange={(e) => patch({ tripadvisorHref: e.target.value })} />
+          </OrbitField>
+          <div className="lg:col-span-2 space-y-2">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Tripadvisor logo</p>
+            {pkg.tripadvisorLogoSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={pkg.tripadvisorLogoSrc} alt="" className="h-12 object-contain" />
+            ) : null}
+            <OrbitMediaButtons onPicked={async (url) => patch({ tripadvisorLogoSrc: url })} />
+          </div>
+          <OrbitField label="Google label">
+            <input className={orbitInputClass} value={pkg.googleLabel || ""} onChange={(e) => patch({ googleLabel: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Google score">
+            <input className={orbitInputClass} value={pkg.googleScore || ""} onChange={(e) => patch({ googleScore: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Google review count">
+            <input className={orbitInputClass} value={pkg.googleCount || ""} onChange={(e) => patch({ googleCount: e.target.value })} />
+          </OrbitField>
+          <OrbitField label="Google URL">
+            <input className={orbitInputClass} value={pkg.googleHref || ""} onChange={(e) => patch({ googleHref: e.target.value })} />
+          </OrbitField>
         </div>
       ) : null}
     </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import {
   cleanSlugInput,
@@ -91,13 +91,18 @@ function SeoBadge({ pkg }: { pkg: TrekPackage }) {
 export default function AdminPackagesList() {
   const { content, loaded, busy, saveMerged } = useAdminContent();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [country, setCountry] = useState<string>("nepal");
   const [categoryId, setCategoryId] = useState("");
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(searchParams.get("q") || "");
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    setQ(searchParams.get("q") || "");
+  }, [searchParams]);
 
   const destKey: DestKey = country === "all" ? "nepal" : (country as DestKey);
   const categories = content[destKey].categories;

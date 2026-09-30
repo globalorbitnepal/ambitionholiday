@@ -4,16 +4,18 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
+import { EBC_PACKAGE_ID } from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
   try {
-    return new Date(iso).toLocaleString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+    return new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   } catch {
     return iso;
   }
+}
+
+function formatDate() {
+  return new Date().toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 }
 
 export default function AdminDashboardHome() {
@@ -34,155 +36,208 @@ export default function AdminDashboardHome() {
     })();
   }, []);
 
-  const nepalCount = useMemo(
-    () => (loaded ? content.nepal.categories.reduce((n, cat) => n + cat.packages.length, 0) : 0),
-    [content.nepal.categories, loaded],
-  );
-  const tripCount = loaded ? content.tripPackages.length : 0;
+  const tripPackages = loaded ? content.tripPackages : [];
+  const published = tripPackages.filter((p) => p.status === "published").length;
   const posts = loaded ? [...(content.blog.posts || []), ...content.blog.featured] : [];
   const departures = loaded ? content.availability?.cards ?? [] : [];
-  const payments = loaded ? content.footer?.payments ?? [] : [];
+
+  const nepalRegions = useMemo(() => {
+    if (!loaded) return [];
+    const cat = content.nepal.categories.find((c) => c.id === "trekking") ?? content.nepal.categories[0];
+    if (!cat) return [];
+    return cat.packages.slice(0, 6).map((card) => ({
+      id: card.id,
+      title: card.title.replace(/Luxury |Trek/gi, "").trim() || card.title,
+      image: card.imageSrc,
+      href: card.href,
+    }));
+  }, [content.nepal.categories, loaded]);
 
   const newInquiries = inquiries.filter((item) => {
     const t = Date.parse(item.createdAt);
     return Number.isFinite(t) && Date.now() - t < 7 * 86400000;
   }).length;
 
-  if (!loaded) return <p>Loading dashboard…</p>;
+  const ebc = tripPackages.find((p) => p.id === EBC_PACKAGE_ID);
+  const abc = tripPackages.find((p) => p.id === "abc-lux");
+
+  if (!loaded) return <p className="admin-muted">Loading dashboard…</p>;
 
   return (
-    <>
-      <h1>Dashboard</h1>
-      <p className="admin-lead">Treks, enquiries, departures and payments — everything in one desk.</p>
+    <div className="admin-dash">
+      <section className="admin-hero">
+        <img src="/images/atmosphere/himalaya-gold-dusk-v2.webp" alt="" className="admin-hero-bg" />
+        <div className="admin-hero-inner">
+          <div>
+            <h1>Welcome back, Admin</h1>
+            <p>Manage treks, prices, maps and every section of your live package pages.</p>
+          </div>
+          <div className="admin-hero-weather">
+            <strong>Kathmandu</strong>
+            <span>{formatDate()}</span>
+            <em>Nepal · HQ</em>
+          </div>
+        </div>
+      </section>
 
-      <div className="admin-stats admin-stats--dash">
-        <div className="admin-stat admin-stat--accent">
+      <div className="admin-stats admin-stats--premium">
+        <div className="admin-stat-card" data-tone="blue">
+          <span className="admin-stat-icon">✉</span>
           <b>{inquiries.length}</b>
           <span>Total enquiries</span>
-          <em>{newInquiries} this week</em>
+          <em>+{newInquiries} this week</em>
         </div>
-        <div className="admin-stat">
+        <div className="admin-stat-card" data-tone="green">
+          <span className="admin-stat-icon">◎</span>
+          <b>{published}</b>
+          <span>Live package pages</span>
+          <em>{tripPackages.length} total</em>
+        </div>
+        <div className="admin-stat-card" data-tone="gold">
+          <span className="admin-stat-icon">▣</span>
           <b>{departures.length}</b>
-          <span>Listed departures</span>
+          <span>Departures listed</span>
         </div>
-        <div className="admin-stat">
-          <b>{tripCount}</b>
-          <span>Full trek packages</span>
-        </div>
-        <div className="admin-stat">
-          <b>{nepalCount}</b>
-          <span>Catalog cards</span>
+        <div className="admin-stat-card" data-tone="purple">
+          <span className="admin-stat-icon">✎</span>
+          <b>{posts.length}</b>
+          <span>Journal posts</span>
         </div>
       </div>
 
-      <div className="admin-dash-stack">
-        <section className="admin-card admin-card--wide">
-          <div className="admin-card-head">
-            <h2>Recent enquiries</h2>
-            <Link className="admin-text-link" href="/admin/contact">Contact settings</Link>
-          </div>
-          {inqLoading ? (
-            <p className="admin-muted">Loading enquiries…</p>
-          ) : inquiries.length === 0 ? (
-            <p className="admin-muted">No enquiries yet. They appear here when guests submit the contact form.</p>
-          ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>When</th>
-                    <th>Guest</th>
-                    <th>Interest</th>
-                    <th>Travel</th>
-                    <th>Message</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inquiries.slice(0, 12).map((row) => (
-                    <tr key={row.id}>
-                      <td>{formatWhen(row.createdAt)}</td>
-                      <td>
-                        <strong>{row.name}</strong>
-                        <span className="admin-cell-sub">{row.email}</span>
-                        {row.phone ? <span className="admin-cell-sub">{row.phone}</span> : null}
-                      </td>
-                      <td>{row.interest || row.source || "—"}</td>
-                      <td>
-                        {row.dates || "—"}
-                        {row.travelers ? ` · ${row.travelers} pax` : ""}
-                        {row.country ? <span className="admin-cell-sub">{row.country}</span> : null}
-                      </td>
-                      <td className="admin-cell-msg">{row.message}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        <div className="admin-grid-2">
+      <div className="admin-dash-grid">
+        <div className="admin-dash-main">
           <section className="admin-card">
             <div className="admin-card-head">
-              <h2>Departures &amp; bookings</h2>
-              <Link className="admin-text-link" href="/admin/luxury">Luxury tours</Link>
+              <h2>Popular destinations</h2>
+              <Link className="admin-text-link" href="/admin/destinations">Manage</Link>
             </div>
-            <p className="admin-muted">Fixed-date groups shown on the homepage availability strip.</p>
+            <div className="admin-dest-row">
+              {nepalRegions.map((dest) => (
+                <a key={dest.id} className="admin-dest-card" href={dest.href || "/nepal"} target="_blank" rel="noreferrer">
+                  <img src={dest.image} alt="" loading="lazy" />
+                  <span>{dest.title}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          <section className="admin-card admin-card--wide">
+            <div className="admin-card-head">
+              <h2>Recent enquiries</h2>
+              <Link className="admin-text-link" href="/admin/contact">Contact settings</Link>
+            </div>
+            {inqLoading ? (
+              <p className="admin-muted">Loading…</p>
+            ) : inquiries.length === 0 ? (
+              <p className="admin-muted">No enquiries yet — they appear when guests use the contact form.</p>
+            ) : (
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Guest</th>
+                      <th>Interest</th>
+                      <th>Travel</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inquiries.slice(0, 8).map((row) => (
+                      <tr key={row.id}>
+                        <td>{formatWhen(row.createdAt)}</td>
+                        <td>
+                          <strong>{row.name}</strong>
+                          <span className="admin-cell-sub">{row.email}</span>
+                        </td>
+                        <td>{row.interest || row.source || "—"}</td>
+                        <td>
+                          {row.dates || "—"}
+                          {row.travelers ? ` · ${row.travelers} pax` : ""}
+                        </td>
+                        <td><span className="admin-badge admin-badge--ok">New</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
+          <section className="admin-card">
+            <div className="admin-card-head">
+              <h2>Full-edit package pages</h2>
+              <Link className="admin-text-link" href="/admin/packages">All packages</Link>
+            </div>
+            <p className="admin-muted">Same layout as Everest Base Camp — edit price, group discounts, itinerary, map, charts, gallery and SEO.</p>
+            <div className="admin-pkg-grid admin-pkg-grid--dash">
+              {[ebc, abc].filter(Boolean).map((pkg) => (
+                <article key={pkg!.id} className="admin-pkg admin-pkg--featured">
+                  <img src={pkg!.heroSrc} alt={pkg!.heroAlt} loading="lazy" />
+                  <div className="body">
+                    <h3>{pkg!.title}</h3>
+                    <p>{pkg!.duration} · /{pkg!.slug}</p>
+                    <div className="admin-row-actions">
+                      <Link className="admin-btn admin-btn-gold admin-btn-sm" href={`/admin/packages/${pkg!.id}`}>
+                        Full section edit
+                      </Link>
+                      <a className="admin-btn admin-btn-sm" href={`/${pkg!.slug}`} target="_blank" rel="noreferrer">
+                        Live page ↗
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="admin-dash-aside">
+          <section className="admin-card">
+            <h2>Quick actions</h2>
+            <div className="admin-quick-grid">
+              <Link className="admin-quick-btn" data-tone="blue" href="/admin/packages">Add / edit packages</Link>
+              <Link className="admin-quick-btn" data-tone="green" href="/admin/media">Upload media</Link>
+              <Link className="admin-quick-btn" data-tone="gold" href="/admin/journal">Write blog post</Link>
+              <Link className="admin-quick-btn" data-tone="purple" href="/admin/reviews">Reviews</Link>
+              <Link className="admin-quick-btn" data-tone="teal" href="/admin/header">Header & menus</Link>
+              <Link className="admin-quick-btn" data-tone="orange" href="/admin/contact">View enquiries</Link>
+            </div>
+          </section>
+
+          <section className="admin-card">
+            <div className="admin-card-head">
+              <h2>Upcoming departures</h2>
+              <Link className="admin-text-link" href="/admin/luxury">Edit</Link>
+            </div>
             <ul className="admin-booking-list">
-              {departures.slice(0, 6).map((card) => (
+              {departures.slice(0, 5).map((card) => (
                 <li key={card.id}>
                   <div>
                     <strong>{card.title}</strong>
                     <span>{card.monthFull || card.monthShort}</span>
                   </div>
-                  <em>{card.availableLabel || card.badge || "Open"}</em>
+                  <em>{card.availableLabel || "Open"}</em>
                 </li>
               ))}
             </ul>
-            {departures.length === 0 ? <p className="admin-muted">No departure cards listed yet.</p> : null}
+            {!departures.length ? <p className="admin-muted">No departures listed.</p> : null}
           </section>
 
           <section className="admin-card">
-            <div className="admin-card-head">
-              <h2>Payment methods</h2>
-              <Link className="admin-text-link" href="/admin/header">Header &amp; footer</Link>
-            </div>
-            <p className="admin-muted">{content.footer.paymentsTitle || "We accept"}</p>
-            <div className="admin-pay-chips">
-              {payments.map((p) => (
-                <span key={p.id} className="admin-pay-chip">
-                  {p.label || p.id}
-                </span>
+            <h2>All trek pages</h2>
+            <ul className="admin-mini-list">
+              {tripPackages.map((pkg) => (
+                <li key={pkg.id}>
+                  <Link href={`/admin/packages/${pkg.id}`}>{pkg.title}</Link>
+                  <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
+                </li>
               ))}
-            </div>
-            <p className="admin-muted admin-pay-note">
-              Bank transfer and invoice details are confirmed per booking. Card logos match the live footer.
-            </p>
+            </ul>
           </section>
-        </div>
-
-        <div className="admin-grid-2">
-          <section className="admin-card">
-            <h2>Quick actions</h2>
-            <div className="admin-chip-row">
-              <Link className="admin-chip on" href="/admin/packages">Manage packages</Link>
-              <Link className="admin-chip" href="/admin/packages/ebc-lux">Edit EBC Luxury Trek</Link>
-              <Link className="admin-chip" href="/admin/media">Media library</Link>
-              <Link className="admin-chip" href="/admin/journal">Journal ({posts.length})</Link>
-              <Link className="admin-chip" href="/admin/header">Header &amp; menus</Link>
-            </div>
-          </section>
-          <section className="admin-card">
-            <h2>Live site</h2>
-            <div className="admin-chip-row">
-              <a className="admin-chip" href="/nepal" target="_blank" rel="noreferrer">Nepal</a>
-              <a className="admin-chip" href="/everest-base-camp-trek" target="_blank" rel="noreferrer">EBC Trek</a>
-              <a className="admin-chip" href="/journal" target="_blank" rel="noreferrer">Journal</a>
-              <a className="admin-chip" href="/contact" target="_blank" rel="noreferrer">Contact</a>
-            </div>
-          </section>
-        </div>
+        </aside>
       </div>
-    </>
+    </div>
   );
 }

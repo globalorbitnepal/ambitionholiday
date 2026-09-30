@@ -2,25 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-
-const NAV = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/packages", label: "Packages" },
-  { href: "/admin/destinations", label: "Destinations" },
-  { href: "/admin/luxury", label: "Luxury Tour & Trek" },
-  { href: "/admin/guide", label: "Travel Guide" },
-  { href: "/admin/company", label: "Company" },
-  { href: "/admin/journal", label: "Journal" },
-  { href: "/admin/reviews", label: "Reviews" },
-  { href: "/admin/contact", label: "Contact" },
-  { href: "/admin/header", label: "Header" },
-  { href: "/admin/media", label: "Media" },
-];
+import { useState } from "react";
+import AdminSideNav from "@/components/admin/AdminSideNav";
 
 export default function AdminShell({ children, role = "admin" }: { children: React.ReactNode; role?: "admin" | "super" }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
+  const [search, setSearch] = useState("");
 
   async function logout() {
     if (role === "super") {
@@ -32,49 +20,70 @@ export default function AdminShell({ children, role = "admin" }: { children: Rea
     router.refresh();
   }
 
+  function onSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const q = search.trim();
+    if (!q) {
+      router.push("/admin/packages");
+      return;
+    }
+    router.push(`/admin/packages?q=${encodeURIComponent(q)}`);
+  }
+
+  const pageTitle =
+    pathname === "/admin"
+      ? "Dashboard"
+      : pathname.startsWith("/admin/packages/")
+        ? "Package editor"
+        : pathname.startsWith("/admin/packages")
+          ? "Tour packages"
+          : "Control centre";
+
   return (
     <div className="admin-shell">
       <aside className="admin-side">
-        <div className="admin-side-brand">
-          <strong>Ambition Holidays</strong>
-          <small>Control centre</small>
-          {role === "super" ? <span className="admin-role">Super admin</span> : null}
+        <div className="admin-side-top">
+          <p className="admin-side-kicker">Ambition Holidays</p>
+          <a className="admin-side-live" href="/" target="_blank" rel="noreferrer">
+            View live site ↗
+          </a>
+          {role === "super" ? <Link className="admin-side-live" href="/orbit">Orbit super-admin</Link> : null}
         </div>
-        <a href="/" target="_blank" rel="noreferrer">
-          View live site
-        </a>
-        {role === "super" ? <Link href="/orbit">Back to Orbit</Link> : null}
-        <div className="group-label">Workspace</div>
-        {NAV.map((item) => (
-          <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}>
-            {item.label}
-          </Link>
-        ))}
-        <div style={{ marginTop: "auto" }}>
-          <button type="button" className="nav" onClick={logout}>
+        <AdminSideNav />
+        <div className="admin-side-bottom">
+          <button type="button" className="admin-side-signout" onClick={logout}>
             {role === "super" ? "Exit to Orbit" : "Sign out"}
           </button>
         </div>
       </aside>
       <div className="admin-main">
         <nav className="admin-mobile-nav" aria-label="Admin sections">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}>
-              {item.label}
-            </Link>
-          ))}
-          <a href="/" target="_blank" rel="noreferrer">
-            Live site
-          </a>
-          <button type="button" onClick={logout}>
-            {role === "super" ? "Orbit" : "Sign out"}
-          </button>
+          <Link href="/admin" className={pathname === "/admin" ? "active" : ""}>Home</Link>
+          <Link href="/admin/packages" className={pathname.startsWith("/admin/packages") ? "active" : ""}>Packages</Link>
+          <Link href="/admin/media" className={pathname.startsWith("/admin/media") ? "active" : ""}>Media</Link>
+          <a href="/" target="_blank" rel="noreferrer">Live</a>
+          <button type="button" onClick={logout}>{role === "super" ? "Orbit" : "Out"}</button>
         </nav>
         <header className="admin-top">
-          <input type="search" placeholder="Search packages, bookings, customers…" readOnly />
-          <div className="admin-top-user">
-            <strong>{role === "super" ? "Super admin" : "Admin"}</strong>
-            <span style={{ color: "#667084" }}>{role === "super" ? "Full access" : "Staff"}</span>
+          <form className="admin-top-search" onSubmit={onSearchSubmit}>
+            <span className="admin-top-search-icon" aria-hidden>⌕</span>
+            <input
+              type="search"
+              placeholder="Search packages, slugs, destinations…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <kbd>Ctrl K</kbd>
+          </form>
+          <div className="admin-top-actions">
+            <Link className="admin-top-pill" href="/admin/contact">Enquiries</Link>
+            <div className="admin-top-user">
+              <span className="admin-top-avatar" aria-hidden>{role === "super" ? "S" : "A"}</span>
+              <div>
+                <strong>{role === "super" ? "Super admin" : "Admin"}</strong>
+                <span>{pageTitle}</span>
+              </div>
+            </div>
           </div>
         </header>
         <div className="admin-page">{children}</div>

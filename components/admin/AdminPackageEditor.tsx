@@ -20,20 +20,30 @@ import { CHART_FRAMES } from "@/lib/chart-frames";
 import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
 
 const TABS = [
-  ["basic", "Basic"],
-  ["itinerary", "Itinerary"],
-  ["media", "Photos"],
-  ["charts", "Map & charts"],
-  ["guide", "Guide"],
-  ["headings", "Headings"],
-  ["faq", "FAQ"],
-  ["info", "Trip info"],
-  ["video", "Video"],
-  ["ratings", "Ratings"],
-  ["reviews", "Reviews"],
-  ["seo", "SEO"],
+  ["basics", "1 · Title & URL"],
+  ["pricing", "2 · Price & groups"],
+  ["facts", "3 · Trip facts"],
+  ["headings", "4 · Section titles"],
+  ["overview", "5 · Overview"],
+  ["why", "6 · Why & fit"],
+  ["video", "7 · Videos"],
+  ["info", "8 · Trip info"],
+  ["itinerary", "9 · Itinerary"],
+  ["charts", "10 · Map & charts"],
+  ["includes", "11 · Includes"],
+  ["photos", "12 · Gallery"],
+  ["packing", "13 · Packing"],
+  ["travel", "14 · Travel notes"],
+  ["faq", "15 · FAQ"],
+  ["ratings", "16 · Ratings"],
+  ["reviews", "17 · Reviews"],
+  ["seo", "18 · SEO"],
 ] as const;
 type TabId = (typeof TABS)[number][0];
+
+function groupTiers(pkg: TrekPackage) {
+  return pkg.groupPrices?.length ? pkg.groupPrices : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
+}
 
 const HEADING_FIELDS: { key: keyof TrekPackage; label: string; head: keyof ReturnType<typeof packageHeadings>; multiline?: boolean }[] = [
   { key: "aboutTitle", label: "Overview heading", head: "about" },
@@ -66,7 +76,7 @@ export default function AdminPackageEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { content, loaded, saveMerged, busy, status } = useAdminContent();
-  const [tab, setTab] = useState<TabId>("basic");
+  const [tab, setTab] = useState<TabId>("basics");
   const [pkg, setPkg] = useState<TrekPackage | null>(null);
   const baselineRef = useRef<TrekPackage | null>(null);
 
@@ -104,12 +114,12 @@ export default function AdminPackageEditor() {
     const slug = pkg.slug.replace(/-+$/, "");
     const problem = packageSlugProblem(slug, content.tripPackages, pkg.id);
     if (problem) {
-      setTab("basic");
+      setTab("basics");
       window.alert(problem);
       return;
     }
     if (!pkg.title.trim()) {
-      setTab("basic");
+      setTab("basics");
       window.alert("Add a package title.");
       return;
     }
@@ -181,7 +191,7 @@ export default function AdminPackageEditor() {
           <span>Draft — visitors cannot see this page until you publish it.</span>
         )}
       </p>
-      <div className="admin-tabs">
+      <div className="admin-tabs admin-tabs--sections">
         {TABS.map(([id, label]) => (
           <button key={id} type="button" className={tab === id ? "on" : ""} onClick={() => setTab(id)}>
             {label}
@@ -189,7 +199,7 @@ export default function AdminPackageEditor() {
         ))}
       </div>
 
-      {tab === "basic" ? (
+      {tab === "basics" ? (
         <div className="admin-card">
           <label className="admin-field">
             <span>Package title</span>
@@ -234,78 +244,104 @@ export default function AdminPackageEditor() {
           </label>
           <div className="admin-grid-3">
             <label className="admin-field">
-              <span>Destination</span>
+              <span>Destination line (under title)</span>
               <input value={pkg.destination} onChange={(e) => patch({ destination: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Duration</span>
+              <span>Duration label</span>
               <input value={pkg.duration} onChange={(e) => patch({ duration: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Days</span>
-              <input
-                type="number"
-                value={pkg.days}
-                onChange={(e) => patch({ days: Number(e.target.value) || 0 })}
-              />
+              <span>Days (number)</span>
+              <input type="number" value={pkg.days} onChange={(e) => patch({ days: Number(e.target.value) || 0 })} />
             </label>
             <label className="admin-field">
               <span>Difficulty</span>
               <input value={pkg.difficulty} onChange={(e) => patch({ difficulty: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Max altitude</span>
-              <input value={pkg.maxAltitude} onChange={(e) => patch({ maxAltitude: e.target.value })} />
-            </label>
-            <label className="admin-field">
               <span>Badge</span>
               <input value={pkg.badge} onChange={(e) => patch({ badge: e.target.value })} />
             </label>
-            <label className="admin-field">
-              <span>Price (USD per person, 0 = on request)</span>
+          </div>
+        </div>
+      ) : null}
+
+      {tab === "pricing" ? (
+        <div className="admin-card">
+          <p className="admin-muted">Book-now sidebar — main price and group discount table (0 = on request).</p>
+          <label className="admin-field">
+            <span>Main price USD per person</span>
+            <input
+              type="number"
+              min={0}
+              value={pkg.priceUsd}
+              onChange={(e) => patch({ priceUsd: Math.max(0, Number(e.target.value) || 0) })}
+            />
+          </label>
+          <p className="admin-side-group-label" style={{ margin: "12px 0 8px", color: "#5b6573" }}>Group booking discounts</p>
+          {groupTiers(pkg).map((row, index) => (
+            <div key={row.id} className="admin-pricing-row">
+              <input
+                placeholder="e.g. 2–3 Pax"
+                value={row.label}
+                onChange={(e) => {
+                  const groupPrices = groupTiers(pkg).map((item, i) =>
+                    i === index ? { ...item, label: e.target.value } : item,
+                  );
+                  patch({ groupPrices });
+                }}
+              />
               <input
                 type="number"
                 min={0}
-                value={pkg.priceUsd}
-                onChange={(e) => patch({ priceUsd: Math.max(0, Number(e.target.value) || 0) })}
+                placeholder="USD"
+                value={row.priceUsd}
+                onChange={(e) => {
+                  const groupPrices = groupTiers(pkg).map((item, i) =>
+                    i === index ? { ...item, priceUsd: Math.max(0, Number(e.target.value) || 0) } : item,
+                  );
+                  patch({ groupPrices });
+                }}
               />
-            </label>
-            {(pkg.groupPrices || []).map((row, index) => (
-              <div key={row.id} className="admin-field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, alignSelf: "end" }}>
-                <input
-                  value={row.label}
-                  onChange={(e) =>
-                    patch({
-                      groupPrices: pkg.groupPrices.map((item, i) =>
-                        i === index ? { ...item, label: e.target.value } : item,
-                      ),
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  value={row.priceUsd}
-                  onChange={(e) =>
-                    patch({
-                      groupPrices: pkg.groupPrices.map((item, i) =>
-                        i === index ? { ...item, priceUsd: Number(e.target.value) || 0 } : item,
-                      ),
-                    })
-                  }
-                />
-              </div>
-            ))}
+              <button
+                type="button"
+                className="admin-btn admin-btn-sm admin-btn-danger"
+                onClick={() => patch({ groupPrices: groupTiers(pkg).filter((_, i) => i !== index) })}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="admin-btn admin-btn-ghost admin-btn-sm"
+            onClick={() =>
+              patch({
+                groupPrices: [...groupTiers(pkg), { id: `p-${Date.now()}`, label: "4–6 Pax", priceUsd: pkg.priceUsd }],
+              })
+            }
+          >
+            Add group tier
+          </button>
+        </div>
+      ) : null}
+
+      {tab === "facts" ? (
+        <div className="admin-card">
+          <p className="admin-muted">Gold info bar and trip facts grid on the live page.</p>
+          <div className="admin-grid-3">
             <label className="admin-field">
-              <span>Best season</span>
-              <input value={pkg.bestSeason} onChange={(e) => patch({ bestSeason: e.target.value })} />
-            </label>
-            <label className="admin-field">
-              <span>Country</span>
+              <span>Country (facts grid)</span>
               <input value={pkg.countryLabel || ""} onChange={(e) => patch({ countryLabel: e.target.value })} />
             </label>
             <label className="admin-field">
               <span>Activity</span>
               <input value={pkg.activityLabel || ""} onChange={(e) => patch({ activityLabel: e.target.value })} />
+            </label>
+            <label className="admin-field">
+              <span>Best season</span>
+              <input value={pkg.bestSeason} onChange={(e) => patch({ bestSeason: e.target.value })} />
             </label>
             <label className="admin-field">
               <span>Accommodation</span>
@@ -316,16 +352,25 @@ export default function AdminPackageEditor() {
               <input value={pkg.mealsLabel || ""} onChange={(e) => patch({ mealsLabel: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Start / End</span>
+              <span>Start / end</span>
               <input value={pkg.startEndLabel || ""} onChange={(e) => patch({ startEndLabel: e.target.value })} />
+            </label>
+            <label className="admin-field">
+              <span>Max altitude (metres label)</span>
+              <input value={pkg.maxAltitude} onChange={(e) => patch({ maxAltitude: e.target.value })} />
             </label>
             <label className="admin-field">
               <span>Max altitude (feet label)</span>
               <input value={pkg.maxAltitudeFt || ""} onChange={(e) => patch({ maxAltitudeFt: e.target.value })} />
             </label>
           </div>
+        </div>
+      ) : null}
+
+      {tab === "overview" ? (
+        <div className="admin-card">
           <label className="admin-field">
-            <span>Overview</span>
+            <span>Overview (main story)</span>
             <textarea style={{ minHeight: 160 }} value={pkg.overview} onChange={(e) => patch({ overview: e.target.value })} />
           </label>
           <label className="admin-field">
@@ -335,20 +380,29 @@ export default function AdminPackageEditor() {
               onChange={(e) => patch({ highlights: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
             />
           </label>
-          <label className="admin-field">
-            <span>Inclusions (one per line)</span>
-            <textarea
-              value={pkg.inclusions.join("\n")}
-              onChange={(e) => patch({ inclusions: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
-            />
-          </label>
-          <label className="admin-field">
-            <span>Exclusions (one per line)</span>
-            <textarea
-              value={pkg.exclusions.join("\n")}
-              onChange={(e) => patch({ exclusions: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
-            />
-          </label>
+        </div>
+      ) : null}
+
+      {tab === "includes" ? (
+        <div className="admin-card">
+          <div className="admin-grid-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            <label className="admin-field">
+              <span>Inclusions (one per line)</span>
+              <textarea
+                style={{ minHeight: 200 }}
+                value={pkg.inclusions.join("\n")}
+                onChange={(e) => patch({ inclusions: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
+              />
+            </label>
+            <label className="admin-field">
+              <span>Exclusions (one per line)</span>
+              <textarea
+                style={{ minHeight: 200 }}
+                value={pkg.exclusions.join("\n")}
+                onChange={(e) => patch({ exclusions: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })}
+              />
+            </label>
+          </div>
           <label className="admin-field">
             <span>Optional add-ons (one per line)</span>
             <textarea
@@ -361,7 +415,7 @@ export default function AdminPackageEditor() {
             <textarea value={pkg.includeNote || ""} onChange={(e) => patch({ includeNote: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>Special flight / travel note</span>
+            <span>Special flight / travel note (full paragraph)</span>
             <textarea value={pkg.luklaNote || ""} onChange={(e) => patch({ luklaNote: e.target.value })} />
           </label>
         </div>
@@ -500,7 +554,7 @@ export default function AdminPackageEditor() {
         </div>
       ) : null}
 
-      {tab === "media" ? (
+      {tab === "photos" ? (
         <div className="admin-card">
           <AdminMediaField label="Cover / hero image" value={pkg.heroSrc} onChange={(heroSrc) => patch({ heroSrc, heroAlt: pkg.heroAlt || pkg.title })} />
           <label className="admin-field">
@@ -602,6 +656,14 @@ export default function AdminPackageEditor() {
             value={pkg.weatherMonthlySrc || ""}
             onChange={(weatherMonthlySrc) => patch({ weatherMonthlySrc })}
           />
+          <AdminMediaField
+            label="Daily weather (optional)"
+            hint="Optional second weather graphic."
+            accept={CHART_FRAMES.weather.accept}
+            fit="contain"
+            value={pkg.weatherDailySrc || ""}
+            onChange={(weatherDailySrc) => patch({ weatherDailySrc })}
+          />
           <label className="admin-field">
             <span>Altitude section note</span>
             <textarea value={pkg.altitudeBody || ""} onChange={(e) => patch({ altitudeBody: e.target.value })} />
@@ -613,15 +675,73 @@ export default function AdminPackageEditor() {
         </div>
       ) : null}
 
-      {tab === "guide" ? (
+      {tab === "why" ? (
         <div className="admin-card">
-          <p className="admin-lead">Why us, suitability, Khumbu notes and grouped packing list shown on the public trek page.</p>
+          <p className="admin-muted">Why Ambition, suitability and trail notes — matches the live page menu.</p>
+          {(pkg.whyItems || []).map((item, wi) => (
+            <div key={`${item.title}-${wi}`} className="admin-day">
+              <label className="admin-field">
+                <span>Why — title</span>
+                <input
+                  value={item.title}
+                  onChange={(e) => {
+                    const whyItems = [...(pkg.whyItems || [])];
+                    whyItems[wi] = { ...item, title: e.target.value };
+                    patch({ whyItems });
+                  }}
+                />
+              </label>
+              <label className="admin-field">
+                <span>Why — body</span>
+                <textarea
+                  value={item.body}
+                  onChange={(e) => {
+                    const whyItems = [...(pkg.whyItems || [])];
+                    whyItems[wi] = { ...item, body: e.target.value };
+                    patch({ whyItems });
+                  }}
+                />
+              </label>
+              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => patch({ whyItems: (pkg.whyItems || []).filter((_, i) => i !== wi) })}>
+                Remove
+              </button>
+            </div>
+          ))}
+          <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => patch({ whyItems: [...(pkg.whyItems || []), { title: "New reason", body: "" }] })}>
+            Add why point
+          </button>
+          <label className="admin-field">
+            <span>Is this trek for you</span>
+            <textarea value={pkg.suitableBody || ""} onChange={(e) => patch({ suitableBody: e.target.value })} />
+          </label>
+          <label className="admin-field">
+            <span>How to train / prepare</span>
+            <textarea value={pkg.trainingBody || ""} onChange={(e) => patch({ trainingBody: e.target.value })} />
+          </label>
+          <label className="admin-field">
+            <span>Trail / region notes</span>
+            <textarea value={pkg.khumbuBody || ""} onChange={(e) => patch({ khumbuBody: e.target.value })} />
+          </label>
+        </div>
+      ) : null}
+
+      {tab === "packing" ? (
+        <div className="admin-card">
           <label className="admin-field">
             <span>Packing intro</span>
             <textarea value={pkg.packingIntro || ""} onChange={(e) => patch({ packingIntro: e.target.value })} />
           </label>
+          <label className="admin-field">
+            <span>Simple packing list (one per line, if no groups)</span>
+            <textarea
+              value={(pkg.packingItems || []).join("\n")}
+              onChange={(e) =>
+                patch({ packingItems: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
+              }
+            />
+          </label>
           {(pkg.packingGroups || []).map((group, gi) => (
-            <div key={group.id} className="admin-card" style={{ margin: "12px 0", padding: 12 }}>
+            <div key={group.id} className="admin-day">
               <label className="admin-field">
                 <span>Packing group title</span>
                 <input
@@ -647,79 +767,48 @@ export default function AdminPackageEditor() {
                   }}
                 />
               </label>
-              <button
-                type="button"
-                className="admin-btn"
-                onClick={() => patch({ packingGroups: (pkg.packingGroups || []).filter((_, i) => i !== gi) })}
-              >
+              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => patch({ packingGroups: (pkg.packingGroups || []).filter((_, i) => i !== gi) })}>
                 Remove group
               </button>
             </div>
           ))}
           <button
             type="button"
-            className="admin-btn"
+            className="admin-btn admin-btn-ghost admin-btn-sm"
             onClick={() =>
               patch({
-                packingGroups: [
-                  ...(pkg.packingGroups || []),
-                  { id: `pg-${Date.now()}`, title: "New group", items: [] },
-                ],
+                packingGroups: [...(pkg.packingGroups || []), { id: `pg-${Date.now()}`, title: "New group", items: [] }],
               })
             }
           >
             Add packing group
           </button>
+        </div>
+      ) : null}
 
-          <h2 style={{ marginTop: 24 }}>Why this trek</h2>
-          {(pkg.whyItems || []).map((item, wi) => (
-            <div key={`${item.title}-${wi}`} className="admin-card" style={{ margin: "12px 0", padding: 12 }}>
-              <label className="admin-field">
-                <span>Title</span>
-                <input
-                  value={item.title}
-                  onChange={(e) => {
-                    const whyItems = [...(pkg.whyItems || [])];
-                    whyItems[wi] = { ...item, title: e.target.value };
-                    patch({ whyItems });
-                  }}
-                />
-              </label>
-              <label className="admin-field">
-                <span>Body</span>
-                <textarea
-                  value={item.body}
-                  onChange={(e) => {
-                    const whyItems = [...(pkg.whyItems || [])];
-                    whyItems[wi] = { ...item, body: e.target.value };
-                    patch({ whyItems });
-                  }}
-                />
-              </label>
-              <button type="button" className="admin-btn" onClick={() => patch({ whyItems: (pkg.whyItems || []).filter((_, i) => i !== wi) })}>
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="admin-btn"
-            onClick={() => patch({ whyItems: [...(pkg.whyItems || []), { title: "New reason", body: "" }] })}
-          >
-            Add why point
-          </button>
-
-          <label className="admin-field" style={{ marginTop: 20 }}>
-            <span>Is this trek for you</span>
-            <textarea value={pkg.suitableBody || ""} onChange={(e) => patch({ suitableBody: e.target.value })} />
+      {tab === "travel" ? (
+        <div className="admin-card">
+          <p className="admin-muted">Flights &amp; travel notes section — sub-headings are in section titles tab.</p>
+          <label className="admin-field">
+            <span>Flights / transfers body</span>
+            <textarea value={pkg.flightBody || ""} onChange={(e) => patch({ flightBody: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>How to train</span>
-            <textarea value={pkg.trainingBody || ""} onChange={(e) => patch({ trainingBody: e.target.value })} />
+            <span>Buffer days body</span>
+            <textarea value={pkg.bufferBody || ""} onChange={(e) => patch({ bufferBody: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>Trail notes</span>
-            <textarea value={pkg.khumbuBody || ""} onChange={(e) => patch({ khumbuBody: e.target.value })} />
+            <span>Helicopter upgrade body</span>
+            <textarea value={pkg.heliBody || ""} onChange={(e) => patch({ heliBody: e.target.value })} />
+          </label>
+          <label className="admin-field">
+            <span>Read before you book (one per line)</span>
+            <textarea
+              value={(pkg.beforeItems || []).join("\n")}
+              onChange={(e) =>
+                patch({ beforeItems: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })
+              }
+            />
           </label>
         </div>
       ) : null}
