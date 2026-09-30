@@ -3,6 +3,33 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
+const STALE_RELOAD_KEY = "ah-stale-reload-at";
+
+export function isStaleBuildError(reason: unknown) {
+  const text =
+    reason instanceof Error
+      ? `${reason.name} ${reason.message}`
+      : typeof reason === "string"
+        ? reason
+        : "";
+  return /ChunkLoadError|Loading (CSS )?chunk [\w-]+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(
+    text,
+  );
+}
+
+/** Reload once per minute at most, so a missing chunk after deploy never loops. */
+export function reloadForFreshBuild() {
+  try {
+    const last = Number(sessionStorage.getItem(STALE_RELOAD_KEY) || 0);
+    if (Date.now() - last < 60_000) return false;
+    sessionStorage.setItem(STALE_RELOAD_KEY, String(Date.now()));
+  } catch {
+    // private mode: still reload once
+  }
+  window.location.reload();
+  return true;
+}
+
 /**
  * Top progress bar + subtle navigating state while App Router loads the next page.
  */
@@ -16,6 +43,21 @@ export default function NavigationUX() {
     setActive(false);
     if (hideTimer.current) clearTimeout(hideTimer.current);
   }, [pathname]);
+
+  useEffect(() => {
+    const onError = (event: ErrorEvent) => {
+      if (isStaleBuildError(event.error ?? event.message)) reloadForFreshBuild();
+    };
+    const onRejection = (event: PromiseRejectionEvent) => {
+      if (isStaleBuildError(event.reason)) reloadForFreshBuild();
+    };
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onRejection);
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onRejection);
+    };
+  }, []);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {

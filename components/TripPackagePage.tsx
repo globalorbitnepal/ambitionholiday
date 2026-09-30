@@ -10,7 +10,7 @@ import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
-import { TREK_DAY_DISTANCE } from "@/lib/trip-packages";
+import { isEbcPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
@@ -80,6 +80,35 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const groups = pkg.groupPrices?.length
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
+  const heads = packageHeadings(pkg);
+  const builtInCharts = isEbcPackage(pkg);
+  const packingGroups = pkg.packingGroups?.length
+    ? pkg.packingGroups
+    : pkg.packingItems?.length
+      ? [{ id: "all", title: "Kit", items: pkg.packingItems }]
+      : [];
+  const show: Record<string, boolean> = {
+    overview: true,
+    book: true,
+    highlights: Boolean(pkg.highlights?.length),
+    why: Boolean(pkg.whyItems?.length),
+    video: Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
+    vreviews: Boolean(pkg.videoReviews?.length),
+    info: Boolean(pkg.tripInfo?.length),
+    itinerary: Boolean(pkg.itinerary?.length),
+    map: Boolean(pkg.routeMapSrc || builtInCharts),
+    altitude: Boolean(pkg.altitudeChartM || pkg.altitudeChartFt || pkg.altitudeBody || builtInCharts),
+    weather: Boolean(pkg.weatherMonthlySrc || pkg.weatherBody || builtInCharts),
+    includes: Boolean(pkg.inclusions?.length || pkg.exclusions?.length),
+    "trip-gallery": gallery.length > 0,
+    packing: packingGroups.some((group) => group.items.length),
+    notes: Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
+    reviews: true,
+    faq: Boolean(pkg.faqs?.length),
+  };
+  const toc = TOC.filter((item) => show[item.id]);
+  const tocKey = toc.map((item) => item.id).join("|");
+  const hasPrice = pkg.priceUsd > 0;
 
   const facts = [
     { icon: "globe", label: "Country", value: pkg.countryLabel || "Nepal" },
@@ -94,7 +123,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   ];
 
   useEffect(() => {
-    const ids = TOC.map((item) => item.id);
+    const ids = tocKey.split("|");
     const nodes = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (!nodes.length) return;
     const obs = new IntersectionObserver(
@@ -106,7 +135,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     );
     nodes.forEach((n) => obs.observe(n));
     return () => obs.disconnect();
-  }, []);
+  }, [tocKey]);
 
   useEffect(() => {
     const onScroll = () => setTocFloating(window.scrollY > 320);
@@ -187,7 +216,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         </section>
 
         <nav className={`lux-toc${tocFloating ? " is-floating" : ""}`} aria-label="On this page">
-          {TOC.map((item) => (
+          {toc.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
@@ -242,31 +271,33 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             <article className="lux-card">
               <p className="lux-kicker">The journey</p>
-              <h2>About this luxury trek</h2>
+              <h2>{heads.about}</h2>
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
             </article>
 
-            <article id="highlights" className="lux-card">
-              <h2>
-                Highlights of {pkg.title} – {pkg.days} Days
-              </h2>
-              <span className="lux-hi-rule" aria-hidden="true" />
-              <ul className="lux-checks">
-                {pkg.highlights.map((item) => (
-                  <li key={item}>
-                    <CheckMark />
-                    <span>{preserveListPhrasing(item)}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
+            {show.highlights ? (
+              <article id="highlights" className="lux-card">
+                <h2>
+                  Highlights of {pkg.title} – {pkg.days} Days
+                </h2>
+                <span className="lux-hi-rule" aria-hidden="true" />
+                <ul className="lux-checks">
+                  {pkg.highlights.map((item) => (
+                    <li key={item}>
+                      <CheckMark />
+                      <span>{preserveListPhrasing(item)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ) : null}
 
             {pkg.whyItems?.length ? (
               <article id="why" className="lux-card">
                 <p className="lux-kicker">Why walk with us</p>
-                <h2>Why this luxury Everest Base Camp trek</h2>
+                <h2>{heads.why}</h2>
                 <div className="lux-why">
                   {pkg.whyItems.map((item) => (
                     <div key={item.title}>
@@ -281,7 +312,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             {!pkg.tripInfo?.length && (pkg.suitableBody || pkg.trainingBody || pkg.khumbuBody) ? (
               <article id="fit" className="lux-card">
                 <p className="lux-kicker">Before you commit</p>
-                <h2>Is this trek for you?</h2>
+                <h2>{heads.fit}</h2>
                 {pkg.suitableBody ? <p>{pkg.suitableBody}</p> : null}
                 {pkg.trainingBody ? (
                   <>
@@ -291,7 +322,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 ) : null}
                 {pkg.khumbuBody ? (
                   <>
-                    <h3>The Khumbu you actually walk</h3>
+                    <h3>{heads.khumbu}</h3>
                     <p>{pkg.khumbuBody}</p>
                   </>
                 ) : null}
@@ -367,14 +398,15 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               </article>
             ) : null}
 
+            {show.itinerary ? (
             <article id="itinerary" className="lux-card">
               <p className="lux-kicker">{pkg.days}-day plan</p>
               <h2>{pkg.title} itinerary</h2>
-              <p>{pkg.itineraryIntro}</p>
+              {pkg.itineraryIntro ? <p>{pkg.itineraryIntro}</p> : null}
               <div className="lux-days">
                 {pkg.itinerary.map((day) => {
                   const open = openDay === day.day;
-                  const distance = day.distance || TREK_DAY_DISTANCE[day.day] || "—";
+                  const distance = day.distance || (builtInCharts ? TREK_DAY_DISTANCE[day.day] : "") || "—";
                   return (
                     <div key={day.id} className={`lux-day${open ? " is-open" : ""}`}>
                       <div className="lux-day-line">
@@ -404,11 +436,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 })}
               </div>
             </article>
+            ) : null}
 
+            {show.map ? (
             <article id="map" className="lux-card">
               <p className="lux-kicker">The line on the map</p>
               <h2>Trip map</h2>
-              <p>The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.</p>
+              {heads.mapBody ? <p>{heads.mapBody}</p> : null}
               {pkg.routeMapSrc ? (
                 <UploadedChart
                   variant="map"
@@ -420,11 +454,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <TrekRouteMap title={`${pkg.title} map`} />
               )}
             </article>
+            ) : null}
 
+            {show.altitude ? (
             <article id="altitude" className="lux-card">
               <p className="lux-kicker">Thin air</p>
               <h2>Altitude profile of {pkg.title}</h2>
-              <p>{pkg.altitudeBody}</p>
+              {pkg.altitudeBody ? <p>{pkg.altitudeBody}</p> : null}
               {pkg.altitudeChartM || pkg.altitudeChartFt ? (
                 <>
                   <div className="lux-unit">
@@ -446,23 +482,27 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     file={`${pkg.slug}-altitude-${altUnit}`}
                   />
                 </>
-              ) : (
+              ) : builtInCharts ? (
                 <AltitudeProfileChart title={`Altitude profile of ${pkg.title}`} />
-              )}
+              ) : null}
             </article>
+            ) : null}
 
+            {show.weather ? (
             <article id="weather" className="lux-card">
               <p className="lux-kicker">Seasons</p>
               <h2>Weather on {pkg.title}</h2>
-              <p>{pkg.weatherBody}</p>
-              <p className="lux-note">Month-by-month Khumbu reference only. The day you walk can be colder, windier or clearer than the chart.</p>
+              {pkg.weatherBody ? <p>{pkg.weatherBody}</p> : null}
+              {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : (
+              ) : builtInCharts ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />
-              )}
+              ) : null}
             </article>
+            ) : null}
 
+            {show.includes ? (
             <article id="includes" className="lux-card">
               <p className="lux-kicker">Practicalities</p>
               <h2>What’s included</h2>
@@ -503,11 +543,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               ) : null}
               {pkg.luklaNote ? (
                 <>
-                  <h3>Special information for Lukla flights</h3>
+                  <h3>{heads.luklaNote}</h3>
                   <p>{pkg.luklaNote}</p>
                 </>
               ) : null}
             </article>
+            ) : null}
 
             {gallery.length ? (
               <section id="trip-gallery" className="lux-trip-gallery" aria-labelledby="trip-gallery-heading">
@@ -555,15 +596,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               </section>
             ) : null}
 
+            {show.packing ? (
             <article id="packing" className="lux-card">
               <p className="lux-kicker">Gear</p>
               <h2>Packing list for the {pkg.title}</h2>
-              <p>{pkg.packingIntro || "Layers matter more than logos. We issue a porter duffel at the Thamel briefing."}</p>
+              {pkg.packingIntro ? <p>{pkg.packingIntro}</p> : null}
               <div className="lux-pack-grid">
-                {(pkg.packingGroups?.length
-                  ? pkg.packingGroups
-                  : [{ id: "all", title: "Kit", items: pkg.packingItems || [] }]
-                ).map((group) => (
+                {packingGroups.map((group) => (
                   <div key={group.id} className="lux-pack-col">
                     <h3>{group.title}</h3>
                     <ul>
@@ -575,23 +614,42 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 ))}
               </div>
             </article>
+            ) : null}
 
+            {show.notes ? (
             <article id="notes" className="lux-card">
               <p className="lux-kicker">Flights</p>
-              <h2>Lukla, buffer days and helicopter</h2>
-              <h3>Kathmandu to Lukla</h3>
-              <p>{pkg.flightBody}</p>
-              <h3>Buffer days</h3>
-              <p>{pkg.bufferBody}</p>
-              <h3>Helicopter upgrade</h3>
-              <p>{pkg.heliBody}</p>
-              <h3>Read before you book</h3>
-              <ul>
-                {(pkg.beforeItems || []).map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <h2>{heads.notes}</h2>
+              {pkg.flightBody ? (
+                <>
+                  <h3>{heads.flight}</h3>
+                  <p>{pkg.flightBody}</p>
+                </>
+              ) : null}
+              {pkg.bufferBody ? (
+                <>
+                  <h3>{heads.buffer}</h3>
+                  <p>{pkg.bufferBody}</p>
+                </>
+              ) : null}
+              {pkg.heliBody ? (
+                <>
+                  <h3>{heads.heli}</h3>
+                  <p>{pkg.heliBody}</p>
+                </>
+              ) : null}
+              {pkg.beforeItems?.length ? (
+                <>
+                  <h3>Read before you book</h3>
+                  <ul>
+                    {pkg.beforeItems.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </article>
+            ) : null}
 
             {pkg.faqs.length ? (
               <article id="faq" className="lux-card">
@@ -619,12 +677,20 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             <div className="lux-price">
               <PackageActions pkg={pkg} />
               <p className="lux-price-main">
-                USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
+                {hasPrice ? (
+                  <>
+                    USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
+                  </>
+                ) : (
+                  "Price on request"
+                )}
               </p>
-              <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
-                See group booking discount {showGroups ? "▴" : "▾"}
-              </button>
-              {showGroups ? (
+              {groups.some((row) => row.priceUsd > 0) ? (
+                <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
+                  See group booking discount {showGroups ? "▴" : "▾"}
+                </button>
+              ) : null}
+              {showGroups && groups.some((row) => row.priceUsd > 0) ? (
                 <table className="lux-price-table">
                   <thead>
                     <tr>
@@ -636,7 +702,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     {groups.map((row) => (
                       <tr key={row.id}>
                         <td>{row.label}</td>
-                        <td>USD {row.priceUsd.toLocaleString()}</td>
+                        <td>{row.priceUsd > 0 ? `USD ${row.priceUsd.toLocaleString()}` : "On request"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -664,8 +730,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
       <div className="lux-mobile-bar">
         <div>
-          <strong>USD {pkg.priceUsd.toLocaleString()}</strong>
-          <span>/ person</span>
+          <strong>{hasPrice ? `USD ${pkg.priceUsd.toLocaleString()}` : "Price on request"}</strong>
+          {hasPrice ? <span>/ person</span> : null}
         </div>
         <Link href={enquire}>Inquire</Link>
       </div>

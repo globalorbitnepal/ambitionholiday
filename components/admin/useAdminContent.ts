@@ -44,5 +44,20 @@ export function useAdminContent() {
     }
   }, []);
 
-  return { content: content ?? DEFAULT_CONTENT, loaded: Boolean(content), status, busy, setContent, save };
+  /** Re-reads the server copy and applies only this editor's change, so parallel edits elsewhere survive. */
+  const saveMerged = useCallback(
+    async (apply: (latest: SiteContent) => SiteContent) => {
+      let latest: SiteContent | null = null;
+      try {
+        const res = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store", credentials: "include" });
+        if (res.ok) latest = (await res.json()) as SiteContent;
+      } catch {
+        latest = null;
+      }
+      return save(apply(latest ?? content ?? DEFAULT_CONTENT));
+    },
+    [content, save],
+  );
+
+  return { content: content ?? DEFAULT_CONTENT, loaded: Boolean(content), status, busy, setContent, save, saveMerged };
 }

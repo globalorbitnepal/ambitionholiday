@@ -7,7 +7,7 @@ import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import type { BlogPost } from "@/lib/content-types";
-import { sectionAnchor } from "@/lib/blog";
+import { categorySlug, sectionAnchor } from "@/lib/blog";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 
 const WALLPAPER = SECTION_WALLPAPER;
@@ -59,7 +59,13 @@ export default function JournalArticleView({ post }: { post: BlogPost }) {
         <div className="explore-hub-shell contact-shell relative">
           <article className="journal-article">
             <div className="explore-hub-glass contact-glass journal-article-main">
-              <p className="explore-hub-eyebrow">{post.category || "Journal"}</p>
+              <p className="explore-hub-eyebrow">
+                {post.category ? (
+                  <Link href={`/journal?category=${categorySlug(post.category)}`}>{post.category}</Link>
+                ) : (
+                  "Journal"
+                )}
+              </p>
               <h1 className="journal-article-title font-[family-name:var(--font-cormorant)]">{post.title}</h1>
               <p className="journal-article-byline">
                 {post.authorName ? `${post.authorName} · ` : ""}
@@ -82,6 +88,14 @@ export default function JournalArticleView({ post }: { post: BlogPost }) {
                   </section>
                 );
               })}
+
+              {post.tags?.length ? (
+                <ul className="journal-tags" aria-label="Tags">
+                  {post.tags.map((tag) => (
+                    <li key={tag}>#{tag}</li>
+                  ))}
+                </ul>
+              ) : null}
 
               <div className="journal-article-foot">
                 <Link href="/journal" className="contact-map-link">

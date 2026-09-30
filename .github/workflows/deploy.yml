@@ -214,51 +214,57 @@ jobs:
             export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
             export NEXT_TELEMETRY_DISABLED=1
 
-            echo "Backing up current .next (restore if build fails)..."
-            if [ -d .next ]; then
-              rm -rf .next.deploy-backup
-              cp -a .next .next.deploy-backup
+            # The live server keeps serving the current .next for the whole build.
+            # The new build lands in .next-build and is swapped in only once verified.
+            BUILD_DIR=".next-build"
+            rm -rf "${BUILD_DIR}" .next.deploy-backup
+            if [ -d .next/cache ]; then
+              mkdir -p "${BUILD_DIR}"
+              cp -a .next/cache "${BUILD_DIR}/cache" 2>/dev/null || true
             fi
 
-            echo "Clean production build (wipe .next — prevents missing CSS after cancelled deploys)..."
-            rm -rf .next
-
-            echo "Building production app..."
-            if ! npm run build; then
-              echo "ERROR: npm run build failed - restoring previous .next"
-              rm -rf .next
-              if [ -d .next.deploy-backup ]; then
-                mv .next.deploy-backup .next
-                echo "Restored .next from deploy backup"
-              fi
+            echo "Building production app into ${BUILD_DIR} (live site untouched)..."
+            if ! NEXT_DIST_DIR="${BUILD_DIR}" npm run build; then
+              echo "ERROR: npm run build failed - live site keeps the previous build"
+              rm -rf "${BUILD_DIR}"
+              git checkout -- tsconfig.json 2>/dev/null || true
               df -h "${PROJECT_PATH}" || df -h || true
               free -m || true
               exit 1
             fi
+            git checkout -- tsconfig.json 2>/dev/null || true
 
             echo "Verifying build artifacts on disk..."
-            if [ ! -f .next/BUILD_ID ]; then
-              echo "ERROR: .next/BUILD_ID missing"
+            if [ ! -f "${BUILD_DIR}/BUILD_ID" ]; then
+              echo "ERROR: ${BUILD_DIR}/BUILD_ID missing"
+              rm -rf "${BUILD_DIR}"
               exit 1
             fi
-            BUILD_ID="$(tr -d '\n' < .next/BUILD_ID)"
+            BUILD_ID="$(tr -d '\n' < "${BUILD_DIR}/BUILD_ID")"
             echo "BUILD_ID=${BUILD_ID}"
-            if [ ! -f ".next/static/${BUILD_ID}/_buildManifest.js" ]; then
-              echo "ERROR: missing .next/static/${BUILD_ID}/_buildManifest.js"
+            if [ ! -f "${BUILD_DIR}/static/${BUILD_ID}/_buildManifest.js" ]; then
+              echo "ERROR: missing ${BUILD_DIR}/static/${BUILD_ID}/_buildManifest.js"
+              rm -rf "${BUILD_DIR}"
               exit 1
             fi
-            CSS_COUNT="$(find .next/static/css -type f -name '*.css' 2>/dev/null | wc -l | tr -d ' ')"
+            CSS_COUNT="$(find "${BUILD_DIR}/static/css" -type f -name '*.css' 2>/dev/null | wc -l | tr -d ' ')"
             echo "Built CSS files: ${CSS_COUNT}"
-            ls -lah .next/static/css 2>/dev/null || true
             if [ "${CSS_COUNT}" = "0" ]; then
-              echo "ERROR: No CSS emitted in .next/static/css — refusing broken deploy"
-              rm -rf .next
-              if [ -d .next.deploy-backup ]; then
-                mv .next.deploy-backup .next
-              fi
+              echo "ERROR: No CSS emitted — refusing broken deploy"
+              rm -rf "${BUILD_DIR}"
               exit 1
             fi
-            rm -rf .next.deploy-backup
+
+            echo "Swapping new build into .next..."
+            rm -rf .next-previous
+            if [ -d .next ]; then
+              mv .next .next-previous
+            fi
+            mv "${BUILD_DIR}" .next
+            # Keep the previous build's hashed assets so browsers holding old HTML can still load their chunks.
+            if [ -d .next-previous/static ]; then
+              cp -an .next-previous/static/. .next/static/ 2>/dev/null || true
+            fi
 
             echo "Validating PM2 process ${PM2_APP} before targeted restart..."
             PM2_APP="${PM2_APP}" PROJECT_PATH="${PROJECT_PATH}" APP_PORT="${APP_PORT}" node <<'NODE'
@@ -340,6 +346,16 @@ jobs:
               echo "ERROR: Local health check failed (need home=200)"
               exit 1
             fi
+
+            echo "Local HTTP check (key pages)..."
+            for page in /everest-base-camp-trek /nepal /bhutan /tibet /himalayan-multi-countries-tour /journal /contact /company; do
+              code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${APP_PORT}${page}" || true)"
+              echo "  ${page} -> ${code}"
+              if [ "${code}" != "200" ]; then
+                echo "ERROR: ${page} returned ${code} after deploy"
+                exit 1
+              fi
+            done
 
             echo "Orbit configuration check..."
             ORBIT_HEALTH="$(curl -fsS --max-time 10 "http://127.0.0.1:${APP_PORT}/api/orbit/health" || echo '{"configured":false}')"

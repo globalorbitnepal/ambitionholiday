@@ -135,7 +135,60 @@ export type TrekPackage = {
   includeNote: string;
   luklaNote: string;
   reviewsWallpaperSrc: string;
+  /** SEO */
+  focusKeyword?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageSrc?: string;
+  noindex?: boolean;
+  updatedAt?: string;
+  /** Editable section headings — empty uses the default wording. */
+  aboutTitle?: string;
+  whyTitle?: string;
+  fitTitle?: string;
+  khumbuTitle?: string;
+  mapBody?: string;
+  weatherNote?: string;
+  luklaNoteTitle?: string;
+  notesTitle?: string;
+  flightTitle?: string;
+  bufferTitle?: string;
+  heliTitle?: string;
 };
+
+export const EBC_PACKAGE_ID = "ebc-lux";
+
+/** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
+export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
+  return pkg.id === EBC_PACKAGE_ID;
+}
+
+export function packageHeadings(pkg: TrekPackage) {
+  const ebc = isEbcPackage(pkg);
+  const pick = (value: string | undefined, ebcDefault: string, generic: string) =>
+    value?.trim() || (ebc ? ebcDefault : generic);
+  return {
+    about: pick(pkg.aboutTitle, "About this luxury trek", "About this journey"),
+    why: pick(pkg.whyTitle, "Why this luxury Everest Base Camp trek", "Why travel with Ambition Holidays"),
+    fit: pick(pkg.fitTitle, "Is this trek for you?", "Is this journey for you?"),
+    khumbu: pick(pkg.khumbuTitle, "The Khumbu you actually walk", "The region you travel through"),
+    mapBody: pick(
+      pkg.mapBody,
+      "The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.",
+      "",
+    ),
+    weatherNote: pick(
+      pkg.weatherNote,
+      "Month-by-month Khumbu reference only. The day you walk can be colder, windier or clearer than the chart.",
+      "",
+    ),
+    luklaNote: pick(pkg.luklaNoteTitle, "Special information for Lukla flights", "Special travel information"),
+    notes: pick(pkg.notesTitle, "Lukla, buffer days and helicopter", "Flights, buffer days and upgrades"),
+    flight: pick(pkg.flightTitle, "Kathmandu to Lukla", "Flights and transfers"),
+    buffer: pick(pkg.bufferTitle, "Buffer days", "Buffer days"),
+    heli: pick(pkg.heliTitle, "Helicopter upgrade", "Helicopter upgrade"),
+  };
+}
 
 export const TREK_DAY_DISTANCE: Record<number, string> = {
   1: "Airport transfer",
@@ -629,7 +682,83 @@ export const RESERVED_PACKAGE_SLUGS = [
   "packing-guide",
   "altitude-tips",
   "permits-and-fees",
+  "experiences",
+  "himalayan-multi-countries",
+  "everest-base-camp-luxury-trek",
+  "privacy",
+  "terms",
+  "api",
+  "orbit-login",
+  "uploads",
+  "images",
+  "sitemap.xml",
+  "robots.txt",
 ];
+
+/** Live-typing friendly slug cleanup: keeps a trailing hyphen so the user can keep typing. */
+export function cleanSlugInput(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/^\/+/, "")
+    .replace(/^trip\//, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-/, "")
+    .slice(0, 90);
+}
+
+export function isValidPackageSlug(slug: string) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+}
+
+/** Returns an error message, or "" when the slug can be used by this package. */
+export function packageSlugProblem(slug: string, packages: TrekPackage[], selfId: string) {
+  if (!slug) return "Add a URL slug.";
+  if (!isValidPackageSlug(slug)) return "Use lowercase letters, numbers and hyphens only (e.g. annapurna-base-camp-trek).";
+  if (RESERVED_PACKAGE_SLUGS.includes(slug)) return `/${slug} is used by another site page. Choose a different slug.`;
+  if (packages.some((pkg) => pkg.id !== selfId && pkg.slug === slug)) return `Another package already uses /${slug}.`;
+  return "";
+}
+
+type CatalogCardLike = { id: string; href: string };
+
+/** Where a country-page card should link: its published trek page, otherwise an enquiry. */
+export function resolveCatalogHref(card: CatalogCardLike, packages: TrekPackage[]) {
+  const href = card.href || "";
+  const cleanSlug = href.replace(/^\//, "").replace(/^trip\//, "");
+  const published = packages.find(
+    (pkg) => pkg.status === "published" && (pkg.catalogId === card.id || (cleanSlug && pkg.slug === cleanSlug)),
+  );
+  if (published) return tripPath(published);
+  const unpublished = packages.some((pkg) => pkg.catalogId === card.id || (cleanSlug && pkg.slug === cleanSlug));
+  if (unpublished || !href) return `/contact?interest=${encodeURIComponent(card.id)}`;
+  return href;
+}
+
+export function packageSeoInput(pkg: TrekPackage) {
+  const itineraryText = (pkg.itinerary ?? []).map((day) => `${day.title} ${day.body}`).join(" ");
+  const infoText = (pkg.tripInfo ?? []).map((block) => block.body).join(" ");
+  const faqText = (pkg.faqs ?? []).map((faq) => `${faq.q} ${faq.a}`).join(" ");
+  return {
+    focusKeyword: pkg.focusKeyword || "",
+    title: pkg.title,
+    metaTitle: pkg.metaTitle || "",
+    metaDescription: pkg.metaDescription || "",
+    slug: pkg.slug,
+    intro: `${pkg.subtitle} ${pkg.overview.split(/\n{2,}/)[0] || ""}`,
+    body: [pkg.overview, ...(pkg.highlights ?? []), itineraryText, infoText, faqText].join(" "),
+    headings: [
+      `Highlights of ${pkg.title}`,
+      `${pkg.title} itinerary`,
+      pkg.tripInfoTitle || "",
+      ...(pkg.tripInfo ?? []).map((block) => block.title),
+      ...(pkg.faqs ?? []).map((faq) => faq.q),
+    ].filter(Boolean),
+    imageSrc: pkg.heroSrc,
+    imageAlt: pkg.heroAlt || "",
+  };
+}
 
 export function tripPath(pkg: Pick<TrekPackage, "slug">) {
   return `/${pkg.slug.replace(/^\//, "")}`;
@@ -731,30 +860,150 @@ export function cloneTrekTemplate(fields: {
   difficulty?: string;
   subtitle?: string;
   badge?: string;
+  status?: TrekPackage["status"];
 }): TrekPackage {
-  const id = fields.catalogId || `pkg-${Date.now()}`;
+  const catalogId = fields.catalogId || `pkg-${Date.now()}`;
+  const id = fields.catalogId ? `trip-${fields.catalogId}` : catalogId;
   const base = DEFAULT_TRIP_PACKAGES[0];
-  const slug = fields.slug.replace(/^\//, "").replace(/\s+/g, "-").toLowerCase();
+  const slug = fields.slug.replace(/^\//, "").replace(/^trip\//, "").replace(/\s+/g, "-").toLowerCase();
+  const days = fields.days && fields.days > 0 ? fields.days : 7;
+  const countryLabel = { nepal: "Nepal", bhutan: "Bhutan", tibet: "Tibet", multi: "Nepal · Bhutan · Tibet" }[fields.country];
+  const heroSrc = fields.heroSrc || base.heroSrc;
+  const heroAlt = fields.heroAlt || fields.title;
+  const summary = fields.subtitle || `${fields.title} with Ambition Holidays — private guiding, handpicked stays and unhurried pacing.`;
+  const itinerary: TrekItineraryDay[] = Array.from({ length: days }, (_, index) => ({
+    id: `d${index + 1}`,
+    day: index + 1,
+    title: index === 0 ? "Arrival and welcome" : index === days - 1 ? "Departure" : `Day ${index + 1}`,
+    altitude: "",
+    duration: "",
+    meals: index === 0 ? "D" : index === days - 1 ? "B" : "B L D",
+    stay: "",
+    distance: "",
+    body: "",
+  }));
   return {
     ...base,
     id,
-    catalogId: id,
+    catalogId,
     title: fields.title,
     slug,
     country: fields.country,
-    status: "published",
+    status: fields.status || "draft",
     featured: false,
     badge: fields.badge || "",
-    subtitle: fields.subtitle || "",
-    days: fields.days || base.days,
-    duration: fields.days ? `${fields.days} Days` : base.duration,
-    difficulty: fields.difficulty || base.difficulty,
-    heroSrc: fields.heroSrc || base.heroSrc,
-    heroAlt: fields.heroAlt || fields.title,
-    gallery: [fields.heroSrc || base.heroSrc, ...base.gallery.slice(1)],
-    galleryAlts: [fields.heroAlt || fields.title, ...base.galleryAlts.slice(1)],
+    subtitle: summary,
+    duration: `${days} Days / ${Math.max(days - 1, 0)} Nights`,
+    days,
+    difficulty: fields.difficulty || "Moderate",
+    destination: countryLabel,
+    maxAltitude: "",
+    maxAltitudeFt: "",
+    countryLabel,
+    activityLabel: "Luxury tour & trek",
+    accommodationLabel: "Luxury hotels + premium lodges",
+    mealsLabel: "As per itinerary",
+    startEndLabel: fields.country === "bhutan" ? "Paro" : fields.country === "tibet" ? "Lhasa" : "Kathmandu",
+    groupSize: "Private · 2–10 guests",
+    bestSeason: "March–May · September–November",
+    priceUsd: 0,
+    groupPrices: [
+      { id: "p1", label: "1 Pax", priceUsd: 0 },
+      { id: "p2", label: "2–3 Pax", priceUsd: 0 },
+      { id: "p3", label: "4–9 Pax", priceUsd: 0 },
+    ],
+    overview: summary,
+    highlights: [],
+    inclusions: [
+      "Private airport transfers on arrival and departure",
+      "Handpicked luxury hotel nights as per the itinerary",
+      "Experienced licensed guide throughout the journey",
+      "Permits and entrance fees listed in the itinerary",
+      "Meals as listed day by day",
+    ],
+    exclusions: [
+      "International flights and visa fees",
+      "Travel insurance with evacuation cover",
+      "Personal expenses, drinks and tips",
+    ],
+    gallery: [heroSrc],
+    galleryAlts: [heroAlt],
+    tripGalleryTitle: "Trip Gallery",
+    heroSrc,
+    heroAlt,
+    altitudeChartM: "",
+    altitudeChartFt: "",
+    altitudeGainSrc: "",
+    routeMapSrc: "",
+    weatherDailySrc: "",
+    weatherMonthlySrc: "",
+    routeMapFile: `${slug}-route-map`,
+    altitudeMFile: `${slug}-altitude-meters`,
+    altitudeFtFile: `${slug}-altitude-feet`,
+    weatherDailyFile: `${slug}-daily-temperature`,
+    weatherMonthlyFile: `${slug}-monthly-temperature`,
+    itineraryIntro: "",
+    itinerary,
+    faqs: [],
+    whyItems: [],
+    weatherBody: "",
+    altitudeBody: "",
+    packingItems: [],
+    packingIntro: "",
+    packingGroups: [],
+    flightBody: "",
+    bufferBody: "",
+    heliBody: "",
+    beforeItems: [],
+    suitableBody: "",
+    trainingBody: "",
+    khumbuBody: "",
+    permitsLabel: "",
+    regionLabel: countryLabel,
+    startLabel: "",
     metaTitle: `${fields.title} | Ambition Holidays`,
-    metaDescription: fields.subtitle || "",
-    metaKeywords: `${fields.title}, luxury trek, Ambition Holidays`,
+    metaDescription: summary.slice(0, 158),
+    metaKeywords: `${fields.title}, luxury ${countryLabel} tour, Ambition Holidays`,
+    focusKeyword: fields.title.replace(/^luxury\s+/i, ""),
+    watchVideo: {
+      id: `watch-${catalogId}`,
+      title: "Watch video",
+      subtitle: fields.title,
+      duration: "",
+      imageSrc: "",
+      imageAlt: fields.title,
+      videoSrc: "",
+    },
+    videoReviews: [],
+    reviews: [],
+    tripInfoTitle: `${fields.title} – Trip Information`,
+    tripInfo: [],
+    optionalAddons: [],
+    includeNote: "",
+    luklaNote: "",
+    reviewsWallpaperSrc: base.reviewsWallpaperSrc,
+    ogTitle: "",
+    ogDescription: "",
+    ogImageSrc: "",
+  };
+}
+
+/** Copy an existing package as a new draft with its own id and slug. */
+export function duplicateTrekPackage(pkg: TrekPackage, packages: TrekPackage[]): TrekPackage {
+  const id = `pkg-${Date.now()}`;
+  let slug = `${pkg.slug}-copy`;
+  let n = 2;
+  while (packages.some((item) => item.slug === slug)) {
+    slug = `${pkg.slug}-copy-${n}`;
+    n += 1;
+  }
+  return {
+    ...structuredClone(pkg),
+    id,
+    catalogId: id,
+    slug,
+    title: `${pkg.title} (copy)`,
+    status: "draft",
+    featured: false,
   };
 }

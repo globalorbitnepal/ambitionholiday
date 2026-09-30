@@ -5,7 +5,9 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/api/admin/")) {
     if (pathname === "/api/admin/login") return NextResponse.next();
-    const hasAdmin = Boolean(request.cookies.get("admin_session")?.value);
+    const hasAdmin = Boolean(
+      request.cookies.get("admin_session")?.value || request.cookies.get("orbit_session")?.value,
+    );
     if (!hasAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

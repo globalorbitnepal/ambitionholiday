@@ -293,6 +293,27 @@ export type BlogPost = {
   metaTitle?: string;
   metaDescription?: string;
   sections?: BlogSection[];
+  /** Main search phrase the article is optimised for. */
+  focusKeyword?: string;
+  /** Comma-separated secondary keywords for the meta keywords tag. */
+  metaKeywords?: string;
+  tags?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
+  /** Social share image; falls back to the cover image. */
+  ogImageSrc?: string;
+  /** Hide from Google (noindex) while keeping the page reachable. */
+  noindex?: boolean;
+  /** ISO date used for sorting, sitemap and Article schema. */
+  publishedAt?: string;
+  updatedAt?: string;
+};
+
+export type BlogCategory = {
+  id: string;
+  label: string;
+  slug: string;
+  description: string;
 };
 
 export type BlogFeatureIcon = "pen" | "camera" | "peaks" | "compass" | "custom";
@@ -323,6 +344,7 @@ export type BlogContent = {
   sidePosts: BlogPost[];
   /** Canonical journal articles (Orbit). */
   posts?: BlogPost[];
+  categories?: BlogCategory[];
   features: BlogFeature[];
 };
 

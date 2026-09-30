@@ -12,6 +12,7 @@ export default function AdminMediaField({
   hint,
   accept = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp",
   fit = "cover",
+  clearLabel = "Use built-in chart",
 }: {
   label: string;
   value: string;
@@ -19,6 +20,7 @@ export default function AdminMediaField({
   hint?: string;
   accept?: string;
   fit?: "cover" | "contain";
+  clearLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<MediaItem[]>([]);
@@ -74,7 +76,7 @@ export default function AdminMediaField({
         </button>
         {value ? (
           <button type="button" className="admin-btn admin-btn-ghost" onClick={() => onChange("")}>
-            Use built-in chart
+            {clearLabel}
           </button>
         ) : null}
       </div>

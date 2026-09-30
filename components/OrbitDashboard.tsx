@@ -154,7 +154,19 @@ export default function OrbitDashboard({ initial, embedded = false }: Props) {
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-gold">Orbit Control</p>
               <h1 className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold">Ambition Holidays</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Link
+                href="/admin/packages"
+                className="rounded-md border border-gold/50 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold hover:bg-gold/20"
+              >
+                Package builder
+              </Link>
+              <Link
+                href="/admin/journal"
+                className="rounded-md border border-gold/50 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold hover:bg-gold/20"
+              >
+                Blog studio
+              </Link>
               <Link
                 href="/"
                 target="_blank"

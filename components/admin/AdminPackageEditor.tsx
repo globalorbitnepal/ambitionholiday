@@ -6,8 +6,48 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import AdminMediaField from "@/components/admin/AdminMediaField";
 import { useAdminContent } from "@/components/admin/useAdminContent";
-import { tripPath, type TrekItineraryDay, type TrekPackage } from "@/lib/trip-packages";
+import {
+  cleanSlugInput,
+  isEbcPackage,
+  packageHeadings,
+  packageSeoInput,
+  packageSlugProblem,
+  tripPath,
+  type TrekItineraryDay,
+  type TrekPackage,
+} from "@/lib/trip-packages";
 import { CHART_FRAMES } from "@/lib/chart-frames";
+import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
+
+const TABS = [
+  ["basic", "Basic"],
+  ["itinerary", "Itinerary"],
+  ["media", "Photos"],
+  ["charts", "Map & charts"],
+  ["guide", "Guide"],
+  ["headings", "Headings"],
+  ["faq", "FAQ"],
+  ["info", "Trip info"],
+  ["video", "Video"],
+  ["ratings", "Ratings"],
+  ["reviews", "Reviews"],
+  ["seo", "SEO"],
+] as const;
+type TabId = (typeof TABS)[number][0];
+
+const HEADING_FIELDS: { key: keyof TrekPackage; label: string; head: keyof ReturnType<typeof packageHeadings>; multiline?: boolean }[] = [
+  { key: "aboutTitle", label: "Overview heading", head: "about" },
+  { key: "whyTitle", label: "“Why” section heading", head: "why" },
+  { key: "fitTitle", label: "Suitability heading", head: "fit" },
+  { key: "khumbuTitle", label: "Trail notes heading", head: "khumbu" },
+  { key: "mapBody", label: "Text above the trip map", head: "mapBody", multiline: true },
+  { key: "weatherNote", label: "Small note under weather", head: "weatherNote", multiline: true },
+  { key: "luklaNoteTitle", label: "Heading for the special flight note", head: "luklaNote" },
+  { key: "notesTitle", label: "Travel notes section heading", head: "notes" },
+  { key: "flightTitle", label: "Flight sub-heading", head: "flight" },
+  { key: "bufferTitle", label: "Buffer days sub-heading", head: "buffer" },
+  { key: "heliTitle", label: "Helicopter / upgrade sub-heading", head: "heli" },
+];
 
 const emptyDay = (n: number): TrekItineraryDay => ({
   id: `d${n}-${Date.now()}`,
@@ -25,10 +65,8 @@ const emptyDay = (n: number): TrekItineraryDay => ({
 export default function AdminPackageEditor() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { content, loaded, save, busy, status } = useAdminContent();
-  const [tab, setTab] = useState<
-    "basic" | "ratings" | "itinerary" | "media" | "charts" | "guide" | "video" | "reviews" | "info" | "seo"
-  >("basic");
+  const { content, loaded, saveMerged, busy, status } = useAdminContent();
+  const [tab, setTab] = useState<TabId>("basic");
   const [pkg, setPkg] = useState<TrekPackage | null>(null);
   const baselineRef = useRef<TrekPackage | null>(null);
 
@@ -61,71 +99,64 @@ export default function AdminPackageEditor() {
     setPkg((cur) => (cur ? { ...cur, ...partial } : cur));
   }
 
-  async function onSave() {
+  async function onSave(publish = false) {
     if (!pkg) return;
-    let pkgToSave = pkg;
-    try {
-      const res = await fetch(`/api/content?t=${Date.now()}`, { cache: "no-store", credentials: "include" });
-      if (res.ok) {
-        const latest = (await res.json()) as typeof content;
-        const serverPkg = latest.tripPackages.find((item) => item.id === pkg.id);
-        if (serverPkg) {
-          pkgToSave = reconcileTripPackageForSave(serverPkg, pkg, baselineRef.current);
-        }
-      }
-    } catch {
-      // save with local copy if refresh fails
+    const slug = pkg.slug.replace(/-+$/, "");
+    const problem = packageSlugProblem(slug, content.tripPackages, pkg.id);
+    if (problem) {
+      setTab("basic");
+      window.alert(problem);
+      return;
     }
-    const cardPatch = {
-      title: pkgToSave.title,
-      days: pkgToSave.days,
-      difficulty: pkgToSave.difficulty,
-      description: pkgToSave.subtitle,
-      badge: pkgToSave.badge,
-      href: tripPath(pkgToSave),
-      imageSrc: pkgToSave.heroSrc,
-      imageAlt: pkgToSave.heroAlt,
+    if (!pkg.title.trim()) {
+      setTab("basic");
+      window.alert("Add a package title.");
+      return;
+    }
+    const local: TrekPackage = {
+      ...pkg,
+      slug,
+      status: publish ? "published" : pkg.status,
+      updatedAt: new Date().toISOString(),
     };
-    const syncDest = (dest: typeof content.nepal) => ({
-      ...dest,
-      categories: dest.categories.map((cat) => ({
-        ...cat,
-        packages: cat.packages.map((card) =>
-          card.id === pkgToSave.catalogId ||
-          card.href.endsWith(`/${pkgToSave.slug}`) ||
-          card.href === tripPath(pkgToSave)
-            ? { ...card, ...cardPatch }
-            : card,
-        ),
-      })),
+    const oldPaths = new Set([tripPath(local), baselineRef.current ? tripPath(baselineRef.current) : ""].filter(Boolean));
+    let pkgToSave = local;
+    const ok = await saveMerged((latest) => {
+      const serverPkg = latest.tripPackages.find((item) => item.id === local.id);
+      pkgToSave = serverPkg ? reconcileTripPackageForSave(serverPkg, local, baselineRef.current) : local;
+      const linked = (card: { id: string; href: string }) => card.id === pkgToSave.catalogId || oldPaths.has(card.href);
+      const cardPatch = {
+        title: pkgToSave.title,
+        days: pkgToSave.days,
+        difficulty: pkgToSave.difficulty,
+        description: pkgToSave.subtitle,
+        badge: pkgToSave.badge,
+        href: tripPath(pkgToSave),
+        imageSrc: pkgToSave.heroSrc,
+        imageAlt: pkgToSave.heroAlt,
+      };
+      const syncDest = (dest: typeof latest.nepal) => ({
+        ...dest,
+        categories: dest.categories.map((cat) => ({
+          ...cat,
+          packages: cat.packages.map((card) => (linked(card) ? { ...card, ...cardPatch } : card)),
+        })),
+      });
+      return {
+        ...latest,
+        tripPackages: serverPkg
+          ? latest.tripPackages.map((item) => (item.id === pkgToSave.id ? pkgToSave : item))
+          : [...latest.tripPackages, pkgToSave],
+        nepal: syncDest(latest.nepal),
+        bhutan: syncDest(latest.bhutan),
+        tibet: syncDest(latest.tibet),
+        multi: syncDest(latest.multi),
+        journeys: {
+          ...latest.journeys,
+          packages: latest.journeys.packages.map((card) => (linked(card) ? { ...card, ...cardPatch } : card)),
+        },
+      };
     });
-    const next = {
-      ...content,
-      tripPackages: content.tripPackages.map((item) => (item.id === pkgToSave.id ? pkgToSave : item)),
-      nepal: syncDest(content.nepal),
-      bhutan: syncDest(content.bhutan),
-      tibet: syncDest(content.tibet),
-      multi: syncDest(content.multi),
-      journeys: {
-        ...content.journeys,
-        packages: content.journeys.packages.map((card) =>
-          card.href.includes(pkgToSave.slug) || card.id === pkgToSave.catalogId
-            ? {
-                ...card,
-                title: pkgToSave.title,
-                href: tripPath(pkgToSave),
-                imageSrc: pkgToSave.heroSrc,
-                imageAlt: pkgToSave.heroAlt,
-                days: pkgToSave.days,
-                difficulty: pkgToSave.difficulty,
-                description: pkgToSave.subtitle,
-                badge: pkgToSave.badge,
-              }
-            : card,
-        ),
-      },
-    };
-    const ok = await save(next);
     if (ok) {
       setPkg(pkgToSave);
       baselineRef.current = structuredClone(pkgToSave);
@@ -135,16 +166,25 @@ export default function AdminPackageEditor() {
 
   return (
     <>
-      <h1>{pkg.title}</h1>
-      <p className="admin-lead">
-        Full trek builder — section by section. Save to publish instantly on {tripPath(pkg)}
+      <p className="admin-lead" style={{ marginBottom: 4 }}>
+        <Link href="/admin/packages">← All packages</Link>
+      </p>
+      <h1>{pkg.title || "Untitled package"}</h1>
+      <p className="admin-lead admin-row-actions">
+        <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
+        <span className="admin-permalink">{tripPath(pkg)}</span>
+        {pkg.status === "published" ? (
+          <a href={tripPath(pkg)} target="_blank" rel="noreferrer">
+            View live ↗
+          </a>
+        ) : (
+          <span>Draft — visitors cannot see this page until you publish it.</span>
+        )}
       </p>
       <div className="admin-tabs">
-        {(
-          ["basic", "ratings", "itinerary", "media", "charts", "guide", "video", "reviews", "info", "seo"] as const
-        ).map((id) => (
+        {TABS.map(([id, label]) => (
           <button key={id} type="button" className={tab === id ? "on" : ""} onClick={() => setTab(id)}>
-            {id[0].toUpperCase() + id.slice(1)}
+            {label}
           </button>
         ))}
       </div>
@@ -156,10 +196,14 @@ export default function AdminPackageEditor() {
             <input value={pkg.title} onChange={(e) => patch({ title: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>URL slug (live page is /{pkg.slug} — no /trip/)</span>
-            <input value={pkg.slug} onChange={(e) => patch({ slug: e.target.value.replace(/^\//, "").replace(/^trip\//, "") })} />
+            <span>URL slug (live page is /{pkg.slug})</span>
+            <input value={pkg.slug} onChange={(e) => patch({ slug: cleanSlugInput(e.target.value) })} />
+            {(() => {
+              const problem = packageSlugProblem(pkg.slug.replace(/-+$/, ""), content.tripPackages, pkg.id);
+              return problem ? <small className="admin-warn">{problem}</small> : null;
+            })()}
           </label>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div className="admin-grid-3">
             <label className="admin-field">
               <span>Country page</span>
               <select value={pkg.country} onChange={(e) => patch({ country: e.target.value as TrekPackage["country"] })}>
@@ -188,7 +232,7 @@ export default function AdminPackageEditor() {
             <span>Short card text</span>
             <textarea value={pkg.subtitle} onChange={(e) => patch({ subtitle: e.target.value })} />
           </label>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div className="admin-grid-3">
             <label className="admin-field">
               <span>Destination</span>
               <input value={pkg.destination} onChange={(e) => patch({ destination: e.target.value })} />
@@ -218,15 +262,16 @@ export default function AdminPackageEditor() {
               <input value={pkg.badge} onChange={(e) => patch({ badge: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Price (USD)</span>
+              <span>Price (USD per person, 0 = on request)</span>
               <input
                 type="number"
+                min={0}
                 value={pkg.priceUsd}
-                onChange={(e) => patch({ priceUsd: Number(e.target.value) || 0 })}
+                onChange={(e) => patch({ priceUsd: Math.max(0, Number(e.target.value) || 0) })}
               />
             </label>
-              {(pkg.groupPrices || []).map((row, index) => (
-              <div key={row.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {(pkg.groupPrices || []).map((row, index) => (
+              <div key={row.id} className="admin-field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, alignSelf: "end" }}>
                 <input
                   value={row.label}
                   onChange={(e) =>
@@ -250,16 +295,6 @@ export default function AdminPackageEditor() {
                 />
               </div>
             ))}
-            <label className="admin-field">
-              <span>Status</span>
-              <select
-                value={pkg.status}
-                onChange={(e) => patch({ status: e.target.value as TrekPackage["status"] })}
-              >
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
-            </label>
             <label className="admin-field">
               <span>Best season</span>
               <input value={pkg.bestSeason} onChange={(e) => patch({ bestSeason: e.target.value })} />
@@ -322,11 +357,11 @@ export default function AdminPackageEditor() {
             />
           </label>
           <label className="admin-field">
-            <span>Important note (Lukla weather / helicopter)</span>
+            <span>Important note under inclusions</span>
             <textarea value={pkg.includeNote || ""} onChange={(e) => patch({ includeNote: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>Special Lukla / Ramechhap note</span>
+            <span>Special flight / travel note</span>
             <textarea value={pkg.luklaNote || ""} onChange={(e) => patch({ luklaNote: e.target.value })} />
           </label>
         </div>
@@ -531,7 +566,9 @@ export default function AdminPackageEditor() {
       {tab === "charts" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            Built-in graphs show until you upload a replacement. JPG and PNG only. Empty a field to restore the drawn chart. Same frames on every package.
+            {isEbcPackage(pkg)
+              ? "Built-in Everest graphs show until you upload a replacement. JPG and PNG only. Empty a field to restore the drawn chart."
+              : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
           <AdminMediaField
             label="Trip map (full graphic)"
@@ -681,7 +718,7 @@ export default function AdminPackageEditor() {
             <textarea value={pkg.trainingBody || ""} onChange={(e) => patch({ trainingBody: e.target.value })} />
           </label>
           <label className="admin-field">
-            <span>Khumbu trail notes</span>
+            <span>Trail notes</span>
             <textarea value={pkg.khumbuBody || ""} onChange={(e) => patch({ khumbuBody: e.target.value })} />
           </label>
         </div>
@@ -690,7 +727,7 @@ export default function AdminPackageEditor() {
       {tab === "ratings" ? (
         <div className="admin-card">
           <p className="admin-lead">Tripadvisor and Google badges under the package title. Edit score, count, URL and logo.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="admin-grid-2">
             <label className="admin-field">
               <span>Tripadvisor label</span>
               <input value={pkg.tripadvisorLabel || ""} onChange={(e) => patch({ tripadvisorLabel: e.target.value })} />
@@ -888,28 +925,147 @@ export default function AdminPackageEditor() {
         </div>
       ) : null}
 
-      {tab === "seo" ? (
+      {tab === "headings" ? (
         <div className="admin-card">
-          <label className="admin-field">
-            <span>Meta title</span>
-            <input value={pkg.metaTitle} onChange={(e) => patch({ metaTitle: e.target.value })} />
-          </label>
-          <label className="admin-field">
-            <span>Meta description</span>
-            <textarea value={pkg.metaDescription} onChange={(e) => patch({ metaDescription: e.target.value })} />
-          </label>
-          <label className="admin-field">
-            <span>Meta keywords</span>
-            <input value={pkg.metaKeywords} onChange={(e) => patch({ metaKeywords: e.target.value })} />
-          </label>
+          <p className="admin-lead">
+            Section headings on the public page. Leave a field empty to use the default shown in grey.
+          </p>
+          {HEADING_FIELDS.map((field) => {
+            const fallback = packageHeadings({ ...pkg, [field.key]: "" })[field.head];
+            const value = (pkg[field.key] as string | undefined) || "";
+            return (
+              <label key={field.key} className="admin-field">
+                <span>{field.label}</span>
+                {field.multiline ? (
+                  <textarea value={value} placeholder={fallback} onChange={(e) => patch({ [field.key]: e.target.value } as Partial<TrekPackage>)} />
+                ) : (
+                  <input value={value} placeholder={fallback} onChange={(e) => patch({ [field.key]: e.target.value } as Partial<TrekPackage>)} />
+                )}
+              </label>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {tab === "faq" ? (
+        <div className="admin-card">
+          <p className="admin-lead">Questions shown in the FAQ section. The section is hidden when the list is empty.</p>
+          {(pkg.faqs || []).map((faq, fi) => (
+            <div key={fi} className="admin-card" style={{ margin: "12px 0", padding: 12 }}>
+              <label className="admin-field">
+                <span>Question {fi + 1}</span>
+                <input
+                  value={faq.q}
+                  onChange={(e) => patch({ faqs: pkg.faqs.map((item, i) => (i === fi ? { ...item, q: e.target.value } : item)) })}
+                />
+              </label>
+              <label className="admin-field">
+                <span>Answer</span>
+                <textarea
+                  value={faq.a}
+                  onChange={(e) => patch({ faqs: pkg.faqs.map((item, i) => (i === fi ? { ...item, a: e.target.value } : item)) })}
+                />
+              </label>
+              <div className="admin-row-actions">
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-sm"
+                  disabled={fi === 0}
+                  onClick={() => {
+                    const faqs = [...pkg.faqs];
+                    [faqs[fi - 1], faqs[fi]] = [faqs[fi], faqs[fi - 1]];
+                    patch({ faqs });
+                  }}
+                >
+                  Move up
+                </button>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-sm admin-btn-danger"
+                  onClick={() => patch({ faqs: pkg.faqs.filter((_, i) => i !== fi) })}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+          <button type="button" className="admin-btn" onClick={() => patch({ faqs: [...(pkg.faqs || []), { q: "", a: "" }] })}>
+            Add question
+          </button>
+        </div>
+      ) : null}
+
+      {tab === "seo" ? (
+        <div className="admin-editor">
+          <div className="admin-card">
+            <label className="admin-field">
+              <span>Focus keyword</span>
+              <input
+                value={pkg.focusKeyword || ""}
+                placeholder="e.g. luxury everest base camp trek"
+                onChange={(e) => patch({ focusKeyword: e.target.value })}
+              />
+            </label>
+            <label className="admin-field">
+              <span>SEO title</span>
+              <input value={pkg.metaTitle} placeholder={pkg.title} onChange={(e) => patch({ metaTitle: e.target.value })} />
+              <SeoLengthHint value={pkg.metaTitle || pkg.title} kind="title" />
+            </label>
+            <label className="admin-field">
+              <span>Meta description</span>
+              <textarea value={pkg.metaDescription} placeholder={pkg.subtitle} onChange={(e) => patch({ metaDescription: e.target.value })} />
+              <SeoLengthHint value={pkg.metaDescription || pkg.subtitle} kind="description" />
+            </label>
+            <label className="admin-field">
+              <span>Meta keywords (comma separated)</span>
+              <input value={pkg.metaKeywords} onChange={(e) => patch({ metaKeywords: e.target.value })} />
+            </label>
+            <h2 style={{ marginTop: 20 }}>Social sharing (Facebook, WhatsApp, X)</h2>
+            <label className="admin-field">
+              <span>OG title</span>
+              <input value={pkg.ogTitle || ""} placeholder={pkg.metaTitle || pkg.title} onChange={(e) => patch({ ogTitle: e.target.value })} />
+            </label>
+            <label className="admin-field">
+              <span>OG description</span>
+              <textarea
+                value={pkg.ogDescription || ""}
+                placeholder={pkg.metaDescription || pkg.subtitle}
+                onChange={(e) => patch({ ogDescription: e.target.value })}
+              />
+            </label>
+            <AdminMediaField
+              label="OG share image (1200 × 630 recommended — empty uses the hero image)"
+              value={pkg.ogImageSrc || ""}
+              clearLabel="Use hero image"
+              onChange={(ogImageSrc) => patch({ ogImageSrc })}
+            />
+            <label className="admin-check">
+              <input type="checkbox" checked={Boolean(pkg.noindex)} onChange={(e) => patch({ noindex: e.target.checked })} />
+              <span>Hide from Google (noindex)</span>
+            </label>
+          </div>
+          <div className="admin-editor-side">
+            <SeoPanel
+              input={packageSeoInput(pkg)}
+              path={tripPath(pkg)}
+              ogTitle={pkg.ogTitle}
+              ogDescription={pkg.ogDescription}
+              ogImageSrc={pkg.ogImageSrc || pkg.heroSrc}
+            />
+          </div>
         </div>
       ) : null}
 
       <div className="admin-save-row">
         {status ? <span className={status === "Saved" ? "admin-ok" : "admin-error"}>{status}</span> : null}
-        <button type="button" className="admin-btn admin-btn-gold" style={{ width: "auto" }} disabled={busy} onClick={() => void onSave()}>
-          Save changes
+        <button type="button" className="admin-btn" style={{ width: "auto" }} disabled={busy} onClick={() => void onSave()}>
+          {pkg.status === "published" ? "Save changes" : "Save draft"}
         </button>
+        {pkg.status !== "published" ? (
+          <button type="button" className="admin-btn admin-btn-gold" style={{ width: "auto" }} disabled={busy} onClick={() => void onSave(true)}>
+            Save &amp; publish
+          </button>
+        ) : null}
       </div>
     </>
   );

@@ -2759,6 +2759,48 @@ body.nav-mega-open .hero-copy {
   min-height: 100svh;
 }
 
+.journal-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.journal-cats a {
+  border-radius: 999px;
+  border: 1px solid rgba(232, 208, 122, 0.45);
+  padding: 0.42rem 0.95rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #f7f4ef;
+  background: rgba(8, 16, 24, 0.3);
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.journal-cats a:hover,
+.journal-cats a.is-on {
+  background: #e8d07a;
+  color: #16120a;
+}
+
+.journal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journal-tags li {
+  border-radius: 999px;
+  border: 1px solid rgba(232, 208, 122, 0.4);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.74rem;
+  color: rgba(247, 244, 239, 0.85);
+}
+
 .journal-grid {
   margin-top: clamp(1.1rem, 2.2vw, 1.75rem);
   display: grid;

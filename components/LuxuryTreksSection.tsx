@@ -5,6 +5,7 @@ import MediaImage from "@/components/MediaImage";
 import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { JourneyPackage } from "@/lib/content-types";
+import { resolveCatalogHref } from "@/lib/trip-packages";
 
 function CalendarIcon() {
   return (
@@ -31,10 +32,10 @@ function DifficultyIcon() {
   );
 }
 
-function PackageCard({ pkg, priority }: { pkg: JourneyPackage; priority?: boolean }) {
+function PackageCard({ pkg, href, priority }: { pkg: JourneyPackage; href: string; priority?: boolean }) {
   const daysLabel = pkg.days === 1 ? "1 Day" : `${pkg.days} Days`;
   return (
-    <Link href={pkg.href} className="jour-card group">
+    <Link href={href} className="jour-card group">
       <div className="jour-card-media">
         <MediaImage
           src={pkg.imageSrc}
@@ -78,7 +79,7 @@ function PackageCard({ pkg, priority }: { pkg: JourneyPackage; priority?: boolea
 }
 
 export default function LuxuryTreksSection() {
-  const { journeys } = useSiteContent();
+  const { journeys, tripPackages } = useSiteContent();
   if (!journeys.visible) return null;
 
   return (
@@ -98,7 +99,7 @@ export default function LuxuryTreksSection() {
 
           <div className="jour-grid">
             {journeys.packages.map((pkg, index) => (
-              <PackageCard key={pkg.id} pkg={pkg} priority={index < 4} />
+              <PackageCard key={pkg.id} pkg={pkg} href={resolveCatalogHref(pkg, tripPackages)} priority={index < 4} />
             ))}
           </div>
         </div>

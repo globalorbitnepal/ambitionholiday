@@ -9,6 +9,8 @@ import TripPackagePage from "@/components/TripPackagePage";
 import { readContent } from "@/lib/content";
 import { getAllRoutes, getNavItemBySlug, getRouteBySlug } from "@/lib/nav";
 import { findTripBySlug, tripPath } from "@/lib/trip-packages";
+import { absoluteUrl, SITE_NAME, SITE_URL, splitKeywords } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -33,16 +35,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pkg = findTripBySlug(content.tripPackages, slug);
   if (pkg) {
     const path = tripPath(pkg);
+    const title = pkg.metaTitle?.trim() || `${pkg.title} | ${SITE_NAME}`;
+    const description = pkg.metaDescription?.trim() || pkg.subtitle;
+    const ogTitle = pkg.ogTitle?.trim() || title;
+    const ogDescription = pkg.ogDescription?.trim() || description;
+    const image = pkg.ogImageSrc?.trim() || pkg.heroSrc;
+    const images = image ? [{ url: absoluteUrl(image), alt: pkg.heroAlt || pkg.title }] : undefined;
+    const keywords = [...splitKeywords(pkg.metaKeywords || ""), ...(pkg.focusKeyword ? [pkg.focusKeyword] : [])];
     return {
-      title: pkg.metaTitle,
-      description: pkg.metaDescription,
-      keywords: pkg.metaKeywords,
+      title: { absolute: title },
+      description,
+      keywords: keywords.length ? Array.from(new Set(keywords)) : undefined,
       alternates: { canonical: path },
+      robots: pkg.noindex ? { index: false, follow: true } : undefined,
       openGraph: {
-        title: pkg.metaTitle,
-        description: pkg.metaDescription,
+        title: ogTitle,
+        description: ogDescription,
         url: path,
+        siteName: SITE_NAME,
         type: "website",
+        images,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: ogTitle,
+        description: ogDescription,
+        images: images?.map((item) => item.url),
       },
     };
   }
@@ -88,7 +106,56 @@ export default async function SlugPage({ params }: Props) {
 
   let page: ReactNode;
   if (pkg) {
-    page = <TripPackagePage pkg={pkg} />;
+    const url = absoluteUrl(tripPath(pkg));
+    const offerPrice = pkg.priceUsd > 0 ? pkg.priceUsd : undefined;
+    page = (
+      <>
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "TouristTrip",
+            name: pkg.title,
+            description: pkg.metaDescription || pkg.subtitle,
+            url,
+            image: [pkg.heroSrc, ...pkg.gallery].filter(Boolean).slice(0, 6).map((src) => absoluteUrl(src)),
+            touristType: pkg.activityLabel || "Luxury travellers",
+            itinerary: pkg.itinerary?.length
+              ? {
+                  "@type": "ItemList",
+                  numberOfItems: pkg.itinerary.length,
+                  itemListElement: pkg.itinerary.map((day, index) => ({
+                    "@type": "ListItem",
+                    position: index + 1,
+                    name: `Day ${day.day}: ${day.title}`,
+                  })),
+                }
+              : undefined,
+            offers: offerPrice
+              ? {
+                  "@type": "Offer",
+                  price: offerPrice,
+                  priceCurrency: "USD",
+                  url,
+                  availability: "https://schema.org/InStock",
+                }
+              : undefined,
+            provider: { "@type": "TravelAgency", name: SITE_NAME, url: SITE_URL },
+          }}
+        />
+        {pkg.faqs?.length ? (
+          <JsonLd
+            data={{
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: pkg.faqs
+                .filter((faq) => faq.q && faq.a)
+                .map((faq) => ({ "@type": "Question", name: faq.q, acceptedAnswer: { "@type": "Answer", text: faq.a } })),
+            }}
+          />
+        ) : null}
+        <TripPackagePage pkg={pkg} />
+      </>
+    );
   } else {
     const route = getRouteBySlug(slug);
     if (!route) notFound();

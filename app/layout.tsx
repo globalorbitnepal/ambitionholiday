@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import NavigationUX from "@/components/NavigationUX";
 import { DEFAULT_SITE_LOGO } from "@/lib/media-src";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Ambition Holiday | Journeys Beyond Limits",
   description:
     "Premium Nepal trekking and adventure travel with Ambition Holiday. Discover handpicked routes, expert guides, and journeys beyond limits.",

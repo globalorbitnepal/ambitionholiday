@@ -671,6 +671,229 @@
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+.admin-tabs {
+  flex-wrap: wrap;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-toolbar input,
+.admin-toolbar select {
+  border: 1px solid #d5dbe3;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font: inherit;
+  background: #fff;
+  color: #1c2430;
+}
+
+.admin-toolbar .grow {
+  flex: 1 1 220px;
+}
+
+.admin-btn-sm {
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  width: auto;
+  margin-top: 0;
+}
+
+.admin-btn-danger {
+  background: #fff;
+  border: 1px solid #fecdca;
+  color: #b42318;
+}
+
+.admin-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-badge--good {
+  background: #e7f6ec;
+  color: #1f7a45;
+}
+
+.admin-badge--ok {
+  background: #fdf3dc;
+  color: #93650a;
+}
+
+.admin-badge--bad {
+  background: #fdecec;
+  color: #b42318;
+}
+
+.admin-badge--draft {
+  background: #eef1f5;
+  color: #4b5565;
+}
+
+.admin-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+.admin-editor-side {
+  display: grid;
+  gap: 14px;
+  position: sticky;
+  top: 12px;
+}
+
+.admin-permalink {
+  font-size: 0.82rem;
+  color: #667084;
+  margin: -8px 0 14px;
+  word-break: break-all;
+}
+
+.admin-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.admin-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: #111820;
+  color: #f7f4ef;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+.admin-tag button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.admin-mobile-nav {
+  display: none;
+}
+
+.admin-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-warn {
+  display: block;
+  margin-top: 4px;
+  color: #b42318;
+  font-size: 0.8rem;
+}
+
+.admin-flash {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #ecfdf3;
+  color: #05603a;
+  font-size: 0.9rem;
+}
+
+.admin-role {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(201, 162, 39, 0.18);
+  color: #e7c766;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1100px) {
+  .admin-editor {
+    grid-template-columns: 1fr;
+  }
+  .admin-editor-side {
+    position: static;
+  }
+}
+
+@media (max-width: 860px) {
+  .admin-mobile-nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 12px;
+    background: #111820;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-mobile-nav a,
+  .admin-mobile-nav button {
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 0.82rem;
+    color: #f7f4ef;
+    background: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .admin-mobile-nav a.active {
+    background: #c9a227;
+    color: #16120a;
+    font-weight: 650;
+  }
+  .admin-page {
+    padding: 14px;
+  }
+  .admin-top input[type="search"] {
+    display: none;
+  }
+}
+
 @media (max-width: 1100px) {
   .admin-stats,
   .admin-stats--dash,
@@ -692,7 +915,16 @@
   }
   .admin-stats,
   .admin-pkg-grid,
-  .admin-cat-grid {
+  .admin-cat-grid,
+  .admin-grid-2,
+  .admin-grid-3 {
     grid-template-columns: 1fr;
+  }
+  .admin-chip-row {
+    flex-wrap: wrap;
+  }
+  .admin-chip-search {
+    margin-left: 0 !important;
+    width: 100%;
   }
 }

@@ -60,6 +60,10 @@ export async function POST(req: Request) {
   revalidatePath("/everest-base-camp-trek");
   revalidatePath("/everest-base-camp-luxury-trek");
   revalidatePath("/saved");
+  revalidatePath("/sitemap.xml");
+  for (const pkg of saved.tripPackages ?? []) {
+    if (pkg?.slug) revalidatePath(`/${pkg.slug.replace(/^\//, "")}`);
+  }
   return NextResponse.json(saved, {
     headers: {
       "Cache-Control": "no-store",

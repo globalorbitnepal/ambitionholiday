@@ -6,14 +6,17 @@ import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { publishedJournalPosts } from "@/lib/blog";
+import { blogCategories, publishedJournalPosts } from "@/lib/blog";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 
 const WALLPAPER = SECTION_WALLPAPER;
 
-export default function JournalIndexPage() {
+export default function JournalIndexPage({ category = "" }: { category?: string }) {
   const { blog } = useSiteContent();
-  const posts = publishedJournalPosts(blog);
+  const allPosts = publishedJournalPosts(blog);
+  const categories = blogCategories(blog).filter((cat) => allPosts.some((post) => post.category === cat.label));
+  const activeCategory = categories.find((cat) => cat.slug === category);
+  const posts = activeCategory ? allPosts.filter((post) => post.category === activeCategory.label) : allPosts;
 
   return (
     <main className="min-w-0 overflow-x-clip pb-[env(safe-area-inset-bottom)]">
@@ -35,12 +38,30 @@ export default function JournalIndexPage() {
           <div className="explore-hub-glass contact-glass">
             <p className="explore-hub-eyebrow">{blog.eyebrow || "Journal"}</p>
             <h1 className="contact-brand font-[family-name:var(--font-cormorant)]">
-              Stories from the Himalayas
+              {activeCategory ? activeCategory.label : "Stories from the Himalayas"}
             </h1>
             <p className="contact-lead">
-              {blog.body ||
+              {activeCategory?.description ||
+                blog.body ||
                 "Guides, lake trails, high passes and short luxury itineraries — written by specialists who walk these routes."}
             </p>
+            {categories.length > 1 ? (
+              <nav className="journal-cats" aria-label="Journal categories">
+                <Link href="/journal" className={activeCategory ? "" : "is-on"} scroll={false}>
+                  All
+                </Link>
+                {categories.map((cat) => (
+                  <Link
+                    key={cat.id}
+                    href={`/journal?category=${cat.slug}`}
+                    className={activeCategory?.id === cat.id ? "is-on" : ""}
+                    scroll={false}
+                  >
+                    {cat.label}
+                  </Link>
+                ))}
+              </nav>
+            ) : null}
           </div>
 
           <ul className="journal-grid">

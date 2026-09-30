@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
+import { useSiteContent } from "@/components/SiteContentProvider";
+import { resolveCatalogHref } from "@/lib/trip-packages";
 import type { NepalContent, NepalPackage } from "@/lib/nepal-defaults";
 
 function CalendarIcon() {
@@ -30,10 +32,20 @@ function PeakIcon() {
   );
 }
 
-function PackageCard({ pkg, priority, cacheKey }: { pkg: NepalPackage; priority?: boolean; cacheKey?: string }) {
+function PackageCard({
+  pkg,
+  href,
+  priority,
+  cacheKey,
+}: {
+  pkg: NepalPackage;
+  href: string;
+  priority?: boolean;
+  cacheKey?: string;
+}) {
   const daysLabel = pkg.days === 1 ? "1 Day" : `${pkg.days} Days`;
   return (
-    <Link href={pkg.href || "/contact"} className="nepal-pkg group">
+    <Link href={href} className="nepal-pkg group">
       <MediaImage
         src={pkg.imageSrc}
         alt={pkg.imageAlt}
@@ -101,6 +113,7 @@ export default function DestinationCatalogPage({ page, coverAlt, tablistLabel, s
     [showCategories, active, categories],
   );
   const tabCount = categories.length;
+  const { tripPackages } = useSiteContent();
 
   if (!listed.length && !active) return null;
 
@@ -191,7 +204,13 @@ export default function DestinationCatalogPage({ page, coverAlt, tablistLabel, s
             )}
             <div className="nepal-pkg-grid nepal-pkg-grid-hd">
               {listed.map((pkg, index) => (
-                <PackageCard key={pkg.id} pkg={pkg} priority={index < 3} cacheKey={cacheKey} />
+                <PackageCard
+                  key={pkg.id}
+                  pkg={pkg}
+                  href={resolveCatalogHref(pkg, tripPackages)}
+                  priority={index < 3}
+                  cacheKey={cacheKey}
+                />
               ))}
             </div>
           </div>

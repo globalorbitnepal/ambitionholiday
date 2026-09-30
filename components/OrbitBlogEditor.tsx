@@ -8,7 +8,8 @@ import {
   type BlogSection,
   type SiteContent,
 } from "@/lib/content-types";
-import { allJournalPosts, decorateBlogPost, slugifyBlog } from "@/lib/blog";
+import { allJournalPosts, blogCategories, blogSeoInput, decorateBlogPost, slugifyBlog } from "@/lib/blog";
+import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
 import { mediaSrc } from "@/lib/media-src";
 import { postOrbitUpload } from "@/lib/orbit-upload-client";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
@@ -85,6 +86,7 @@ type Props = {
 export default function OrbitBlogEditor({ content, setContent, save }: Props) {
   const blog = content.blog ?? DEFAULT_CONTENT.blog;
   const posts = allJournalPosts(blog);
+  const categories = blogCategories(blog);
   const [busy, setBusy] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(posts[0]?.id ?? null);
 
@@ -267,7 +269,17 @@ export default function OrbitBlogEditor({ content, setContent, save }: Props) {
                         </select>
                       </Field>
                       <Field label="Category">
-                        <input className={inputClass} value={post.category} onChange={(e) => updatePost(index, { ...post, category: e.target.value })} />
+                        <input
+                          className={inputClass}
+                          list="orbit-blog-categories"
+                          value={post.category}
+                          onChange={(e) => updatePost(index, { ...post, category: e.target.value })}
+                        />
+                        <datalist id="orbit-blog-categories">
+                          {categories.map((cat) => (
+                            <option key={cat.id} value={cat.label} />
+                          ))}
+                        </datalist>
                       </Field>
                       <div className="sm:col-span-2">
                         <Field label="Title">
@@ -307,12 +319,23 @@ export default function OrbitBlogEditor({ content, setContent, save }: Props) {
                           <textarea className={`${inputClass} min-h-20`} value={post.excerpt} onChange={(e) => updatePost(index, { ...post, excerpt: e.target.value })} />
                         </Field>
                       </div>
-                      <Field label="Meta title">
-                        <input className={inputClass} value={post.metaTitle || ""} onChange={(e) => updatePost(index, { ...post, metaTitle: e.target.value })} />
+                      <Field label="Focus keyword">
+                        <input
+                          className={inputClass}
+                          value={post.focusKeyword || ""}
+                          placeholder="e.g. Everest Base Camp trek"
+                          onChange={(e) => updatePost(index, { ...post, focusKeyword: e.target.value })}
+                        />
                       </Field>
                       <Field label="Image alt">
                         <input className={inputClass} value={post.imageAlt} onChange={(e) => updatePost(index, { ...post, imageAlt: e.target.value })} />
                       </Field>
+                      <div className="sm:col-span-2">
+                        <Field label="SEO title">
+                          <input className={inputClass} value={post.metaTitle || ""} onChange={(e) => updatePost(index, { ...post, metaTitle: e.target.value })} />
+                          <SeoLengthHint value={post.metaTitle || post.title} kind="title" theme="dark" />
+                        </Field>
+                      </div>
                       <div className="sm:col-span-2">
                         <Field label="Meta description">
                           <textarea
@@ -320,7 +343,72 @@ export default function OrbitBlogEditor({ content, setContent, save }: Props) {
                             value={post.metaDescription || ""}
                             onChange={(e) => updatePost(index, { ...post, metaDescription: e.target.value })}
                           />
+                          <SeoLengthHint value={post.metaDescription || ""} kind="description" theme="dark" />
                         </Field>
+                      </div>
+                      <Field label="Meta keywords (comma separated)">
+                        <input className={inputClass} value={post.metaKeywords || ""} onChange={(e) => updatePost(index, { ...post, metaKeywords: e.target.value })} />
+                      </Field>
+                      <Field label="Tags (comma separated)">
+                        <input
+                          key={`${post.id}-${(post.tags ?? []).join("|")}`}
+                          className={inputClass}
+                          defaultValue={(post.tags ?? []).join(", ")}
+                          placeholder="Everest, trekking, Nepal"
+                          onBlur={(e) =>
+                            updatePost(index, {
+                              ...post,
+                              tags: e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean),
+                            })
+                          }
+                        />
+                      </Field>
+                      <Field label="Social share title (OG)">
+                        <input
+                          className={inputClass}
+                          value={post.ogTitle || ""}
+                          placeholder="Defaults to SEO title"
+                          onChange={(e) => updatePost(index, { ...post, ogTitle: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="Social share image (OG)">
+                        <div className="flex gap-2">
+                          <input
+                            className={inputClass}
+                            value={post.ogImageSrc || ""}
+                            placeholder="Defaults to cover image"
+                            onChange={(e) => updatePost(index, { ...post, ogImageSrc: e.target.value })}
+                          />
+                          <OrbitMediaButtons onPicked={(url) => updatePost(index, { ...post, ogImageSrc: url })} />
+                        </div>
+                      </Field>
+                      <div className="sm:col-span-2">
+                        <Field label="Social share description (OG)">
+                          <textarea
+                            className={`${inputClass} min-h-16`}
+                            value={post.ogDescription || ""}
+                            placeholder="Defaults to meta description"
+                            onChange={(e) => updatePost(index, { ...post, ogDescription: e.target.value })}
+                          />
+                        </Field>
+                      </div>
+                      <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(post.noindex)}
+                          onChange={(e) => updatePost(index, { ...post, noindex: e.target.checked })}
+                        />
+                        Hide from Google (noindex)
+                      </label>
+                      <div className="sm:col-span-2">
+                        <SeoPanel
+                          theme="dark"
+                          input={blogSeoInput(post)}
+                          path={`/journal/${post.slug}`}
+                          ogTitle={post.ogTitle}
+                          ogDescription={post.ogDescription}
+                          ogImageSrc={post.ogImageSrc}
+                        />
                       </div>
                       <Field label="Homepage badge">
                         <input className={inputClass} value={post.badge} onChange={(e) => updatePost(index, { ...post, badge: e.target.value })} />
