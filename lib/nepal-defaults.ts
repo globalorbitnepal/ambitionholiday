@@ -114,6 +114,7 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Moderate",
           "A private sanctuary walk through rhododendron forests to the foot of Annapurna.",
           "Best Seller",
+          "/annapurna-base-camp-luxury-trek",
         ),
         pkg(
           "mustang-lux",

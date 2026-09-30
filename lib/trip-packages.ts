@@ -7,6 +7,7 @@ import {
   EBC_ITINERARY_INTRO,
   EBC_LUKLA_NOTE,
 } from "./ebc-luxury-content";
+import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
 
 export type TrekItineraryDay = {
   id: string;
@@ -653,6 +654,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     luklaNote: EBC_LUKLA_NOTE,
     reviewsWallpaperSrc: "/images/atmosphere/ebc-premium-section.webp",
   },
+  ABC_LUXURY_TRIP_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [
@@ -770,6 +772,10 @@ export function findTripBySlug(packages: TrekPackage[], slug: string) {
     aliases.add("everest-base-camp-trek");
     aliases.add("everest-base-camp-luxury-trek");
   }
+  if (slug === "annapurna-base-camp-luxury-trek" || slug === "luxury-annapurna-base-camp-trek") {
+    aliases.add("annapurna-base-camp-luxury-trek");
+    aliases.add("luxury-annapurna-base-camp-trek");
+  }
   return packages.find((pkg) => aliases.has(pkg.slug) && pkg.status === "published");
 }
 
@@ -790,13 +796,23 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       galleryAlts: item.galleryAlts?.length ? item.galleryAlts : def.galleryAlts,
       tripGalleryTitle: item.tripGalleryTitle?.trim() || def.tripGalleryTitle,
       groupPrices: item.groupPrices?.length ? item.groupPrices : def.groupPrices,
-      itinerary: /sightseeing/i.test(item.itinerary?.[1]?.title || "")
-        ? item.itinerary.map((day, index) => ({
-            ...def.itinerary[index],
-            ...day,
-            distance: day.distance || def.itinerary[index]?.distance || "",
-          }))
-        : def.itinerary,
+      itinerary:
+        def.id === EBC_PACKAGE_ID
+          ? /sightseeing/i.test(item.itinerary?.[1]?.title || "")
+            ? item.itinerary.map((day, index) => ({
+                ...def.itinerary[index],
+                ...day,
+                distance: day.distance || def.itinerary[index]?.distance || "",
+              }))
+            : def.itinerary
+          : item.itinerary?.length >= def.itinerary.length &&
+              item.itinerary.every((day) => day.title?.trim() && day.body?.trim())
+            ? item.itinerary.map((day, index) => ({
+                ...def.itinerary[index],
+                ...day,
+                distance: day.distance || def.itinerary[index]?.distance || "",
+              }))
+            : def.itinerary,
       itineraryIntro: /personalized and comfortable/i.test(item.itineraryIntro || "") ? item.itineraryIntro : def.itineraryIntro,
       faqs: item.faqs?.length ? item.faqs : def.faqs,
       whyItems: item.whyItems?.length ? item.whyItems : def.whyItems,
