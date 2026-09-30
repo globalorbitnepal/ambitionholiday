@@ -59,10 +59,16 @@ export async function POST(req: Request) {
   revalidatePath("/trip", "layout");
   revalidatePath("/everest-base-camp-trek");
   revalidatePath("/everest-base-camp-luxury-trek");
+  revalidatePath("/annapurna-base-camp-luxury-trek");
+  revalidatePath("/luxury-annapurna-base-camp-trek");
   revalidatePath("/saved");
   revalidatePath("/sitemap.xml");
   for (const pkg of saved.tripPackages ?? []) {
-    if (pkg?.slug) revalidatePath(`/${pkg.slug.replace(/^\//, "")}`);
+    if (pkg?.slug) {
+      revalidatePath(`/${pkg.slug.replace(/^\//, "")}`);
+      revalidatePath(`/packages/${pkg.slug.replace(/^\//, "")}`);
+      revalidatePath(`/trip/${pkg.slug.replace(/^\//, "")}`);
+    }
   }
   return NextResponse.json(saved, {
     headers: {

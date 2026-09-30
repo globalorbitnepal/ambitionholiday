@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 
+const CMS_SAVED = "ambition-cms-saved";
+
 export function useAdminContent() {
   const [content, setContent] = useState<SiteContent | null>(null);
   const [status, setStatus] = useState("");
@@ -16,6 +18,12 @@ export function useAdminContent() {
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  useEffect(() => {
+    const onSaved = () => void load();
+    window.addEventListener(CMS_SAVED, onSaved);
+    return () => window.removeEventListener(CMS_SAVED, onSaved);
   }, [load]);
 
   const save = useCallback(async (next: SiteContent) => {
@@ -34,7 +42,8 @@ export function useAdminContent() {
         return false;
       }
       setContent(data);
-      setStatus("Saved");
+      setStatus("Live website updated");
+      window.dispatchEvent(new Event(CMS_SAVED));
       return true;
     } catch {
       setStatus("Save failed");
@@ -59,5 +68,5 @@ export function useAdminContent() {
     [content, save],
   );
 
-  return { content: content ?? DEFAULT_CONTENT, loaded: Boolean(content), status, busy, setContent, save, saveMerged };
+  return { content: content ?? DEFAULT_CONTENT, loaded: Boolean(content), status, busy, setContent, save, saveMerged, setStatus };
 }

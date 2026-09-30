@@ -14,7 +14,7 @@ import {
   IconSettings,
   IconStar,
 } from "@/components/admin/AdminNavIcons";
-import { tripPath } from "@/lib/trip-packages";
+import { tripPath, tripSlugAliases } from "@/lib/trip-packages";
 
 const MAIN_NAV = [
   { href: "/admin", label: "Dashboard", icon: IconDashboard },
@@ -40,7 +40,15 @@ export default function AdminSideNav() {
 
   const packages = useMemo(() => {
     if (!loaded) return [];
-    return [...content.tripPackages].sort((a, b) => a.title.localeCompare(b.title));
+    const seen = new Set<string>();
+    return [...content.tripPackages]
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .filter((pkg) => {
+        const keys = [pkg.id, pkg.catalogId, ...tripSlugAliases(pkg.slug)].filter(Boolean);
+        if (keys.some((key) => seen.has(key))) return false;
+        keys.forEach((key) => seen.add(key));
+        return true;
+      });
   }, [content.tripPackages, loaded]);
 
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
@@ -75,7 +83,7 @@ export default function AdminSideNav() {
                   const editHref = `/admin/packages/${pkg.id}`;
                   const onEditor = pathname === editHref;
                   return (
-                    <Link key={pkg.id} href={editHref} className={onEditor ? "active" : ""} title={tripPath(pkg)}>
+                    <Link key={pkg.id} href={editHref} className={onEditor ? "active" : ""} title={`${pkg.title} · ${tripPath(pkg)}`}>
                       <span className="admin-side-pkg-dot" data-status={pkg.status} />
                       <span className="admin-side-pkg-title">{pkg.title}</span>
                     </Link>
@@ -96,14 +104,6 @@ export default function AdminSideNav() {
           {item.label}
         </Link>
       ))}
-
-      <div className="admin-side-footer-card">
-        <img src="/images/nepal/nepal-trek-ebc.webp" alt="" loading="lazy" />
-        <div>
-          <strong>Explore · Manage · Grow</strong>
-          <span>Edit every trek page section by section.</span>
-        </div>
-      </div>
     </nav>
   );
 }

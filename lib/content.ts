@@ -263,10 +263,11 @@ async function healStalePrimaryContent(merged: SiteContent): Promise<void> {
   try {
     const raw = await fs.readFile(primary, "utf8");
     const parsed = JSON.parse(raw) as SiteContent;
-    const primaryCount = parsed.tripPackages?.length ?? 0;
+    const primaryIds = (parsed.tripPackages ?? []).map((pkg) => pkg.id).sort().join("|");
+    const mergedIds = packages.map((pkg) => pkg.id).sort().join("|");
     const primaryUpdated = String(parsed.updatedAt || "");
     const mergedUpdated = String(merged.updatedAt || "");
-    if (primaryCount >= packages.length && primaryUpdated >= mergedUpdated) return;
+    if (primaryIds === mergedIds && primaryUpdated >= mergedUpdated) return;
     await writeContent(merged);
   } catch {
     // unreadable primary — writeContent below will create it on next save
@@ -768,7 +769,7 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
   }
   const next: SiteContent = withSharedSectionWallpaper({
     ...content,
-    tripPackages,
+    tripPackages: coerceTripPackages(tripPackages),
     header: {
       ...content.header,
       logoSrc: headerLogoSrc(content.header?.logoSrc),

@@ -719,7 +719,9 @@ export function packageSlugProblem(slug: string, packages: TrekPackage[], selfId
   if (!slug) return "Add a URL slug.";
   if (!isValidPackageSlug(slug)) return "Use lowercase letters, numbers and hyphens only (e.g. annapurna-base-camp-trek).";
   if (RESERVED_PACKAGE_SLUGS.includes(slug)) return `/${slug} is used by another site page. Choose a different slug.`;
-  if (packages.some((pkg) => pkg.id !== selfId && pkg.slug === slug)) return `Another package already uses /${slug}.`;
+  if (packages.some((pkg) => pkg.id !== selfId && [...tripSlugAliases(pkg.slug)].includes(slug))) {
+    return `Another package already uses /${slug}.`;
+  }
   return "";
 }
 
@@ -766,24 +768,77 @@ export function tripPath(pkg: Pick<TrekPackage, "slug">) {
   return `/${pkg.slug.replace(/^\//, "")}`;
 }
 
-export function findTripBySlug(packages: TrekPackage[], slug: string) {
-  const aliases = new Set([slug]);
-  if (slug === "everest-base-camp-trek" || slug === "everest-base-camp-luxury-trek") {
+export function tripSlugAliases(slug: string) {
+  const s = (slug || "").replace(/^\//, "");
+  const aliases = new Set<string>(s ? [s] : []);
+  if (s === "everest-base-camp-trek" || s === "everest-base-camp-luxury-trek") {
     aliases.add("everest-base-camp-trek");
     aliases.add("everest-base-camp-luxury-trek");
   }
-  if (slug === "annapurna-base-camp-luxury-trek" || slug === "luxury-annapurna-base-camp-trek") {
+  if (s === "annapurna-base-camp-luxury-trek" || s === "luxury-annapurna-base-camp-trek") {
     aliases.add("annapurna-base-camp-luxury-trek");
     aliases.add("luxury-annapurna-base-camp-trek");
   }
+  return aliases;
+}
+
+export function packagesSharePage(
+  a: Pick<TrekPackage, "id" | "catalogId" | "slug">,
+  b: Pick<TrekPackage, "id" | "catalogId" | "slug">,
+) {
+  if (a.id === b.id) return true;
+  const aIds = new Set([a.id, a.catalogId, a.catalogId ? `trip-${a.catalogId}` : ""].filter(Boolean));
+  if (aIds.has(b.id) || (b.catalogId && (aIds.has(b.catalogId) || aIds.has(`trip-${b.catalogId}`)))) return true;
+  if (!a.slug || !b.slug) return false;
+  const aliases = tripSlugAliases(a.slug);
+  return [...tripSlugAliases(b.slug)].some((item) => aliases.has(item));
+}
+
+export function findTripBySlug(packages: TrekPackage[], slug: string) {
+  const aliases = tripSlugAliases(slug);
   return packages.find((pkg) => aliases.has(pkg.slug) && pkg.status === "published");
+}
+
+function foldDuplicateTripPackages(packages: TrekPackage[]): TrekPackage[] {
+  const out: TrekPackage[] = [];
+  for (const pkg of packages) {
+    const idx = out.findIndex((keep) => packagesSharePage(keep, pkg));
+    if (idx < 0) {
+      out.push(pkg);
+      continue;
+    }
+    const keep = out[idx];
+    const canonical = DEFAULT_TRIP_PACKAGES.find((d) => packagesSharePage(d, keep) || packagesSharePage(d, pkg));
+    out[idx] = {
+      ...keep,
+      ...pkg,
+      id: canonical?.id ?? keep.id,
+      catalogId: canonical?.catalogId ?? keep.catalogId ?? pkg.catalogId,
+      slug: pkg.slug || keep.slug || canonical?.slug || pkg.slug,
+      groupPrices: pkg.groupPrices?.length ? pkg.groupPrices : keep.groupPrices,
+      priceUsd: typeof pkg.priceUsd === "number" ? pkg.priceUsd : keep.priceUsd,
+    };
+  }
+  return out;
 }
 
 export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackage[] {
   const incoming = Array.isArray(saved) ? saved : [];
-  const byId = new Map(incoming.map((pkg) => [pkg.id, pkg]));
+  const usedIds = new Set<string>();
   const merged = DEFAULT_TRIP_PACKAGES.map((def) => {
-    const item = byId.get(def.id);
+    const matches = incoming.filter((pkg) => pkg.id === def.id || packagesSharePage(pkg, def));
+    for (const match of matches) usedIds.add(match.id);
+    const item = matches.reduce<TrekPackage | undefined>((acc, next) => {
+      if (!acc) return next;
+      return {
+        ...acc,
+        ...next,
+        id: def.id,
+        catalogId: def.catalogId,
+        groupPrices: next.groupPrices?.length ? next.groupPrices : acc.groupPrices,
+        priceUsd: typeof next.priceUsd === "number" ? next.priceUsd : acc.priceUsd,
+      };
+    }, undefined);
     if (!item) return def;
     return {
       ...def,
@@ -861,8 +916,10 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       reviewsWallpaperSrc: item.reviewsWallpaperSrc || def.reviewsWallpaperSrc,
     };
   });
-  const extras = incoming.filter((pkg) => !DEFAULT_TRIP_PACKAGES.some((d) => d.id === pkg.id));
-  return [...merged, ...extras];
+  const extras = incoming.filter(
+    (pkg) => !usedIds.has(pkg.id) && !DEFAULT_TRIP_PACKAGES.some((d) => packagesSharePage(d, pkg)),
+  );
+  return foldDuplicateTripPackages([...merged, ...extras]);
 }
 
 export function cloneTrekTemplate(fields: {
@@ -879,7 +936,7 @@ export function cloneTrekTemplate(fields: {
   status?: TrekPackage["status"];
 }): TrekPackage {
   const catalogId = fields.catalogId || `pkg-${Date.now()}`;
-  const id = fields.catalogId ? `trip-${fields.catalogId}` : catalogId;
+  const id = DEFAULT_TRIP_PACKAGES.find((d) => d.catalogId === catalogId || d.id === catalogId)?.id || catalogId;
   const base = DEFAULT_TRIP_PACKAGES[0];
   const slug = fields.slug.replace(/^\//, "").replace(/^trip\//, "").replace(/\s+/g, "-").toLowerCase();
   const days = fields.days && fields.days > 0 ? fields.days : 7;

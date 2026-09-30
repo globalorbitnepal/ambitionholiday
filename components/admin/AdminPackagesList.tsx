@@ -11,7 +11,9 @@ import {
   isValidPackageSlug,
   packageSeoInput,
   packageSlugProblem,
+  packagesSharePage,
   tripPath,
+  tripSlugAliases,
   type TrekPackage,
 } from "@/lib/trip-packages";
 import { analyzeSeo, seoScoreTone, slugify } from "@/lib/seo";
@@ -36,7 +38,14 @@ function cardSlug(card: NepalPackage) {
 
 function findPageForCard(card: NepalPackage, packages: TrekPackage[]) {
   const slug = (card.href || "").replace(/^\//, "").replace(/^trip\//, "");
-  return packages.find((pkg) => pkg.catalogId === card.id || (isValidPackageSlug(slug) && pkg.slug === slug));
+  return packages.find(
+    (pkg) =>
+      pkg.catalogId === card.id ||
+      pkg.id === card.id ||
+      pkg.id === `trip-${card.id}` ||
+      (isValidPackageSlug(slug) && [...tripSlugAliases(pkg.slug)].includes(slug)) ||
+      packagesSharePage(pkg, { id: card.id, catalogId: card.id, slug }),
+  );
 }
 
 function uniqueSlug(base: string, taken: Set<string>) {
@@ -110,9 +119,13 @@ export default function AdminPackagesList() {
 
   const packages = useMemo(() => {
     const needle = q.trim().toLowerCase();
+    const seen = new Set<string>();
     return content.tripPackages.filter((pkg) => {
       if (country !== "all" && pkg.country !== country) return false;
       if (needle && !`${pkg.title} ${pkg.slug}`.toLowerCase().includes(needle)) return false;
+      const keys = [pkg.id, pkg.catalogId, ...tripSlugAliases(pkg.slug)].filter(Boolean);
+      if (keys.some((key) => seen.has(key))) return false;
+      keys.forEach((key) => seen.add(key));
       return true;
     });
   }, [content.tripPackages, country, q]);

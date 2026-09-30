@@ -12,6 +12,7 @@ import {
   packageHeadings,
   packageSeoInput,
   packageSlugProblem,
+  packagesSharePage,
   tripPath,
   type TrekItineraryDay,
   type TrekPackage,
@@ -83,10 +84,29 @@ export default function AdminPackageEditor() {
   useEffect(() => {
     if (!loaded) return;
     const found = content.tripPackages.find((item) => item.id === params.id);
-    const next = found ? { ...found } : null;
-    setPkg(next);
-    baselineRef.current = next ? structuredClone(next) : null;
-  }, [loaded, params.id]);
+    if (!found) {
+      const fallback = content.tripPackages.find(
+        (item) =>
+          item.id === params.id.replace(/^trip-/, "") ||
+          packagesSharePage(item, { id: params.id, catalogId: params.id.replace(/^trip-/, ""), slug: "" }),
+      );
+      if (fallback) {
+        router.replace(`/admin/packages/${fallback.id}`);
+        return;
+      }
+      setPkg(null);
+      baselineRef.current = null;
+      return;
+    }
+    setPkg((cur) => {
+      if (cur && cur.id === found.id) return cur;
+      baselineRef.current = structuredClone(found);
+      return { ...found };
+    });
+    if (!baselineRef.current || baselineRef.current.id !== found.id) {
+      baselineRef.current = structuredClone(found);
+    }
+  }, [loaded, params.id, content.tripPackages, router]);
 
   function defaultWatch(cur: TrekPackage) {
     return (
@@ -126,6 +146,7 @@ export default function AdminPackageEditor() {
     const local: TrekPackage = {
       ...pkg,
       slug,
+      groupPrices: groupTiers(pkg),
       status: publish ? "published" : pkg.status,
       updatedAt: new Date().toISOString(),
     };
@@ -179,18 +200,33 @@ export default function AdminPackageEditor() {
       <p className="admin-lead" style={{ marginBottom: 4 }}>
         <Link href="/admin/packages">← All packages</Link>
       </p>
-      <h1>{pkg.title || "Untitled package"}</h1>
-      <p className="admin-lead admin-row-actions">
-        <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
-        <span className="admin-permalink">{tripPath(pkg)}</span>
-        {pkg.status === "published" ? (
-          <a href={tripPath(pkg)} target="_blank" rel="noreferrer">
-            View live ↗
-          </a>
-        ) : (
-          <span>Draft — visitors cannot see this page until you publish it.</span>
-        )}
-      </p>
+      <div className="admin-editor-head">
+        <div>
+          <h1>{pkg.title || "Untitled package"}</h1>
+          <p className="admin-lead admin-row-actions">
+            <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
+            <span className="admin-permalink">{tripPath(pkg)}</span>
+            {pkg.status === "published" ? (
+              <a href={tripPath(pkg)} target="_blank" rel="noreferrer">
+                View live ↗
+              </a>
+            ) : (
+              <span>Draft — publish to show this page on the website.</span>
+            )}
+          </p>
+        </div>
+        <div className="admin-sticky-save">
+          {status ? <span className={status.startsWith("Live") || status === "Saved" ? "admin-ok" : "admin-error"}>{status}</span> : null}
+          {pkg.status !== "published" ? (
+            <button type="button" className="admin-btn admin-btn-ghost" disabled={busy} onClick={() => void onSave(false)}>
+              Save draft
+            </button>
+          ) : null}
+          <button type="button" className="admin-btn admin-btn-gold" disabled={busy} onClick={() => void onSave(true)}>
+            {busy ? "Updating…" : "Save & update live"}
+          </button>
+        </div>
+      </div>
       <div className="admin-tabs admin-tabs--sections">
         {TABS.map(([id, label]) => (
           <button key={id} type="button" className={tab === id ? "on" : ""} onClick={() => setTab(id)}>
@@ -269,17 +305,24 @@ export default function AdminPackageEditor() {
 
       {tab === "pricing" ? (
         <div className="admin-card">
-          <p className="admin-muted">Book-now sidebar — main price and group discount table (0 = on request).</p>
+          <p className="admin-muted">Guests see this on the Book now box. Change the main price and every matching group row, then press Save &amp; update live.</p>
           <label className="admin-field">
             <span>Main price USD per person</span>
             <input
               type="number"
               min={0}
               value={pkg.priceUsd}
-              onChange={(e) => patch({ priceUsd: Math.max(0, Number(e.target.value) || 0) })}
+              onChange={(e) => {
+                const priceUsd = Math.max(0, Number(e.target.value) || 0);
+                const prev = pkg.priceUsd;
+                const groupPrices = groupTiers(pkg).map((item) =>
+                  item.priceUsd === prev ? { ...item, priceUsd } : item,
+                );
+                patch({ priceUsd, groupPrices });
+              }}
             />
           </label>
-          <p className="admin-side-group-label" style={{ margin: "12px 0 8px", color: "#5b6573" }}>Group booking discounts</p>
+          <p className="admin-side-group-label" style={{ margin: "12px 0 8px", color: "#344054" }}>Group booking discounts</p>
           {groupTiers(pkg).map((row, index) => (
             <div key={row.id} className="admin-pricing-row">
               <input
@@ -1145,16 +1188,16 @@ export default function AdminPackageEditor() {
         </div>
       ) : null}
 
-      <div className="admin-save-row">
-        {status ? <span className={status === "Saved" ? "admin-ok" : "admin-error"}>{status}</span> : null}
-        <button type="button" className="admin-btn" style={{ width: "auto" }} disabled={busy} onClick={() => void onSave()}>
-          {pkg.status === "published" ? "Save changes" : "Save draft"}
-        </button>
+      <div className="admin-sticky-save admin-sticky-save--bottom">
+        {status ? <span className={status.startsWith("Live") || status === "Saved" ? "admin-ok" : "admin-error"}>{status}</span> : null}
         {pkg.status !== "published" ? (
-          <button type="button" className="admin-btn admin-btn-gold" style={{ width: "auto" }} disabled={busy} onClick={() => void onSave(true)}>
-            Save &amp; publish
+          <button type="button" className="admin-btn admin-btn-ghost" disabled={busy} onClick={() => void onSave(false)}>
+            Save draft
           </button>
         ) : null}
+        <button type="button" className="admin-btn admin-btn-gold" disabled={busy} onClick={() => void onSave(true)}>
+          {busy ? "Updating…" : "Save & update live"}
+        </button>
       </div>
     </>
   );
