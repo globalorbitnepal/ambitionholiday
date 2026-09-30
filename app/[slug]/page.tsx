@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import ContactPage from "@/components/ContactPage";
@@ -84,25 +85,25 @@ export default async function SlugPage({ params }: Props) {
 
   const content = await readContent();
   const pkg = findTripBySlug(content.tripPackages, slug);
+
+  let page: ReactNode;
   if (pkg) {
-    return (
-      <SiteContentProvider initial={content}>
-        <TripPackagePage pkg={pkg} />
-      </SiteContentProvider>
-    );
+    page = <TripPackagePage pkg={pkg} />;
+  } else {
+    const route = getRouteBySlug(slug);
+    if (!route) notFound();
+
+    if (slug === "contact") {
+      page = <ContactPage />;
+    } else {
+      const hub = getNavItemBySlug(slug);
+      if (hub?.groups?.length) {
+        page = <NavHubPage item={hub} />;
+      } else {
+        page = <PageShell title={route.title} description={route.description} />;
+      }
+    }
   }
 
-  const route = getRouteBySlug(slug);
-  if (!route) notFound();
-
-  if (slug === "contact") {
-    return <ContactPage />;
-  }
-
-  const hub = getNavItemBySlug(slug);
-  if (hub?.groups?.length) {
-    return <NavHubPage item={hub} />;
-  }
-
-  return <PageShell title={route.title} description={route.description} />;
+  return <SiteContentProvider initial={content}>{page}</SiteContentProvider>;
 }

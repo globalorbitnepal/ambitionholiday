@@ -6371,14 +6371,18 @@ a.lux-chart-dl {
   max-width: 92rem;
 }
 
-.lux-root--sky .lux-reviews-band .explore-hub-glass {
-  background: var(--lux-glass);
-  backdrop-filter: blur(18px) saturate(1.45);
-  -webkit-backdrop-filter: blur(18px) saturate(1.45);
-  border: 1px solid rgba(232, 208, 122, 0.52);
-  box-shadow:
-    0 22px 56px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+.lux-root--sky .lux-reviews-band .rev-hub--embedded .explore-hub-glass {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding-inline: 0;
+}
+
+.lux-root--sky .lux-reviews-band .rev-hub--embedded .explore-hub-shell {
+  padding-top: clamp(0.75rem, 1.8vw, 1.5rem);
 }
 
 .lux-root--sky .lux-foot {

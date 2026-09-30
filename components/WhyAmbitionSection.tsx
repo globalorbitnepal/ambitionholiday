@@ -227,7 +227,9 @@ export default function WhyAmbitionSection({
   };
 
   return (
-    <section className="rev-hub explore-hub relative isolate overflow-hidden">
+    <section
+      className={`rev-hub explore-hub relative isolate overflow-hidden${embedded ? " rev-hub--embedded" : ""}`}
+    >
       {embedded ? null : <SectionWallpaper src={wallpaperSrc} />}
 
       <div className="explore-hub-shell relative">
