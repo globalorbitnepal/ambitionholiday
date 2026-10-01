@@ -1092,6 +1092,13 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         def,
       ).slugHistory,
     };
+    if (def.id === LANGTANG_PACKAGE_ID) {
+      return {
+        ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
+      };
+    }
     if (def.id === ABC_PACKAGE_ID) {
       return {
         ...mergedPkg,

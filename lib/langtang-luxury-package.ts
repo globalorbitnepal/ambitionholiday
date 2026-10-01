@@ -37,9 +37,12 @@ export const LANGTANG_LUXURY_TRIP_PACKAGE: TrekPackage = {
   startEndLabel: "Kathmandu",
   groupSize: "Private · 2–10 guests",
   bestSeason: "March–May · September–November",
-  priceUsd: 0,
+  priceUsd: 2200,
   groupPrices: [
-    { id: "p1", label: "Private quote", priceUsd: 0 },
+    { id: "p1", label: "1 Pax", priceUsd: 3200 },
+    { id: "p2", label: "2–3 Pax", priceUsd: 2800 },
+    { id: "p3", label: "4–9 Pax", priceUsd: 2500 },
+    { id: "p4", label: "10–14 Pax", priceUsd: 2200 },
   ],
   overview:
     "The Langtang Valley offers a different Himalayan rhythm from the crowded Everest and Annapurna corridors. This ten-day, nine-night private programme leaves Kathmandu by private 4WD and climbs north toward Syabrubesi, where the walking trail enters oak, rhododendron and bamboo forest beside the Langtang Khola.\n\nAs the valley rises, traditional Tamang settlements give way to open alpine country. The final approach to Kyanjin Gompa unfolds beneath Langtang Lirung and neighbouring peaks — close enough to feel the scale of the range without the flight logistics of other regions.\n\nLuxury on Langtang is not about five-star resorts at 4,000 metres. It means private road transfers, a dedicated guide, carefully selected lodges, better Kathmandu accommodation, flexible pacing and honest cultural time in villages that still farm and host guests along the trail.",
