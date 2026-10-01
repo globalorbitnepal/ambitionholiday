@@ -49,7 +49,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageAlt: "Annapurna mountain range",
       },
       {
-        title: "Upper Mustang Tour",
+        title: "Luxury Upper Mustang Trek",
         days: "15 Days",
         difficulty: "Moderate",
         href: "/luxury-upper-mustang-trek",

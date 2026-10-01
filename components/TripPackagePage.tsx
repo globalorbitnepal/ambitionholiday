@@ -9,9 +9,10 @@ import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
+import { MUSTANG_ALTITUDE_STOPS } from "@/lib/mustang-charts";
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
-import { isAbcPackage, isEbcPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
+import { isAbcPackage, isEbcPackage, isMustangPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
@@ -82,8 +83,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
   const heads = packageHeadings(pkg);
-  const builtInCharts = isEbcPackage(pkg) || isAbcPackage(pkg);
+  const mustangCharts = isMustangPackage(pkg);
   const abcCharts = isAbcPackage(pkg);
+  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts;
+  const chartStops = mustangCharts ? MUSTANG_ALTITUDE_STOPS : abcCharts ? ABC_ALTITUDE_STOPS : undefined;
+  const chartMaxM = mustangCharts ? 4000 : abcCharts ? 4300 : undefined;
+  const chartMinM = mustangCharts ? 700 : abcCharts ? 700 : undefined;
+  const chartFile = mustangCharts ? "mustang-altitude-profile" : abcCharts ? "abc-altitude-profile" : "ebc-altitude-profile";
+  const mapVariant = mustangCharts ? "mustang" : abcCharts ? "abc" : "ebc";
   const packingGroups = pkg.packingGroups?.length
     ? pkg.packingGroups
     : pkg.packingItems?.length
@@ -459,7 +466,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   file={pkg.routeMapFile || `${pkg.slug}-route-map`}
                 />
               ) : (
-                <TrekRouteMap title={`${pkg.title} map`} variant={abcCharts ? "abc" : "ebc"} />
+                <TrekRouteMap title={`${pkg.title} map`} variant={mapVariant} />
               )}
             </article>
             ) : null}
@@ -493,10 +500,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               ) : builtInCharts ? (
                 <AltitudeProfileChart
                   title={`Altitude profile of ${pkg.title}`}
-                  stops={abcCharts ? ABC_ALTITUDE_STOPS : undefined}
-                  maxM={abcCharts ? 4300 : undefined}
-                  minM={abcCharts ? 700 : undefined}
-                  fileName={abcCharts ? "abc-altitude-profile" : "ebc-altitude-profile"}
+                  stops={chartStops}
+                  maxM={chartMaxM}
+                  minM={chartMinM}
+                  fileName={chartFile}
                 />
               ) : null}
             </article>

@@ -13,7 +13,8 @@ export function mediaSrc(src: string, cacheKey?: string) {
   if (
     path.startsWith("/images/") &&
     /\.(jpe?g|png)$/i.test(path) &&
-    !/\/images\/reviews\/tripadvisor-owl\.png$/i.test(path)
+    !/\/images\/reviews\/tripadvisor-owl\.png$/i.test(path) &&
+    !/\/images\/packages\/mustang-luxury-hero\.png$/i.test(path)
   ) {
     path = path.replace(/\.(jpe?g|png)$/i, ".webp");
   }

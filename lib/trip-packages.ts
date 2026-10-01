@@ -8,6 +8,7 @@ import {
   EBC_LUKLA_NOTE,
 } from "./ebc-luxury-content";
 import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
+import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
@@ -187,6 +188,7 @@ export type TrekPackage = {
 
 export const EBC_PACKAGE_ID = "ebc-lux";
 export const ABC_PACKAGE_ID = "abc-lux";
+export const MUSTANG_PACKAGE_ID = "mustang-lux";
 
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
 export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
@@ -195,6 +197,10 @@ export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
 
 export function isAbcPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === ABC_PACKAGE_ID || /annapurna-base-camp/i.test(pkg.slug || "");
+}
+
+export function isMustangPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
+  return pkg.id === MUSTANG_PACKAGE_ID || /luxury-upper-mustang|upper-mustang-luxury/i.test(pkg.slug || "");
 }
 
 export function packageHeadings(pkg: TrekPackage) {
@@ -654,6 +660,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     slugHistory: ["everest-base-camp-luxury-trek"],
   },
   ABC_LUXURY_TRIP_PACKAGE,
+  MUSTANG_LUXURY_TRIP_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [
