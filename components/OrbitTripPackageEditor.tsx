@@ -7,8 +7,8 @@ import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
 import { CHART_FRAMES, chartFrameLine } from "@/lib/chart-frames";
 import type { SiteContent } from "@/lib/content-types";
+import { applyTripPackageToSiteContent } from "@/lib/trip-package-catalog-sync";
 import {
-  cardLinkedToPackage,
   cleanSlugInput,
   packageHeadings,
   packageSeoInput,
@@ -104,75 +104,8 @@ const SUB_TABS: { id: SubTab; label: string }[] = [
 ];
 
 function syncCatalog(content: SiteContent, pkg: TrekPackage, previous?: TrekPackage): SiteContent {
-  const cardPatch = {
-    title: pkg.title,
-    days: pkg.days,
-    difficulty: pkg.difficulty,
-    description: pkg.subtitle,
-    badge: pkg.badge,
-    href: tripPath(pkg),
-    imageSrc: pkg.heroSrc,
-    imageAlt: pkg.heroAlt,
-  };
   const extra = previous ? [tripPath(previous)] : [];
-  const link = (card: { id?: string; href: string; title?: string }) => cardLinkedToPackage(card, pkg, extra);
-  const syncDest = (dest: SiteContent["nepal"]) => ({
-    ...dest,
-    categories: dest.categories.map((cat) => ({
-      ...cat,
-      packages: cat.packages.map((card) => (link(card) ? { ...card, ...cardPatch } : card)),
-    })),
-  });
-  return {
-    ...content,
-    nepal: syncDest(content.nepal),
-    bhutan: syncDest(content.bhutan),
-    tibet: syncDest(content.tibet),
-    multi: syncDest(content.multi),
-    journeys: {
-      ...content.journeys,
-      packages: content.journeys.packages.map((card) =>
-        link(card)
-          ? {
-              ...card,
-              title: pkg.title,
-              href: tripPath(pkg),
-              imageSrc: pkg.heroSrc,
-              imageAlt: pkg.heroAlt,
-              days: pkg.days,
-              difficulty: pkg.difficulty,
-              description: pkg.subtitle,
-              badge: pkg.badge,
-            }
-          : card,
-      ),
-    },
-    headerNav: {
-      ...content.headerNav,
-      luxuryCountries: (content.headerNav?.luxuryCountries || []).map((country) => ({
-        ...country,
-        packages: country.packages.map((card) =>
-          link(card)
-            ? {
-                ...card,
-                title: pkg.title,
-                days: pkg.duration || card.days,
-                difficulty: pkg.difficulty,
-                href: tripPath(pkg),
-                imageSrc: pkg.heroSrc || card.imageSrc,
-                imageAlt: pkg.heroAlt || card.imageAlt,
-              }
-            : card,
-        ),
-      })),
-    },
-    footer: {
-      ...content.footer,
-      trekLinks: (content.footer?.trekLinks || []).map((item) =>
-        link({ id: item.id, href: item.href, title: item.label }) ? { ...item, href: tripPath(pkg), label: pkg.title } : item,
-      ),
-    },
-  };
+  return applyTripPackageToSiteContent(content, pkg, extra);
 }
 
 function ChartBlock({

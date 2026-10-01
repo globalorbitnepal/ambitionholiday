@@ -5,7 +5,7 @@ import MediaImage from "@/components/MediaImage";
 import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { JourneyPackage } from "@/lib/content-types";
-import { resolveCatalogHref } from "@/lib/trip-packages";
+import { enrichCatalogCard } from "@/lib/trip-packages";
 
 function CalendarIcon() {
   return (
@@ -98,9 +98,10 @@ export default function LuxuryTreksSection() {
           </header>
 
           <div className="jour-grid">
-            {journeys.packages.map((pkg, index) => (
-              <PackageCard key={pkg.id} pkg={pkg} href={resolveCatalogHref(pkg, tripPackages)} priority={index < 4} />
-            ))}
+            {journeys.packages.map((raw, index) => {
+              const pkg = enrichCatalogCard(raw, tripPackages);
+              return <PackageCard key={pkg.id} pkg={pkg} href={pkg.href} priority={index < 4} />;
+            })}
           </div>
         </div>
       </div>

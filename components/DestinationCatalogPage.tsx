@@ -7,7 +7,7 @@ import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { resolveCatalogHref } from "@/lib/trip-packages";
+import { enrichCatalogCard, resolveCatalogHref } from "@/lib/trip-packages";
 import type { NepalContent, NepalPackage } from "@/lib/nepal-defaults";
 
 function CalendarIcon() {
@@ -108,12 +108,12 @@ export default function DestinationCatalogPage({ page, coverAlt, tablistLabel, s
     () => categories.find((cat) => cat.id === activeId) || categories[0],
     [activeId, categories],
   );
-  const listed = useMemo(
-    () => (showCategories ? active?.packages || [] : categories.flatMap((cat) => cat.packages || [])),
-    [showCategories, active, categories],
-  );
-  const tabCount = categories.length;
   const { tripPackages } = useSiteContent();
+  const listed = useMemo(() => {
+    const raw = showCategories ? active?.packages || [] : categories.flatMap((cat) => cat.packages || []);
+    return raw.map((card) => enrichCatalogCard(card, tripPackages));
+  }, [showCategories, active, categories, tripPackages]);
+  const tabCount = categories.length;
 
   if (!listed.length && !active) return null;
 

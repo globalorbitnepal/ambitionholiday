@@ -729,18 +729,87 @@ export function resolveCatalogHref(card: CatalogCardLike, packages: TrekPackage[
   return href;
 }
 
+/** Keys used on catalog cards (journeys grid, Nepal page, mega menu) for a trek page. */
+export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
+  const keys = new Set<string>();
+  if (pkg.id) keys.add(pkg.id);
+  if (pkg.catalogId) {
+    keys.add(pkg.catalogId);
+    keys.add(pkg.catalogId.replace(/-lux$/, ""));
+    keys.add(`trip-${pkg.catalogId}`);
+  }
+  return keys;
+}
+
 export function cardLinkedToPackage(
   card: { id?: string; href: string; title?: string },
   pkg: TrekPackage,
   extraHrefs: Iterable<string> = [],
 ) {
-  if (card.id && (card.id === pkg.catalogId || card.id === pkg.id || card.id === `trip-${pkg.catalogId}`)) return true;
+  const keys = packageCatalogKeys(pkg);
+  if (card.id && keys.has(card.id)) return true;
   const href = (card.href || "").replace(/^\//, "");
   if (href && (pkg.slug === href || packageLookupSlugs(pkg).has(href))) return true;
   for (const extra of extraHrefs) {
     if (extra && extra.replace(/^\//, "") === href) return true;
   }
+  const cardTitle = (card.title || "").trim();
+  if (cardTitle.length > 6) {
+    const wanted = compactTitle(cardTitle);
+    const have = compactTitle(pkg.title);
+    if (wanted === have || wanted.includes(have) || have.includes(wanted)) return true;
+  }
   return false;
+}
+
+export function findPublishedTripForCard(
+  card: { id?: string; href: string; title?: string },
+  packages: TrekPackage[],
+) {
+  return packages.find((pkg) => pkg.status === "published" && cardLinkedToPackage(card, pkg));
+}
+
+function tripMaxAltitudeLabel(pkg: TrekPackage) {
+  const raw = (pkg.maxAltitude || "").trim();
+  if (!raw) return "";
+  return raw.split("/")[0].trim();
+}
+
+/** Live catalog card: href + cover image + stats from the published trek page when linked. */
+export function enrichCatalogCard<
+  T extends {
+    id?: string;
+    href: string;
+    title?: string;
+    imageSrc?: string;
+    imageAlt?: string;
+    days?: number | string;
+    difficulty?: string;
+    badge?: string;
+    description?: string;
+    subtitle?: string;
+    maxAltitude?: string;
+  },
+>(card: T, packages: TrekPackage[]): T {
+  const trip = findPublishedTripForCard(card, packages);
+  if (!trip) return card;
+  const days =
+    typeof card.days === "string" || card.days === undefined
+      ? trip.duration || `${trip.days} Days`
+      : trip.days;
+  return {
+    ...card,
+    href: tripPath(trip),
+    imageSrc: trip.heroSrc || card.imageSrc,
+    imageAlt: trip.heroAlt || card.imageAlt || trip.title,
+    title: card.title || trip.title,
+    difficulty: trip.difficulty || card.difficulty,
+    badge: trip.badge || card.badge,
+    description: trip.subtitle || card.description,
+    subtitle: card.subtitle || "Luxury Package",
+    maxAltitude: tripMaxAltitudeLabel(trip) || card.maxAltitude,
+    days,
+  };
 }
 
 export function packageSeoInput(pkg: TrekPackage) {

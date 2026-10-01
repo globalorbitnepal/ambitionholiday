@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { applyTripPackageToSiteContent } from "@/lib/trip-package-catalog-sync";
 import { reconcileTripPackageForSave } from "@/lib/trip-package-save";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -13,7 +14,6 @@ import {
   packageSeoInput,
   packageSlugProblem,
   packagesSharePage,
-  cardLinkedToPackage,
   withSlugHistory,
   tripPath,
   type TrekItineraryDay,
@@ -180,69 +180,13 @@ export default function AdminPackageEditor() {
     const ok = await saveMerged((latest) => {
       const serverPkg = latest.tripPackages.find((item) => item.id === local.id);
       pkgToSave = serverPkg ? reconcileTripPackageForSave(serverPkg, local, baselineRef.current) : local;
-      const linked = (card: { id?: string; href: string; title?: string }) =>
-        cardLinkedToPackage(card, pkgToSave, oldPaths);
-      const cardPatch = {
-        title: pkgToSave.title,
-        days: pkgToSave.days,
-        difficulty: pkgToSave.difficulty,
-        description: pkgToSave.subtitle,
-        badge: pkgToSave.badge,
-        href: tripPath(pkgToSave),
-        imageSrc: pkgToSave.heroSrc,
-        imageAlt: pkgToSave.heroAlt,
-      };
-      const syncDest = (dest: typeof latest.nepal) => ({
-        ...dest,
-        categories: dest.categories.map((cat) => ({
-          ...cat,
-          packages: cat.packages.map((card) => (linked(card) ? { ...card, ...cardPatch } : card)),
-        })),
-      });
-      return {
+      const withPkg: typeof latest = {
         ...latest,
         tripPackages: serverPkg
           ? latest.tripPackages.map((item) => (item.id === pkgToSave.id ? pkgToSave : item))
           : [...latest.tripPackages, pkgToSave],
-        nepal: syncDest(latest.nepal),
-        bhutan: syncDest(latest.bhutan),
-        tibet: syncDest(latest.tibet),
-        multi: syncDest(latest.multi),
-        journeys: {
-          ...latest.journeys,
-          packages: latest.journeys.packages.map((card) => (linked(card) ? { ...card, ...cardPatch } : card)),
-        },
-        headerNav: {
-          ...latest.headerNav,
-          destinations: (latest.headerNav?.destinations || []).map((card) =>
-            linked(card) ? { ...card, href: tripPath(pkgToSave), title: pkgToSave.title, imageSrc: pkgToSave.heroSrc, imageAlt: pkgToSave.heroAlt } : card,
-          ),
-          luxuryCountries: (latest.headerNav?.luxuryCountries || []).map((country) => ({
-            ...country,
-            packages: country.packages.map((card) =>
-              linked(card)
-                ? {
-                    ...card,
-                    title: pkgToSave.title,
-                    days: pkgToSave.duration || card.days,
-                    difficulty: pkgToSave.difficulty,
-                    href: tripPath(pkgToSave),
-                    imageSrc: pkgToSave.heroSrc || card.imageSrc,
-                    imageAlt: pkgToSave.heroAlt || card.imageAlt,
-                  }
-                : card,
-            ),
-          })),
-        },
-        footer: {
-          ...latest.footer,
-          trekLinks: (latest.footer?.trekLinks || []).map((link) =>
-            linked({ id: link.id, href: link.href, title: link.label })
-              ? { ...link, href: tripPath(pkgToSave), label: pkgToSave.title }
-              : link,
-          ),
-        },
       };
+      return applyTripPackageToSiteContent(withPkg, pkgToSave, oldPaths);
     });
     if (ok) {
       setPkg(pkgToSave);

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
-import { EBC_PACKAGE_ID } from "@/lib/trip-packages";
+import { enrichCatalogCard, EBC_PACKAGE_ID } from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
   try {
@@ -45,13 +45,16 @@ export default function AdminDashboardHome() {
     if (!loaded) return [];
     const cat = content.nepal.categories.find((c) => c.id === "trekking") ?? content.nepal.categories[0];
     if (!cat) return [];
-    return cat.packages.slice(0, 6).map((card) => ({
-      id: card.id,
-      title: card.title.replace(/Luxury |Trek/gi, "").trim() || card.title,
-      image: card.imageSrc,
-      href: card.href,
-    }));
-  }, [content.nepal.categories, loaded]);
+    return cat.packages.slice(0, 6).map((card) => {
+      const live = enrichCatalogCard(card, content.tripPackages);
+      return {
+        id: card.id,
+        title: live.title.replace(/Luxury |Trek/gi, "").trim() || live.title,
+        image: live.imageSrc,
+        href: live.href,
+      };
+    });
+  }, [content.nepal.categories, content.tripPackages, loaded]);
 
   const newInquiries = inquiries.filter((item) => {
     const t = Date.parse(item.createdAt);

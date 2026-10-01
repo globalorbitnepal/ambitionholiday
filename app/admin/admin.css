@@ -493,17 +493,94 @@
   color: #3d4654;
 }
 
-.admin-top-user {
+.admin-profile {
+  position: relative;
+}
+
+.admin-profile-trigger {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.88rem;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 246, 240, 0.98));
+  box-shadow: 0 4px 18px rgba(17, 24, 39, 0.06);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.admin-top-user span {
+.admin-profile-trigger:hover,
+.admin-profile-trigger[aria-expanded="true"] {
+  border-color: rgba(201, 162, 39, 0.45);
+  box-shadow: 0 6px 22px rgba(139, 105, 20, 0.12);
+}
+
+.admin-profile-label span {
   display: block;
   color: #667084;
   font-size: 0.76rem;
+  text-align: left;
+}
+
+.admin-profile-chevron {
+  color: #8b6914;
+  font-size: 0.65rem;
+  margin-left: 2px;
+}
+
+.admin-profile-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 40;
+  min-width: 220px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.14);
+}
+
+.admin-profile-menu-kicker {
+  margin: 0 8px 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b6914;
+  font-weight: 700;
+}
+
+.admin-profile-menu a,
+.admin-profile-menu button.admin-profile-signout {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #2a3140;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.admin-profile-menu a:hover,
+.admin-profile-menu button.admin-profile-signout:hover {
+  background: #f6f3eb;
+  color: #1a1406;
+}
+
+.admin-profile-menu hr {
+  border: none;
+  border-top: 1px solid #ece8df;
+  margin: 8px 4px;
+}
+
+.admin-profile-signout {
+  color: #9a3412 !important;
 }
 
 .admin-top-avatar {

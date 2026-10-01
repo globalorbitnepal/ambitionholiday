@@ -2,13 +2,31 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AdminSideNav from "@/components/admin/AdminSideNav";
 
 export default function AdminShell({ children, role = "admin" }: { children: React.ReactNode; role?: "admin" | "super" }) {
   const pathname = usePathname();
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!profileOpen) return;
+    function onDocClick(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setProfileOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [profileOpen]);
 
   async function logout() {
     if (role === "super") {
@@ -77,12 +95,34 @@ export default function AdminShell({ children, role = "admin" }: { children: Rea
           </form>
           <div className="admin-top-actions">
             <Link className="admin-top-pill" href="/admin/contact">Enquiries</Link>
-            <div className="admin-top-user">
-              <span className="admin-top-avatar" aria-hidden>{role === "super" ? "S" : "A"}</span>
-              <div>
-                <strong>{role === "super" ? "Super admin" : "Admin"}</strong>
-                <span>{pageTitle}</span>
-              </div>
+            <div className="admin-profile" ref={profileRef}>
+              <button
+                type="button"
+                className="admin-profile-trigger"
+                aria-expanded={profileOpen}
+                aria-haspopup="menu"
+                onClick={() => setProfileOpen((open) => !open)}
+              >
+                <span className="admin-top-avatar" aria-hidden>{role === "super" ? "S" : "A"}</span>
+                <div className="admin-profile-label">
+                  <strong>{role === "super" ? "Super admin" : "Admin"}</strong>
+                  <span>{pageTitle}</span>
+                </div>
+                <span className="admin-profile-chevron" aria-hidden>▾</span>
+              </button>
+              {profileOpen ? (
+                <div className="admin-profile-menu" role="menu">
+                  <p className="admin-profile-menu-kicker">Ambition Holidays</p>
+                  <Link href="/admin" role="menuitem" onClick={() => setProfileOpen(false)}>Dashboard</Link>
+                  <Link href="/admin/packages" role="menuitem" onClick={() => setProfileOpen(false)}>Tour packages</Link>
+                  <Link href="/admin/media" role="menuitem" onClick={() => setProfileOpen(false)}>Media library</Link>
+                  <a href="/" target="_blank" rel="noreferrer" role="menuitem">View live site ↗</a>
+                  <hr />
+                  <button type="button" role="menuitem" className="admin-profile-signout" onClick={() => void logout()}>
+                    {role === "super" ? "Exit to Orbit" : "Sign out"}
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </header>

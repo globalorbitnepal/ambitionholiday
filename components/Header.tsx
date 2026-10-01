@@ -7,7 +7,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { luxuryCountryById, type DestShowcaseCard } from "@/lib/header-nav";
 import type { LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
-import { resolveCatalogHref, type TrekPackage } from "@/lib/trip-packages";
+import { enrichCatalogCard, type TrekPackage } from "@/lib/trip-packages";
 import { mediaSrc } from "@/lib/media-src";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { DEFAULT_SITE_LOGO, headerLogoSrc } from "@/lib/media-src";
@@ -605,10 +605,15 @@ function LuxuryGlassPanel({
           </div>
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {country.packages.map((pkg) => (
+            {country.packages.map((raw) => {
+              const pkg = enrichCatalogCard(
+                { ...raw, href: raw.href, title: raw.title, imageSrc: raw.imageSrc, imageAlt: raw.imageAlt },
+                tripPackages,
+              );
+              return (
               <li key={pkg.title}>
                 <Link
-                  href={resolveCatalogHref({ id: "", href: pkg.href, title: pkg.title }, tripPackages)}
+                  href={pkg.href}
                   onClick={onNavigate}
                   className="focus-ring group relative block overflow-hidden rounded-[1.05rem] border border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.28)]"
                 >
@@ -651,7 +656,8 @@ function LuxuryGlassPanel({
                   </span>
                 </Link>
               </li>
-            ))}
+              );
+            })}
           </ul>
 
           <Link

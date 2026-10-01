@@ -22,65 +22,11 @@ import { DEFAULT_MULTI } from "@/lib/multi-defaults";
 import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
-import { coerceTripPackages, resolveCatalogHref, type TrekPackage } from "@/lib/trip-packages";
+import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
+import { applyPublishedPackageHrefs } from "@/lib/trip-package-catalog-sync";
 import { mergeTripPackageSnapshots } from "@/lib/trip-package-save";
 
-function rewriteDestHrefs(dest: NepalContent, packages: TrekPackage[]): NepalContent {
-  return {
-    ...dest,
-    categories: (dest.categories || []).map((cat) => ({
-      ...cat,
-      packages: (cat.packages || []).map((card) => ({
-        ...card,
-        href: resolveCatalogHref({ id: card.id, href: card.href, title: card.title }, packages),
-      })),
-    })),
-  };
-}
-
-export function applyPublishedPackageHrefs(content: SiteContent): SiteContent {
-  const pkgs = content.tripPackages || [];
-  const nav = content.headerNav;
-  return {
-    ...content,
-    headerNav: nav
-      ? {
-          ...nav,
-          destinations: (nav.destinations || []).map((dest) => ({
-            ...dest,
-            href: resolveCatalogHref({ id: dest.id, href: dest.href, title: dest.title }, pkgs),
-          })),
-          luxuryCountries: (nav.luxuryCountries || []).map((country) => ({
-            ...country,
-            packages: country.packages.map((card) => ({
-              ...card,
-              href: resolveCatalogHref({ id: "", href: card.href, title: card.title }, pkgs),
-            })),
-          })),
-        }
-      : nav,
-    nepal: rewriteDestHrefs(content.nepal, pkgs),
-    bhutan: rewriteDestHrefs(content.bhutan, pkgs),
-    tibet: rewriteDestHrefs(content.tibet, pkgs),
-    multi: rewriteDestHrefs(content.multi, pkgs),
-    helicopter: rewriteDestHrefs(content.helicopter, pkgs),
-    photography: rewriteDestHrefs(content.photography, pkgs),
-    journeys: {
-      ...content.journeys,
-      packages: (content.journeys?.packages || []).map((card) => ({
-        ...card,
-        href: resolveCatalogHref({ id: card.id, href: card.href, title: card.title }, pkgs),
-      })),
-    },
-    footer: {
-      ...content.footer,
-      trekLinks: (content.footer?.trekLinks || []).map((link) => ({
-        ...link,
-        href: resolveCatalogHref({ id: link.id, href: link.href, title: link.label }, pkgs),
-      })),
-    },
-  };
-}
+export { applyPublishedPackageHrefs, applyTripPackageToSiteContent } from "@/lib/trip-package-catalog-sync";
 
 const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
 
