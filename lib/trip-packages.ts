@@ -190,6 +190,9 @@ export const EBC_PACKAGE_ID = "ebc-lux";
 export const ABC_PACKAGE_ID = "abc-lux";
 export const MUSTANG_PACKAGE_ID = "mustang-lux";
 
+/** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
+export const FULL_PAGE_PACKAGE_IDS = [EBC_PACKAGE_ID, ABC_PACKAGE_ID, MUSTANG_PACKAGE_ID] as const;
+
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
 export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
   return pkg.id === EBC_PACKAGE_ID;
@@ -985,7 +988,12 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     const mergedPkg: TrekPackage = {
       ...def,
       ...item,
-      slug: item.slug === "everest-base-camp-luxury-trek" || !item.slug ? def.slug : item.slug,
+      slug:
+        !item.slug ||
+        (def.id === EBC_PACKAGE_ID && item.slug === "everest-base-camp-luxury-trek") ||
+        (def.id === MUSTANG_PACKAGE_ID && item.slug === "upper-mustang-luxury-trek")
+          ? def.slug
+          : item.slug,
       highlights: item.highlights?.some((h) => h.length > 90) ? item.highlights : def.highlights,
       inclusions: item.inclusions?.some((line) => /5-star|Yeti Mountain/i.test(line)) ? item.inclusions : def.inclusions,
       exclusions: item.exclusions?.some((line) => /USD 30|\$ 30 for 15/i.test(line)) ? item.exclusions : def.exclusions,

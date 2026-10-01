@@ -319,7 +319,7 @@ export default function AdminPackagesList() {
               </p>
               <div className="admin-row-actions">
                 <Link className="admin-btn admin-btn-gold admin-btn-sm" href={`/admin/packages/${pkg.id}`}>
-                  Edit
+                  Full edit
                 </Link>
                 {pkg.status === "published" ? (
                   <a className="admin-btn admin-btn-sm" href={tripPath(pkg)} target="_blank" rel="noreferrer">
@@ -373,7 +373,7 @@ export default function AdminPackagesList() {
                   <div className="admin-row-actions">
                     <span className={`admin-badge admin-badge--${existing.status === "published" ? "good" : "draft"}`}>{existing.status}</span>
                     <Link className="admin-btn admin-btn-gold admin-btn-sm" href={`/admin/packages/${existing.id}`}>
-                      Edit page
+                      Full edit (all sections)
                     </Link>
                   </div>
                 ) : (

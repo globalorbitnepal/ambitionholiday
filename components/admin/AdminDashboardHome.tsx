@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
-import { enrichCatalogCard, EBC_PACKAGE_ID } from "@/lib/trip-packages";
+import { enrichCatalogCard, FULL_PAGE_PACKAGE_IDS, type TrekPackage } from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
   try {
@@ -61,8 +61,9 @@ export default function AdminDashboardHome() {
     return Number.isFinite(t) && Date.now() - t < 7 * 86400000;
   }).length;
 
-  const ebc = tripPackages.find((p) => p.id === EBC_PACKAGE_ID);
-  const abc = tripPackages.find((p) => p.id === "abc-lux");
+  const fullEditPackages = FULL_PAGE_PACKAGE_IDS.map((id) => tripPackages.find((p) => p.id === id)).filter(
+    (p): p is TrekPackage => Boolean(p),
+  );
 
   if (!loaded) return <p className="admin-muted">Loading dashboard…</p>;
 
@@ -175,17 +176,17 @@ export default function AdminDashboardHome() {
             </div>
             <p className="admin-muted">Same layout as Everest Base Camp — edit price, group discounts, itinerary, map, charts, gallery and SEO.</p>
             <div className="admin-pkg-grid admin-pkg-grid--dash">
-              {[ebc, abc].filter(Boolean).map((pkg) => (
-                <article key={pkg!.id} className="admin-pkg admin-pkg--featured">
-                  <img src={pkg!.heroSrc} alt={pkg!.heroAlt} loading="lazy" />
+              {fullEditPackages.map((pkg) => (
+                <article key={pkg.id} className="admin-pkg admin-pkg--featured">
+                  <img src={pkg.heroSrc} alt={pkg.heroAlt} loading="lazy" />
                   <div className="body">
-                    <h3>{pkg!.title}</h3>
-                    <p>{pkg!.duration} · /{pkg!.slug}</p>
+                    <h3>{pkg.title}</h3>
+                    <p>{pkg.duration} · /{pkg.slug}</p>
                     <div className="admin-row-actions">
-                      <Link className="admin-btn admin-btn-gold admin-btn-sm" href={`/admin/packages/${pkg!.id}`}>
-                        Full section edit
+                      <Link className="admin-btn admin-btn-gold admin-btn-sm" href={`/admin/packages/${pkg.id}`}>
+                        Full edit (all sections)
                       </Link>
-                      <a className="admin-btn admin-btn-sm" href={`/${pkg!.slug}`} target="_blank" rel="noreferrer">
+                      <a className="admin-btn admin-btn-sm" href={`/${pkg.slug}`} target="_blank" rel="noreferrer">
                         Live page ↗
                       </a>
                     </div>

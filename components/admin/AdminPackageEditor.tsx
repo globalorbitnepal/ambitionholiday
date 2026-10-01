@@ -9,7 +9,10 @@ import AdminMediaField from "@/components/admin/AdminMediaField";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import {
   cleanSlugInput,
+  DEFAULT_TRIP_PACKAGES,
+  isAbcPackage,
   isEbcPackage,
+  isMustangPackage,
   packageHeadings,
   packageSeoInput,
   packageSlugProblem,
@@ -87,7 +90,9 @@ export default function AdminPackageEditor() {
 
   useEffect(() => {
     if (!loaded) return;
-    const found = content.tripPackages.find((item) => item.id === params.id);
+    const found =
+      content.tripPackages.find((item) => item.id === params.id) ??
+      DEFAULT_TRIP_PACKAGES.find((item) => item.id === params.id || item.catalogId === params.id);
     if (!found) {
       const fallback = content.tripPackages.find(
         (item) =>
@@ -185,6 +190,10 @@ export default function AdminPackageEditor() {
       <div className="admin-editor-head">
         <div>
           <h1>{pkg.title || "Untitled package"}</h1>
+          <p className="admin-muted" style={{ marginTop: 4, marginBottom: 8 }}>
+            Full page editor — all 18 sections: title &amp; hero, pricing, facts, overview, why, videos, trip info, itinerary, map &amp; charts,
+            includes, gallery, packing, flights, FAQ, ratings, guest reviews &amp; SEO.
+          </p>
           <p className="admin-lead admin-row-actions">
             <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
             <span className="admin-permalink">{tripPath(pkg)}</span>
@@ -645,8 +654,8 @@ export default function AdminPackageEditor() {
       {tab === "charts" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            {isEbcPackage(pkg)
-              ? "Built-in Everest graphs show until you upload a replacement. JPG and PNG only. Empty a field to restore the drawn chart."
+            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg)
+              ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
           <AdminMediaField
