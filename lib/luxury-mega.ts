@@ -1,5 +1,8 @@
 export type LuxuryMegaCountryId = "nepal" | "bhutan" | "tibet" | "multi";
 
+/** Featured cards per country in the header mega menu (and matching CMS rows). */
+export const LUXURY_MEGA_PACKAGE_COUNT = 6;
+
 export type LuxuryMegaPackage = {
   title: string;
   days: string;
@@ -79,14 +82,6 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         href: "/chitwan-wildlife-tour",
         imageSrc: "/images/luxury/lux-chitwan.webp",
         imageAlt: "Rhinos in Chitwan grassland",
-      },
-      {
-        title: "Helicopter Everest Tour",
-        days: "1 Day",
-        difficulty: "Easy",
-        href: "/luxury-helicopter-treks",
-        imageSrc: "/images/luxury/lux-heli.webp",
-        imageAlt: "Helicopter flying past Everest",
       },
     ],
   },

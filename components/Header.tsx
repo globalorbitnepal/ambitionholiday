@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { luxuryCountryById, type DestShowcaseCard } from "@/lib/header-nav";
-import type { LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
+import { LUXURY_MEGA_PACKAGE_COUNT, type LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
 import { enrichCatalogCard, type TrekPackage } from "@/lib/trip-packages";
 import { mediaSrc } from "@/lib/media-src";
 import { useSiteContent } from "@/components/SiteContentProvider";
@@ -605,13 +605,13 @@ function LuxuryGlassPanel({
           </div>
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {country.packages.map((raw) => {
+            {country.packages.slice(0, LUXURY_MEGA_PACKAGE_COUNT).map((raw, index) => {
               const pkg = enrichCatalogCard(
                 { ...raw, href: raw.href, title: raw.title, imageSrc: raw.imageSrc, imageAlt: raw.imageAlt },
                 tripPackages,
               );
               return (
-              <li key={pkg.title}>
+              <li key={`${country.id}-${index}-${pkg.href}`}>
                 <Link
                   href={pkg.href}
                   onClick={onNavigate}

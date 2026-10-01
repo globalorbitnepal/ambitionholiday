@@ -1,6 +1,7 @@
 import { DEST_SHOWCASE } from "@/lib/dest-showcase";
 import {
   LUXURY_MEGA_COUNTRIES,
+  LUXURY_MEGA_PACKAGE_COUNT,
   type LuxuryMegaCountry,
   type LuxuryMegaCountryId,
   type LuxuryMegaPackage,
@@ -46,25 +47,18 @@ function mergePackages(
   parsed?: LuxuryMegaPackage[],
   fallback: LuxuryMegaPackage[] = [],
 ): LuxuryMegaPackage[] {
-  const len = Math.max(fallback.length, parsed?.length ?? 0);
-  const out: LuxuryMegaPackage[] = [];
-  for (let i = 0; i < len; i += 1) {
-    const base = fallback[i];
+  const slots = fallback.slice(0, LUXURY_MEGA_PACKAGE_COUNT);
+  return slots.map((base, i) => {
     const row = parsed?.[i];
-    if (!base && row) {
-      out.push(row);
-      continue;
-    }
-    if (!base) continue;
-    out.push({
+    if (!row) return { ...base };
+    return {
       ...base,
       ...row,
-      href: row?.href || base.href,
-      imageSrc: row?.imageSrc || base.imageSrc,
-      imageAlt: row?.imageAlt || base.imageAlt,
-    });
-  }
-  return out.length ? out : fallback;
+      href: row.href || base.href,
+      imageSrc: row.imageSrc || base.imageSrc,
+      imageAlt: row.imageAlt || base.imageAlt,
+    };
+  });
 }
 
 function mergeLuxuryCountries(parsed?: LuxuryMegaCountry[]): LuxuryMegaCountry[] {
