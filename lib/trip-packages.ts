@@ -780,12 +780,10 @@ export function tripSlugAliases(slug: string) {
   }
   if (
     s === "annapurna-base-camp-luxury-trek" ||
-    s === "luxury-annapurna-base-camp-trek" ||
-    s === "annapurna-base-camp-trek"
+    s === "luxury-annapurna-base-camp-trek"
   ) {
     aliases.add("annapurna-base-camp-luxury-trek");
     aliases.add("luxury-annapurna-base-camp-trek");
-    aliases.add("annapurna-base-camp-trek");
   }
   return aliases;
 }
