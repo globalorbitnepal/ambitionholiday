@@ -44,7 +44,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         title: "Annapurna Base Camp Trek",
         days: "12 Days",
         difficulty: "Moderate",
-        href: "/luxury-annapurna-base-camp-trek",
+        href: "/annapurna-base-camp-luxury-trek",
         imageSrc: "/images/luxury/lux-abc.webp",
         imageAlt: "Annapurna mountain range",
       },

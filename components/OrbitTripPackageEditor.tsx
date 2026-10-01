@@ -8,10 +8,12 @@ import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
 import { CHART_FRAMES, chartFrameLine } from "@/lib/chart-frames";
 import type { SiteContent } from "@/lib/content-types";
 import {
+  cardLinkedToPackage,
   cleanSlugInput,
   packageHeadings,
   packageSeoInput,
   tripPath,
+  withSlugHistory,
   type TrekItineraryDay,
   type TrekPackage,
   type TrekVideo,
@@ -101,7 +103,7 @@ const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "seo", label: "17 · SEO" },
 ];
 
-function syncCatalog(content: SiteContent, pkg: TrekPackage): SiteContent {
+function syncCatalog(content: SiteContent, pkg: TrekPackage, previous?: TrekPackage): SiteContent {
   const cardPatch = {
     title: pkg.title,
     days: pkg.days,
@@ -112,7 +114,8 @@ function syncCatalog(content: SiteContent, pkg: TrekPackage): SiteContent {
     imageSrc: pkg.heroSrc,
     imageAlt: pkg.heroAlt,
   };
-  const link = (card: { id: string; href: string }) => card.id === pkg.catalogId || card.href === tripPath(pkg);
+  const extra = previous ? [tripPath(previous)] : [];
+  const link = (card: { id?: string; href: string; title?: string }) => cardLinkedToPackage(card, pkg, extra);
   const syncDest = (dest: SiteContent["nepal"]) => ({
     ...dest,
     categories: dest.categories.map((cat) => ({
@@ -129,7 +132,7 @@ function syncCatalog(content: SiteContent, pkg: TrekPackage): SiteContent {
     journeys: {
       ...content.journeys,
       packages: content.journeys.packages.map((card) =>
-        link(card) || card.id === pkg.catalogId
+        link(card)
           ? {
               ...card,
               title: pkg.title,
@@ -142,6 +145,31 @@ function syncCatalog(content: SiteContent, pkg: TrekPackage): SiteContent {
               badge: pkg.badge,
             }
           : card,
+      ),
+    },
+    headerNav: {
+      ...content.headerNav,
+      luxuryCountries: (content.headerNav?.luxuryCountries || []).map((country) => ({
+        ...country,
+        packages: country.packages.map((card) =>
+          link(card)
+            ? {
+                ...card,
+                title: pkg.title,
+                days: pkg.duration || card.days,
+                difficulty: pkg.difficulty,
+                href: tripPath(pkg),
+                imageSrc: pkg.heroSrc || card.imageSrc,
+                imageAlt: pkg.heroAlt || card.imageAlt,
+              }
+            : card,
+        ),
+      })),
+    },
+    footer: {
+      ...content.footer,
+      trekLinks: (content.footer?.trekLinks || []).map((item) =>
+        link({ id: item.id, href: item.href, title: item.label }) ? { ...item, href: tripPath(pkg), label: pkg.title } : item,
       ),
     },
   };
@@ -193,16 +221,19 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
 
   function patch(partial: Partial<TrekPackage>) {
     if (!pkg) return;
-    const nextPkg: TrekPackage = {
-      ...pkg,
-      ...partial,
-      updatedAt: new Date().toISOString(),
-    };
+    const nextPkg: TrekPackage = withSlugHistory(
+      {
+        ...pkg,
+        ...partial,
+        updatedAt: new Date().toISOString(),
+      },
+      pkg,
+    );
     const withPackages = {
       ...content,
       tripPackages: content.tripPackages.map((p) => (p.id === pkg.id ? nextPkg : p)),
     };
-    setContent(syncCatalog(withPackages, nextPkg));
+    setContent(syncCatalog(withPackages, nextPkg, pkg));
   }
 
   function patchItinerary(dayIndex: number, partial: Partial<TrekItineraryDay>) {

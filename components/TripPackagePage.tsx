@@ -105,7 +105,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     "trip-gallery": gallery.length > 0,
     packing: packingGroups.some((group) => group.items.length),
     notes: Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
-    reviews: true,
+    reviews: Boolean(pkg.reviews?.length),
     faq: Boolean(pkg.faqs?.length),
   };
   const toc = TOC.filter((item) => show[item.id]);
@@ -763,12 +763,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       </div>
 
       <div id="reviews" className="lux-reviews-band">
-        {abcCharts ? (
-          <p className="lux-reviews-note">
-            Guest reviews from Ambition Himalaya Treks and Expeditions, our sister trekking company.
-          </p>
-        ) : null}
-        <WhyAmbitionSection embedded />
+        <WhyAmbitionSection embedded trekPackage={pkg} />
       </div>
 
       <div className="home-light relative isolate [clip-path:inset(0)] text-[#f7f4ef]">

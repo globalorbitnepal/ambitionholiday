@@ -22,8 +22,65 @@ import { DEFAULT_MULTI } from "@/lib/multi-defaults";
 import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
-import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
+import { coerceTripPackages, resolveCatalogHref, type TrekPackage } from "@/lib/trip-packages";
 import { mergeTripPackageSnapshots } from "@/lib/trip-package-save";
+
+function rewriteDestHrefs(dest: NepalContent, packages: TrekPackage[]): NepalContent {
+  return {
+    ...dest,
+    categories: (dest.categories || []).map((cat) => ({
+      ...cat,
+      packages: (cat.packages || []).map((card) => ({
+        ...card,
+        href: resolveCatalogHref({ id: card.id, href: card.href, title: card.title }, packages),
+      })),
+    })),
+  };
+}
+
+export function applyPublishedPackageHrefs(content: SiteContent): SiteContent {
+  const pkgs = content.tripPackages || [];
+  const nav = content.headerNav;
+  return {
+    ...content,
+    headerNav: nav
+      ? {
+          ...nav,
+          destinations: (nav.destinations || []).map((dest) => ({
+            ...dest,
+            href: resolveCatalogHref({ id: dest.id, href: dest.href, title: dest.title }, pkgs),
+          })),
+          luxuryCountries: (nav.luxuryCountries || []).map((country) => ({
+            ...country,
+            packages: country.packages.map((card) => ({
+              ...card,
+              href: resolveCatalogHref({ id: "", href: card.href, title: card.title }, pkgs),
+            })),
+          })),
+        }
+      : nav,
+    nepal: rewriteDestHrefs(content.nepal, pkgs),
+    bhutan: rewriteDestHrefs(content.bhutan, pkgs),
+    tibet: rewriteDestHrefs(content.tibet, pkgs),
+    multi: rewriteDestHrefs(content.multi, pkgs),
+    helicopter: rewriteDestHrefs(content.helicopter, pkgs),
+    photography: rewriteDestHrefs(content.photography, pkgs),
+    journeys: {
+      ...content.journeys,
+      packages: (content.journeys?.packages || []).map((card) => ({
+        ...card,
+        href: resolveCatalogHref({ id: card.id, href: card.href, title: card.title }, pkgs),
+      })),
+    },
+    footer: {
+      ...content.footer,
+      trekLinks: (content.footer?.trekLinks || []).map((link) => ({
+        ...link,
+        href: resolveCatalogHref({ id: link.id, href: link.href, title: link.label }, pkgs),
+      })),
+    },
+  };
+}
 
 const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
 
@@ -750,9 +807,9 @@ export async function readContent(): Promise<SiteContent> {
       },
     });
     await healStalePrimaryContent(merged);
-    return merged;
+    return applyPublishedPackageHrefs(merged);
   } catch {
-    return withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT));
+    return applyPublishedPackageHrefs(withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT)));
   }
 }
 
@@ -771,7 +828,8 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
       };
     });
   }
-  const next: SiteContent = withSharedSectionWallpaper({
+  const next: SiteContent = applyPublishedPackageHrefs(
+    withSharedSectionWallpaper({
     ...content,
     tripPackages: coerceTripPackages(tripPackages),
     header: {
@@ -780,7 +838,8 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
     },
     headerNav: mergeHeaderNav(content.headerNav),
     updatedAt: new Date().toISOString(),
-  });
+  }),
+  );
   const payload = JSON.stringify(next, null, 2);
   let wrote = 0;
   let lastError: unknown;

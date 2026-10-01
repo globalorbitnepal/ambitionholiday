@@ -13,9 +13,12 @@ import {
   packageSeoInput,
   packageSlugProblem,
   packagesSharePage,
+  cardLinkedToPackage,
+  withSlugHistory,
   tripPath,
   type TrekItineraryDay,
   type TrekPackage,
+  type TrekReview,
 } from "@/lib/trip-packages";
 import { CHART_FRAMES } from "@/lib/chart-frames";
 import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
@@ -72,6 +75,25 @@ const emptyDay = (n: number): TrekItineraryDay => ({
   body: "",
   imageSrc: "",
 });
+
+function blankPackageReview(platform: TrekReview["platform"], title: string): TrekReview {
+  return {
+    id: `rev-${Date.now()}`,
+    platform,
+    name: "Guest name",
+    avatarSrc: "",
+    avatarAlt: "",
+    rating: 5,
+    dateLabel: "Recently",
+    meta: "1 review",
+    title: "",
+    body: "",
+    moreLabel: "Read more",
+    moreHref: "",
+    trekEyebrow: "Traveled with Ambition Holidays",
+    trekName: title,
+  };
+}
 
 export default function AdminPackageEditor() {
   const params = useParams<{ id: string }>();
@@ -143,19 +165,23 @@ export default function AdminPackageEditor() {
       window.alert("Add a package title.");
       return;
     }
-    const local: TrekPackage = {
-      ...pkg,
-      slug,
-      groupPrices: groupTiers(pkg),
-      status: publish ? "published" : pkg.status,
-      updatedAt: new Date().toISOString(),
-    };
+    const local: TrekPackage = withSlugHistory(
+      {
+        ...pkg,
+        slug,
+        groupPrices: groupTiers(pkg),
+        status: publish ? "published" : pkg.status,
+        updatedAt: new Date().toISOString(),
+      },
+      baselineRef.current,
+    );
     const oldPaths = new Set([tripPath(local), baselineRef.current ? tripPath(baselineRef.current) : ""].filter(Boolean));
     let pkgToSave = local;
     const ok = await saveMerged((latest) => {
       const serverPkg = latest.tripPackages.find((item) => item.id === local.id);
       pkgToSave = serverPkg ? reconcileTripPackageForSave(serverPkg, local, baselineRef.current) : local;
-      const linked = (card: { id: string; href: string }) => card.id === pkgToSave.catalogId || oldPaths.has(card.href);
+      const linked = (card: { id?: string; href: string; title?: string }) =>
+        cardLinkedToPackage(card, pkgToSave, oldPaths);
       const cardPatch = {
         title: pkgToSave.title,
         days: pkgToSave.days,
@@ -185,6 +211,36 @@ export default function AdminPackageEditor() {
         journeys: {
           ...latest.journeys,
           packages: latest.journeys.packages.map((card) => (linked(card) ? { ...card, ...cardPatch } : card)),
+        },
+        headerNav: {
+          ...latest.headerNav,
+          destinations: (latest.headerNav?.destinations || []).map((card) =>
+            linked(card) ? { ...card, href: tripPath(pkgToSave), title: pkgToSave.title, imageSrc: pkgToSave.heroSrc, imageAlt: pkgToSave.heroAlt } : card,
+          ),
+          luxuryCountries: (latest.headerNav?.luxuryCountries || []).map((country) => ({
+            ...country,
+            packages: country.packages.map((card) =>
+              linked(card)
+                ? {
+                    ...card,
+                    title: pkgToSave.title,
+                    days: pkgToSave.duration || card.days,
+                    difficulty: pkgToSave.difficulty,
+                    href: tripPath(pkgToSave),
+                    imageSrc: pkgToSave.heroSrc || card.imageSrc,
+                    imageAlt: pkgToSave.heroAlt || card.imageAlt,
+                  }
+                : card,
+            ),
+          })),
+        },
+        footer: {
+          ...latest.footer,
+          trekLinks: (latest.footer?.trekLinks || []).map((link) =>
+            linked({ id: link.id, href: link.href, title: link.label })
+              ? { ...link, href: tripPath(pkgToSave), label: pkgToSave.title }
+              : link,
+          ),
         },
       };
     });
@@ -1014,11 +1070,156 @@ export default function AdminPackageEditor() {
       {tab === "reviews" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            This package uses the homepage reviews hub — wallpaper, logos and traveler photos. Edit them in Reviews (same uploads as Orbit).
+            These reviews appear only on this package page. The homepage “What Our Travelers Say” block is edited separately under Reviews.
           </p>
-          <Link className="admin-btn admin-btn-gold" href="/admin/reviews" style={{ display: "inline-block", width: "auto" }}>
-            Open reviews editor
-          </Link>
+          <AdminMediaField
+            label="Reviews section wallpaper (optional)"
+            value={pkg.reviewsWallpaperSrc || ""}
+            onChange={(reviewsWallpaperSrc) => patch({ reviewsWallpaperSrc })}
+          />
+          <div style={{ display: "flex", gap: 8, margin: "12px 0", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="admin-btn admin-btn-ghost"
+              onClick={() => patch({ reviews: [...(pkg.reviews || []), blankPackageReview("google", pkg.title)] })}
+            >
+              Add Google review
+            </button>
+            <button
+              type="button"
+              className="admin-btn admin-btn-ghost"
+              onClick={() => patch({ reviews: [...(pkg.reviews || []), blankPackageReview("tripadvisor", pkg.title)] })}
+            >
+              Add Tripadvisor review
+            </button>
+          </div>
+          {(pkg.reviews || []).map((review, index) => (
+            <div key={review.id} className="admin-card" style={{ margin: "12px 0", padding: 12 }}>
+              <AdminMediaField
+                label="Traveler photo"
+                value={review.avatarSrc || ""}
+                onChange={(avatarSrc) => {
+                  const reviews = [...(pkg.reviews || [])];
+                  reviews[index] = { ...review, avatarSrc };
+                  patch({ reviews });
+                }}
+              />
+              <div className="admin-grid-2">
+                <label className="admin-field">
+                  <span>Name</span>
+                  <input
+                    value={review.name}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, name: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Platform</span>
+                  <select
+                    value={review.platform}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, platform: e.target.value as TrekReview["platform"] };
+                      patch({ reviews });
+                    }}
+                  >
+                    <option value="google">Google</option>
+                    <option value="tripadvisor">Tripadvisor</option>
+                  </select>
+                </label>
+                <label className="admin-field">
+                  <span>Meta (e.g. 12 reviews)</span>
+                  <input
+                    value={review.meta}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, meta: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Date</span>
+                  <input
+                    value={review.dateLabel}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, dateLabel: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Stars (1–5)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={5}
+                    value={review.rating}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, rating: Number(e.target.value) || 5 };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Headline (optional)</span>
+                  <input
+                    value={review.title}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, title: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Trek label</span>
+                  <input
+                    value={review.trekName || pkg.title}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, trekName: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>Read more URL (optional)</span>
+                  <input
+                    value={review.moreHref || ""}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, moreHref: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </label>
+              </div>
+              <label className="admin-field">
+                <span>Review text</span>
+                <textarea
+                  value={review.body}
+                  onChange={(e) => {
+                    const reviews = [...(pkg.reviews || [])];
+                    reviews[index] = { ...review, body: e.target.value };
+                    patch({ reviews });
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-btn"
+                onClick={() => patch({ reviews: (pkg.reviews || []).filter((_, i) => i !== index) })}
+              >
+                Remove review
+              </button>
+            </div>
+          ))}
         </div>
       ) : null}
 

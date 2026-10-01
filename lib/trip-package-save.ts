@@ -1,4 +1,5 @@
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
+import { withSlugHistory } from "@/lib/trip-packages";
 
 function pickNonempty(...values: (string | undefined)[]): string {
   for (const v of values) {
@@ -41,6 +42,11 @@ export function mergeTripPackageSnapshots(a: TrekPackage, b: TrekPackage): TrekP
     altitudeChartM: pickNonempty(b.altitudeChartM, a.altitudeChartM),
     altitudeChartFt: pickNonempty(b.altitudeChartFt, a.altitudeChartFt),
     weatherMonthlySrc: pickNonempty(b.weatherMonthlySrc, a.weatherMonthlySrc),
+    reviews: Array.isArray(b.reviews) ? b.reviews : a.reviews || [],
+    slugHistory: withSlugHistory(
+      { slug: b.slug || a.slug, slugHistory: [...(a.slugHistory || []), ...(b.slugHistory || [])] },
+      a,
+    ).slugHistory,
   };
 }
 

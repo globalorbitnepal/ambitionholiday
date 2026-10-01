@@ -1329,7 +1329,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         maxAltitude: "4,130 m",
         difficulty: "Moderate",
         description: "Sanctuary of Majestic Peaks",
-        href: "/luxury-annapurna-base-camp-trek",
+        href: "/annapurna-base-camp-luxury-trek",
         imageSrc: "/images/journeys/j-abc.webp",
         imageAlt: "Luxury Annapurna lodge terrace with a fire pit at dusk",
       },
@@ -2726,7 +2726,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     treksTitle: "POPULAR TREKS",
     trekLinks: [
       { id: "t1", label: "Luxury Everest Base Camp", href: "/everest-base-camp-trek" },
-      { id: "t2", label: "Luxury Annapurna Base Camp", href: "/luxury-annapurna-base-camp-trek" },
+      { id: "t2", label: "Luxury Annapurna Base Camp", href: "/annapurna-base-camp-luxury-trek" },
       { id: "t3", label: "Luxury Annapurna Circuit", href: "/luxury-annapurna-circuit" },
       { id: "t4", label: "Luxury Manaslu Circuit", href: "/luxury-manaslu-circuit-trek" },
       { id: "t5", label: "Luxury Upper Mustang", href: "/luxury-upper-mustang-trek" },

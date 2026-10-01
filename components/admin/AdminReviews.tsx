@@ -48,7 +48,7 @@ export default function AdminReviews() {
     <>
       <h1>Reviews</h1>
       <p className="admin-lead">
-        Same homepage hub used on every trek page. Upload the mountain wallpaper, board logos and traveler photos here — the same fields as Orbit.
+        Same homepage reviews hub. Trek package pages have their own reviews — edit those under Packages → that trek → Reviews.
       </p>
       <div className="admin-card">
         <label className="admin-field" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>

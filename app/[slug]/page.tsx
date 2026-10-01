@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pkg = findTripBySlug(content.tripPackages, slug);
   if (pkg) {
     const path = tripPath(pkg);
+    if (`/${slug}` !== path) redirect(path);
     const title = pkg.metaTitle?.trim() || `${pkg.title} | ${SITE_NAME}`;
     const description = pkg.metaDescription?.trim() || pkg.subtitle;
     const ogTitle = pkg.ogTitle?.trim() || title;
@@ -103,6 +104,7 @@ export default async function SlugPage({ params }: Props) {
 
   const content = await readContent();
   const pkg = findTripBySlug(content.tripPackages, slug);
+  if (pkg && `/${slug}` !== tripPath(pkg)) redirect(tripPath(pkg));
 
   let page: ReactNode;
   if (pkg) {

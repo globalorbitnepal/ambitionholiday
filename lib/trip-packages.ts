@@ -39,11 +39,16 @@ export type TrekReview = {
   platform: "google" | "tripadvisor";
   name: string;
   avatarSrc: string;
+  avatarAlt?: string;
   rating: number;
   dateLabel: string;
   meta: string;
   title: string;
   body: string;
+  moreLabel?: string;
+  moreHref?: string;
+  trekEyebrow?: string;
+  trekName?: string;
 };
 
 export type TrekGroupPrice = {
@@ -131,6 +136,7 @@ export type TrekPackage = {
   watchVideo: TrekVideo;
   videoReviews: TrekVideo[];
   reviews: TrekReview[];
+  slugHistory?: string[];
   tripInfoTitle: string;
   tripInfo: { id: string; title: string; body: string }[];
   optionalAddons: string[];
@@ -623,6 +629,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     includeNote: EBC_INCLUDE_NOTE,
     luklaNote: EBC_LUKLA_NOTE,
     reviewsWallpaperSrc: "/images/atmosphere/ebc-premium-section.webp",
+    slugHistory: ["everest-base-camp-luxury-trek"],
   },
   ABC_LUXURY_TRIP_PACKAGE,
 ];
@@ -689,25 +696,51 @@ export function packageSlugProblem(slug: string, packages: TrekPackage[], selfId
   if (!slug) return "Add a URL slug.";
   if (!isValidPackageSlug(slug)) return "Use lowercase letters, numbers and hyphens only (e.g. annapurna-base-camp-trek).";
   if (RESERVED_PACKAGE_SLUGS.includes(slug)) return `/${slug} is used by another site page. Choose a different slug.`;
-  if (packages.some((pkg) => pkg.id !== selfId && [...tripSlugAliases(pkg.slug)].includes(slug))) {
+  if (packages.some((pkg) => pkg.id !== selfId && (pkg.slug === slug || packageLookupSlugs(pkg).has(slug)))) {
     return `Another package already uses /${slug}.`;
   }
   return "";
 }
 
-type CatalogCardLike = { id: string; href: string };
+type CatalogCardLike = { id: string; href: string; title?: string };
 
 /** Where a country-page card should link: its published trek page, otherwise an enquiry. */
 export function resolveCatalogHref(card: CatalogCardLike, packages: TrekPackage[]) {
   const href = card.href || "";
   const cleanSlug = href.replace(/^\//, "").replace(/^trip\//, "");
-  const published = packages.find(
-    (pkg) => pkg.status === "published" && (pkg.catalogId === card.id || (cleanSlug && pkg.slug === cleanSlug)),
+  const published = packages.filter((pkg) => pkg.status === "published");
+  const byId = published.find((pkg) => pkg.catalogId === card.id || pkg.id === card.id);
+  if (byId) return tripPath(byId);
+  const bySlug = published.find((pkg) => pkg.slug === cleanSlug || (cleanSlug && packageLookupSlugs(pkg).has(cleanSlug)));
+  if (bySlug) return tripPath(bySlug);
+  const title = (card.title || "").trim();
+  if (title.length > 6) {
+    const wanted = compactTitle(title);
+    const byTitle = published.find((pkg) => {
+      const have = compactTitle(pkg.title);
+      return have === wanted || have.includes(wanted) || wanted.includes(have);
+    });
+    if (byTitle) return tripPath(byTitle);
+  }
+  const unpublished = packages.some(
+    (pkg) => pkg.catalogId === card.id || (cleanSlug && (pkg.slug === cleanSlug || packageLookupSlugs(pkg).has(cleanSlug))),
   );
-  if (published) return tripPath(published);
-  const unpublished = packages.some((pkg) => pkg.catalogId === card.id || (cleanSlug && pkg.slug === cleanSlug));
   if (unpublished || !href) return `/contact?interest=${encodeURIComponent(card.id)}`;
   return href;
+}
+
+export function cardLinkedToPackage(
+  card: { id?: string; href: string; title?: string },
+  pkg: TrekPackage,
+  extraHrefs: Iterable<string> = [],
+) {
+  if (card.id && (card.id === pkg.catalogId || card.id === pkg.id || card.id === `trip-${pkg.catalogId}`)) return true;
+  const href = (card.href || "").replace(/^\//, "");
+  if (href && (pkg.slug === href || packageLookupSlugs(pkg).has(href))) return true;
+  for (const extra of extraHrefs) {
+    if (extra && extra.replace(/^\//, "") === href) return true;
+  }
+  return false;
 }
 
 export function packageSeoInput(pkg: TrekPackage) {
@@ -745,28 +778,71 @@ export function tripSlugAliases(slug: string) {
     aliases.add("everest-base-camp-trek");
     aliases.add("everest-base-camp-luxury-trek");
   }
-  if (s === "annapurna-base-camp-luxury-trek" || s === "luxury-annapurna-base-camp-trek") {
+  if (
+    s === "annapurna-base-camp-luxury-trek" ||
+    s === "luxury-annapurna-base-camp-trek" ||
+    s === "annapurna-base-camp-trek"
+  ) {
     aliases.add("annapurna-base-camp-luxury-trek");
     aliases.add("luxury-annapurna-base-camp-trek");
+    aliases.add("annapurna-base-camp-trek");
   }
   return aliases;
 }
 
+function compactTitle(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/luxury|trek|tour/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function withSlugHistory<T extends Pick<TrekPackage, "slug" | "slugHistory">>(
+  next: T,
+  previous?: Pick<TrekPackage, "slug" | "slugHistory"> | null,
+): T {
+  const hist = [...(next.slugHistory || []), ...(previous?.slugHistory || [])];
+  if (previous?.slug && previous.slug !== next.slug) hist.push(previous.slug);
+  const unique = [...new Set(hist.map((item) => item.replace(/^\//, "")).filter((item) => item && item !== next.slug))];
+  return { ...next, slugHistory: unique.slice(-24) };
+}
+
+export function packageLookupSlugs(pkg: Pick<TrekPackage, "slug" | "slugHistory">) {
+  const slugs = tripSlugAliases(pkg.slug);
+  for (const old of pkg.slugHistory || []) {
+    for (const alias of tripSlugAliases(old)) slugs.add(alias);
+  }
+  return slugs;
+}
+
 export function packagesSharePage(
-  a: Pick<TrekPackage, "id" | "catalogId" | "slug">,
-  b: Pick<TrekPackage, "id" | "catalogId" | "slug">,
+  a: Pick<TrekPackage, "id" | "catalogId" | "slug" | "slugHistory">,
+  b: Pick<TrekPackage, "id" | "catalogId" | "slug" | "slugHistory">,
 ) {
   if (a.id === b.id) return true;
   const aIds = new Set([a.id, a.catalogId, a.catalogId ? `trip-${a.catalogId}` : ""].filter(Boolean));
   if (aIds.has(b.id) || (b.catalogId && (aIds.has(b.catalogId) || aIds.has(`trip-${b.catalogId}`)))) return true;
+  const defA = DEFAULT_TRIP_PACKAGES.find(
+    (d) => d.id === a.id || (a.catalogId && d.catalogId === a.catalogId) || a.id === `trip-${d.catalogId}`,
+  );
+  const defB = DEFAULT_TRIP_PACKAGES.find(
+    (d) => d.id === b.id || (b.catalogId && d.catalogId === b.catalogId) || b.id === `trip-${d.catalogId}`,
+  );
+  if (defA && defB && defA.id !== defB.id) return false;
   if (!a.slug || !b.slug) return false;
-  const aliases = tripSlugAliases(a.slug);
-  return [...tripSlugAliases(b.slug)].some((item) => aliases.has(item));
+  const aliases = packageLookupSlugs(a);
+  return [...packageLookupSlugs(b)].some((item) => aliases.has(item));
 }
 
 export function findTripBySlug(packages: TrekPackage[], slug: string) {
-  const aliases = tripSlugAliases(slug);
-  return packages.find((pkg) => aliases.has(pkg.slug) && pkg.status === "published");
+  const needle = (slug || "").replace(/^\//, "");
+  if (!needle) return undefined;
+  const published = packages.filter((pkg) => pkg.status === "published");
+  const exact = published.find((pkg) => pkg.slug === needle);
+  if (exact) return exact;
+  return published.find((pkg) => packageLookupSlugs(pkg).has(needle));
 }
 
 function foldDuplicateTripPackages(packages: TrekPackage[]): TrekPackage[] {
@@ -892,6 +968,10 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       altitudeChartFt: item.altitudeChartFt || def.altitudeChartFt,
       weatherMonthlySrc: item.weatherMonthlySrc || def.weatherMonthlySrc,
       reviewsWallpaperSrc: item.reviewsWallpaperSrc || def.reviewsWallpaperSrc,
+      slugHistory: withSlugHistory(
+        { slug: item.slug || def.slug, slugHistory: item.slugHistory || [] },
+        def,
+      ).slugHistory,
     };
     if (def.id === ABC_PACKAGE_ID) {
       return {
@@ -1081,6 +1161,7 @@ export function cloneTrekTemplate(fields: {
     },
     videoReviews: [],
     reviews: [],
+    slugHistory: [],
     tripInfoTitle: `${fields.title} – Trip Information`,
     tripInfo: [],
     optionalAddons: [],

@@ -69,6 +69,9 @@ export async function POST(req: Request) {
       revalidatePath(`/packages/${pkg.slug.replace(/^\//, "")}`);
       revalidatePath(`/trip/${pkg.slug.replace(/^\//, "")}`);
     }
+    for (const old of pkg?.slugHistory ?? []) {
+      revalidatePath(`/${old.replace(/^\//, "")}`);
+    }
   }
   return NextResponse.json(saved, {
     headers: {

@@ -7,6 +7,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { luxuryCountryById, type DestShowcaseCard } from "@/lib/header-nav";
 import type { LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
+import { resolveCatalogHref, type TrekPackage } from "@/lib/trip-packages";
 import { mediaSrc } from "@/lib/media-src";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { DEFAULT_SITE_LOGO, headerLogoSrc } from "@/lib/media-src";
@@ -485,12 +486,14 @@ function LuxuryGlassPanel({
   onSelect,
   onNavigate,
   solid,
+  tripPackages = [],
 }: {
   countries: LuxuryMegaCountry[];
   activeId: LuxuryMegaCountryId;
   onSelect: (id: LuxuryMegaCountryId) => void;
   onNavigate: () => void;
   solid?: boolean;
+  tripPackages?: TrekPackage[];
 }) {
   const country = luxuryCountryById(countries, activeId);
 
@@ -605,7 +608,7 @@ function LuxuryGlassPanel({
             {country.packages.map((pkg) => (
               <li key={pkg.title}>
                 <Link
-                  href={pkg.href}
+                  href={resolveCatalogHref({ id: "", href: pkg.href, title: pkg.title }, tripPackages)}
                   onClick={onNavigate}
                   className="focus-ring group relative block overflow-hidden rounded-[1.05rem] border border-white/12 shadow-[0_10px_24px_rgba(0,0,0,0.28)]"
                 >
@@ -793,7 +796,7 @@ type HeaderProps = {
 };
 
 export default function Header({ surface = "dark" }: HeaderProps) {
-  const { header, headerNav, updatedAt } = useSiteContent();
+  const { header, headerNav, updatedAt, tripPackages } = useSiteContent();
   const logoSrc = headerLogoSrc(header.logoSrc, updatedAt);
   const { items: savedTrips } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -1086,6 +1089,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                 onSelect={setLuxuryCountry}
                 onNavigate={() => setOpenDropdown(null)}
                 solid={!isHome}
+                tripPackages={tripPackages}
               />
             ) : null}
           </div>
@@ -1159,6 +1163,7 @@ export default function Header({ surface = "dark" }: HeaderProps) {
                               onSelect={setLuxuryCountry}
                               onNavigate={() => setMobileOpen(false)}
                               solid={!isHome}
+                              tripPackages={tripPackages}
                             />
                           </div>
                         ) : useStackMobile ? (

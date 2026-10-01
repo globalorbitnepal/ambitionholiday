@@ -6,6 +6,7 @@ import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { mediaSrc } from "@/lib/media-src";
 import type { ReviewBoard, ReviewPlatform, TravelerReview } from "@/lib/content-types";
+import type { TrekPackage, TrekReview } from "@/lib/trip-packages";
 
 function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
@@ -191,33 +192,95 @@ function BoardPanel({
   );
 }
 
+function asTravelerReview(review: TrekReview, fallbackTitle: string): TravelerReview {
+  return {
+    id: review.id,
+    platform: review.platform,
+    name: review.name,
+    avatarSrc: review.avatarSrc || "",
+    avatarAlt: review.avatarAlt || review.name,
+    meta: review.meta,
+    rating: review.rating,
+    dateLabel: review.dateLabel,
+    title: review.title,
+    body: review.body,
+    moreLabel: review.moreLabel || "Read more",
+    moreHref: review.moreHref || "",
+    trekEyebrow: review.trekEyebrow || "Traveled with Ambition Holidays",
+    trekName: review.trekName || fallbackTitle,
+  };
+}
+
+function boardsFromPackage(pkg: TrekPackage): ReviewBoard[] {
+  return [
+    {
+      id: `${pkg.id}-google`,
+      platform: "google",
+      title: "Google Reviews",
+      ratingValue: pkg.googleScore?.includes("/") ? pkg.googleScore : `${pkg.googleScore || "5.0"}/5`,
+      ratingCount: pkg.googleCount || "",
+      ctaLabel: "View All on Google",
+      ctaHref: pkg.googleHref || "",
+    },
+    {
+      id: `${pkg.id}-tripadvisor`,
+      platform: "tripadvisor",
+      title: "Tripadvisor Reviews",
+      ratingValue: pkg.tripadvisorScore?.includes("/")
+        ? pkg.tripadvisorScore
+        : `${pkg.tripadvisorScore || "5.0"}/5`,
+      ratingCount: pkg.tripadvisorCount || "",
+      ctaLabel: "View All on Tripadvisor",
+      ctaHref: pkg.tripadvisorHref || "",
+      logoSrc: pkg.tripadvisorLogoSrc,
+    },
+  ];
+}
+
 export default function WhyAmbitionSection({
   wallpaperSrc,
   reviews: reviewOverride,
   embedded,
+  trekPackage,
 }: {
   wallpaperSrc?: string;
   reviews?: TravelerReview[];
   /** Trek package page: no extra wallpaper, no leftover kickers. */
   embedded?: boolean;
+  /** When set, this hub uses only this package’s reviews — not the homepage Himalaya feed. */
+  trekPackage?: TrekPackage;
 } = {}) {
   const { why } = useSiteContent();
   const [starts, setStarts] = useState<Record<string, number>>({});
+  const sourceReviews = useMemo(() => {
+    if (trekPackage) {
+      return (trekPackage.reviews || []).map((review) => asTravelerReview(review, trekPackage.title));
+    }
+    if (reviewOverride?.length) return reviewOverride;
+    return why.reviews ?? [];
+  }, [trekPackage, reviewOverride, why.reviews]);
+  const boards = trekPackage
+    ? boardsFromPackage(trekPackage).filter((board) => sourceReviews.some((review) => review.platform === board.platform))
+    : why.boards ?? [];
 
   const reviewsByPlatform = useMemo(() => {
     const map: Record<ReviewPlatform, TravelerReview[]> = { google: [], tripadvisor: [] };
-    for (const review of reviewOverride?.length ? reviewOverride : why.reviews ?? []) {
+    for (const review of sourceReviews) {
       map[review.platform].push(review);
     }
     return map;
-  }, [why.reviews, reviewOverride]);
+  }, [sourceReviews]);
 
-  if (!why?.visible) return null;
+  if (trekPackage) {
+    if (!sourceReviews.length) return null;
+  } else if (!why?.visible) {
+    return null;
+  }
 
   const shiftAll = (dir: -1 | 1) => {
     setStarts((prev) => {
       const next = { ...prev };
-      for (const board of why.boards) {
+      for (const board of boards) {
         const list = reviewsByPlatform[board.platform];
         if (!list.length) continue;
         next[board.id] = ((prev[board.id] ?? 0) + dir + list.length) % list.length;
@@ -242,13 +305,13 @@ export default function WhyAmbitionSection({
           )}
 
           <header className="rev-head">
-            <p className="explore-hub-eyebrow">{why.eyebrow}</p>
+            <p className="explore-hub-eyebrow">{trekPackage ? "Guest reviews" : why.eyebrow}</p>
             <h2 className="rev-title-display font-[family-name:var(--font-cormorant)]">
               {why.headlineWhite} <span>{why.headlineGold}</span>
             </h2>
-            <p className="rev-subtitle">{why.subtitle}</p>
-            <p className="rev-sister">{why.sisterLine}</p>
-            {why.stats?.length ? (
+            <p className="rev-subtitle">{trekPackage ? `Reviews for ${trekPackage.title}` : why.subtitle}</p>
+            {trekPackage ? null : <p className="rev-sister">{why.sisterLine}</p>}
+            {!trekPackage && why.stats?.length ? (
               <p className="rev-stats">
                 {why.stats.map((item, index) => (
                   <span key={`${item}-${index}`}>
@@ -268,7 +331,7 @@ export default function WhyAmbitionSection({
             </button>
 
             <div className="rev-boards">
-              {(why.boards ?? []).map((board) => (
+              {boards.map((board) => (
                 <BoardPanel
                   key={board.id}
                   board={board}
@@ -293,10 +356,12 @@ export default function WhyAmbitionSection({
             </button>
           </div>
 
+          {trekPackage ? null : (
           <footer className="rev-quote">
             <p className="font-[family-name:var(--font-cormorant)]">“{why.quote}”</p>
             <span>— {why.quoteBy}</span>
           </footer>
+          )}
         </div>
       </div>
     </section>
