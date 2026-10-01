@@ -5780,6 +5780,41 @@ a.lux-chart-dl {
   scroll-margin-top: 5.2rem;
 }
 
+.lux-aside--inline {
+  display: none;
+  margin-bottom: 1rem;
+}
+
+.lux-aside--sidebar {
+  display: block;
+}
+
+@media (max-width: 1099px) {
+  .lux-toc {
+    display: none;
+  }
+
+  .lux-aside--inline {
+    display: block;
+  }
+
+  .lux-aside--sidebar {
+    display: none;
+  }
+
+  .lux-aside--inline .lux-price {
+    position: static;
+    top: auto;
+  }
+
+  .lux-card,
+  .lux-day,
+  .lux-price,
+  .lux-aside {
+    scroll-margin-top: 1rem;
+  }
+}
+
 @media (min-width: 1100px) {
   .lux-layout {
     grid-template-columns: minmax(0, 1fr) 21.5rem;
@@ -5806,6 +5841,12 @@ a.lux-chart-dl {
   }
   .lux-root {
     padding-bottom: 0;
+  }
+}
+
+@media (max-width: 1099px) {
+  .lux-mobile-bar {
+    display: none;
   }
 }
 

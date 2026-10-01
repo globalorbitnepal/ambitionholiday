@@ -52,7 +52,11 @@ function teaserOf(body: string) {
 }
 
 function scrollToId(id: string) {
-  const el = document.getElementById(id);
+  const targetId =
+    id === "book" && typeof window !== "undefined" && window.matchMedia("(max-width: 1099px)").matches
+      ? "book-mobile"
+      : id;
+  const el = document.getElementById(targetId);
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -170,10 +174,21 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   }, [tocKey]);
 
   useEffect(() => {
-    const onScroll = () => setTocFloating(window.scrollY > 320);
+    const mq = window.matchMedia("(min-width: 1100px)");
+    const onScroll = () => {
+      if (!mq.matches) {
+        setTocFloating(false);
+        return;
+      }
+      setTocFloating(window.scrollY > 320);
+    };
     onScroll();
+    mq.addEventListener("change", onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      mq.removeEventListener("change", onScroll);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   function openVideo(video: TrekVideo) {
@@ -185,6 +200,63 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   function galleryAlt(index: number) {
     return pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`);
   }
+
+  const bookingPanel = (
+    <div className="lux-price">
+      <PackageActions pkg={pkg} />
+      <p className="lux-price-main">
+        {hasFromPrice ? (
+          <>
+            From USD {fromPrice.toLocaleString()} <span>/ person</span>
+          </>
+        ) : hasPrice ? (
+          <>
+            USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
+          </>
+        ) : (
+          "Request Private Quote"
+        )}
+      </p>
+      {groups.some((row) => row.priceUsd > 0) ? (
+        <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
+          See group booking discount {showGroups ? "▴" : "▾"}
+        </button>
+      ) : null}
+      {showGroups && groups.some((row) => row.priceUsd > 0) ? (
+        <table className="lux-price-table">
+          <thead>
+            <tr>
+              <th>No. of people</th>
+              <th>Price per person</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map((row) => (
+              <tr key={row.id}>
+                <td>{row.label}</td>
+                <td>{row.priceUsd > 0 ? `USD ${row.priceUsd.toLocaleString()}` : "On request"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      <Link href={enquire} className="lux-btn lux-btn-solid">
+        Book now
+      </Link>
+      <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
+        Check availability
+      </Link>
+      <Link href={enquire} className="lux-btn lux-btn-ghost">
+        Inquire now
+      </Link>
+      <a className="lux-wa" href="https://wa.me/9779851148898" target="_blank" rel="noreferrer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.95L2 22l5.37-1.4a10 10 0 0 0 4.67 1.18h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2Zm5.48 14.05c-.23.64-1.34 1.18-1.86 1.26-.48.07-1.08.1-1.74-.11-.4-.12-.91-.3-1.57-.59-2.76-1.19-4.55-3.96-4.69-4.15-.14-.18-1.15-1.52-1.15-2.9 0-1.37.7-2.05.95-2.33.23-.26.62-.37.98-.37.12 0 .23 0 .33.01.29.01.44.03.63.49.23.55.78 1.9.85 2.04.07.14.12.3.02.49-.09.18-.14.3-.28.46-.14.16-.29.35-.41.47-.14.14-.28.29-.12.56.16.26.7 1.15 1.5 1.86 1.03.92 1.9 1.21 2.18 1.35.26.13.42.11.58-.07.16-.18.7-.8.88-1.08.18-.26.37-.22.62-.13.26.08 1.64.77 1.92.91.28.14.46.21.53.33.07.12.07.7-.16 1.34Z" />
+        </svg>
+        WhatsApp +977 9851148898
+      </a>
+    </div>
+  );
 
   return (
     <>
@@ -308,6 +380,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
             </article>
+
+            <aside id="book-mobile" className="lux-aside lux-aside--inline" aria-label="Book this trip">
+              {bookingPanel}
+            </aside>
 
             {show.highlights ? (
               <article id="highlights" className="lux-card">
@@ -717,61 +793,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             ) : null}
           </div>
 
-          <aside id="book" className="lux-aside">
-            <div className="lux-price">
-              <PackageActions pkg={pkg} />
-              <p className="lux-price-main">
-                {hasFromPrice ? (
-                  <>
-                    From USD {fromPrice.toLocaleString()} <span>/ person</span>
-                  </>
-                ) : hasPrice ? (
-                  <>
-                    USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
-                  </>
-                ) : (
-                  "Request Private Quote"
-                )}
-              </p>
-              {groups.some((row) => row.priceUsd > 0) ? (
-                <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
-                  See group booking discount {showGroups ? "▴" : "▾"}
-                </button>
-              ) : null}
-              {showGroups && groups.some((row) => row.priceUsd > 0) ? (
-                <table className="lux-price-table">
-                  <thead>
-                    <tr>
-                      <th>No. of people</th>
-                      <th>Price per person</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {groups.map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.label}</td>
-                        <td>{row.priceUsd > 0 ? `USD ${row.priceUsd.toLocaleString()}` : "On request"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : null}
-              <Link href={enquire} className="lux-btn lux-btn-solid">
-                Book now
-              </Link>
-              <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
-                Check availability
-              </Link>
-              <Link href={enquire} className="lux-btn lux-btn-ghost">
-                Inquire now
-              </Link>
-              <a className="lux-wa" href="https://wa.me/9779851148898" target="_blank" rel="noreferrer">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.95L2 22l5.37-1.4a10 10 0 0 0 4.67 1.18h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2Zm5.48 14.05c-.23.64-1.34 1.18-1.86 1.26-.48.07-1.08.1-1.74-.11-.4-.12-.91-.3-1.57-.59-2.76-1.19-4.55-3.96-4.69-4.15-.14-.18-1.15-1.52-1.15-2.9 0-1.37.7-2.05.95-2.33.23-.26.62-.37.98-.37.12 0 .23 0 .33.01.29.01.44.03.63.49.23.55.78 1.9.85 2.04.07.14.12.3.02.49-.09.18-.14.3-.28.46-.14.16-.29.35-.41.47-.14.14-.28.29-.12.56.16.26.7 1.15 1.5 1.86 1.03.92 1.9 1.21 2.18 1.35.26.13.42.11.58-.07.16-.18.7-.8.88-1.08.18-.26.37-.22.62-.13.26.08 1.64.77 1.92.91.28.14.46.21.53.33.07.12.07.7-.16 1.34Z" />
-                </svg>
-                WhatsApp +977 9851148898
-              </a>
-            </div>
+          <aside id="book" className="lux-aside lux-aside--sidebar" aria-label="Book this trip">
+            {bookingPanel}
           </aside>
         </div>
       </div>
