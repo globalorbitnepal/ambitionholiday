@@ -247,6 +247,7 @@ export const ABC_LUXURY_TRIP_PACKAGE: TrekPackage = {
   googleScore: "5.0",
   googleCount: "165+ Reviews",
   googleHref: "https://www.google.com/maps",
+  googleLogoSrc: "",
   watchVideo: {
     ...EBC_WATCH_VIDEO,
     id: "abc-watch",

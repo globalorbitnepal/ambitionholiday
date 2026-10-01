@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import { reviewBodyIsLong } from "@/lib/review-display";
 import MediaImage from "@/components/MediaImage";
 import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
@@ -24,18 +25,30 @@ const TRIPADVISOR_OWL = "/images/reviews/tripadvisor-owl.png";
 function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={TRIPADVISOR_OWL} alt="Tripadvisor" className={`${className} object-contain`} />
+    <img src={mediaSrc(TRIPADVISOR_OWL)} alt="Tripadvisor" className={`${className} object-contain`} />
+  );
+}
+
+function BoardLogoImage({ src, fallback }: { src: string; fallback: ReactNode }) {
+  const [broken, setBroken] = useState(false);
+  if (!src.trim() || broken) return <>{fallback}</>;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={mediaSrc(src)}
+      alt=""
+      className="h-9 w-9 object-contain"
+      onError={() => setBroken(true)}
+    />
   );
 }
 
 function PlatformLogo({ board }: { board: ReviewBoard }) {
-  if (board.logoSrc) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={mediaSrc(board.logoSrc)} alt="" className="h-9 w-9 object-contain" />
-    );
+  const fallback = board.platform === "tripadvisor" ? <TripadvisorMark /> : <GoogleMark />;
+  if (board.logoSrc?.trim()) {
+    return <BoardLogoImage src={board.logoSrc} fallback={fallback} />;
   }
-  return board.platform === "tripadvisor" ? <TripadvisorMark /> : <GoogleMark />;
+  return fallback;
 }
 
 function GoogleStars({ count }: { count: number }) {
@@ -93,7 +106,10 @@ function visibleSlice(list: TravelerReview[], start: number, count: number) {
 }
 
 function ReviewCard({ review }: { review: TravelerReview }) {
+  const [expanded, setExpanded] = useState(false);
   const google = review.platform === "google";
+  const long = reviewBodyIsLong(review.body);
+  const showClamp = long && !expanded;
   return (
     <article className="rev-card">
       <div className="rev-card-top">
@@ -111,14 +127,24 @@ function ReviewCard({ review }: { review: TravelerReview }) {
         <span>{review.dateLabel}</span>
       </div>
       {review.title ? <p className="rev-title">{review.title}</p> : null}
-      <p className="rev-body">
-        {review.body}{" "}
-        {review.moreHref ? (
-          <a href={review.moreHref} target="_blank" rel="noreferrer" className="rev-more">
-            {review.moreLabel || "Read more"}
+      <div className="rev-card-body-wrap">
+        <p className={`rev-body${showClamp ? " rev-body--clamped" : ""}`}>{review.body}</p>
+        {long ? (
+          <button
+            type="button"
+            className="rev-more rev-more-btn"
+            onClick={() => setExpanded((on) => !on)}
+            aria-expanded={expanded}
+          >
+            {expanded ? "Show less" : review.moreLabel || "Read more"}
+          </button>
+        ) : null}
+        {expanded && review.moreHref ? (
+          <a href={review.moreHref} target="_blank" rel="noreferrer" className="rev-more rev-more-link">
+            View on {google ? "Google" : "Tripadvisor"} ↗
           </a>
         ) : null}
-      </p>
+      </div>
       <p className="rev-trek">
         <span className="rev-trek-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
@@ -221,6 +247,7 @@ function boardsFromPackage(pkg: TrekPackage): ReviewBoard[] {
       ratingCount: pkg.googleCount || "",
       ctaLabel: "View All on Google",
       ctaHref: pkg.googleHref || "",
+      logoSrc: pkg.googleLogoSrc,
     },
     {
       id: `${pkg.id}-tripadvisor`,

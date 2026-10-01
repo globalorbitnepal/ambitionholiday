@@ -14,6 +14,7 @@ import {
   packageSeoInput,
   packageSlugProblem,
   packagesSharePage,
+  blankPackageReview,
   withSlugHistory,
   tripPath,
   type TrekItineraryDay,
@@ -75,25 +76,6 @@ const emptyDay = (n: number): TrekItineraryDay => ({
   body: "",
   imageSrc: "",
 });
-
-function blankPackageReview(platform: TrekReview["platform"], title: string): TrekReview {
-  return {
-    id: `rev-${Date.now()}`,
-    platform,
-    name: "Guest name",
-    avatarSrc: "",
-    avatarAlt: "",
-    rating: 5,
-    dateLabel: "Recently",
-    meta: "1 review",
-    title: "",
-    body: "",
-    moreLabel: "Read more",
-    moreHref: "",
-    trekEyebrow: "Traveled with Ambition Holidays",
-    trekName: title,
-  };
-}
 
 export default function AdminPackageEditor() {
   const params = useParams<{ id: string }>();
@@ -894,9 +876,14 @@ export default function AdminPackageEditor() {
             </label>
           </div>
           <AdminMediaField
-            label="Tripadvisor owl / logo"
+            label="Tripadvisor board logo (guest review panel header)"
             value={pkg.tripadvisorLogoSrc || ""}
             onChange={(tripadvisorLogoSrc) => patch({ tripadvisorLogoSrc })}
+          />
+          <AdminMediaField
+            label="Google board logo (guest review panel header)"
+            value={pkg.googleLogoSrc || ""}
+            onChange={(googleLogoSrc) => patch({ googleLogoSrc })}
           />
         </div>
       ) : null}

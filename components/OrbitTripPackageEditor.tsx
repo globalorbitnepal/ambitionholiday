@@ -8,7 +8,9 @@ import SeoPanel, { SeoLengthHint } from "@/components/SeoPanel";
 import { CHART_FRAMES, chartFrameLine } from "@/lib/chart-frames";
 import type { SiteContent } from "@/lib/content-types";
 import { applyTripPackageToSiteContent } from "@/lib/trip-package-catalog-sync";
+import { mediaSrc } from "@/lib/media-src";
 import {
+  blankPackageReview,
   cleanSlugInput,
   packageHeadings,
   packageSeoInput,
@@ -16,6 +18,7 @@ import {
   withSlugHistory,
   type TrekItineraryDay,
   type TrekPackage,
+  type TrekReview,
   type TrekVideo,
 } from "@/lib/trip-packages";
 
@@ -80,6 +83,7 @@ type SubTab =
   | "travel"
   | "faq"
   | "ratings"
+  | "reviews"
   | "seo";
 
 /** Same order as the live trek page menu (Overview → Book → … → FAQ). */
@@ -100,7 +104,8 @@ const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "travel", label: "14 · Travel notes" },
   { id: "faq", label: "15 · FAQ" },
   { id: "ratings", label: "16 · TripAdvisor / Google" },
-  { id: "seo", label: "17 · SEO" },
+  { id: "reviews", label: "17 · Guest reviews" },
+  { id: "seo", label: "18 · SEO" },
 ];
 
 function syncCatalog(content: SiteContent, pkg: TrekPackage, previous?: TrekPackage): SiteContent {
@@ -1139,11 +1144,171 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
         </div>
       ) : null}
 
+      {subTab === "reviews" ? (
+        <div className="space-y-4">
+          <p className="text-sm text-white/55">
+            Guest review wall on this package page only. Long text is clamped on the live site — guests tap Read more.
+            Add as many Google or Tripadvisor cards as you need.
+          </p>
+          <OrbitMediaButtons onPicked={async (url) => patch({ reviewsWallpaperSrc: url })} />
+          <p className="text-[0.7rem] text-white/45">Optional: pick wallpaper for the reviews band (or leave default).</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white/85"
+              onClick={() => patch({ reviews: [...(pkg.reviews || []), blankPackageReview("google", pkg.title)] })}
+            >
+              Add Google review
+            </button>
+            <button
+              type="button"
+              className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white/85"
+              onClick={() => patch({ reviews: [...(pkg.reviews || []), blankPackageReview("tripadvisor", pkg.title)] })}
+            >
+              Add Tripadvisor review
+            </button>
+          </div>
+          {(pkg.reviews || []).map((review, index) => (
+            <div key={review.id} className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-white">
+                  {review.platform === "google" ? "Google" : "Tripadvisor"} · {review.name || "Guest"}
+                </p>
+                <button
+                  type="button"
+                  className="text-xs text-red-300/90"
+                  onClick={() => patch({ reviews: (pkg.reviews || []).filter((_, i) => i !== index) })}
+                >
+                  Remove
+                </button>
+              </div>
+              <OrbitMediaButtons
+                onPicked={async (url) => {
+                  const reviews = [...(pkg.reviews || [])];
+                  reviews[index] = { ...review, avatarSrc: url };
+                  patch({ reviews });
+                }}
+              />
+              <p className="text-[0.65rem] text-white/40">Traveler photo (optional)</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <OrbitField label="Name">
+                  <input
+                    className={orbitInputClass}
+                    value={review.name}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, name: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Platform">
+                  <select
+                    className={orbitInputClass}
+                    value={review.platform}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, platform: e.target.value as TrekReview["platform"] };
+                      patch({ reviews });
+                    }}
+                  >
+                    <option value="google">Google</option>
+                    <option value="tripadvisor">Tripadvisor</option>
+                  </select>
+                </OrbitField>
+                <OrbitField label="Meta">
+                  <input
+                    className={orbitInputClass}
+                    value={review.meta}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, meta: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Date label">
+                  <input
+                    className={orbitInputClass}
+                    value={review.dateLabel}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, dateLabel: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Stars (1–5)">
+                  <input
+                    className={orbitInputClass}
+                    type="number"
+                    min={1}
+                    max={5}
+                    value={review.rating}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, rating: Number(e.target.value) || 5 };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Trek label">
+                  <input
+                    className={orbitInputClass}
+                    value={review.trekName || pkg.title}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, trekName: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+              </div>
+              <OrbitField label="Review text">
+                <textarea
+                  className={orbitTextareaClass}
+                  rows={5}
+                  value={review.body}
+                  onChange={(e) => {
+                    const reviews = [...(pkg.reviews || [])];
+                    reviews[index] = { ...review, body: e.target.value };
+                    patch({ reviews });
+                  }}
+                />
+              </OrbitField>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <OrbitField label="Read more label">
+                  <input
+                    className={orbitInputClass}
+                    value={review.moreLabel || ""}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, moreLabel: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+                <OrbitField label="Original review URL (optional)">
+                  <input
+                    className={orbitInputClass}
+                    value={review.moreHref || ""}
+                    onChange={(e) => {
+                      const reviews = [...(pkg.reviews || [])];
+                      reviews[index] = { ...review, moreHref: e.target.value };
+                      patch({ reviews });
+                    }}
+                  />
+                </OrbitField>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       {subTab === "ratings" ? (
         <div className="grid gap-4 lg:grid-cols-2">
           <p className="lg:col-span-2 text-sm text-white/55">
-            Scores under the package title on the live page. Guest review wall uses the shared Reviews tab in Orbit →
-            Traveler reviews.
+            Scores under the package title. Board logos and guest cards are in tab 17 · Guest reviews.
           </p>
           <OrbitField label="Tripadvisor label">
             <input className={orbitInputClass} value={pkg.tripadvisorLabel || ""} onChange={(e) => patch({ tripadvisorLabel: e.target.value })} />
@@ -1158,12 +1323,35 @@ export default function OrbitTripPackageEditor({ content, setContent }: Props) {
             <input className={orbitInputClass} value={pkg.tripadvisorHref || ""} onChange={(e) => patch({ tripadvisorHref: e.target.value })} />
           </OrbitField>
           <div className="lg:col-span-2 space-y-2">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Tripadvisor logo</p>
-            {pkg.tripadvisorLogoSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={pkg.tripadvisorLogoSrc} alt="" className="h-12 object-contain" />
-            ) : null}
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Tripadvisor board logo</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={mediaSrc(pkg.tripadvisorLogoSrc || "/images/reviews/tripadvisor-owl.png")}
+              alt=""
+              className="h-12 object-contain"
+            />
             <OrbitMediaButtons onPicked={async (url) => patch({ tripadvisorLogoSrc: url })} />
+            <button
+              type="button"
+              className="text-xs text-white/50 underline"
+              onClick={() => patch({ tripadvisorLogoSrc: "/images/reviews/tripadvisor-owl.png" })}
+            >
+              Reset to default owl
+            </button>
+          </div>
+          <div className="lg:col-span-2 space-y-2">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">Google board logo</p>
+            <p className="text-xs text-white/45">Leave empty for the built-in Google G mark on the review panel.</p>
+            {pkg.googleLogoSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={mediaSrc(pkg.googleLogoSrc)} alt="" className="h-12 object-contain" />
+            ) : null}
+            <OrbitMediaButtons onPicked={async (url) => patch({ googleLogoSrc: url })} />
+            {pkg.googleLogoSrc ? (
+              <button type="button" className="text-xs text-white/50 underline" onClick={() => patch({ googleLogoSrc: "" })}>
+                Use default Google mark
+              </button>
+            ) : null}
           </div>
           <OrbitField label="Google label">
             <input className={orbitInputClass} value={pkg.googleLabel || ""} onChange={(e) => patch({ googleLabel: e.target.value })} />

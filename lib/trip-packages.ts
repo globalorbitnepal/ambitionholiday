@@ -51,6 +51,25 @@ export type TrekReview = {
   trekName?: string;
 };
 
+export function blankPackageReview(platform: TrekReview["platform"], title: string): TrekReview {
+  return {
+    id: `rev-${Date.now()}`,
+    platform,
+    name: "Guest name",
+    avatarSrc: "",
+    avatarAlt: "",
+    rating: 5,
+    dateLabel: "Recently",
+    meta: "1 review",
+    title: "",
+    body: "",
+    moreLabel: "Read more",
+    moreHref: "",
+    trekEyebrow: "Traveled with Ambition Holidays",
+    trekName: title,
+  };
+}
+
 export type TrekGroupPrice = {
   id: string;
   label: string;
@@ -133,6 +152,8 @@ export type TrekPackage = {
   googleScore: string;
   googleCount: string;
   googleHref: string;
+  /** Optional board header logo; empty uses the built-in Google mark. */
+  googleLogoSrc: string;
   watchVideo: TrekVideo;
   videoReviews: TrekVideo[];
   reviews: TrekReview[];
@@ -504,6 +525,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     googleScore: "5.0",
     googleCount: "210+ Reviews",
     googleHref: "https://www.google.com/maps",
+    googleLogoSrc: "",
     watchVideo: EBC_WATCH_VIDEO,
     videoReviews: EBC_VIDEO_REVIEWS,
     reviews: [
@@ -999,6 +1021,8 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       tripadvisorCount: item.tripadvisorCount || def.tripadvisorCount,
       tripadvisorScore: item.tripadvisorScore || def.tripadvisorScore,
       googleCount: item.googleCount || def.googleCount,
+      googleLogoSrc: item.googleLogoSrc ?? def.googleLogoSrc ?? "",
+      tripadvisorLogoSrc: item.tripadvisorLogoSrc || def.tripadvisorLogoSrc,
       watchVideo: item.watchVideo
         ? {
             ...def.watchVideo,
@@ -1235,6 +1259,7 @@ export function cloneTrekTemplate(fields: {
     includeNote: "",
     luklaNote: "",
     reviewsWallpaperSrc: base.reviewsWallpaperSrc,
+    googleLogoSrc: "",
     ogTitle: "",
     ogDescription: "",
     ogImageSrc: "",

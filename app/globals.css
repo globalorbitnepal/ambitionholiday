@@ -1628,14 +1628,24 @@ body.nav-mega-open .hero-copy {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
+  align-items: stretch;
 }
 
 .rev-card {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 12.5rem;
   border-radius: 1.05rem;
   padding: 0.9rem 0.85rem 0.8rem;
   background: rgba(247, 250, 252, 0.96);
   color: #1e2a33;
+}
+
+.rev-card-body-wrap {
+  flex: 1 1 auto;
+  min-height: 4.5rem;
 }
 
 .rev-card-top {
@@ -1712,9 +1722,34 @@ body.nav-mega-open .hero-copy {
   color: #314047;
 }
 
+.rev-body--clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
 .rev-more {
   color: #1a73e8;
   font-weight: 600;
+}
+
+.rev-more-btn {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rev-more-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
 }
 
 .rev-board-tripadvisor .rev-more {
@@ -1725,7 +1760,7 @@ body.nav-mega-open .hero-copy {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin-top: 0.7rem;
+  margin-top: auto;
   padding-top: 0.55rem;
   border-top: 1px solid rgba(23, 48, 58, 0.1);
   color: #4a5a63;
