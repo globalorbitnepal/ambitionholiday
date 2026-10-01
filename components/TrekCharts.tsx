@@ -10,6 +10,7 @@ import {
   type AltitudeStop,
 } from "@/lib/ebc-charts";
 import { ABC_MAP_STOPS } from "@/lib/abc-charts";
+import { LANGTANG_MAP_STOPS } from "@/lib/langtang-charts";
 import { MUSTANG_MAP_STOPS } from "@/lib/mustang-charts";
 import { mediaSrc } from "@/lib/media-src";
 
@@ -285,6 +286,90 @@ export function MonthlyWeatherChart({ title = "Weather on the Everest Base Camp 
   );
 }
 
+function LangtangRouteMap({ title }: { title: string }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gid = useId().replace(/:/g, "");
+  const byId = Object.fromEntries(LANGTANG_MAP_STOPS.map((s) => [s.id, s]));
+  const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
+  const trekOut = ["syabru", "lama1", "langtang", "kyanjin"]
+    .map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`)
+    .join(" ");
+  const trekRi = `M${pt("kyanjin")} L${pt("kyanjinri")}`;
+  const trekReturn = `M${pt("kyanjin")} L${pt("lama2")} L${pt("syabru")}`;
+
+  return (
+    <div className="lux-graph">
+      <div className="lux-graph-head">
+        <h3>{title}</h3>
+        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, "langtang-valley-luxury-trek-route-map")}>
+          Download PNG
+        </button>
+      </div>
+      <svg ref={svgRef} className="lux-graph-svg lux-map-svg" viewBox="0 0 1000 560" role="img" aria-label={title}>
+        <defs>
+          <linearGradient id={`${gid}-sky`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e4eef6" />
+            <stop offset="55%" stopColor="#f4f7f9" />
+            <stop offset="100%" stopColor="#e8efe4" />
+          </linearGradient>
+          <linearGradient id={`${gid}-peak`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f8fbff" />
+            <stop offset="100%" stopColor="#7a9ab8" />
+          </linearGradient>
+        </defs>
+        <rect width="1000" height="560" fill={`url(#${gid}-sky)`} />
+        <Watermark w={1000} h={560} />
+        <path d="M0 180 L120 120 L260 80 L400 50 L560 30 L720 20 L880 40 L1000 60 L1000 560 L0 560 Z" fill={`url(#${gid}-peak)`} opacity="0.4" />
+        <text x="620" y="24" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1a4d8c">
+          Langtang Lirung
+        </text>
+        <path d="M0 360 C180 320 360 380 520 340 C700 300 860 360 1000 320 L1000 560 L0 560 Z" fill="#b8c9a8" opacity="0.55" />
+        <path d={trekOut} fill="none" stroke="#b42318" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={trekReturn} fill="none" stroke="#b42318" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+        <path d={trekRi} fill="none" stroke="#b42318" strokeWidth="3" strokeDasharray="5 5" strokeLinecap="round" />
+        <path d={`M${pt("ktm")} L${pt("syabru")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("syabru")} L${pt("ktm")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        {LANGTANG_MAP_STOPS.map((stop) => (
+          <g key={stop.id}>
+            <circle
+              cx={stop.x * 10}
+              cy={stop.y * 6}
+              r={stop.id === "kyanjin" ? 7 : stop.id === "kyanjinri" ? 6 : 5.5}
+              fill={stop.id === "kyanjin" ? "#1a4d8c" : stop.id === "kyanjinri" ? "#6b7280" : "#c9a227"}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <text x={stop.x * 10 + 10} y={stop.y * 6 - 8} fontSize="13" fontWeight="700" fill="#111827">
+              {stop.name}
+            </text>
+            <text x={stop.x * 10 + 10} y={stop.y * 6 + 8} fontSize="11" fill="#4b5563">
+              {stop.sub}
+            </text>
+          </g>
+        ))}
+        <g transform="translate(28 28)">
+          <rect width="268" height="118" rx="10" fill="#fff" stroke="#e5d39a" />
+          <text x="14" y="24" fontSize="12" fontWeight="700" fill="#1a2129">
+            Ambition Holidays
+          </text>
+          <text x="14" y="44" fontSize="11" fill="#4b5563">
+            Red solid — trekking route
+          </text>
+          <text x="14" y="62" fontSize="11" fill="#4b5563">
+            Red dash — Kyanjin Ri viewpoint (day hike)
+          </text>
+          <text x="14" y="80" fontSize="11" fill="#4b5563">
+            Blue dash — private 4WD (Kathmandu → Syabrubesi)
+          </text>
+          <text x="14" y="98" fontSize="11" fill="#4b5563">
+            Gold dash — private 4WD return to Kathmandu
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 function MustangRouteMap({ title }: { title: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const gid = useId().replace(/:/g, "");
@@ -362,10 +447,11 @@ export function TrekRouteMap({
   variant = "ebc",
 }: {
   title?: string;
-  variant?: "ebc" | "abc" | "mustang";
+  variant?: "ebc" | "abc" | "mustang" | "langtang";
 }) {
   if (variant === "abc") return <AbcRouteMap title={title || "Annapurna Base Camp Luxury Trek map"} />;
   if (variant === "mustang") return <MustangRouteMap title={title || "Luxury Upper Mustang Trek map"} />;
+  if (variant === "langtang") return <LangtangRouteMap title={title || "Langtang Valley Luxury Trek — 10 days route map"} />;
   return <EbcRouteMap title={title} />;
 }
 

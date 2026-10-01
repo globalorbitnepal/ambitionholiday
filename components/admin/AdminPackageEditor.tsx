@@ -12,6 +12,7 @@ import {
   DEFAULT_TRIP_PACKAGES,
   isAbcPackage,
   isEbcPackage,
+  isLangtangPackage,
   isMustangPackage,
   packageHeadings,
   packageSeoInput,
@@ -654,7 +655,7 @@ export default function AdminPackageEditor() {
       {tab === "charts" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg)
+            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg) || isLangtangPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>

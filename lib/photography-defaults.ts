@@ -40,9 +40,9 @@ const PHOTO_COPY: Record<string, { subtitle: string; description: string }> = {
       "Mardi Himal’s ridge walk for first-light Annapurna frames without a long expedition.",
   },
   "langtang-lux": {
-    subtitle: "Close Himalaya, Tamang villages",
+    subtitle: "Private 4WD · Kyanjin Gompa · Kyanjin Ri",
     description:
-      "Langtang’s pine valleys and village life — a quieter photography trek close to Kathmandu.",
+      "Tamang villages, rhododendron forest and alpine light beneath Langtang Lirung — a private ten-day valley trek from Kathmandu.",
   },
   "threepass-lux": {
     subtitle: "Three high passes, one Khumbu horseshoe",

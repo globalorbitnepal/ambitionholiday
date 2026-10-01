@@ -57,6 +57,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageAlt: "Mustang monastery in the hills",
       },
       {
+        title: "Langtang Valley Luxury Trek",
+        days: "10 Days",
+        difficulty: "Moderate",
+        href: "/langtang-valley-luxury-trek",
+        imageSrc: "/images/journeys/j-langtang.webp",
+        imageAlt: "Langtang valley beneath snow peaks",
+      },
+      {
         title: "Kathmandu Valley Tour",
         days: "6 Days",
         difficulty: "Easy",

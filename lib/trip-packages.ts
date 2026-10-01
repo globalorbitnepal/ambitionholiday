@@ -8,6 +8,7 @@ import {
   EBC_LUKLA_NOTE,
 } from "./ebc-luxury-content";
 import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
+import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
@@ -189,9 +190,15 @@ export type TrekPackage = {
 export const EBC_PACKAGE_ID = "ebc-lux";
 export const ABC_PACKAGE_ID = "abc-lux";
 export const MUSTANG_PACKAGE_ID = "mustang-lux";
+export const LANGTANG_PACKAGE_ID = "langtang-lux";
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
-export const FULL_PAGE_PACKAGE_IDS = [EBC_PACKAGE_ID, ABC_PACKAGE_ID, MUSTANG_PACKAGE_ID] as const;
+export const FULL_PAGE_PACKAGE_IDS = [
+  EBC_PACKAGE_ID,
+  ABC_PACKAGE_ID,
+  MUSTANG_PACKAGE_ID,
+  LANGTANG_PACKAGE_ID,
+] as const;
 
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
 export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
@@ -204,6 +211,10 @@ export function isAbcPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
 
 export function isMustangPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === MUSTANG_PACKAGE_ID || /luxury-upper-mustang|upper-mustang-luxury/i.test(pkg.slug || "");
+}
+
+export function isLangtangPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
+  return pkg.id === LANGTANG_PACKAGE_ID || /langtang-valley-luxury/i.test(pkg.slug || "");
 }
 
 export function packageHeadings(pkg: TrekPackage) {
@@ -664,6 +675,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   },
   ABC_LUXURY_TRIP_PACKAGE,
   MUSTANG_LUXURY_TRIP_PACKAGE,
+  LANGTANG_LUXURY_TRIP_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [
@@ -991,7 +1003,8 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       slug:
         !item.slug ||
         (def.id === EBC_PACKAGE_ID && item.slug === "everest-base-camp-luxury-trek") ||
-        (def.id === MUSTANG_PACKAGE_ID && item.slug === "upper-mustang-luxury-trek")
+        (def.id === MUSTANG_PACKAGE_ID && item.slug === "upper-mustang-luxury-trek") ||
+        (def.id === LANGTANG_PACKAGE_ID && !item.slug)
           ? def.slug
           : item.slug,
       highlights: item.highlights?.some((h) => h.length > 90) ? item.highlights : def.highlights,

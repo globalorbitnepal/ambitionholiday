@@ -9,10 +9,18 @@ import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
+import { LANGTANG_ALTITUDE_STOPS } from "@/lib/langtang-charts";
 import { MUSTANG_ALTITUDE_STOPS } from "@/lib/mustang-charts";
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
-import { isAbcPackage, isEbcPackage, isMustangPackage, packageHeadings, TREK_DAY_DISTANCE } from "@/lib/trip-packages";
+import {
+  isAbcPackage,
+  isEbcPackage,
+  isLangtangPackage,
+  isMustangPackage,
+  packageHeadings,
+  TREK_DAY_DISTANCE,
+} from "@/lib/trip-packages";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
@@ -83,14 +91,27 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
   const heads = packageHeadings(pkg);
+  const langtangCharts = isLangtangPackage(pkg);
   const mustangCharts = isMustangPackage(pkg);
   const abcCharts = isAbcPackage(pkg);
-  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts;
-  const chartStops = mustangCharts ? MUSTANG_ALTITUDE_STOPS : abcCharts ? ABC_ALTITUDE_STOPS : undefined;
-  const chartMaxM = mustangCharts ? 4000 : abcCharts ? 4300 : undefined;
-  const chartMinM = mustangCharts ? 700 : abcCharts ? 700 : undefined;
-  const chartFile = mustangCharts ? "mustang-altitude-profile" : abcCharts ? "abc-altitude-profile" : "ebc-altitude-profile";
-  const mapVariant = mustangCharts ? "mustang" : abcCharts ? "abc" : "ebc";
+  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts;
+  const chartStops = langtangCharts
+    ? LANGTANG_ALTITUDE_STOPS
+    : mustangCharts
+      ? MUSTANG_ALTITUDE_STOPS
+      : abcCharts
+        ? ABC_ALTITUDE_STOPS
+        : undefined;
+  const chartMaxM = langtangCharts ? 5000 : mustangCharts ? 4000 : abcCharts ? 4300 : undefined;
+  const chartMinM = langtangCharts ? 1200 : mustangCharts ? 700 : abcCharts ? 700 : undefined;
+  const chartFile = langtangCharts
+    ? "langtang-valley-luxury-trek-altitude-profile"
+    : mustangCharts
+      ? "mustang-altitude-profile"
+      : abcCharts
+        ? "abc-altitude-profile"
+        : "ebc-altitude-profile";
+  const mapVariant = langtangCharts ? "langtang" : mustangCharts ? "mustang" : abcCharts ? "abc" : "ebc";
   const packingGroups = pkg.packingGroups?.length
     ? pkg.packingGroups
     : pkg.packingItems?.length
@@ -709,7 +730,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     USD {pkg.priceUsd.toLocaleString()} <span>/ person</span>
                   </>
                 ) : (
-                  "Price on request"
+                  "Request Private Quote"
                 )}
               </p>
               {groups.some((row) => row.priceUsd > 0) ? (
@@ -762,7 +783,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               ? `From USD ${fromPrice.toLocaleString()}`
               : hasPrice
                 ? `USD ${pkg.priceUsd.toLocaleString()}`
-                : "Price on request"}
+                : "Request Private Quote"}
           </strong>
           {hasPrice ? <span>/ person</span> : null}
         </div>
