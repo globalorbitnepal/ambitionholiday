@@ -5,50 +5,36 @@ import { reviewBodyIsLong } from "@/lib/review-display";
 import MediaImage from "@/components/MediaImage";
 import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { mediaSrc } from "@/lib/media-src";
+import {
+  GoogleMark,
+  TripadvisorMark,
+  isBuiltinTripadvisorLogoPath,
+  reviewBoardLogoSrc,
+} from "@/components/ReviewPlatformMarks";
+import { resolveReviewBoardLogoUrl } from "@/lib/review-board-logo";
 import type { ReviewBoard, ReviewPlatform, TravelerReview } from "@/lib/content-types";
 import type { TrekPackage, TrekReview } from "@/lib/trip-packages";
 
-function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path fill="#4285F4" d="M23.5 12.27c0-.82-.07-1.6-.21-2.36H12v4.47h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.56-5.17 3.56-8.73Z" />
-      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3c-1.08.72-2.47 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.09A12 12 0 0 0 12 24Z" />
-      <path fill="#FBBC05" d="M5.27 14.3A7.2 7.2 0 0 1 4.9 12c0-.8.14-1.57.37-2.3V6.61H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.09Z" />
-      <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.43-3.43C17.95 1.19 15.23 0 12 0 7.31 0 3.26 2.69 1.27 6.61l4 3.09C6.22 6.86 8.87 4.75 12 4.75Z" />
-    </svg>
-  );
-}
-
-const TRIPADVISOR_OWL = "/images/reviews/tripadvisor-owl.png";
-
-function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={mediaSrc(TRIPADVISOR_OWL)} alt="Tripadvisor" className={`${className} object-contain`} />
-  );
-}
-
 function BoardLogoImage({ src, fallback }: { src: string; fallback: ReactNode }) {
   const [broken, setBroken] = useState(false);
-  if (!src.trim() || broken) return <>{fallback}</>;
+  const url = resolveReviewBoardLogoUrl(src);
+  if (!url || broken) return <>{fallback}</>;
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={mediaSrc(src)}
-      alt=""
-      className="h-9 w-9 object-contain"
-      onError={() => setBroken(true)}
-    />
+    <img src={url} alt="" className="h-9 w-9 object-contain" onError={() => setBroken(true)} />
   );
 }
 
 function PlatformLogo({ board }: { board: ReviewBoard }) {
   const fallback = board.platform === "tripadvisor" ? <TripadvisorMark /> : <GoogleMark />;
-  if (board.logoSrc?.trim()) {
-    return <BoardLogoImage src={board.logoSrc} fallback={fallback} />;
-  }
+  const custom = reviewBoardLogoSrc(board.logoSrc, board.platform);
+  if (custom) return <BoardLogoImage src={custom} fallback={fallback} />;
   return fallback;
+}
+
+function normalizeBoard(board: ReviewBoard): ReviewBoard {
+  const logoSrc = reviewBoardLogoSrc(board.logoSrc, board.platform);
+  return logoSrc === board.logoSrc ? board : { ...board, logoSrc: logoSrc || undefined };
 }
 
 function GoogleStars({ count }: { count: number }) {
@@ -259,7 +245,7 @@ function boardsFromPackage(pkg: TrekPackage): ReviewBoard[] {
       ratingCount: pkg.tripadvisorCount || "",
       ctaLabel: "View All on Tripadvisor",
       ctaHref: pkg.tripadvisorHref || "",
-      logoSrc: pkg.tripadvisorLogoSrc,
+      logoSrc: isBuiltinTripadvisorLogoPath(pkg.tripadvisorLogoSrc) ? undefined : pkg.tripadvisorLogoSrc,
     },
   ];
 }
@@ -286,9 +272,10 @@ export default function WhyAmbitionSection({
     if (reviewOverride?.length) return reviewOverride;
     return why.reviews ?? [];
   }, [trekPackage, reviewOverride, why.reviews]);
-  const boards = trekPackage
+  const boards = (trekPackage
     ? boardsFromPackage(trekPackage).filter((board) => sourceReviews.some((review) => review.platform === board.platform))
-    : why.boards ?? [];
+    : why.boards ?? []
+  ).map(normalizeBoard);
 
   const reviewsByPlatform = useMemo(() => {
     const map: Record<ReviewPlatform, TravelerReview[]> = { google: [], tripadvisor: [] };

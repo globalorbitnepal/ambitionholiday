@@ -10,7 +10,11 @@ export function headerLogoSrc(logoSrc?: string, cacheKey?: string) {
 export function mediaSrc(src: string, cacheKey?: string) {
   if (!src) return src;
   let path = src.split("?")[0];
-  if (path.startsWith("/images/") && /\.(jpe?g|png)$/i.test(path)) {
+  if (
+    path.startsWith("/images/") &&
+    /\.(jpe?g|png)$/i.test(path) &&
+    !/\/images\/reviews\/tripadvisor-owl\.png$/i.test(path)
+  ) {
     path = path.replace(/\.(jpe?g|png)$/i, ".webp");
   }
   let out = path;

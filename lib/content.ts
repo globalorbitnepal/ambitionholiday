@@ -172,10 +172,7 @@ function decorateReviewBoards(boards: ReviewBoard[]): ReviewBoard[] {
       ...fallback,
       ...board,
       platform,
-      logoSrc:
-        board.logoSrc ||
-        fallback?.logoSrc ||
-        (platform === "tripadvisor" ? "/images/reviews/tripadvisor-owl.png" : undefined),
+      logoSrc: board.logoSrc || (platform === "google" ? fallback?.logoSrc : undefined),
     };
   });
 }
