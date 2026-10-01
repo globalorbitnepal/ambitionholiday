@@ -1,4 +1,9 @@
-/** Built-in review platform marks — SVG only so they never 404 (no mediaSrc png→webp rewrite). */
+"use client";
+
+import { useState } from "react";
+
+/** Official Tripadvisor owl asset (served as PNG — excluded from mediaSrc webp rewrite). */
+export const TRIPADVISOR_LOGO_SRC = "/images/reviews/tripadvisor-owl.png";
 
 export function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
@@ -11,20 +16,30 @@ export function GoogleMark({ className = "h-8 w-8" }: { className?: string }) {
   );
 }
 
-export function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
+function TripadvisorMarkSvg({ className = "h-9 w-9" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-label="Tripadvisor" role="img">
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
       <circle cx="12" cy="12" r="11" fill="#34E0A1" />
       <circle cx="8.6" cy="10.2" r="2.35" fill="#0a0a0a" />
       <circle cx="15.4" cy="10.2" r="2.35" fill="#0a0a0a" />
-      <circle cx="9.1" cy="9.6" r="0.55" fill="#fff" />
-      <circle cx="15.9" cy="9.6" r="0.55" fill="#fff" />
-      <path
-        fill="#0a0a0a"
-        d="M12 13.1c-1.35 0-2.45 1.05-2.45 2.35h4.9c0-1.3-1.1-2.35-2.45-2.35Z"
-      />
-      <path fill="#0a0a0a" d="M10.2 15.8h-.75a.85.85 0 0 0 0 1.7h.75v-1.7Zm4.3 0h-.75a.85.85 0 0 0 0 1.7h.75v-1.7Z" />
     </svg>
+  );
+}
+
+export function TripadvisorMark({ className = "h-9 w-9" }: { className?: string }) {
+  const [broken, setBroken] = useState(false);
+  if (broken) return <TripadvisorMarkSvg className={className} />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={TRIPADVISOR_LOGO_SRC}
+      alt="Tripadvisor"
+      className={`${className} object-contain`}
+      width={36}
+      height={36}
+      decoding="async"
+      onError={() => setBroken(true)}
+    />
   );
 }
 
