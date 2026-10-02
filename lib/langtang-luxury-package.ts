@@ -23,7 +23,7 @@ export const LANGTANG_LUXURY_TRIP_PACKAGE: TrekPackage = {
   badge: "HIDDEN GEM",
   title: "Langtang Valley Luxury Trek",
   subtitle:
-    "A private Himalayan escape from Kathmandu into the Langtang Valley, where Tamang villages, rhododendron forests and high mountain landscapes lead to Kyanjin beneath the Langtang peaks.",
+    "Travel from Kathmandu into the quiet northern Himalaya on a private journey through Tamang villages, deep forest and high alpine valleys, with carefully planned pacing and premium accommodation where the trail allows.",
   duration: "10 Days / 9 Nights",
   days: 10,
   difficulty: "Moderate",
@@ -31,7 +31,7 @@ export const LANGTANG_LUXURY_TRIP_PACKAGE: TrekPackage = {
   maxAltitude: "Kyanjin Ri — approx. 4,773 m / 15,659 ft",
   maxAltitudeFt: "15,659 ft",
   countryLabel: "Nepal",
-  activityLabel: "Private luxury trek",
+  activityLabel: "Private Luxury Trek",
   accommodationLabel: "Luxury Kathmandu hotel + premium mountain lodges",
   mealsLabel: "As per itinerary",
   startEndLabel: "Kathmandu",
