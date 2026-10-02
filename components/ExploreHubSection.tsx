@@ -163,7 +163,7 @@ export default function ExploreHubSection() {
   if (!exploreHub.visible || !active) return null;
 
   return (
-    <section className="explore-hub relative isolate overflow-hidden">
+    <section className="explore-hub home-explore-hub relative isolate hidden overflow-hidden lg:block">
       <SectionWallpaper />
 
       <div className="explore-hub-shell relative mx-auto">
