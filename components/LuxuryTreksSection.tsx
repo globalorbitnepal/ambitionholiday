@@ -98,9 +98,9 @@ export default function LuxuryTreksSection() {
           </header>
 
           <div className="jour-grid">
-            {journeys.packages.map((raw, index) => {
+            {journeys.packages.map((raw) => {
               const pkg = enrichCatalogCard(raw, tripPackages);
-              return <PackageCard key={pkg.id} pkg={pkg} href={pkg.href} priority={index < 4} />;
+              return <PackageCard key={pkg.id} pkg={pkg} href={pkg.href} priority />;
             })}
           </div>
         </div>

@@ -849,7 +849,7 @@ export function enrichCatalogCard<
     title: card.title || trip.title,
     difficulty: trip.difficulty || card.difficulty,
     badge: trip.badge || card.badge,
-    description: trip.subtitle || card.description,
+    description: card.description || trip.subtitle,
     subtitle: card.subtitle || "Luxury Package",
     maxAltitude: tripMaxAltitudeLabel(trip) || card.maxAltitude,
     days,

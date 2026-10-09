@@ -1351,6 +1351,7 @@ body.nav-mega-open .hero-copy {
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(0.85rem, 1.4vw, 1.25rem);
+  align-items: stretch;
 }
 
 .jour-card {
@@ -1404,10 +1405,12 @@ body.nav-mega-open .hero-copy {
   z-index: 1;
   margin-top: -4.6rem;
   display: flex;
+  flex: 1 1 auto;
   align-items: flex-end;
   justify-content: space-between;
   gap: 0.7rem;
   padding: 0 0.95rem 0.35rem;
+  min-height: 7.25rem;
 }
 
 .jour-card-copy h3 {
@@ -1429,6 +1432,11 @@ body.nav-mega-open .hero-copy {
   color: rgba(237, 232, 222, 0.82);
   font-size: 0.74rem;
   line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  min-height: calc(0.74rem * 1.35 * 3);
 }
 
 .jour-card-go {
@@ -1447,6 +1455,7 @@ body.nav-mega-open .hero-copy {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem 0.85rem;
+  margin-top: auto;
   padding: 0.45rem 0.95rem 0.9rem;
   color: rgba(232, 224, 210, 0.78);
   font-size: 0.7rem;
