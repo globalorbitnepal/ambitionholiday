@@ -9,6 +9,7 @@ import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
 import { EverestViewAltitudeProfile } from "@/components/everest-view/EverestViewAltitudeProfile";
+import { EverestViewMonthlyWeather } from "@/components/everest-view/EverestViewMonthlyWeather";
 import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
 import { LANGTANG_ALTITUDE_STOPS } from "@/lib/langtang-charts";
 import { MUSTANG_ALTITUDE_STOPS } from "@/lib/mustang-charts";
@@ -664,7 +665,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : isEbcPackage(pkg) || everestViewCharts ? (
+              ) : everestViewCharts ? (
+                <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
+              ) : isEbcPackage(pkg) ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />
               ) : null}
             </article>

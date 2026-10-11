@@ -5,7 +5,7 @@ import { formatElevationM } from "./evl-chart-utils";
 
 type EvlDetailCardProps = {
   name: string;
-  elevationM: number;
+  elevationM?: number;
   day: string;
   description: string;
   pinned: boolean;
@@ -37,7 +37,9 @@ export function EvlDetailCard({ name, elevationM, day, description, pinned, onCl
         <div>
           <p className="evl-detail-card-day">{day}</p>
           <p className="evl-detail-card-title">{name}</p>
-          <p className="evl-detail-card-elev">{formatElevationM(elevationM)}</p>
+          {typeof elevationM === "number" && elevationM > 0 ? (
+            <p className="evl-detail-card-elev">{formatElevationM(elevationM)}</p>
+          ) : null}
         </div>
         {pinned ? (
           <button type="button" className="evl-detail-card-close" onClick={onClose} aria-label="Close stop details">
