@@ -3,7 +3,7 @@
  * Paths are illustrative — not survey-grade coordinates.
  */
 
-export const EVL_MAP_VIEWBOX = { w: 1100, h: 520 };
+export const EVL_MAP_VIEWBOX = { w: 1100, h: 580 };
 
 export type EvlRouteNode = {
   id: string;
@@ -61,7 +61,7 @@ export const EVL_ROUTE_NODES: EvlRouteNode[] = [
     x: 375,
     y: 315,
     labelX: 375,
-    labelY: 288,
+    labelY: 276,
     labelAnchor: "middle",
   },
   {
@@ -71,8 +71,8 @@ export const EVL_ROUTE_NODES: EvlRouteNode[] = [
     elevationM: 2835,
     x: 475,
     y: 285,
-    labelX: 430,
-    labelY: 258,
+    labelX: 400,
+    labelY: 248,
     labelAnchor: "end",
   },
   {
@@ -141,8 +141,8 @@ export const EVL_ROUTE_PATHS: EvlRoutePath[] = [
     day: 3,
     kind: "acclimatisation",
     d: "M595,248",
-    badgeX: 648,
-    badgeY: 228,
+    badgeX: 668,
+    badgeY: 212,
   },
   {
     id: "day4-trek",
@@ -173,10 +173,21 @@ export const EVL_ROUTE_PATHS: EvlRoutePath[] = [
     day: 7,
     kind: "flight",
     d: "M255,358 Q172,418 95,400",
-    badgeX: 168,
-    badgeY: 418,
+    badgeX: 128,
+    badgeY: 432,
   },
 ];
+
+/** One visible day disc per day — avoids clutter at Lukla (Day 1 / 6 / 7). */
+export const EVL_PRIMARY_DAY_PATH: Record<number, string> = {
+  1: "day1-trek",
+  2: "day2-trek",
+  3: "day3-zone",
+  4: "day4-trek",
+  5: "day5-descent",
+  6: "day6-trek",
+  7: "flight-in",
+};
 
 export function pathIdsForDay(day: number): Set<string> {
   return new Set(EVL_ROUTE_PATHS.filter((p) => p.day === day).map((p) => p.id));

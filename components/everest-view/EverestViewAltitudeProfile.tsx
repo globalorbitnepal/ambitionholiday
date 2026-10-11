@@ -19,12 +19,15 @@ import {
   EvlPlotArea,
   EvlSvgBackground,
   EVL_LAYOUT,
+  evlChartBands,
 } from "./evl-chart-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
 
 const W = 1100;
-const H = 540;
+const H = 600;
+
+const HIDE_AXIS_LABEL = new Set(["phakding2", "monjo2", "namche2"]);
 
 export function EverestViewAltitudeProfile({
   sectionTitle = "Altitude profile — Everest View Luxury Trek",
@@ -38,26 +41,26 @@ export function EverestViewAltitudeProfile({
   const { activeId, onPointerEnter, onPointerLeave, onActivate, dismiss, isPinned } = useEvlInteraction();
 
   const minM = 1200;
-  const maxM = 4200;
-  const pad = { l: 56, r: 40, t: EVL_LAYOUT.plotTop, b: 88 };
+  const maxM = 4000;
+  const pad = { l: 56, r: 40, t: EVL_LAYOUT.plotTop, b: 112 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const flightW = 58;
   const gap = 20;
   const trekCount = EVL_TREK_ALTITUDE_POINTS.length;
   const trekInnerW = innerW - flightW * 2 - gap * 2;
+  const axisLabelY = H - 58;
+  const bands = evlChartBands(H, true);
 
   const points = useMemo(() => {
     return EVL_TREK_ALTITUDE_POINTS.map((stop, i) => {
       const x = pad.l + flightW + gap + (i / (trekCount - 1)) * trekInnerW;
       const y = pad.t + (1 - (stop.m - minM) / (maxM - minM)) * innerH;
       const value = unit === "m" ? stop.m : metresToFeet(stop.m);
-      const labelBelow = i % 2 === 0;
-      const labelY = labelBelow ? H - pad.b + 14 : H - pad.b + 30;
-      const elevY = labelBelow ? y - 12 : y - 26;
-      return { ...stop, x, y, value, labelY, elevY, labelBelow };
+      const elevY = stop.isPeak ? y - 18 : y - 14;
+      return { ...stop, x, y, value, elevY };
     });
-  }, [innerH, pad.b, pad.l, pad.t, trekCount, trekInnerW, unit]);
+  }, [innerH, pad.l, pad.t, trekCount, trekInnerW, unit]);
 
   const line = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 
@@ -101,7 +104,7 @@ export function EverestViewAltitudeProfile({
           data-export-root="true"
         >
           <title id={`${gid}-title`}>{EVL_ALT_TITLE}</title>
-          <EvlSvgBackground gid={gid} w={W} h={H} />
+          <EvlSvgBackground gid={gid} w={W} h={H} watermarkY={300} />
           <EvlChartHeader title={EVL_ALT_TITLE} subtitle={EVL_ALT_SUBTITLE} w={W} />
           <EvlPlotArea x={pad.l - 6} y={pad.t - 6} width={innerW + 12} height={innerH + 12} />
 
@@ -128,8 +131,8 @@ export function EverestViewAltitudeProfile({
 
           {peak ? (
             <g>
-              <line x1={peak.x + 10} y1={peak.y - 4} x2={peak.x + 118} y2={peak.y - 36} stroke={EVL_CHART_COLORS.gold} strokeWidth="1" opacity="0.7" />
-              <text x={peak.x + 122} y={peak.y - 32} textAnchor="start" fill={EVL_CHART_COLORS.goldSoft} fontSize="9.5" fontWeight="700">
+              <line x1={peak.x + 8} y1={peak.y - 2} x2={peak.x + 100} y2={peak.y - 42} stroke={EVL_CHART_COLORS.gold} strokeWidth="1" opacity="0.75" />
+              <text x={peak.x + 104} y={peak.y - 38} textAnchor="start" fill={EVL_CHART_COLORS.goldSoft} fontSize="9.5" fontWeight="700">
                 {peakCallout}
               </text>
             </g>
@@ -138,16 +141,27 @@ export function EverestViewAltitudeProfile({
           {points.map((p) => {
             const isActive = activeId === p.id;
             const showElev = !p.isPeak;
+            const showAxis = !HIDE_AXIS_LABEL.has(p.id);
             return (
               <g key={p.id}>
                 {showElev ? (
-                  <text x={p.x} y={p.elevY} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="10" fontWeight="700">
+                  <text x={p.x} y={p.elevY} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="9.5" fontWeight="700">
                     {p.value.toLocaleString("en-US")} {unit}
                   </text>
                 ) : null}
-                <text x={p.x} y={p.labelY} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">
-                  {p.shortLabel || p.label}
-                </text>
+                {showAxis ? (
+                  <text
+                    x={p.x}
+                    y={axisLabelY}
+                    textAnchor="end"
+                    fill={EVL_CHART_COLORS.textMuted}
+                    fontSize="9.5"
+                    fontWeight="600"
+                    transform={`rotate(-48, ${p.x}, ${axisLabelY})`}
+                  >
+                    {p.shortLabel || p.label}
+                  </text>
+                ) : null}
                 {isActive ? <circle cx={p.x} cy={p.y} r={13} fill={EVL_CHART_COLORS.gold} opacity="0.2" className="evl-no-export" /> : null}
                 <circle cx={p.x} cy={p.y} r={p.isPeak ? 6.5 : 5} fill={p.isPeak ? EVL_CHART_COLORS.goldSoft : EVL_CHART_COLORS.gold} stroke="#fff" strokeWidth="1.5" />
                 <g className="evl-no-export">
@@ -179,14 +193,14 @@ export function EverestViewAltitudeProfile({
 
           <EvlLegendStrip
             w={W}
-            y={H - 72}
+            y={bands.legendY}
             items={[
               { kind: "line-gold", label: "Trekking elevation" },
               { kind: "line-flight", label: "Flight connection" },
             ]}
             note="Elevations are approximate trekking reference only."
           />
-          <EvlChartFooter w={W} h={H} />
+          <EvlChartFooter w={W} y={bands.footerY} />
         </svg>
 
         {activePoint ? (

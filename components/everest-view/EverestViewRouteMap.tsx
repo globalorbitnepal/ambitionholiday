@@ -11,6 +11,7 @@ import {
 import {
   EVL_MAP_VIEWBOX,
   EVL_ROUTE_NODES,
+  EVL_PRIMARY_DAY_PATH,
   EVL_ROUTE_PATHS,
   pathIdsForStop,
   type EvlRoutePath,
@@ -27,7 +28,7 @@ import {
   EvlLegendStrip,
   EvlMapStopLabel,
   EvlSvgBackground,
-  EVL_LAYOUT,
+  evlChartBands,
 } from "./evl-chart-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
@@ -71,20 +72,22 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
     const isAcclim = path.kind === "acclimatisation";
     const showDots = !focusMode || hot;
 
+    const showDayDot = showDots && EVL_PRIMARY_DAY_PATH[path.day] === path.id;
+
     if (isAcclim) {
       return (
         <g key={path.id}>
           <circle
-            cx={path.badgeX - 53}
-            cy={path.badgeY + 18}
-            r={28}
+            cx={path.badgeX - 58}
+            cy={path.badgeY + 32}
+            r={26}
             fill="none"
             stroke={EVL_CHART_COLORS.goldSoft}
             strokeWidth="1.5"
             strokeDasharray="5 4"
             opacity={focusMode && !hot ? 0.3 : 0.85}
           />
-          {showDots ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
+          {showDayDot ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
         </g>
       );
     }
@@ -110,10 +113,12 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
             {flightLabel}
           </text>
         ) : null}
-        {showDots ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
+        {showDayDot ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
       </g>
     );
   }
+
+  const bands = evlChartBands(h, true);
 
   return (
     <EvlChartShell
@@ -149,7 +154,7 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
               <path d="M0,0 L6,3 L0,6 Z" fill={EVL_CHART_COLORS.flight} />
             </marker>
           </defs>
-          <EvlSvgBackground gid={gid} w={w} h={h} />
+          <EvlSvgBackground gid={gid} w={w} h={h} watermarkY={250} />
           <EvlChartHeader title={EVL_MAP_TITLE} subtitle={EVL_MAP_SUBTITLE} w={w} />
 
           {EVL_ROUTE_PATHS.map(renderPath)}
@@ -208,7 +213,7 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
 
           <EvlLegendStrip
             w={w}
-            y={EVL_LAYOUT.legendY}
+            y={bands.legendY}
             note="Schematic map â€” not survey accurate"
             items={[
               { kind: "line-gold", label: "Trekking route" },
@@ -217,7 +222,7 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
               { kind: "day-dot", label: "Day segment" },
             ]}
           />
-          <EvlChartFooter w={w} h={h} />
+          <EvlChartFooter w={w} y={bands.footerY} />
         </svg>
 
         {activeNode && stopDetails[activeNode.id] ? (

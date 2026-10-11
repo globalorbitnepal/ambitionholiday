@@ -11,12 +11,20 @@ import { cToF } from "@/lib/ebc-charts";
 import { EvlChartShell } from "./EvlChartShell";
 import { EvlDetailCard } from "./EvlDetailCard";
 import { downloadSvgAsPng } from "./evl-chart-utils";
-import { EvlChartFooter, EvlChartHeader, EvlLegendStrip, EvlPlotArea, EvlSvgBackground, EVL_LAYOUT } from "./evl-chart-theme";
+import {
+  EvlChartFooter,
+  EvlChartHeader,
+  EvlLegendStrip,
+  EvlPlotArea,
+  EvlSvgBackground,
+  EVL_LAYOUT,
+  evlChartBands,
+} from "./evl-chart-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
 
 const W = 1100;
-const H = 500;
+const H = 520;
 
 export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: string }) {
   const [unit, setUnit] = useState<"c" | "f">("c");
@@ -25,7 +33,8 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
   const gid = useId().replace(/:/g, "");
   const { activeId, onPointerEnter, onPointerLeave, onActivate, dismiss, isPinned } = useEvlInteraction();
 
-  const pad = { l: 54, r: 36, t: EVL_LAYOUT.plotTop, b: 78 };
+  const pad = { l: 54, r: 36, t: EVL_LAYOUT.plotTop, b: 92 };
+  const bands = evlChartBands(H, true);
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const minT = -18;
@@ -73,7 +82,7 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
       <div className="evl-map-stage" ref={stageRef}>
         <svg ref={svgRef} className="evl-infographic-svg" viewBox={`0 0 ${W} ${H}`} role="img" data-export-root="true">
           <title>{EVL_WEATHER_TITLE}</title>
-          <EvlSvgBackground gid={gid} w={W} h={H} />
+          <EvlSvgBackground gid={gid} w={W} h={H} watermarkY={268} />
           <EvlChartHeader title={EVL_WEATHER_TITLE} subtitle={EVL_WEATHER_SUBTITLE} w={W} />
           <EvlPlotArea x={pad.l - 6} y={pad.t - 6} width={innerW + 12} height={innerH + 12} />
 
@@ -139,14 +148,14 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
 
           <EvlLegendStrip
             w={W}
-            y={H - 64}
+            y={bands.legendY}
             items={[
               { kind: "line-flight", label: "Daytime high (indicative)" },
               { kind: "line-gold", label: "Night low (indicative)" },
             ]}
             note="Khumbu reference only — not a daily forecast."
           />
-          <EvlChartFooter w={W} h={H} />
+          <EvlChartFooter w={W} y={bands.footerY} />
         </svg>
         {active ? (
           <EvlDetailCard
