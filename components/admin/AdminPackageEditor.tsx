@@ -14,6 +14,8 @@ import {
   isEbcPackage,
   isLangtangPackage,
   isMustangPackage,
+  isEverestViewPackage,
+  LOCKED_PACKAGE_SLUGS,
   packageHeadings,
   packageSeoInput,
   packageSlugProblem,
@@ -235,7 +237,14 @@ export default function AdminPackageEditor() {
           </label>
           <label className="admin-field">
             <span>URL slug (live page is /{pkg.slug})</span>
-            <input value={pkg.slug} onChange={(e) => patch({ slug: cleanSlugInput(e.target.value) })} />
+            <input
+              value={pkg.slug}
+              readOnly={Boolean(LOCKED_PACKAGE_SLUGS[pkg.id])}
+              onChange={(e) => patch({ slug: cleanSlugInput(e.target.value) })}
+            />
+            {LOCKED_PACKAGE_SLUGS[pkg.id] ? (
+              <small className="admin-muted">This package URL is fixed at /{LOCKED_PACKAGE_SLUGS[pkg.id]} for SEO and redirects.</small>
+            ) : null}
             {(() => {
               const problem = packageSlugProblem(pkg.slug.replace(/-+$/, ""), content.tripPackages, pkg.id);
               return problem ? <small className="admin-warn">{problem}</small> : null;
@@ -288,7 +297,7 @@ export default function AdminPackageEditor() {
               <input value={pkg.difficulty} onChange={(e) => patch({ difficulty: e.target.value })} />
             </label>
             <label className="admin-field">
-              <span>Badge</span>
+              <span>Badge / hero eyebrow</span>
               <input value={pkg.badge} onChange={(e) => patch({ badge: e.target.value })} />
             </label>
           </div>
@@ -655,7 +664,7 @@ export default function AdminPackageEditor() {
       {tab === "charts" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg) || isLangtangPackage(pkg)
+            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg) || isLangtangPackage(pkg) || isEverestViewPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -845,6 +854,39 @@ export default function AdminPackageEditor() {
               }
             />
           </label>
+          {isEverestViewPackage(pkg) ? (
+            <div className="admin-subcard" style={{ marginTop: "1.25rem" }}>
+              <h3 className="admin-h3">Hotel Everest View overnight (Day 4)</h3>
+              <p className="admin-muted">Controls how the key lodge night is described on the public page. Admin note is never shown to visitors.</p>
+              <label className="admin-field">
+                <span>Confirmation status</span>
+                <select
+                  value={pkg.hotelEverestViewStatus || "pending"}
+                  onChange={(e) =>
+                    patch({ hotelEverestViewStatus: e.target.value as TrekPackage["hotelEverestViewStatus"] })
+                  }
+                >
+                  <option value="pending">Pending confirmation</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="unavailable">Unavailable — do not advertise as confirmed</option>
+                </select>
+              </label>
+              <label className="admin-field">
+                <span>Public note (optional)</span>
+                <textarea
+                  value={pkg.hotelEverestViewPublicNote || ""}
+                  onChange={(e) => patch({ hotelEverestViewPublicNote: e.target.value })}
+                />
+              </label>
+              <label className="admin-field">
+                <span>Admin-only operational note</span>
+                <textarea
+                  value={pkg.hotelEverestViewAdminNote || ""}
+                  onChange={(e) => patch({ hotelEverestViewAdminNote: e.target.value })}
+                />
+              </label>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

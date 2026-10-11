@@ -97,6 +97,20 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
   const heads = packageHeadings(pkg);
+  const highlightHeading = /\d+\s*Days?/i.test(pkg.title)
+    ? `Highlights of ${pkg.title}`
+    : `Highlights of ${pkg.title} – ${pkg.days} Days`;
+  const hotelEverestViewNotice =
+    isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
+      ? pkg.hotelEverestViewStatus === "confirmed"
+        ? pkg.hotelEverestViewPublicNote ||
+          "Hotel Everest View overnight is confirmed on your booking documents."
+        : pkg.hotelEverestViewStatus === "unavailable"
+          ? pkg.hotelEverestViewPublicNote ||
+            "Hotel Everest View is not currently available for this departure. Your coordinator will confirm any alternative before you travel."
+          : pkg.hotelEverestViewPublicNote ||
+            "Hotel Everest View overnight is subject to confirmed availability and will be stated on your booking confirmation."
+      : "";
   const langtangCharts = isLangtangPackage(pkg);
   const mustangCharts = isMustangPackage(pkg);
   const abcCharts = isAbcPackage(pkg);
@@ -410,6 +424,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
+              {hotelEverestViewNotice ? <p className="lux-note">{hotelEverestViewNotice}</p> : null}
             </article>
 
             <aside id="book-mobile" className="lux-aside lux-aside--inline" aria-label="Book this trip">
@@ -418,9 +433,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             {show.highlights ? (
               <article id="highlights" className="lux-card">
-                <h2>
-                  Highlights of {pkg.title} – {pkg.days} Days
-                </h2>
+                <h2>{highlightHeading}</h2>
                 <span className="lux-hi-rule" aria-hidden="true" />
                 <ul className="lux-checks">
                   {pkg.highlights.map((item) => (

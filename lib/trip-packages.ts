@@ -186,6 +186,12 @@ export type TrekPackage = {
   flightTitle?: string;
   bufferTitle?: string;
   heliTitle?: string;
+  /** Hotel Everest View (or similar) — public confirmation state for key lodge nights. */
+  hotelEverestViewStatus?: "pending" | "confirmed" | "unavailable";
+  /** Staff-only note; never shown on the public trek page. */
+  hotelEverestViewAdminNote?: string;
+  /** Optional visitor-facing note when status is pending or unavailable. */
+  hotelEverestViewPublicNote?: string;
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
@@ -193,6 +199,11 @@ export const ABC_PACKAGE_ID = "abc-lux";
 export const MUSTANG_PACKAGE_ID = "mustang-lux";
 export const LANGTANG_PACKAGE_ID = "langtang-lux";
 export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
+
+/** Package ids whose public URL slug must not change (SEO / redirects). */
+export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
+  [EVEREST_VIEW_PACKAGE_ID]: "everest-view-luxury-trek",
+};
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
 export const FULL_PAGE_PACKAGE_IDS = [
@@ -752,6 +763,10 @@ export function isValidPackageSlug(slug: string) {
 /** Returns an error message, or "" when the slug can be used by this package. */
 export function packageSlugProblem(slug: string, packages: TrekPackage[], selfId: string) {
   if (!slug) return "Add a URL slug.";
+  const locked = LOCKED_PACKAGE_SLUGS[selfId];
+  if (locked && slug !== locked) {
+    return `This package must keep the URL /${locked}. Create a new package for a different slug.`;
+  }
   if (!isValidPackageSlug(slug)) return "Use lowercase letters, numbers and hyphens only (e.g. annapurna-base-camp-trek).";
   if (RESERVED_PACKAGE_SLUGS.includes(slug)) return `/${slug} is used by another site page. Choose a different slug.`;
   if (packages.some((pkg) => pkg.id !== selfId && (pkg.slug === slug || packageLookupSlugs(pkg).has(slug)))) {
@@ -1131,6 +1146,11 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_VIEW_PACKAGE_ID) {
       return {
         ...mergedPkg,
+        hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
+        hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
+        hotelEverestViewPublicNote: item.hotelEverestViewPublicNote ?? def.hotelEverestViewPublicNote,
+        slug:
+          mergedPkg.slug && mergedPkg.slug !== "everest-base-camp-trek" ? mergedPkg.slug : def.slug,
         slugHistory: withSlugHistory(
           {
             slug: mergedPkg.slug,
