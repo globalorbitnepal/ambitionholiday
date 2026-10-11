@@ -35,7 +35,7 @@ export function EvlChartShell({
   }
 
   return (
-    <div className={`lux-graph lux-graph--map evl-infographic evl-infographic--${variant}`}>
+    <div className={`lux-graph lux-graph--map evl-infographic evl-infographic--atlas evl-infographic--${variant}`}>
       <div className="lux-graph-head">
         <h3>{sectionTitle}</h3>
         <button type="button" className="lux-chart-dl" onClick={handleDownload} disabled={downloading}>

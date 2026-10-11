@@ -1,8 +1,8 @@
 "use client";
 
 import { useId, useMemo, useRef, useState } from "react";
+import { EVL_ATLAS_EXPORT_BG } from "@/lib/everest-view-atlas-colors";
 import {
-  EVL_CHART_COLORS,
   EVL_MAP_SUBTITLE,
   EVL_MAP_TITLE,
   EVL_STOP_DETAILS,
@@ -10,28 +10,46 @@ import {
 } from "@/lib/everest-view-charts";
 import {
   EVL_MAP_VIEWBOX,
-  EVL_ROUTE_NODES,
   EVL_PRIMARY_DAY_PATH,
+  EVL_ROUTE_NODES,
   EVL_ROUTE_PATHS,
   pathIdsForStop,
+  type EvlRouteNode,
   type EvlRoutePath,
 } from "@/lib/everest-view-route-geometry";
+import { EVL_ATLAS } from "@/lib/everest-view-atlas-colors";
 import { EvlAirportIcon } from "./EvlAirportIcon";
 import { EvlChartShell } from "./EvlChartShell";
 import { EvlDayRoutePanel } from "./EvlDayRoutePanel";
 import { EvlDetailCard } from "./EvlDetailCard";
-import { downloadSvgAsPng, formatElevationM } from "./evl-chart-utils";
+import { downloadSvgAsPng } from "./evl-chart-utils";
 import {
-  EvlChartFooter,
-  EvlChartHeader,
-  EvlDayDot,
-  EvlLegendStrip,
-  EvlMapStopLabel,
-  EvlSvgBackground,
-  evlChartBands,
-} from "./evl-chart-theme";
+  AtlasChartFooter,
+  AtlasDayMarker,
+  AtlasMapLegend,
+  AtlasMapTitle,
+  AtlasScenicBackground,
+} from "./evl-atlas-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
+
+function StopLabel({ node, gid, active }: { node: EvlRouteNode; gid: string; active: boolean }) {
+  const anchor = node.labelSide === "left" ? "start" : "end";
+  const lx = node.labelX;
+  const ly = node.labelY;
+  const elev = `${node.elevationM.toLocaleString("en-US")} m`;
+  return (
+    <g>
+      <line x1={node.x} y1={node.y} x2={lx + (node.labelSide === "left" ? -4 : 4)} y2={ly + 6} stroke={EVL_ATLAS.textMuted} strokeWidth="0.8" opacity="0.55" />
+      <text x={lx} y={ly} textAnchor={anchor} fill={active ? EVL_ATLAS.gold : EVL_ATLAS.text} fontSize="12.5" fontWeight="700" fontFamily="Manrope, sans-serif">
+        {node.displayName}
+      </text>
+      <text x={lx} y={ly + 15} textAnchor={anchor} fill={EVL_ATLAS.textElev} fontSize="10.5" fontWeight="600" fontFamily="Manrope, sans-serif">
+        {elev}
+      </text>
+    </g>
+  );
+}
 
 export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â€” route map" }: { sectionTitle?: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -57,68 +75,73 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
     ...EVL_STOP_DETAILS,
     ktm: {
       day: "Day 1 & Day 7",
-      description:
-        "Domestic flight connection at Kathmandu (airport per your confirmed booking). Subject to weather and operational routing.",
+      description: "Domestic flight at Kathmandu (airport per confirmed booking). Subject to weather and routing.",
     },
     lukla: {
       day: "Day 1 & Day 6â€“7",
-      description: "Trekking begins and ends at Lukla airport. Return flight to Kathmandu on Day 7 when operations allow.",
+      description: "Trekking starts and ends at Lukla Airport. Return flight to Kathmandu on Day 7 when operations allow.",
     },
   };
+
+  function strokeFor(path: EvlRoutePath) {
+    if (path.kind === "flight") return EVL_ATLAS.flight;
+    if (path.kind === "trek-descent") return EVL_ATLAS.routeDescent;
+    if (path.kind === "trek-ascent") return EVL_ATLAS.routeAscent;
+    return EVL_ATLAS.route;
+  }
 
   function renderPath(path: EvlRoutePath) {
     const hot = activePaths.has(path.id);
     const isFlight = path.kind === "flight";
     const isAcclim = path.kind === "acclimatisation";
-    const showDots = !focusMode || hot;
-
-    const showDayDot = showDots && EVL_PRIMARY_DAY_PATH[path.day] === path.id;
+    const showDay = (!focusMode || hot) && EVL_PRIMARY_DAY_PATH[path.day] === path.id;
 
     if (isAcclim) {
       return (
         <g key={path.id}>
           <circle
-            cx={path.badgeX - 58}
-            cy={path.badgeY + 32}
+            cx={path.badgeX - 62}
+            cy={path.badgeY + 28}
             r={26}
             fill="none"
-            stroke={EVL_CHART_COLORS.goldSoft}
+            stroke={EVL_ATLAS.gold}
             strokeWidth="1.5"
             strokeDasharray="5 4"
-            opacity={focusMode && !hot ? 0.3 : 0.85}
+            opacity={focusMode && !hot ? 0.35 : 0.9}
           />
-          {showDayDot ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
+          <text x={path.badgeX - 62} y={path.badgeY + 62} textAnchor="middle" fill={EVL_ATLAS.textMuted} fontSize="9" fontWeight="600">
+            Rest day
+          </text>
+          {showDay ? <AtlasDayMarker x={path.badgeX} y={path.badgeY} day={path.day} active={hot} /> : null}
         </g>
       );
     }
     if (path.d.length < 4) return null;
 
-    const flightLabel = path.id === "flight-out" ? "Outbound flight" : path.id === "flight-in" ? "Return flight" : null;
+    const flightTag = path.id === "flight-out" ? "FLIGHT Â· Outbound" : path.id === "flight-in" ? "FLIGHT Â· Return" : null;
 
     return (
       <g key={path.id}>
         <path
           d={path.d}
           fill="none"
-          stroke={isFlight ? EVL_CHART_COLORS.flight : "url(#evl-gold-line)"}
-          strokeWidth={hot ? (isFlight ? 3 : 5.5) : isFlight ? 2.2 : 3.8}
+          stroke={strokeFor(path)}
+          strokeWidth={hot ? (isFlight ? 3 : 5.5) : isFlight ? 2.5 : 4.2}
           strokeDasharray={isFlight ? "9 6" : undefined}
           strokeLinecap="round"
           strokeLinejoin="round"
-          markerEnd={isFlight ? `url(#${gid}-flight-arrow)` : `url(#${gid}-trek-arrow)`}
+          markerEnd={isFlight ? `url(#${gid}-flight-arrow)` : `url(#${gid}-arrow)`}
           opacity={focusMode && !hot ? 0.22 : 0.95}
         />
-        {isFlight && flightLabel && showDots ? (
-          <text x={path.badgeX} y={path.badgeY - 12} textAnchor="middle" fill={EVL_CHART_COLORS.flight} fontSize="8.5" fontWeight="700" letterSpacing="0.08em">
-            {flightLabel}
+        {isFlight && flightTag && (!focusMode || hot) ? (
+          <text x={path.badgeX} y={path.badgeY - 8} textAnchor="middle" fill={EVL_ATLAS.flight} fontSize="9" fontWeight="700" letterSpacing="0.06em">
+            {flightTag}
           </text>
         ) : null}
-        {showDayDot ? <EvlDayDot x={path.badgeX} y={path.badgeY} day={path.day} hot={hot} visible /> : null}
+        {showDay ? <AtlasDayMarker x={path.badgeX} y={path.badgeY} day={path.day} active={hot} /> : null}
       </g>
     );
   }
-
-  const bands = evlChartBands(h, true);
 
   return (
     <EvlChartShell
@@ -132,58 +155,51 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
         />
       }
       onDownload={async () => {
-        await downloadSvgAsPng(svgRef.current, "ambition-holidays-everest-view-7-day-route-map", { scale: 3 });
+        await downloadSvgAsPng(svgRef.current, "ambition-holidays-everest-view-7-day-route-map", {
+          scale: 3,
+          background: EVL_ATLAS_EXPORT_BG,
+        });
       }}
     >
-      <div className="evl-map-stage" ref={stageRef}>
+      <div className="evl-map-stage evl-atlas-map" ref={stageRef}>
         <svg
           ref={svgRef}
-          className="evl-infographic-svg evl-map-canvas"
+          className="evl-infographic-svg evl-map-canvas evl-atlas-svg"
           viewBox={`0 0 ${w} ${h}`}
           role="img"
           aria-labelledby={`${gid}-title`}
           data-export-root="true"
         >
           <title id={`${gid}-title`}>{EVL_MAP_TITLE}</title>
-          <desc>Schematic seven-day Everest View Luxury Trek. Gold lines are walking; blue dashed lines are flights.</desc>
-          <defs>
-            <marker id={`${gid}-trek-arrow`} markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto">
-              <path d="M0,0 L7,3.5 L0,7 Z" fill={EVL_CHART_COLORS.gold} />
-            </marker>
-            <marker id={`${gid}-flight-arrow`} markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill={EVL_CHART_COLORS.flight} />
-            </marker>
-          </defs>
-          <EvlSvgBackground gid={gid} w={w} h={h} watermarkY={250} />
-          <EvlChartHeader title={EVL_MAP_TITLE} subtitle={EVL_MAP_SUBTITLE} w={w} />
+          <AtlasScenicBackground gid={gid} w={w} h={h} />
+          <AtlasMapTitle title={EVL_MAP_TITLE} subtitle={EVL_MAP_SUBTITLE} w={w} />
+          <AtlasMapLegend x={24} y={92} />
 
           {EVL_ROUTE_PATHS.map(renderPath)}
 
           {EVL_ROUTE_NODES.map((node) => {
             const isActive = activeId === node.id;
-            const elev = `approximately ${formatElevationM(node.elevationM)}`;
             return (
               <g key={node.id}>
-                <line x1={node.x} y1={node.y} x2={node.labelX} y2={node.labelY + (node.isPeak ? -8 : 4)} stroke={EVL_CHART_COLORS.textMuted} strokeWidth="0.75" opacity="0.45" />
-                {node.isAirport ? <EvlAirportIcon x={node.x} y={node.y - 12} size={16} /> : null}
+                {node.isAirport ? <EvlAirportIcon x={node.x} y={node.y} size={18} variant="atlas" /> : null}
+                {node.isPeak ? (
+                  <path
+                    d={`M${node.x - 6},${node.y + 4} L${node.x},${node.y - 8} L${node.x + 6},${node.y + 4} Z`}
+                    fill={EVL_ATLAS.gold}
+                    stroke="#fff"
+                    strokeWidth="1"
+                  />
+                ) : null}
                 <circle
                   cx={node.x}
                   cy={node.y}
-                  r={node.isPeak ? 8 : 6}
-                  fill={node.isPeak ? EVL_CHART_COLORS.goldSoft : node.isAirport ? EVL_CHART_COLORS.flight : EVL_CHART_COLORS.gold}
+                  r={node.isPeak ? 5 : 6}
+                  fill={node.isAirport ? EVL_ATLAS.markerAirport : EVL_ATLAS.markerTrek}
                   stroke="#fff"
-                  strokeWidth="1.75"
+                  strokeWidth="2"
                 />
-                <EvlMapStopLabel
-                  gid={gid}
-                  name={node.displayName}
-                  elevation={elev}
-                  x={node.labelX}
-                  y={node.labelY}
-                  anchor={node.labelAnchor}
-                  active={isActive}
-                />
-                {isActive ? <circle cx={node.x} cy={node.y} r={16} fill={EVL_CHART_COLORS.gold} opacity="0.15" className="evl-no-export" /> : null}
+                <StopLabel node={node} gid={gid} active={isActive} />
+                {isActive ? <circle cx={node.x} cy={node.y} r={16} fill={EVL_ATLAS.gold} opacity="0.2" className="evl-no-export" /> : null}
                 <g className="evl-no-export">
                   <circle
                     cx={node.x}
@@ -193,7 +209,7 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
                     className="evl-hit"
                     role="button"
                     tabIndex={0}
-                    aria-label={`${node.displayName}, ${elev}`}
+                    aria-label={`${node.displayName}, ${node.elevationM} metres`}
                     onMouseEnter={() => onPointerEnter(node.id)}
                     onMouseLeave={onPointerLeave}
                     onFocus={() => onPointerEnter(node.id)}
@@ -211,18 +227,7 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
             );
           })}
 
-          <EvlLegendStrip
-            w={w}
-            y={bands.legendY}
-            note="Schematic map â€” not survey accurate"
-            items={[
-              { kind: "line-gold", label: "Trekking route" },
-              { kind: "line-flight", label: "Flight connection" },
-              { kind: "airport", label: "Airport" },
-              { kind: "day-dot", label: "Day segment" },
-            ]}
-          />
-          <EvlChartFooter w={w} y={bands.footerY} />
+          <AtlasChartFooter w={w} y={h - 8} />
         </svg>
 
         {activeNode && stopDetails[activeNode.id] ? (

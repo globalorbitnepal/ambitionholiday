@@ -5428,6 +5428,37 @@ body.nav-mega-open .hero-copy {
   margin-top: 0.15rem;
 }
 
+.evl-atlas-map {
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 1px solid #e5d39a;
+  box-shadow: 0 8px 28px rgba(15, 39, 68, 0.08);
+}
+
+.evl-atlas-svg {
+  display: block;
+  width: 100%;
+  min-width: min(100%, 20rem);
+  height: auto;
+  background: #f4f7f9;
+}
+
+.evl-infographic--atlas .evl-day-nav-item {
+  background: #fafbfc;
+  border-color: rgba(201, 162, 39, 0.35);
+  color: #0f2744;
+}
+
+.evl-infographic--atlas .evl-day-nav-heading {
+  color: #0f2744;
+}
+
+.evl-infographic--atlas .evl-day-nav-detail {
+  background: #f6f8fa;
+  border-color: rgba(201, 162, 39, 0.3);
+  color: #334155;
+}
+
 .evl-hit {
   cursor: pointer;
 }
