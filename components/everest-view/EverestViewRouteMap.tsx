@@ -1,12 +1,11 @@
 "use client";
 
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef } from "react";
 import { EVL_ATLAS_EXPORT_BG } from "@/lib/everest-view-atlas-colors";
 import {
   EVL_MAP_SUBTITLE,
   EVL_MAP_TITLE,
   EVL_STOP_DETAILS,
-  segmentsForDay,
 } from "@/lib/everest-view-charts";
 import {
   EVL_MAP_VIEWBOX,
@@ -20,7 +19,6 @@ import {
 import { EVL_ATLAS } from "@/lib/everest-view-atlas-colors";
 import { EvlAirportIcon } from "./EvlAirportIcon";
 import { EvlChartShell } from "./EvlChartShell";
-import { EvlDayRoutePanel } from "./EvlDayRoutePanel";
 import { EvlDetailCard } from "./EvlDetailCard";
 import { downloadSvgAsPng } from "./evl-chart-utils";
 import {
@@ -57,19 +55,13 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
   const gid = useId().replace(/:/g, "");
   const nodes = useMemo(() => Object.fromEntries(EVL_ROUTE_NODES.map((n) => [n.id, n])), []);
   const { activeId, onPointerEnter, onPointerLeave, onActivate, dismiss, isPinned } = useEvlInteraction();
-  const [activeDay, setActiveDay] = useState<number | null>(null);
-
   const activeNode = activeId ? nodes[activeId] : null;
   const cardPos = useSvgCardPosition(svgRef, stageRef, activeNode?.x ?? 0, activeNode?.y ?? 0, Boolean(activeNode));
 
-  const activePaths = useMemo(() => {
-    const fromStop = activeId ? pathIdsForStop(activeId) : new Set<string>();
-    const fromDay = activeDay ? segmentsForDay(activeDay) : new Set<string>();
-    return new Set([...fromStop, ...fromDay]);
-  }, [activeDay, activeId]);
+  const activePaths = useMemo(() => (activeId ? pathIdsForStop(activeId) : new Set<string>()), [activeId]);
 
   const { w, h } = EVL_MAP_VIEWBOX;
-  const focusMode = Boolean(activeId || activeDay);
+  const focusMode = Boolean(activeId);
 
   const stopDetails: Record<string, { day: string; description: string }> = {
     ...EVL_STOP_DETAILS,
@@ -148,12 +140,6 @@ export function EverestViewRouteMap({ sectionTitle = "Everest View Luxury Trek â
       sectionTitle={sectionTitle}
       downloadLabel="Download PNG"
       variant="map"
-      footer={
-        <EvlDayRoutePanel
-          activeDay={activeDay}
-          onSelectDay={(day) => setActiveDay((d) => (d === day ? null : day))}
-        />
-      }
       onDownload={async () => {
         await downloadSvgAsPng(svgRef.current, "ambition-holidays-everest-view-7-day-route-map", {
           scale: 3,
