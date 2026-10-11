@@ -10,6 +10,7 @@ import {
 import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
 import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
+import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
@@ -191,6 +192,7 @@ export const EBC_PACKAGE_ID = "ebc-lux";
 export const ABC_PACKAGE_ID = "abc-lux";
 export const MUSTANG_PACKAGE_ID = "mustang-lux";
 export const LANGTANG_PACKAGE_ID = "langtang-lux";
+export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
 export const FULL_PAGE_PACKAGE_IDS = [
@@ -198,6 +200,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   ABC_PACKAGE_ID,
   MUSTANG_PACKAGE_ID,
   LANGTANG_PACKAGE_ID,
+  EVEREST_VIEW_PACKAGE_ID,
 ] as const;
 
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
@@ -217,19 +220,30 @@ export function isLangtangPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === LANGTANG_PACKAGE_ID || /langtang-valley-luxury/i.test(pkg.slug || "");
 }
 
+export function isEverestViewPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
+  return pkg.id === EVEREST_VIEW_PACKAGE_ID || /everest-view-luxury/i.test(pkg.slug || "");
+}
+
 export function packageHeadings(pkg: TrekPackage) {
   const ebc = isEbcPackage(pkg);
+  const evl = isEverestViewPackage(pkg);
   const pick = (value: string | undefined, ebcDefault: string, generic: string) =>
     value?.trim() || (ebc ? ebcDefault : generic);
   return {
     about: pick(pkg.aboutTitle, "About this luxury trek", "About this journey"),
     why: pick(pkg.whyTitle, "Why this luxury Everest Base Camp trek", "Why travel with Ambition Holidays"),
     fit: pick(pkg.fitTitle, "Is this trek for you?", "Is this journey for you?"),
-    khumbu: pick(pkg.khumbuTitle, "The Khumbu you actually walk", "The region you travel through"),
+    khumbu: pick(
+      pkg.khumbuTitle,
+      "The Khumbu you actually walk",
+      evl ? "The lower Khumbu you walk" : "The region you travel through",
+    ),
     mapBody: pick(
       pkg.mapBody,
       "The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.",
-      "",
+      evl
+        ? "Walking route: Lukla → Phakding → Namche → Khumjung → Hotel Everest View → Monjo → Lukla. Flights link Kathmandu and Lukla. This map does not include Everest Base Camp."
+        : "",
     ),
     weatherNote: pick(
       pkg.weatherNote,
@@ -676,6 +690,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   ABC_LUXURY_TRIP_PACKAGE,
   MUSTANG_LUXURY_TRIP_PACKAGE,
   LANGTANG_LUXURY_TRIP_PACKAGE,
+  EVEREST_VIEW_LUXURY_TRIP_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [

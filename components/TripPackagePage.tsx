@@ -11,11 +11,13 @@ import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart 
 import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
 import { LANGTANG_ALTITUDE_STOPS } from "@/lib/langtang-charts";
 import { MUSTANG_ALTITUDE_STOPS } from "@/lib/mustang-charts";
+import { EVEREST_VIEW_ALTITUDE_STOPS } from "@/lib/everest-view-charts";
 import PackageActions from "@/components/PackageActions";
 import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
 import {
   isAbcPackage,
   isEbcPackage,
+  isEverestViewPackage,
   isLangtangPackage,
   isMustangPackage,
   packageHeadings,
@@ -98,24 +100,53 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const langtangCharts = isLangtangPackage(pkg);
   const mustangCharts = isMustangPackage(pkg);
   const abcCharts = isAbcPackage(pkg);
-  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts;
-  const chartStops = langtangCharts
-    ? LANGTANG_ALTITUDE_STOPS
-    : mustangCharts
-      ? MUSTANG_ALTITUDE_STOPS
-      : abcCharts
-        ? ABC_ALTITUDE_STOPS
-        : undefined;
-  const chartMaxM = langtangCharts ? 5000 : mustangCharts ? 4000 : abcCharts ? 4300 : undefined;
-  const chartMinM = langtangCharts ? 1200 : mustangCharts ? 700 : abcCharts ? 700 : undefined;
-  const chartFile = langtangCharts
-    ? "langtang-valley-luxury-trek-altitude-profile"
-    : mustangCharts
-      ? "mustang-altitude-profile"
-      : abcCharts
-        ? "abc-altitude-profile"
-        : "ebc-altitude-profile";
-  const mapVariant = langtangCharts ? "langtang" : mustangCharts ? "mustang" : abcCharts ? "abc" : "ebc";
+  const everestViewCharts = isEverestViewPackage(pkg);
+  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts;
+  const chartStops = everestViewCharts
+    ? EVEREST_VIEW_ALTITUDE_STOPS
+    : langtangCharts
+      ? LANGTANG_ALTITUDE_STOPS
+      : mustangCharts
+        ? MUSTANG_ALTITUDE_STOPS
+        : abcCharts
+          ? ABC_ALTITUDE_STOPS
+          : undefined;
+  const chartMaxM = everestViewCharts
+    ? 4200
+    : langtangCharts
+      ? 5000
+      : mustangCharts
+        ? 4000
+        : abcCharts
+          ? 4300
+          : undefined;
+  const chartMinM = everestViewCharts
+    ? 1200
+    : langtangCharts
+      ? 1200
+      : mustangCharts
+        ? 700
+        : abcCharts
+          ? 700
+          : undefined;
+  const chartFile = everestViewCharts
+    ? "everest-view-luxury-trek-altitude-profile"
+    : langtangCharts
+      ? "langtang-valley-luxury-trek-altitude-profile"
+      : mustangCharts
+        ? "mustang-altitude-profile"
+        : abcCharts
+          ? "abc-altitude-profile"
+          : "ebc-altitude-profile";
+  const mapVariant = everestViewCharts
+    ? "everest-view"
+    : langtangCharts
+      ? "langtang"
+      : mustangCharts
+        ? "mustang"
+        : abcCharts
+          ? "abc"
+          : "ebc";
   const packingGroups = pkg.packingGroups?.length
     ? pkg.packingGroups
     : pkg.packingItems?.length
@@ -614,7 +645,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : isEbcPackage(pkg) ? (
+              ) : isEbcPackage(pkg) || everestViewCharts ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />
               ) : null}
             </article>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/ebc-charts";
 import { ABC_MAP_STOPS } from "@/lib/abc-charts";
 import { LANGTANG_MAP_STOPS } from "@/lib/langtang-charts";
+import { EVEREST_VIEW_MAP_STOPS } from "@/lib/everest-view-charts";
 import { MUSTANG_MAP_STOPS } from "@/lib/mustang-charts";
 import { mediaSrc } from "@/lib/media-src";
 
@@ -442,16 +443,91 @@ function MustangRouteMap({ title }: { title: string }) {
   );
 }
 
+function EverestViewRouteMap({ title }: { title: string }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gid = useId().replace(/:/g, "");
+  const byId = Object.fromEntries(EVEREST_VIEW_MAP_STOPS.map((s) => [s.id, s]));
+  const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
+  const trekOut = ["lukla", "phakding", "namche", "khumjung", "hev"].map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`).join(" ");
+  const trekReturn = `M${pt("hev")} L${pt("namche")} L${pt("monjo")} L${pt("lukla")}`;
+
+  return (
+    <div className="lux-graph">
+      <div className="lux-graph-head">
+        <h3>{title}</h3>
+        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, "everest-view-luxury-trek-route-map")}>
+          Download PNG
+        </button>
+      </div>
+      <svg ref={svgRef} className="lux-graph-svg lux-map-svg" viewBox="0 0 1000 560" role="img" aria-label={title}>
+        <defs>
+          <linearGradient id={`${gid}-sky`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e4eef6" />
+            <stop offset="55%" stopColor="#f4f7f9" />
+            <stop offset="100%" stopColor="#f6f3ea" />
+          </linearGradient>
+          <linearGradient id={`${gid}-peak`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f8fbff" />
+            <stop offset="100%" stopColor="#8aa0b8" />
+          </linearGradient>
+        </defs>
+        <rect width="1000" height="560" fill={`url(#${gid}-sky)`} />
+        <Watermark w={1000} h={560} />
+        <path d="M0 200 L80 140 L150 180 L230 90 L310 160 L400 60 L490 130 L580 40 L670 120 L760 36 L850 110 L1000 70 L1000 560 L0 560 Z" fill={`url(#${gid}-peak)`} opacity="0.45" />
+        <path d="M0 340 C120 300 200 360 320 310 C430 270 500 330 620 300 C740 268 860 320 1000 290 L1000 560 L0 560 Z" fill="#c9d4c0" />
+        <path d={trekOut} fill="none" stroke="#c9a227" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={trekReturn} fill="none" stroke="#c9a227" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+        <path d={`M${pt("ktm")} L${pt("lukla")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("lukla")} L${pt("ktm")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        {EVEREST_VIEW_MAP_STOPS.map((stop) => (
+          <g key={stop.id}>
+            <circle
+              cx={stop.x * 10}
+              cy={stop.y * 6}
+              r={stop.id === "hev" ? 7 : stop.id === "ktm" ? 6 : 5.5}
+              fill={stop.id === "hev" ? "#1a4d8c" : stop.id === "ktm" ? "#6b7280" : "#c9a227"}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <text x={stop.x * 10 + 10} y={stop.y * 6 - 8} fontSize="13" fontWeight="700" fill="#111827">
+              {stop.name}
+            </text>
+            <text x={stop.x * 10 + 10} y={stop.y * 6 + 8} fontSize="11" fill="#4b5563">
+              {stop.sub}
+            </text>
+          </g>
+        ))}
+        <g transform="translate(28 28)">
+          <rect width="268" height="102" rx="10" fill="#fff" stroke="#e5d39a" />
+          <text x="14" y="24" fontSize="12" fontWeight="700" fill="#1a2129">
+            Ambition Holidays
+          </text>
+          <text x="14" y="44" fontSize="11" fill="#4b5563">
+            Gold line — walking route (lower Khumbu)
+          </text>
+          <text x="14" y="62" fontSize="11" fill="#4b5563">
+            Blue dash — Kathmandu ↔ Lukla flights
+          </text>
+          <text x="14" y="80" fontSize="11" fill="#4b5563">
+            Not shown: Everest Base Camp extension
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 export function TrekRouteMap({
   title = "Everest Base Camp Luxury Trek map",
   variant = "ebc",
 }: {
   title?: string;
-  variant?: "ebc" | "abc" | "mustang" | "langtang";
+  variant?: "ebc" | "abc" | "mustang" | "langtang" | "everest-view";
 }) {
   if (variant === "abc") return <AbcRouteMap title={title || "Annapurna Base Camp Luxury Trek map"} />;
   if (variant === "mustang") return <MustangRouteMap title={title || "Luxury Upper Mustang Trek map"} />;
   if (variant === "langtang") return <LangtangRouteMap title={title || "Langtang Valley Luxury Trek — 10 days route map"} />;
+  if (variant === "everest-view") return <EverestViewRouteMap title={title || "Everest View Luxury Trek — 7 days route map"} />;
   return <EbcRouteMap title={title} />;
 }
 
