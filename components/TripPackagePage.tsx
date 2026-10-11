@@ -23,12 +23,6 @@ import {
   packageHeadings,
   TREK_DAY_DISTANCE,
 } from "@/lib/trip-packages";
-import {
-  EVEREST_VIEW_ACCOMMODATION_SECTION,
-  EVEREST_VIEW_PRICING_NOTE,
-  EVEREST_VIEW_SAFETY_SECTION,
-  resolveTripPackageForPage,
-} from "@/lib/everest-view-public-display";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
@@ -77,9 +71,7 @@ function preserveListPhrasing(text: string) {
   );
 }
 
-export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
-  const pkg = useMemo(() => resolveTripPackageForPage(rawPkg), [rawPkg]);
-  const everestViewPage = isEverestViewPackage(pkg);
+export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const [openDay, setOpenDay] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
   const [showGroups, setShowGroups] = useState(true);
@@ -108,16 +100,16 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
   const highlightHeading = /\d+\s*Days?/i.test(pkg.title)
     ? `Highlights of ${pkg.title}`
     : `Highlights of ${pkg.title} – ${pkg.days} Days`;
-  const ridgeStayNotice =
-    everestViewPage && pkg.hotelEverestViewStatus
+  const hotelEverestViewNotice =
+    isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
       ? pkg.hotelEverestViewStatus === "confirmed"
         ? pkg.hotelEverestViewPublicNote ||
-          "Your higher-elevation overnight is confirmed on your booking documents."
+          "Hotel Everest View overnight is confirmed on your booking documents."
         : pkg.hotelEverestViewStatus === "unavailable"
           ? pkg.hotelEverestViewPublicNote ||
-            "The planned ridge overnight is not currently available for this departure. Your coordinator will confirm any alternative before you travel."
+            "Hotel Everest View is not currently available for this departure. Your coordinator will confirm any alternative before you travel."
           : pkg.hotelEverestViewPublicNote ||
-            "The planned higher-elevation overnight is subject to confirmed availability and will be stated on your booking confirmation."
+            "Hotel Everest View overnight is subject to confirmed availability and will be stated on your booking confirmation."
       : "";
   const langtangCharts = isLangtangPackage(pkg);
   const mustangCharts = isMustangPackage(pkg);
@@ -177,7 +169,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
   const show: Record<string, boolean> = {
     overview: true,
     book: true,
-    accommodation: everestViewPage,
     highlights: Boolean(pkg.highlights?.length),
     why: Boolean(pkg.whyItems?.length),
     video: Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
@@ -186,7 +177,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
     itinerary: Boolean(pkg.itinerary?.length),
     map: Boolean(pkg.routeMapSrc || builtInCharts),
     altitude: Boolean(pkg.altitudeChartM || pkg.altitudeChartFt || pkg.altitudeBody || builtInCharts),
-    safety: everestViewPage,
     weather: Boolean(pkg.weatherMonthlySrc || pkg.weatherBody || builtInCharts),
     includes: Boolean(pkg.inclusions?.length || pkg.exclusions?.length),
     "trip-gallery": gallery.length > 0,
@@ -195,18 +185,7 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
     reviews: Boolean(pkg.reviews?.length),
     faq: Boolean(pkg.faqs?.length),
   };
-  const tocItems = useMemo(() => {
-    const base = [...TOC];
-    if (everestViewPage) {
-      const infoIdx = base.findIndex((item) => item.id === "info");
-      const insertAt = infoIdx >= 0 ? infoIdx + 1 : 3;
-      base.splice(insertAt, 0, { id: "accommodation", label: "Stay" });
-      const altIdx = base.findIndex((item) => item.id === "altitude");
-      if (altIdx >= 0) base.splice(altIdx + 1, 0, { id: "safety", label: "Safety" });
-    }
-    return base;
-  }, [everestViewPage]);
-  const toc = tocItems.filter((item) => show[item.id]);
+  const toc = TOC.filter((item) => show[item.id]);
   const tocKey = toc.map((item) => item.id).join("|");
   const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
   const hasFromPrice = Number.isFinite(fromPrice);
@@ -283,7 +262,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
           "Request Private Quote"
         )}
       </p>
-      {everestViewPage && !hasPrice ? <p className="lux-price-note">{EVEREST_VIEW_PRICING_NOTE}</p> : null}
       {groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
           See group booking discount {showGroups ? "▴" : "▾"}
@@ -308,7 +286,7 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
         </table>
       ) : null}
       <Link href={enquire} className="lux-btn lux-btn-solid">
-        {everestViewPage ? "Book this trek" : "Book now"}
+        Book now
       </Link>
       <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
         Check availability
@@ -374,15 +352,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
       </div>
 
       <div className="lux-wrap">
-        {everestViewPage ? (
-          <nav className="lux-breadcrumb" aria-label="Breadcrumb">
-            <Link href="/">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/nepal">Nepal</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">Everest View Luxury Trek</span>
-          </nav>
-        ) : null}
         <section className="lux-spec" aria-label="Trip facts">
           {facts.map((fact) => (
             <div key={fact.label} className="lux-spec-item">
@@ -418,36 +387,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
-              {everestViewPage ? (
-                <div className="lux-hero-actions">
-                  <Link href={enquire} className="lux-btn lux-btn-solid">
-                    Book this trek
-                  </Link>
-                  <button
-                    type="button"
-                    className="lux-btn lux-btn-ghost"
-                    onClick={() => scrollToId("itinerary")}
-                  >
-                    View itinerary
-                  </button>
-                </div>
-              ) : null}
-              {everestViewPage && (hasFromPrice || hasPrice) ? (
-                <p className="lux-hero-price">
-                  {hasFromPrice ? (
-                    <>
-                      From <strong>USD {fromPrice.toLocaleString()}</strong> per person
-                    </>
-                  ) : (
-                    <>
-                      <strong>USD {pkg.priceUsd.toLocaleString()}</strong> per person
-                    </>
-                  )}
-                  {pkg.groupSize ? <span> · {pkg.groupSize}</span> : null}
-                </p>
-              ) : everestViewPage ? (
-                <p className="lux-hero-price lux-hero-price--quote">{EVEREST_VIEW_PRICING_NOTE}</p>
-              ) : null}
               <div className="lux-rates">
                 <a className="lux-rate" href={pkg.tripadvisorHref || "#"} target="_blank" rel="noreferrer">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -485,41 +424,12 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
-              {ridgeStayNotice ? <p className="lux-note">{ridgeStayNotice}</p> : null}
-              {everestViewPage ? (
-                <p className="lux-resource-links">
-                  Planning resources:{" "}
-                  <Link href="/permits-and-fees">Permits & fees</Link>
-                  {" · "}
-                  <Link href="/packing-guide">Packing guide</Link>
-                  {" · "}
-                  <Link href="/altitude-tips">Altitude tips</Link>
-                </p>
-              ) : null}
+              {hotelEverestViewNotice ? <p className="lux-note">{hotelEverestViewNotice}</p> : null}
             </article>
 
             <aside id="book-mobile" className="lux-aside lux-aside--inline" aria-label="Book this trip">
               {bookingPanel}
             </aside>
-
-            {show.accommodation ? (
-              <article id="accommodation" className="lux-card">
-                <p className="lux-kicker">Where you stay</p>
-                <h2>{EVEREST_VIEW_ACCOMMODATION_SECTION.title}</h2>
-                <p>{EVEREST_VIEW_ACCOMMODATION_SECTION.intro}</p>
-                <div className="lux-acc-grid">
-                  {EVEREST_VIEW_ACCOMMODATION_SECTION.blocks.map((block) => (
-                    <div key={block.heading} className="lux-acc-block">
-                      <h3>{block.heading}</h3>
-                      <p>{block.body}</p>
-                      <p className="lux-acc-status">
-                        <strong>Status:</strong> {block.status}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ) : null}
 
             {show.highlights ? (
               <article id="highlights" className="lux-card">
@@ -738,19 +648,6 @@ export default function TripPackagePage({ pkg: rawPkg }: { pkg: TrekPackage }) {
                 />
               ) : null}
             </article>
-            ) : null}
-
-            {show.safety ? (
-              <article id="safety" className="lux-card">
-                <p className="lux-kicker">On the trail</p>
-                <h2>{EVEREST_VIEW_SAFETY_SECTION.title}</h2>
-                {EVEREST_VIEW_SAFETY_SECTION.blocks.map((block) => (
-                  <div key={block.heading} className="lux-info-block">
-                    <h3>{block.heading}</h3>
-                    <p>{block.body}</p>
-                  </div>
-                ))}
-              </article>
             ) : null}
 
             {show.weather ? (

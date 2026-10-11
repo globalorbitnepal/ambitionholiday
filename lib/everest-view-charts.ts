@@ -7,7 +7,7 @@ export const EVEREST_VIEW_ALTITUDE_STOPS: AltitudeStop[] = [
   { label: "Phakding", m: 2610 },
   { label: "Namche Bazaar", m: 3440 },
   { label: "Namche Bazaar", m: 3440 },
-  { label: "Ridge viewpoint area", m: 3880 },
+  { label: "Hotel Everest View", m: 3880 },
   { label: "Monjo", m: 2835 },
   { label: "Lukla", m: 2860 },
   { label: "Kathmandu", m: 1400 },
@@ -22,6 +22,6 @@ export const EVEREST_VIEW_MAP_STOPS: EverestViewMapStop[] = [
   { id: "phakding", name: "Phakding", sub: "2,610 m", x: 28, y: 74 },
   { id: "namche", name: "Namche Bazaar", sub: "3,440 m", x: 36, y: 58 },
   { id: "khumjung", name: "Khumjung", sub: "3,780 m", x: 52, y: 44 },
-  { id: "hev", name: "Ridge viewpoint area", sub: "~3,880 m", x: 62, y: 36 },
+  { id: "hev", name: "Hotel Everest View", sub: "~3,880 m", x: 62, y: 36 },
   { id: "monjo", name: "Monjo", sub: "2,835 m", x: 32, y: 68 },
 ];
