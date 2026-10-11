@@ -8,6 +8,7 @@ import DuskAtmosphere from "@/components/DuskAtmosphere";
 import SiteFooter from "@/components/SiteFooter";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import { AltitudeProfileChart, MonthlyWeatherChart, TrekRouteMap, UploadedChart } from "@/components/TrekCharts";
+import { EverestViewAltitudeProfile } from "@/components/everest-view/EverestViewAltitudeProfile";
 import { ABC_ALTITUDE_STOPS } from "@/lib/abc-charts";
 import { LANGTANG_ALTITUDE_STOPS } from "@/lib/langtang-charts";
 import { MUSTANG_ALTITUDE_STOPS } from "@/lib/mustang-charts";
@@ -641,6 +642,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     file={`${pkg.slug}-altitude-${altUnit}`}
                   />
                 </>
+              ) : everestViewCharts ? (
+                <EverestViewAltitudeProfile sectionTitle={`Altitude profile of ${pkg.title}`} />
               ) : builtInCharts ? (
                 <AltitudeProfileChart
                   title={`Altitude profile of ${pkg.title}`}

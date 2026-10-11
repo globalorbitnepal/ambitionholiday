@@ -5381,6 +5381,40 @@ body.nav-mega-open .hero-copy {
   max-height: 32rem;
 }
 
+.evl-infographic-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  margin: 0.35rem -0.15rem 0;
+  padding-bottom: 0.25rem;
+}
+
+.evl-infographic-svg {
+  display: block;
+  width: 100%;
+  min-width: min(100%, 22rem);
+  height: auto;
+  max-height: none;
+}
+
+.evl-infographic--map .evl-infographic-svg {
+  min-width: min(100%, 20rem);
+}
+
+@media (max-width: 767px) {
+  .evl-infographic--map .evl-infographic-svg {
+    min-width: 20rem;
+  }
+
+  .evl-infographic--altitude .evl-infographic-svg {
+    min-width: 22rem;
+  }
+}
+
+.evl-alt-unit {
+  margin-bottom: 0.35rem;
+}
+
 .lux-graph-legend {
   display: flex;
   flex-wrap: wrap;
