@@ -28,7 +28,7 @@ import { mergeTripPackageSnapshots } from "@/lib/trip-package-save";
 
 export { applyPublishedPackageHrefs, applyTripPackageToSiteContent } from "@/lib/trip-package-catalog-sync";
 
-const GRID_JOURNEY_IDS = ["ebc", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
+const GRID_JOURNEY_IDS = ["everest-view", "abc", "mustang", "manaslu", "langtang", "gokyo", "heli", "mardi"];
 
 function coerceDestinationCatalog(
   savedRaw: Partial<NepalContent> | undefined,

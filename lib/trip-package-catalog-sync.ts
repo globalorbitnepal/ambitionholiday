@@ -46,15 +46,21 @@ export function applyPublishedPackageHrefs(content: SiteContent): SiteContent {
           ),
           luxuryCountries: (nav.luxuryCountries || []).map((country) => ({
             ...country,
-            packages: country.packages.map((card) =>
-              enrichCatalogCard(
+            packages: country.packages.map((card) => {
+              const href = resolveCatalogHref({ id: "", href: card.href, title: card.title }, pkgs);
+              const slug = href.replace(/^\//, "");
+              const trip = pkgs.find(
+                (pkg) => pkg.status === "published" && (pkg.slug === slug || pkg.catalogId === slug),
+              );
+              return enrichCatalogCard(
                 {
                   ...card,
-                  href: resolveCatalogHref({ id: "", href: card.href, title: card.title }, pkgs),
+                  id: trip?.catalogId || trip?.id || "",
+                  href,
                 },
                 pkgs,
-              ),
-            ),
+              );
+            }),
           })),
         }
       : nav,

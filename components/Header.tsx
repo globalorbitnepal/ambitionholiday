@@ -637,7 +637,7 @@ function LuxuryGlassPanel({
                               <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
                               <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                             </svg>
-                            {pkg.days}
+                            {typeof pkg.days === "number" ? `${pkg.days} Days` : pkg.days}
                           </span>
                           <span className="inline-flex items-center gap-1">
                             <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" aria-hidden="true">

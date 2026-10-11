@@ -788,6 +788,13 @@ export function resolveCatalogHref(card: CatalogCardLike, packages: TrekPackage[
 }
 
 /** Keys used on catalog cards (journeys grid, Nepal page, mega menu) for a trek page. */
+/** Retired catalog ids that should resolve to a replacement published package. */
+export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
+  "ebc-lux": EVEREST_VIEW_PACKAGE_ID,
+  ebc: EVEREST_VIEW_PACKAGE_ID,
+  "trip-ebc-lux": EVEREST_VIEW_PACKAGE_ID,
+};
+
 export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   const keys = new Set<string>();
   if (pkg.id) keys.add(pkg.id);
@@ -795,6 +802,9 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
     keys.add(pkg.catalogId);
     keys.add(pkg.catalogId.replace(/-lux$/, ""));
     keys.add(`trip-${pkg.catalogId}`);
+  }
+  if (pkg.id === EVEREST_VIEW_PACKAGE_ID || pkg.catalogId === "everest-view-lux") {
+    for (const legacy of Object.keys(CATALOG_PACKAGE_ALIASES)) keys.add(legacy);
   }
   return keys;
 }
@@ -824,7 +834,16 @@ export function findPublishedTripForCard(
   card: { id?: string; href: string; title?: string },
   packages: TrekPackage[],
 ) {
-  return packages.find((pkg) => pkg.status === "published" && cardLinkedToPackage(card, pkg));
+  const published = packages.filter((pkg) => pkg.status === "published");
+  const direct = published.find((pkg) => cardLinkedToPackage(card, pkg));
+  if (direct) return direct;
+  const aliasId = card.id ? CATALOG_PACKAGE_ALIASES[card.id] : undefined;
+  if (aliasId) return published.find((pkg) => pkg.id === aliasId);
+  const cleanSlug = (card.href || "").replace(/^\//, "");
+  if (cleanSlug === "everest-base-camp-trek" || cleanSlug === "everest-base-camp-luxury-trek") {
+    return published.find((pkg) => pkg.id === EVEREST_VIEW_PACKAGE_ID);
+  }
+  return undefined;
 }
 
 function tripMaxAltitudeLabel(pkg: TrekPackage) {
@@ -851,22 +870,22 @@ export function enrichCatalogCard<
 >(card: T, packages: TrekPackage[]): T {
   const trip = findPublishedTripForCard(card, packages);
   if (!trip) return card;
-  const days =
-    typeof card.days === "string" || card.days === undefined
-      ? trip.duration || `${trip.days} Days`
-      : trip.days;
+  const days = trip.days;
+  const durationLabel = trip.duration || `${trip.days} Days`;
   return {
     ...card,
+    id: card.id && CATALOG_PACKAGE_ALIASES[card.id] ? trip.catalogId || card.id : card.id,
     href: tripPath(trip),
     imageSrc: trip.heroSrc || card.imageSrc,
     imageAlt: trip.heroAlt || card.imageAlt || trip.title,
-    title: card.title || trip.title,
+    title: trip.title,
     difficulty: trip.difficulty || card.difficulty,
     badge: trip.badge || card.badge,
-    description: card.description || trip.subtitle,
+    description: trip.subtitle || card.description,
     subtitle: card.subtitle || "Luxury Package",
     maxAltitude: tripMaxAltitudeLabel(trip) || card.maxAltitude,
     days,
+    duration: durationLabel,
   };
 }
 
