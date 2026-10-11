@@ -14,6 +14,7 @@ import JsonLd from "@/components/JsonLd";
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ interest?: string; intent?: string }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -98,8 +99,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SlugPage({ params }: Props) {
+export default async function SlugPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const query = (await searchParams) ?? {};
   if (slug === "blog") redirect("/journal");
 
   const content = await readContent();
@@ -163,7 +165,9 @@ export default async function SlugPage({ params }: Props) {
     if (!route) notFound();
 
     if (slug === "contact") {
-      page = <ContactPage />;
+      page = (
+        <ContactPage interestKey={query.interest} intent={query.intent} />
+      );
     } else {
       const hub = getNavItemBySlug(slug);
       if (hub?.groups?.length) {

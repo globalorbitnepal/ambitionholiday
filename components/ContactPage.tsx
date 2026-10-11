@@ -1,7 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import Header from "@/components/Header";
+import {
+  CONTACT_FORM_INTERESTS,
+  type ContactFormInterest,
+  resolveContactInterestFromQuery,
+} from "@/lib/contact-interest";
 import MediaImage from "@/components/MediaImage";
 import SiteFooter from "@/components/SiteFooter";
 import DuskAtmosphere from "@/components/DuskAtmosphere";
@@ -16,13 +21,10 @@ const MOBILE_TEL = "+9779851148898";
 const EMAIL = "info@ambitionholidays.com";
 const WHATSAPP = "https://wa.me/9779851148898";
 
-const INTERESTS = [
-  "Luxury Tour & Trek",
-  "Helicopter Experience",
-  "Multi-Country Journey",
-  "Cultural Tour",
-  "Custom Private Journey",
-];
+type ContactPageProps = {
+  interestKey?: string;
+  intent?: string;
+};
 
 function PhoneIcon() {
   return (
@@ -59,9 +61,15 @@ function PinIcon() {
   );
 }
 
-export default function ContactPage() {
+export default function ContactPage({ interestKey, intent }: ContactPageProps = {}) {
+  const resolved = useMemo(
+    () => resolveContactInterestFromQuery(interestKey, intent),
+    [interestKey, intent],
+  );
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [error, setError] = useState("");
+  const [interest, setInterest] = useState<ContactFormInterest | "">(resolved.selectValue);
+  const [message, setMessage] = useState(resolved.messagePrefill);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,6 +91,8 @@ export default function ContactPage() {
       }
       setStatus("ok");
       form.reset();
+      setInterest(resolved.selectValue);
+      setMessage(resolved.messagePrefill);
     } catch {
       setStatus("error");
       setError("Could not send right now. Please call or WhatsApp us.");
@@ -175,6 +185,9 @@ export default function ContactPage() {
               </p>
 
               <form className="contact-form" onSubmit={onSubmit}>
+                {resolved.sourceTag ? (
+                  <input type="hidden" name="source" value={resolved.sourceTag} />
+                ) : null}
                 <label>
                   Full name *
                   <input name="name" type="text" required autoComplete="name" placeholder="Your name" />
@@ -206,11 +219,17 @@ export default function ContactPage() {
                   </label>
                   <label>
                     Interested in
-                    <select name="interest" defaultValue="">
+                    <select
+                      name="interest"
+                      value={interest}
+                      onChange={(e) =>
+                        setInterest(e.target.value as ContactFormInterest | "")
+                      }
+                    >
                       <option value="" disabled>
                         Select a journey
                       </option>
-                      {INTERESTS.map((item) => (
+                      {CONTACT_FORM_INTERESTS.map((item) => (
                         <option key={item} value={item}>
                           {item}
                         </option>
@@ -224,6 +243,8 @@ export default function ContactPage() {
                     name="message"
                     required
                     rows={6}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell us about the journey you have in mind — region, style of travel, lodges, helicopter, or a custom private itinerary."
                   />
                 </label>
