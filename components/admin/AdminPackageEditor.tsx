@@ -512,7 +512,7 @@ export default function AdminPackageEditor() {
                 />
                 <input
                   value={day.meals}
-                  placeholder="Meals"
+                  placeholder="Meals (e.g. Breakfast, Lunch, Dinner)"
                   onChange={(e) =>
                     patch({
                       itinerary: pkg.itinerary.map((item, i) =>
@@ -523,7 +523,7 @@ export default function AdminPackageEditor() {
                 />
                 <input
                   value={day.stay}
-                  placeholder="Stay"
+                  placeholder="Accommodation"
                   onChange={(e) =>
                     patch({
                       itinerary: pkg.itinerary.map((item, i) =>

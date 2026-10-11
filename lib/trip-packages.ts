@@ -257,6 +257,28 @@ function everestViewFaqs(
   return saved;
 }
 
+function everestViewItinerary(
+  saved: TrekPackage["itinerary"] | undefined,
+  def: TrekPackage["itinerary"],
+): TrekPackage["itinerary"] {
+  return def.map((defDay, index) => {
+    const day = saved?.[index];
+    if (!day) return defDay;
+    return {
+      ...defDay,
+      title: everestViewPublicText(day.title, defDay.title),
+      body: everestViewPublicText(day.body, defDay.body),
+      meals: (day.meals || "").trim() || defDay.meals,
+      stay: (day.stay || "").trim() || defDay.stay,
+      duration: (day.duration || "").trim() || defDay.duration,
+      altitude: (day.altitude || "").trim() || defDay.altitude,
+      distance: (day.distance || "").trim() || defDay.distance || "",
+      imageSrc: (day.imageSrc || "").trim() || defDay.imageSrc || "",
+      imageAlt: everestViewPublicText(day.imageAlt, defDay.imageAlt || ""),
+    };
+  });
+}
+
 export function packageHeadings(pkg: TrekPackage) {
   const ebc = isEbcPackage(pkg);
   const evl = isEverestViewPackage(pkg);
@@ -1169,7 +1191,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_VIEW_PACKAGE_ID) {
       return {
         ...mergedPkg,
-        itinerary: def.itinerary,
+        itinerary: everestViewItinerary(item.itinerary, def.itinerary),
         itineraryIntro: everestViewPublicText(item.itineraryIntro, def.itineraryIntro),
         overview: everestViewPublicText(item.overview, def.overview),
         mapBody: everestViewPublicText(item.mapBody, def.mapBody || ""),

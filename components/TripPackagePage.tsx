@@ -28,6 +28,7 @@ import {
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
+import { ItineraryMetaIcon } from "@/components/itinerary-meta-icons";
 import { normalizeVideoSrc, youtubeId } from "@/lib/video-embed";
 
 const TOC = [
@@ -944,66 +945,6 @@ function ItineraryMetaItem({
   );
 }
 
-function ItineraryMetaIcon({ name }: { name: "meal" | "bed" | "duration" | "altitude" | "distance" }) {
-  const strokeW = name === "meal" || name === "bed" ? 2 : 1.75;
-  const common = {
-    width: 22,
-    height: 22,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: strokeW,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-  if (name === "meal") {
-    return (
-      <svg {...common}>
-        <path d="M5 2v7.2c0 1.2.9 2.1 2 2.1h0c1.1 0 2-.9 2-2.1V2" />
-        <path d="M7 2v20" />
-        <path d="M17 2v20" />
-        <path d="M21 2v6.8a3.2 3.2 0 0 1-6.4 0V2" />
-      </svg>
-    );
-  }
-  if (name === "bed") {
-    return (
-      <svg {...common}>
-        <path d="M3 11V7.2A2.2 2.2 0 0 1 5.2 5h2.1" />
-        <path d="M3 14.5h18" />
-        <path d="M3 11h10.5a2.8 2.8 0 0 1 2.8 2.8v4.7" />
-        <path d="M19.5 11H21a1.5 1.5 0 0 1 1.5 1.5v7" />
-        <path d="M3 20v-5.5" />
-        <path d="M21 20v-7" />
-        <path d="M5.5 9.2h3.2a1.2 1.2 0 0 1 1.2 1.2v.6H5.5" />
-      </svg>
-    );
-  }
-  if (name === "duration") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="M12 8v4.2l2.6 1.5" />
-      </svg>
-    );
-  }
-  if (name === "altitude") {
-    return (
-      <svg {...common}>
-        <path d="M4 19l5-9 3 5 2-3 6 7H4z" />
-        <path d="M14 9l2-3 2 3" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...common}>
-      <circle cx="6" cy="17" r="2" />
-      <circle cx="18" cy="7" r="2" />
-      <path d="M8 17c2.5-6 6-8 8-8" />
-    </svg>
-  );
-}
-
 function CheckMark() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1075,27 +1016,10 @@ function FactIcon({ name }: { name: string }) {
     );
   }
   if (name === "bed") {
-    return (
-      <svg {...common}>
-        <path d="M3 11V7.2A2.2 2.2 0 0 1 5.2 5h2.1" />
-        <path d="M3 14.5h18" />
-        <path d="M3 11h10.5a2.8 2.8 0 0 1 2.8 2.8v4.7" />
-        <path d="M19.5 11H21a1.5 1.5 0 0 1 1.5 1.5v7" />
-        <path d="M3 20v-5.5" />
-        <path d="M21 20v-7" />
-        <path d="M5.5 9.2h3.2a1.2 1.2 0 0 1 1.2 1.2v.6H5.5" />
-      </svg>
-    );
+    return <ItineraryMetaIcon name="bed" size={26} strokeWidth={1.6} />;
   }
   if (name === "meal") {
-    return (
-      <svg {...common}>
-        <path d="M5 2v7.2c0 1.2.9 2.1 2 2.1h0c1.1 0 2-.9 2-2.1V2" />
-        <path d="M7 2v20" />
-        <path d="M17 2v20" />
-        <path d="M21 2v6.8a3.2 3.2 0 0 1-6.4 0V2" />
-      </svg>
-    );
+    return <ItineraryMetaIcon name="meal" size={26} strokeWidth={1.6} />;
   }
   return (
     <svg {...common}>
