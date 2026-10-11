@@ -2697,8 +2697,8 @@ export const DEFAULT_CONTENT: SiteContent = {
     helpBody:
       "Our Himalayan specialists are here to craft your private journey — from first enquiry to the trail.",
     phones: [
-      { id: "p1", label: "+977-1-4000000", href: "tel:+97714000000" },
-      { id: "p2", label: "+977-9800000000", href: "tel:+9779800000000" },
+      { id: "p1", label: "+977 1 4518413", href: "tel:+97714518413" },
+      { id: "p2", label: "+977 9851148898", href: "tel:+9779851148898" },
     ],
     email: "info@ambitionholidays.com",
     emailHref: "mailto:info@ambitionholidays.com",

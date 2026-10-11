@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
+import { coerceFooterPhones } from "@/lib/footer-contact";
 import { mergeHeaderNav } from "@/lib/header-nav";
 import { normalizeSiteContent } from "@/lib/normalize-site-content";
 
@@ -180,7 +181,7 @@ export default function SiteContentProvider({
             : DEFAULT_CONTENT.footer.members,
           socials: data.footer?.socials ?? DEFAULT_CONTENT.footer.socials,
           payments: data.footer?.payments ?? DEFAULT_CONTENT.footer.payments,
-          phones: data.footer?.phones ?? DEFAULT_CONTENT.footer.phones,
+          phones: coerceFooterPhones(data.footer?.phones),
           usefulLinks: data.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks,
           adventureLinks: data.footer?.adventureLinks ?? DEFAULT_CONTENT.footer.adventureLinks,
           trekLinks: data.footer?.trekLinks ?? DEFAULT_CONTENT.footer.trekLinks,

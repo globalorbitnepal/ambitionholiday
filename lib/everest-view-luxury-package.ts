@@ -276,15 +276,17 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   metaKeywords:
     "Everest View Luxury Trek, Everest View Trek Nepal, 7 Days Everest View Trek, Namche Bazaar Trek, Khumjung Village Trek, Everest panorama trek, private Everest trek",
   focusKeyword: "Everest View Luxury Trek",
-  tripadvisorLabel: "Excellent",
-  tripadvisorScore: "5.0",
-  tripadvisorCount: "120+ Reviews",
-  tripadvisorHref: "https://www.tripadvisor.com",
+  tripadvisorLabel: "Tripadvisor",
+  tripadvisorScore: "",
+  tripadvisorCount: "View reviews",
+  tripadvisorHref:
+    "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
   tripadvisorLogoSrc: "/images/reviews/tripadvisor-owl.png",
-  googleLabel: "Excellent",
-  googleScore: "5.0",
-  googleCount: "140+ Reviews",
-  googleHref: "https://www.google.com/maps",
+  googleLabel: "Google",
+  googleScore: "",
+  googleCount: "View on Maps",
+  googleHref:
+    "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
   googleLogoSrc: "",
   watchVideo: {
     id: "evl-watch",

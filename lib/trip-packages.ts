@@ -234,6 +234,29 @@ export function isEverestViewPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === EVEREST_VIEW_PACKAGE_ID || /everest-view-luxury/i.test(pkg.slug || "");
 }
 
+const EVL_PROHIBITED_RE = /hotel\s+everest\s+view/i;
+
+function everestViewPublicText(saved: string | undefined, def: string) {
+  const value = (saved || "").trim();
+  if (!value || EVL_PROHIBITED_RE.test(value)) return def;
+  return value;
+}
+
+function everestViewStringList(saved: string[] | undefined, def: string[]) {
+  if (!saved?.length) return def;
+  if (saved.some((line) => EVL_PROHIBITED_RE.test(line))) return def;
+  return saved;
+}
+
+function everestViewFaqs(
+  saved: TrekPackage["faqs"] | undefined,
+  def: TrekPackage["faqs"],
+) {
+  if (!saved?.length) return def;
+  if (saved.some((faq) => EVL_PROHIBITED_RE.test(`${faq.q} ${faq.a}`))) return def;
+  return saved;
+}
+
 export function packageHeadings(pkg: TrekPackage) {
   const ebc = isEbcPackage(pkg);
   const evl = isEverestViewPackage(pkg);
@@ -1146,11 +1169,31 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_VIEW_PACKAGE_ID) {
       return {
         ...mergedPkg,
+        itinerary: def.itinerary,
+        itineraryIntro: everestViewPublicText(item.itineraryIntro, def.itineraryIntro),
+        overview: everestViewPublicText(item.overview, def.overview),
+        mapBody: everestViewPublicText(item.mapBody, def.mapBody || ""),
+        metaTitle: everestViewPublicText(item.metaTitle, def.metaTitle),
+        metaDescription: everestViewPublicText(item.metaDescription, def.metaDescription),
+        metaKeywords: everestViewPublicText(item.metaKeywords, def.metaKeywords),
+        highlights: everestViewStringList(item.highlights, def.highlights),
+        faqs: everestViewFaqs(item.faqs, def.faqs),
+        tripadvisorLabel: def.tripadvisorLabel,
+        tripadvisorScore: def.tripadvisorScore,
+        tripadvisorCount: def.tripadvisorCount,
+        tripadvisorHref: def.tripadvisorHref,
+        googleLabel: def.googleLabel,
+        googleScore: def.googleScore,
+        googleCount: def.googleCount,
+        googleHref: def.googleHref,
         priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
         groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
         hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
         hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
-        hotelEverestViewPublicNote: item.hotelEverestViewPublicNote ?? def.hotelEverestViewPublicNote,
+        hotelEverestViewPublicNote: everestViewPublicText(
+          item.hotelEverestViewPublicNote,
+          def.hotelEverestViewPublicNote || "",
+        ),
         slug:
           mergedPkg.slug && mergedPkg.slug !== "everest-base-camp-trek" ? mergedPkg.slug : def.slug,
         slugHistory: withSlugHistory(

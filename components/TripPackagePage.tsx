@@ -392,21 +392,24 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={pkg.tripadvisorLogoSrc || "/images/reviews/tripadvisor-owl.png"} alt="" />
                   <span>
-                    <strong>{pkg.tripadvisorLabel || "Excellent"}</strong>
-                    <span className="lux-owls" aria-hidden="true">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <i key={i} className={`lux-owl${i < 5 ? " is-on" : ""}`} />
-                      ))}
-                    </span>
-                    <em>{pkg.tripadvisorCount}</em>
+                    <strong>{pkg.tripadvisorLabel || "Tripadvisor"}</strong>
+                    {pkg.tripadvisorScore?.trim() ? (
+                      <span className="lux-owls" aria-hidden="true">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <i key={i} className={`lux-owl${i < 5 ? " is-on" : ""}`} />
+                        ))}
+                      </span>
+                    ) : null}
+                    <em>{pkg.tripadvisorCount || "View reviews"}</em>
                   </span>
                 </a>
                 <a className="lux-rate" href={pkg.googleHref || "#"} target="_blank" rel="noreferrer">
                   <GoogleG />
                   <span>
-                    <strong>{pkg.googleLabel || "Excellent"}</strong>
+                    <strong>{pkg.googleLabel || "Google"}</strong>
                     <em>
-                      {pkg.googleScore} · {pkg.googleCount}
+                      {[pkg.googleScore, pkg.googleCount].filter((part) => part?.trim()).join(" · ") ||
+                        "View on Google"}
                     </em>
                   </span>
                 </a>

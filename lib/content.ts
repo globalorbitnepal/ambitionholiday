@@ -22,6 +22,7 @@ import { DEFAULT_MULTI } from "@/lib/multi-defaults";
 import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
+import { coerceFooterPhones } from "@/lib/footer-contact";
 import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
 import { applyPublishedPackageHrefs } from "@/lib/trip-package-catalog-sync";
 import { mergeTripPackageSnapshots } from "@/lib/trip-package-save";
@@ -714,7 +715,7 @@ export async function readContent(): Promise<SiteContent> {
           parsed.footer?.payments?.some((p) => p.imageSrc)
             ? parsed.footer.payments
             : DEFAULT_CONTENT.footer.payments,
-        phones: parsed.footer?.phones ?? DEFAULT_CONTENT.footer.phones,
+        phones: coerceFooterPhones(parsed.footer?.phones),
         usefulLinks: (() => {
           const links = (parsed.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks).map((link) =>
             link.href === "/about-us" ? { ...link, href: "/company", label: "Company" } : link,
