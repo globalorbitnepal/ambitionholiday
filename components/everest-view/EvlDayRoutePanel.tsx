@@ -16,7 +16,8 @@ type EvlDayRoutePanelProps = {
 export function EvlDayRoutePanel({ activeDay, onSelectDay }: EvlDayRoutePanelProps) {
   return (
     <div className="evl-day-route-panel" aria-label="Day-by-day route">
-      <p className="evl-day-route-panel-title">Day-by-day route</p>
+      <p className="evl-day-route-panel-title">Seven-day route strip</p>
+      <div className="evl-day-route-strip">
       <ul className="evl-day-route-list">
         {EVL_DAY_ROUTE.map((row) => {
           const isActive = activeDay === row.day;
@@ -29,7 +30,7 @@ export function EvlDayRoutePanel({ activeDay, onSelectDay }: EvlDayRoutePanelPro
                 aria-pressed={isActive}
               >
                 <div className="evl-day-route-card-head">
-                  <span className="evl-day-route-num">Day {row.day}</span>
+                  <span className="evl-day-route-num-lg">DAY {row.day}</span>
                   <span className={`evl-day-route-mode evl-day-route-mode--${row.mode}`}>{MODE_LABEL[row.mode]}</span>
                 </div>
                 <p className="evl-day-route-seq">{row.route}</p>
@@ -42,6 +43,7 @@ export function EvlDayRoutePanel({ activeDay, onSelectDay }: EvlDayRoutePanelPro
           );
         })}
       </ul>
+      </div>
     </div>
   );
 }

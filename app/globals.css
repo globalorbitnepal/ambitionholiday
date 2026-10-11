@@ -5568,19 +5568,48 @@ body.nav-mega-open .hero-copy {
   color: #e8d48a;
 }
 
+.evl-day-route-strip {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+}
+
 .evl-day-route-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  gap: 0.45rem;
+  display: flex;
+  gap: 0.55rem;
+  min-width: min-content;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1100px) {
   .evl-day-route-list {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    min-width: 0;
   }
+
+  .evl-day-route-strip {
+    overflow: visible;
+  }
+}
+
+.evl-day-route-list > li {
+  flex: 0 0 min(16.5rem, 78vw);
+}
+
+@media (min-width: 1100px) {
+  .evl-day-route-list > li {
+    flex: unset;
+  }
+}
+
+.evl-day-route-num-lg {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #e8d48a;
 }
 
 .evl-day-route-card {

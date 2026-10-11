@@ -59,7 +59,7 @@ export const EVL_ALT_SUBTITLE = "Route Elevation Profile | Approximate Altitudes
 export const EVL_WEATHER_TITLE = "EVEREST VIEW LUXURY TREK";
 export const EVL_WEATHER_SUBTITLE = "Monthly Khumbu Reference Temperatures | Indicative °C";
 
-export const EVL_MAP_VIEWBOX = { w: 1040, h: 520 };
+export { EVL_MAP_VIEWBOX } from "./everest-view-route-geometry";
 
 /** Khumbu reference — not a daily forecast. */
 export const EVL_KHUMBU_MONTHLY_WEATHER: { month: string; maxC: number; minC: number }[] = [
@@ -137,11 +137,11 @@ export const EVL_WALK_SEGMENTS_RETURN: EvlWalkSegment[] = [
 export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
   {
     day: 1,
-    route: "Kathmandu → flight → Lukla → Phakding",
+    route: "Kathmandu — flight → Lukla — trek → Phakding",
     mode: "trek",
     overnight: "Phakding",
     elevationNote: "~2,610 m",
-    segmentIds: ["flight-out", "d1a"],
+    segmentIds: ["flight-out", "day1-trek"],
   },
   {
     day: 2,
@@ -149,23 +149,23 @@ export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
     mode: "trek",
     overnight: "Namche Bazaar",
     elevationNote: "~3,440 m",
-    segmentIds: ["d2a", "d2b"],
+    segmentIds: ["day2-trek"],
   },
   {
     day: 3,
-    route: "Acclimatisation around Namche Bazaar",
+    route: "Namche Bazaar — acclimatisation",
     mode: "acclimatisation",
     overnight: "Namche Bazaar",
     elevationNote: "~3,440 m",
-    segmentIds: ["day3-namche"],
+    segmentIds: ["day3-zone"],
   },
   {
     day: 4,
-    route: "Namche Bazaar → Khumjung Village → Syangboche ridge area",
+    route: "Namche Bazaar → Khumjung Village / Syangboche ridge area",
     mode: "trek",
     overnight: "Syangboche ridge area (when confirmed)",
     elevationNote: "~3,880 m",
-    segmentIds: ["d4a", "d4b"],
+    segmentIds: ["day4-trek"],
   },
   {
     day: 5,
@@ -173,7 +173,7 @@ export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
     mode: "trek",
     overnight: "Monjo",
     elevationNote: "~2,835 m",
-    segmentIds: ["d5a", "d5b"],
+    segmentIds: ["day5-descent"],
   },
   {
     day: 6,
@@ -181,11 +181,11 @@ export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
     mode: "trek",
     overnight: "Lukla",
     elevationNote: "~2,860 m",
-    segmentIds: ["d6a", "d6b"],
+    segmentIds: ["day6-trek"],
   },
   {
     day: 7,
-    route: "Flight Lukla → Kathmandu",
+    route: "Lukla — flight → Kathmandu",
     mode: "flight",
     segmentIds: ["flight-in"],
   },
@@ -193,7 +193,7 @@ export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
 
 export function segmentsForDay(day: number): Set<string> {
   const row = EVL_DAY_ROUTE.find((r) => r.day === day);
-  return new Set(row?.segmentIds.filter((id) => !id.startsWith("flight") && id !== "day3-namche") ?? []);
+  return new Set(row?.segmentIds ?? []);
 }
 
 export const EVL_ALL_WALK_SEGMENTS = [...EVL_WALK_SEGMENTS_OUT, ...EVL_WALK_SEGMENTS_RETURN];
