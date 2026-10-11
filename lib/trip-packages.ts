@@ -11,6 +11,7 @@ import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
 import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package";
+import { everestViewPublicPackage } from "./everest-view-public-display";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
@@ -252,7 +253,7 @@ export function packageHeadings(pkg: TrekPackage) {
       pkg.mapBody,
       "The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.",
       evl
-        ? "Walking route: Lukla → Phakding → Namche → Khumjung → Hotel Everest View → Monjo → Lukla. Flights link Kathmandu and Lukla. This map does not include Everest Base Camp."
+        ? "Walking route: Lukla → Phakding → Namche → Khumjung → Syangboche ridge area → Monjo → Lukla. Flights link Kathmandu and Lukla. This map does not include Everest Base Camp."
         : "",
     ),
     weatherNote: pick(
@@ -1144,7 +1145,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       return { ...mergedPkg, status: "draft" as const, featured: false };
     }
     if (def.id === EVEREST_VIEW_PACKAGE_ID) {
-      return {
+      const withSlug = {
         ...mergedPkg,
         hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
         hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
@@ -1164,6 +1165,38 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
           def,
         ).slugHistory,
       };
+      const cmsHasLodgeBrand = /Hotel Everest View/i.test(JSON.stringify(item));
+      const copyMerged = cmsHasLodgeBrand
+        ? {
+            ...withSlug,
+            subtitle: def.subtitle,
+            overview: def.overview,
+            highlights: def.highlights,
+            whyItems: def.whyItems,
+            faqs: def.faqs,
+            tripInfo: def.tripInfo,
+            itinerary: def.itinerary,
+            itineraryIntro: def.itineraryIntro,
+            inclusions: def.inclusions,
+            exclusions: def.exclusions,
+            optionalAddons: def.optionalAddons,
+            includeNote: def.includeNote,
+            beforeItems: def.beforeItems,
+            mapBody: def.mapBody,
+            weatherNote: def.weatherNote,
+            altitudeBody: def.altitudeBody,
+            maxAltitude: def.maxAltitude,
+            accommodationLabel: def.accommodationLabel,
+            metaTitle: def.metaTitle,
+            metaDescription: def.metaDescription,
+            metaKeywords: def.metaKeywords,
+            ogTitle: def.ogTitle,
+            ogDescription: def.ogDescription,
+            galleryAlts: def.galleryAlts,
+            gallery: item.gallery?.some((src) => /manaslu/i.test(src)) ? def.gallery : withSlug.gallery,
+          }
+        : withSlug;
+      return everestViewPublicPackage(copyMerged);
     }
     if (def.id === LANGTANG_PACKAGE_ID) {
       return {
