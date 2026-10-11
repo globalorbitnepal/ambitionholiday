@@ -36,12 +36,12 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
     viewAllLabel: "View All Nepal Packages",
     packages: [
       {
-        title: "Everest Base Camp Trek",
-        days: "14 Days",
+        title: "Everest View Luxury Trek",
+        days: "7 Days",
         difficulty: "Moderate",
-        href: "/everest-base-camp-trek",
+        href: "/everest-view-luxury-trek",
         imageSrc: "/images/luxury/lux-ebc.webp",
-        imageAlt: "Snow peaks of Everest",
+        imageAlt: "Snow peaks of the Everest region",
       },
       {
         title: "Annapurna Base Camp Trek",

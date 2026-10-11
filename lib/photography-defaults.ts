@@ -3,7 +3,7 @@ import { DEFAULT_NEPAL, type NepalContent, type NepalPackage } from "@/lib/nepal
 const CONTACT = "/contact";
 
 const PHOTO_IDS = [
-  "ebc-lux",
+  "everest-view-lux",
   "gokyo-lux",
   "abc-lux",
   "mustang-lux",
@@ -14,10 +14,10 @@ const PHOTO_IDS = [
 ];
 
 const PHOTO_COPY: Record<string, { subtitle: string; description: string }> = {
-  "ebc-lux": {
-    subtitle: "Khumbu light, prayer flags and the icefall",
+  "everest-view-lux": {
+    subtitle: "Namche, Khumjung and Everest panoramas",
     description:
-      "Photograph the Khumbu trail at luxury pace — dawn on the icefall, prayer-flag ridges and Everest’s south wall.",
+      "Photograph the lower Khumbu at luxury pace — Namche mornings, monastery lanes and ridge light when visibility allows.",
   },
   "gokyo-lux": {
     subtitle: "Turquoise lakes and Gokyo Ri sunrise",

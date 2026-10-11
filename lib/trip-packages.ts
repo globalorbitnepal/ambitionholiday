@@ -196,7 +196,6 @@ export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
 export const FULL_PAGE_PACKAGE_IDS = [
-  EBC_PACKAGE_ID,
   ABC_PACKAGE_ID,
   MUSTANG_PACKAGE_ID,
   LANGTANG_PACKAGE_ID,
@@ -283,9 +282,9 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
     catalogId: "ebc-lux",
     slug: "everest-base-camp-trek",
     country: "nepal",
-    status: "published",
-    featured: true,
-    badge: "Most Popular",
+    status: "draft",
+    featured: false,
+    badge: "Retired",
     title: "Everest Base Camp Luxury Trek",
     subtitle: "Follow the Khumbu trail to the base of the world’s highest peak, with private lodge nights.",
     duration: "14 Days / 13 Nights",
@@ -1107,6 +1106,26 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         def,
       ).slugHistory,
     };
+    if (def.id === EBC_PACKAGE_ID) {
+      return { ...mergedPkg, status: "draft" as const, featured: false };
+    }
+    if (def.id === EVEREST_VIEW_PACKAGE_ID) {
+      return {
+        ...mergedPkg,
+        slugHistory: withSlugHistory(
+          {
+            slug: mergedPkg.slug,
+            slugHistory: [
+              ...(mergedPkg.slugHistory || []),
+              "everest-base-camp-trek",
+              "everest-base-camp-luxury-trek",
+              "luxury-everest-base-camp-trek",
+            ],
+          },
+          def,
+        ).slugHistory,
+      };
+    }
     if (def.id === LANGTANG_PACKAGE_ID) {
       return {
         ...mergedPkg,

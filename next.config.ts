@@ -71,23 +71,28 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/everest-base-camp-luxury-trek",
-        destination: "/everest-base-camp-trek",
+        source: "/everest-base-camp-trek",
+        destination: "/everest-view-luxury-trek",
         permanent: true,
       },
       {
-        source: "/packages/everest-base-camp-luxury-trek",
-        destination: "/everest-base-camp-trek",
+        source: "/everest-base-camp-luxury-trek",
+        destination: "/everest-view-luxury-trek",
         permanent: true,
       },
       {
         source: "/packages/everest-base-camp-trek",
-        destination: "/everest-base-camp-trek",
+        destination: "/everest-view-luxury-trek",
+        permanent: true,
+      },
+      {
+        source: "/packages/everest-base-camp-luxury-trek",
+        destination: "/everest-view-luxury-trek",
         permanent: true,
       },
       {
         source: "/luxury-everest-base-camp-trek",
-        destination: "/everest-base-camp-trek",
+        destination: "/everest-view-luxury-trek",
         permanent: true,
       },
       {

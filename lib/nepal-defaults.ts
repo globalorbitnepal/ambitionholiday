@@ -93,16 +93,16 @@ export const DEFAULT_NEPAL: NepalContent = {
       countLabel: "12 Packages",
       packages: [
         pkg(
-          "ebc-lux",
-          "Everest Base Camp Luxury Trek",
-          14,
+          "everest-view-lux",
+          "Everest View Luxury Trek",
+          7,
           "/images/nepal/nepal-trek-ebc.webp",
-          "Khumbu glacier trail toward Everest at dusk",
-          "Private lodges on the Khumbu trail",
+          "Himalayan panorama above the Khumbu valley",
+          "Namche, Khumjung and Hotel Everest View",
           "Moderate",
-          "Follow the Khumbu trail to the base of the world’s highest peak, with private lodge nights.",
+          "Private seven-day Everest region trek — Sherpa culture and panoramic views without Base Camp.",
           "Most Popular",
-          "/everest-base-camp-trek",
+          "/everest-view-luxury-trek",
         ),
         pkg(
           "abc-lux",

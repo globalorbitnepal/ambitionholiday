@@ -345,7 +345,11 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   includeNote: EVEREST_VIEW_INCLUDE_NOTE,
   luklaNote: EVEREST_VIEW_LUKLA_NOTE,
   reviewsWallpaperSrc: "/images/atmosphere/ebc-premium-section.webp",
-  slugHistory: [],
+  slugHistory: [
+    "everest-base-camp-trek",
+    "everest-base-camp-luxury-trek",
+    "luxury-everest-base-camp-trek",
+  ],
   ogTitle: "Everest View Luxury Trek – 7 Days",
   ogDescription:
     "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung Village and Hotel Everest View when confirmed. Request a quote.",
