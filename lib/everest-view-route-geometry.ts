@@ -3,7 +3,7 @@
  * Paths are illustrative — not survey-grade coordinates.
  */
 
-export const EVL_MAP_VIEWBOX = { w: 1080, h: 580 };
+export const EVL_MAP_VIEWBOX = { w: 1100, h: 520 };
 
 export type EvlRouteNode = {
   id: string;
@@ -14,6 +14,7 @@ export type EvlRouteNode = {
   y: number;
   labelX: number;
   labelY: number;
+  labelAnchor: "start" | "middle" | "end";
   isAirport?: boolean;
   isPeak?: boolean;
 };
@@ -23,7 +24,6 @@ export type EvlRoutePath = {
   day: number;
   kind: "flight" | "trek" | "acclimatisation";
   d: string;
-  /** Position for DAY N badge */
   badgeX: number;
   badgeY: number;
 };
@@ -32,23 +32,25 @@ export const EVL_ROUTE_NODES: EvlRouteNode[] = [
   {
     id: "ktm",
     name: "Kathmandu",
-    displayName: "KATHMANDU AIRPORT",
+    displayName: "Kathmandu Airport",
     elevationM: 1400,
-    x: 88,
-    y: 468,
-    labelX: 24,
-    labelY: 498,
+    x: 95,
+    y: 400,
+    labelX: 95,
+    labelY: 458,
+    labelAnchor: "middle",
     isAirport: true,
   },
   {
     id: "lukla",
     name: "Lukla",
-    displayName: "LUKLA AIRPORT",
+    displayName: "Lukla Airport",
     elevationM: 2860,
-    x: 248,
-    y: 392,
-    labelX: 188,
-    labelY: 348,
+    x: 255,
+    y: 345,
+    labelX: 198,
+    labelY: 318,
+    labelAnchor: "end",
     isAirport: true,
   },
   {
@@ -56,125 +58,128 @@ export const EVL_ROUTE_NODES: EvlRouteNode[] = [
     name: "Phakding",
     displayName: "Phakding",
     elevationM: 2610,
-    x: 368,
-    y: 348,
-    labelX: 318,
-    labelY: 302,
+    x: 375,
+    y: 315,
+    labelX: 375,
+    labelY: 288,
+    labelAnchor: "middle",
   },
   {
     id: "monjo",
     name: "Monjo",
     displayName: "Monjo",
     elevationM: 2835,
-    x: 468,
-    y: 312,
-    labelX: 418,
-    labelY: 268,
+    x: 475,
+    y: 285,
+    labelX: 430,
+    labelY: 258,
+    labelAnchor: "end",
   },
   {
     id: "namche",
     name: "Namche Bazaar",
     displayName: "Namche Bazaar",
     elevationM: 3440,
-    x: 578,
-    y: 268,
-    labelX: 498,
+    x: 595,
+    y: 248,
+    labelX: 595,
     labelY: 218,
+    labelAnchor: "middle",
   },
   {
     id: "khumjung",
     name: "Khumjung Village",
     displayName: "Khumjung Village",
     elevationM: 3780,
-    x: 728,
-    y: 188,
-    labelX: 768,
-    labelY: 108,
+    x: 745,
+    y: 168,
+    labelX: 798,
+    labelY: 118,
+    labelAnchor: "start",
   },
   {
     id: "ridge",
     name: "Syangboche ridge area",
     displayName: "Syangboche ridge area",
     elevationM: 3880,
-    x: 898,
-    y: 148,
-    labelX: 928,
-    labelY: 72,
+    x: 905,
+    y: 128,
+    labelX: 958,
+    labelY: 98,
+    labelAnchor: "start",
     isPeak: true,
   },
 ];
 
-/** Separate polylines per day — return descent uses offset geometry (not shared with ascent). */
 export const EVL_ROUTE_PATHS: EvlRoutePath[] = [
   {
     id: "flight-out",
     day: 1,
     kind: "flight",
-    d: "M88,468 Q168,360 248,392",
+    d: "M95,400 Q178,302 255,345",
     badgeX: 168,
-    badgeY: 328,
+    badgeY: 278,
   },
   {
     id: "day1-trek",
     day: 1,
     kind: "trek",
-    d: "M248,392 L368,348",
-    badgeX: 308,
-    badgeY: 358,
+    d: "M255,345 L375,315",
+    badgeX: 312,
+    badgeY: 338,
   },
   {
     id: "day2-trek",
     day: 2,
     kind: "trek",
-    d: "M368,348 L468,312 L578,268",
+    d: "M375,315 L475,285 L595,248",
     badgeX: 518,
-    badgeY: 298,
+    badgeY: 278,
   },
   {
     id: "day3-zone",
     day: 3,
     kind: "acclimatisation",
-    d: "M578,268",
-    badgeX: 578,
+    d: "M595,248",
+    badgeX: 648,
     badgeY: 228,
   },
   {
     id: "day4-trek",
     day: 4,
     kind: "trek",
-    d: "M578,268 L728,188 L898,148",
-    badgeX: 798,
-    badgeY: 168,
+    d: "M595,248 L745,168 L905,128",
+    badgeX: 812,
+    badgeY: 152,
   },
   {
     id: "day5-descent",
     day: 5,
     kind: "trek",
-    d: "M898,148 Q780,198 620,262 L468,312",
-    badgeX: 712,
-    badgeY: 218,
+    d: "M905,128 Q768,188 620,258 L475,285",
+    badgeX: 688,
+    badgeY: 212,
   },
   {
     id: "day6-trek",
     day: 6,
     kind: "trek",
-    d: "M468,312 L378,378 L248,392",
+    d: "M475,285 L388,358 L255,345",
     badgeX: 348,
-    badgeY: 398,
+    badgeY: 368,
   },
   {
     id: "flight-in",
     day: 7,
     kind: "flight",
-    d: "M248,404 Q168,490 88,468",
+    d: "M255,358 Q172,418 95,400",
     badgeX: 168,
-    badgeY: 528,
+    badgeY: 418,
   },
 ];
 
 export function pathIdsForDay(day: number): Set<string> {
-  const ids = EVL_ROUTE_PATHS.filter((p) => p.day === day).map((p) => p.id);
-  return new Set(ids);
+  return new Set(EVL_ROUTE_PATHS.filter((p) => p.day === day).map((p) => p.id));
 }
 
 export function pathIdsForStop(stopId: string): Set<string> {

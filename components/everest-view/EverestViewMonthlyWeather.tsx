@@ -11,12 +11,12 @@ import { cToF } from "@/lib/ebc-charts";
 import { EvlChartShell } from "./EvlChartShell";
 import { EvlDetailCard } from "./EvlDetailCard";
 import { downloadSvgAsPng } from "./evl-chart-utils";
-import { EvlChartFooter, EvlChartHeader, EvlPlotArea, EvlSvgBackground } from "./evl-chart-theme";
+import { EvlChartFooter, EvlChartHeader, EvlLegendStrip, EvlPlotArea, EvlSvgBackground, EVL_LAYOUT } from "./evl-chart-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
 
-const W = 1040;
-const H = 480;
+const W = 1100;
+const H = 500;
 
 export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: string }) {
   const [unit, setUnit] = useState<"c" | "f">("c");
@@ -25,7 +25,7 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
   const gid = useId().replace(/:/g, "");
   const { activeId, onPointerEnter, onPointerLeave, onActivate, dismiss, isPinned } = useEvlInteraction();
 
-  const pad = { l: 58, r: 32, t: 78, b: 64 };
+  const pad = { l: 54, r: 36, t: EVL_LAYOUT.plotTop, b: 78 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const minT = -18;
@@ -47,7 +47,7 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
         maxV: unit === "c" ? m.maxC : cToF(m.maxC),
         minV: unit === "c" ? m.minC : cToF(m.minC),
       })),
-    [unit],
+    [unit, innerW, innerH, pad.t],
   );
 
   const maxLine = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.yMax}`).join(" ");
@@ -72,41 +72,80 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
       </div>
       <div className="evl-map-stage" ref={stageRef}>
         <svg ref={svgRef} className="evl-infographic-svg" viewBox={`0 0 ${W} ${H}`} role="img" data-export-root="true">
+          <title>{EVL_WEATHER_TITLE}</title>
           <EvlSvgBackground gid={gid} w={W} h={H} />
           <EvlChartHeader title={EVL_WEATHER_TITLE} subtitle={EVL_WEATHER_SUBTITLE} w={W} />
-          <EvlPlotArea x={pad.l - 8} y={pad.t - 8} width={innerW + 16} height={innerH + 16} />
+          <EvlPlotArea x={pad.l - 6} y={pad.t - 6} width={innerW + 12} height={innerH + 12} />
+
           {[-15, -5, 5, 15].map((c) => (
             <g key={c}>
               <line x1={pad.l} x2={W - pad.r} y1={yOf(c)} y2={yOf(c)} stroke={EVL_CHART_COLORS.grid} strokeWidth="1" />
-              <text x={pad.l - 8} y={yOf(c) + 4} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">
+              <text x={pad.l - 6} y={yOf(c) + 4} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">
                 {unit === "c" ? c : cToF(c)}{suffix}
               </text>
             </g>
           ))}
-          <path d={maxLine} fill="none" stroke={EVL_CHART_COLORS.flight} strokeWidth="2.8" strokeLinejoin="round" />
-          <path d={minLine} fill="none" stroke={EVL_CHART_COLORS.gold} strokeWidth="2.8" strokeLinejoin="round" />
-          {points.map((p) => (
-            <g key={p.month}>
-              <circle cx={p.x} cy={p.yMax} r="3.5" fill={EVL_CHART_COLORS.flight} />
-              <circle cx={p.x} cy={p.yMin} r="3.5" fill={EVL_CHART_COLORS.gold} />
-              <text x={p.x} y={H - pad.b + 18} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">
-                {p.month}
-              </text>
-              <g className="evl-no-export">
-                <rect x={p.x - 18} y={pad.t} width={36} height={innerH} fill="transparent" className="evl-hit" role="presentation" onMouseEnter={() => onPointerEnter(p.id)} onMouseLeave={onPointerLeave} onClick={() => onActivate(p.id)} />
+
+          <path d={maxLine} fill="none" stroke={EVL_CHART_COLORS.flight} strokeWidth="2.6" strokeLinejoin="round" />
+          <path d={minLine} fill="none" stroke={EVL_CHART_COLORS.gold} strokeWidth="2.6" strokeLinejoin="round" />
+
+          {points.map((p, i) => {
+            const showMaxLabel = i % 3 === 0 || i === points.length - 1;
+            const showMinLabel = i % 3 === 1;
+            return (
+              <g key={p.month}>
+                <circle cx={p.x} cy={p.yMax} r="3.5" fill={EVL_CHART_COLORS.flight} />
+                <circle cx={p.x} cy={p.yMin} r="3.5" fill={EVL_CHART_COLORS.gold} />
+                {showMaxLabel ? (
+                  <text x={p.x} y={p.yMax - 8} textAnchor="middle" fill={EVL_CHART_COLORS.flight} fontSize="8.5" fontWeight="700">
+                    {p.maxV}{suffix}
+                  </text>
+                ) : null}
+                {showMinLabel ? (
+                  <text x={p.x} y={p.yMin + 14} textAnchor="middle" fill={EVL_CHART_COLORS.goldSoft} fontSize="8.5" fontWeight="700">
+                    {p.minV}{suffix}
+                  </text>
+                ) : null}
+                <text x={p.x} y={H - pad.b + 16} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="10.5" fontWeight="600">
+                  {p.month}
+                </text>
+                <g className="evl-no-export">
+                  <rect
+                    x={p.x - 16}
+                    y={pad.t}
+                    width={32}
+                    height={innerH}
+                    fill="transparent"
+                    className="evl-hit"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${p.month} reference temperatures`}
+                    onMouseEnter={() => onPointerEnter(p.id)}
+                    onMouseLeave={onPointerLeave}
+                    onFocus={() => onPointerEnter(p.id)}
+                    onBlur={onPointerLeave}
+                    onClick={() => onActivate(p.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onActivate(p.id);
+                      }
+                    }}
+                  />
+                </g>
               </g>
-            </g>
-          ))}
-          <g transform={`translate(${pad.l}, ${H - 38})`}>
-            <rect width={340} height={44} rx="8" fill={EVL_CHART_COLORS.panel} stroke={EVL_CHART_COLORS.panelStroke} />
-            <line x1={14} y1={16} x2={42} y2={16} stroke={EVL_CHART_COLORS.flight} strokeWidth="3" />
-            <text x={50} y={20} fill={EVL_CHART_COLORS.textMuted} fontSize="10">Blue — Daytime high (indicative)</text>
-            <line x1={14} y1={32} x2={42} y2={32} stroke={EVL_CHART_COLORS.gold} strokeWidth="3" />
-            <text x={50} y={36} fill={EVL_CHART_COLORS.textMuted} fontSize="10">Gold — Night low (indicative)</text>
-          </g>
-          <text x={W - pad.r} y={H - 22} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="9" fontStyle="italic">
-            Khumbu reference only — not a daily forecast.
-          </text>
+            );
+          })}
+
+          <EvlLegendStrip
+            w={W}
+            y={H - 64}
+            items={[
+              { kind: "line-flight", label: "Daytime high (indicative)" },
+              { kind: "line-gold", label: "Night low (indicative)" },
+            ]}
+            note="Khumbu reference only — not a daily forecast."
+          />
           <EvlChartFooter w={W} h={H} />
         </svg>
         {active ? (
@@ -114,14 +153,13 @@ export function EverestViewMonthlyWeather({ sectionTitle }: { sectionTitle?: str
             name={active.month}
             elevationM={0}
             day="Monthly reference"
-            description={`Daytime high: ${active.maxV}${suffix} · Night low: ${active.minV}${suffix}. Indicative Khumbu temperatures for trip planning — not guaranteed conditions on your travel dates.`}
+            description={`Daytime high: ${active.maxV}${suffix} · Night low: ${active.minV}${suffix}. Indicative Khumbu temperatures for trip planning.`}
             pinned={isPinned}
             onClose={dismiss}
             style={cardPos}
           />
         ) : null}
       </div>
-      <p className="evl-map-hint evl-no-export">Tap a month for daytime high and night low. Khumbu reference temperatures only.</p>
     </EvlChartShell>
   );
 }

@@ -12,11 +12,19 @@ import { metresToFeet } from "@/lib/ebc-charts";
 import { EvlChartShell } from "./EvlChartShell";
 import { EvlDetailCard } from "./EvlDetailCard";
 import { downloadSvgAsPng, formatElevationM } from "./evl-chart-utils";
+import {
+  EvlChartFooter,
+  EvlChartHeader,
+  EvlLegendStrip,
+  EvlPlotArea,
+  EvlSvgBackground,
+  EVL_LAYOUT,
+} from "./evl-chart-theme";
 import { useEvlInteraction } from "./useEvlInteraction";
 import { useSvgCardPosition } from "./useSvgCardPosition";
 
 const W = 1100;
-const H = 600;
+const H = 540;
 
 export function EverestViewAltitudeProfile({
   sectionTitle = "Altitude profile — Everest View Luxury Trek",
@@ -31,11 +39,11 @@ export function EverestViewAltitudeProfile({
 
   const minM = 1200;
   const maxM = 4200;
-  const pad = { l: 58, r: 36, t: 88, b: 96 };
+  const pad = { l: 56, r: 40, t: EVL_LAYOUT.plotTop, b: 88 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
-  const flightW = 64;
-  const gap = 24;
+  const flightW = 58;
+  const gap = 20;
   const trekCount = EVL_TREK_ALTITUDE_POINTS.length;
   const trekInnerW = innerW - flightW * 2 - gap * 2;
 
@@ -44,8 +52,10 @@ export function EverestViewAltitudeProfile({
       const x = pad.l + flightW + gap + (i / (trekCount - 1)) * trekInnerW;
       const y = pad.t + (1 - (stop.m - minM) / (maxM - minM)) * innerH;
       const value = unit === "m" ? stop.m : metresToFeet(stop.m);
-      const labelY = H - pad.b + (i % 2 === 0 ? 12 : 28);
-      return { ...stop, x, y, value, labelY };
+      const labelBelow = i % 2 === 0;
+      const labelY = labelBelow ? H - pad.b + 14 : H - pad.b + 30;
+      const elevY = labelBelow ? y - 12 : y - 26;
+      return { ...stop, x, y, value, labelY, elevY, labelBelow };
     });
   }, [innerH, pad.b, pad.l, pad.t, trekCount, trekInnerW, unit]);
 
@@ -56,13 +66,16 @@ export function EverestViewAltitudeProfile({
   const luklaFirst = points[0];
   const luklaLast = points[points.length - 1];
   const returnKtmX = pad.l + innerW - flightW / 2;
-  const yTicks = [1400, 2000, 2600, 3200, 3800, 4200];
+  const yTicks = [1400, 2000, 2600, 3200, 3800];
 
+  const peak = points.find((p) => p.isPeak);
   const activePoint = activeId ? points.find((p) => p.id === activeId) : null;
   const cardPos = useSvgCardPosition(svgRef, stageRef, activePoint?.x ?? 0, activePoint?.y ?? 0, Boolean(activePoint));
 
-  const desc =
-    "Interactive trekking elevation profile. Kathmandu–Lukla transfers are flights and shown separately from the walking profile.";
+  const peakCallout =
+    unit === "m"
+      ? "Syangboche ridge area · approximately 3,880 m"
+      : `Syangboche ridge area · approximately ${metresToFeet(3880).toLocaleString("en-US")} ft`;
 
   return (
     <EvlChartShell
@@ -85,96 +98,63 @@ export function EverestViewAltitudeProfile({
           viewBox={`0 0 ${W} ${H}`}
           role="img"
           aria-labelledby={`${gid}-title`}
-          aria-describedby={`${gid}-desc`}
           data-export-root="true"
         >
           <title id={`${gid}-title`}>{EVL_ALT_TITLE}</title>
-          <desc id={`${gid}-desc`}>{desc}</desc>
-          <defs>
-            <linearGradient id={`${gid}-bg`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={EVL_CHART_COLORS.bgTop} />
-              <stop offset="100%" stopColor={EVL_CHART_COLORS.bgBottom} />
-            </linearGradient>
-            <linearGradient id={`${gid}-gold`} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#a8841f" />
-              <stop offset="100%" stopColor={EVL_CHART_COLORS.goldSoft} />
-            </linearGradient>
-          </defs>
-          <rect width={W} height={H} fill={`url(#${gid}-bg)`} />
-          <text x={W / 2} y={H * 0.44} textAnchor="middle" fill={EVL_CHART_COLORS.text} opacity="0.07" fontSize="48" fontWeight="700" letterSpacing="0.3em" fontFamily="Cormorant Garamond, Georgia, serif">
-            AMBITION HOLIDAYS
-          </text>
-          <text x={W / 2} y={40} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="22" fontWeight="700" letterSpacing="0.06em" fontFamily="Cormorant Garamond, Georgia, serif">
-            {EVL_ALT_TITLE}
-          </text>
-          <text x={W / 2} y={62} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="12" fontWeight="600">
-            {EVL_ALT_SUBTITLE}
-          </text>
+          <EvlSvgBackground gid={gid} w={W} h={H} />
+          <EvlChartHeader title={EVL_ALT_TITLE} subtitle={EVL_ALT_SUBTITLE} w={W} />
+          <EvlPlotArea x={pad.l - 6} y={pad.t - 6} width={innerW + 12} height={innerH + 12} />
 
           {yTicks.map((m) => {
             const y = pad.t + (1 - (m - minM) / (maxM - minM)) * innerH;
-            const label = unit === "m" ? m.toLocaleString("en-US") : metresToFeet(m).toLocaleString("en-US");
+            const label = unit === "m" ? `${m.toLocaleString("en-US")} m` : `${metresToFeet(m).toLocaleString("en-US")} ft`;
             return (
               <g key={m}>
                 <line x1={pad.l} x2={W - pad.r} y1={y} y2={y} stroke={EVL_CHART_COLORS.grid} strokeWidth="1" />
-                <text x={pad.l - 8} y={y + 4} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">{label}</text>
+                <text x={pad.l - 6} y={y + 4} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">{label}</text>
               </g>
             );
           })}
 
-          <rect x={pad.l} y={pad.t} width={flightW + gap} height={innerH} fill="rgba(91,159,212,0.06)" stroke="rgba(91,159,212,0.2)" strokeDasharray="4 4" rx="6" />
-          <rect x={pad.l + innerW - flightW - gap} y={pad.t} width={flightW + gap} height={innerH} fill="rgba(91,159,212,0.06)" stroke="rgba(91,159,212,0.2)" strokeDasharray="4 4" rx="6" />
+          <line x1={ktmX} y1={ktmY} x2={luklaFirst.x - 6} y2={luklaFirst.y} stroke={EVL_CHART_COLORS.flight} strokeWidth="2" strokeDasharray="7 5" />
+          <line x1={luklaLast.x + 6} y1={luklaLast.y} x2={returnKtmX} y2={ktmY} stroke={EVL_CHART_COLORS.flight} strokeWidth="2" strokeDasharray="7 5" />
 
-          <line x1={ktmX} y1={ktmY} x2={luklaFirst.x - 8} y2={luklaFirst.y} stroke={EVL_CHART_COLORS.flight} strokeWidth="2" strokeDasharray="8 6" />
-          <line x1={luklaLast.x + 8} y1={luklaLast.y} x2={returnKtmX} y2={ktmY} stroke={EVL_CHART_COLORS.flight} strokeWidth="2" strokeDasharray="8 6" />
+          <circle cx={ktmX} cy={ktmY} r="5.5" fill={EVL_CHART_COLORS.flight} stroke="#fff" strokeWidth="1.25" />
+          <text x={ktmX} y={ktmY - 12} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="9" fontWeight="600">Kathmandu</text>
+          <circle cx={returnKtmX} cy={ktmY} r="5.5" fill={EVL_CHART_COLORS.flight} stroke="#fff" strokeWidth="1.25" />
+          <text x={returnKtmX} y={ktmY - 12} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="9" fontWeight="600">Kathmandu</text>
 
-          <g>
-            <circle cx={ktmX} cy={ktmY} r="6" fill={EVL_CHART_COLORS.flight} stroke="#fff" strokeWidth="1.5" />
-            <text x={ktmX} y={ktmY - 14} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="10" fontWeight="700">Kathmandu</text>
-            <text x={ktmX} y={ktmY + 22} textAnchor="middle" fill={EVL_CHART_COLORS.flight} fontSize="8" fontWeight="700">FLIGHT</text>
-          </g>
-          <g>
-            <circle cx={returnKtmX} cy={ktmY} r="6" fill={EVL_CHART_COLORS.flight} stroke="#fff" strokeWidth="1.5" />
-            <text x={returnKtmX} y={ktmY - 14} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="10" fontWeight="700">Kathmandu</text>
-            <text x={returnKtmX} y={ktmY + 22} textAnchor="middle" fill={EVL_CHART_COLORS.flight} fontSize="8" fontWeight="700">FLIGHT</text>
-          </g>
+          <path d={line} fill="none" stroke="url(#evl-gold-line)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" opacity={activeId ? 0.45 : 1} />
 
-          <path
-            d={line}
-            fill="none"
-            stroke={`url(#${gid}-gold)`}
-            strokeWidth={activeId ? 2.5 : 3.5}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            opacity={activeId ? 0.5 : 1}
-          />
+          {peak ? (
+            <g>
+              <line x1={peak.x + 10} y1={peak.y - 4} x2={peak.x + 118} y2={peak.y - 36} stroke={EVL_CHART_COLORS.gold} strokeWidth="1" opacity="0.7" />
+              <text x={peak.x + 122} y={peak.y - 32} textAnchor="start" fill={EVL_CHART_COLORS.goldSoft} fontSize="9.5" fontWeight="700">
+                {peakCallout}
+              </text>
+            </g>
+          ) : null}
 
           {points.map((p) => {
             const isActive = activeId === p.id;
-            const elevLabelY = p.isPeak ? p.y - 56 : p.y - 14;
+            const showElev = !p.isPeak;
             return (
               <g key={p.id}>
-                {p.isPeak ? (
-                  <g>
-                    <rect x={p.x - 76} y={p.y - 72} width={152} height={22} rx="6" fill="rgba(201,162,39,0.2)" stroke={EVL_CHART_COLORS.gold} />
-                    <text x={p.x} y={p.y - 57} textAnchor="middle" fill={EVL_CHART_COLORS.goldSoft} fontSize="10" fontWeight="700">
-                      Highest ~{unit === "m" ? "3,880 m" : `${metresToFeet(3880).toLocaleString("en-US")} ft`}
-                    </text>
-                  </g>
+                {showElev ? (
+                  <text x={p.x} y={p.elevY} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="10" fontWeight="700">
+                    {p.value.toLocaleString("en-US")} {unit}
+                  </text>
                 ) : null}
-                <text x={p.x} y={elevLabelY} textAnchor="middle" fill={EVL_CHART_COLORS.text} fontSize="9" fontWeight="700">
-                  {p.value.toLocaleString("en-US")} {unit}
-                </text>
-                <text x={p.x} y={p.labelY} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="9.5" fontWeight="600">
+                <text x={p.x} y={p.labelY} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="10" fontWeight="600">
                   {p.shortLabel || p.label}
                 </text>
-                {isActive ? <circle cx={p.x} cy={p.y} r={14} fill={EVL_CHART_COLORS.gold} opacity="0.22" className="evl-no-export" /> : null}
-                <circle cx={p.x} cy={p.y} r={p.isPeak ? 7 : 5.5} fill={p.isPeak ? EVL_CHART_COLORS.goldSoft : EVL_CHART_COLORS.gold} stroke="#fff" strokeWidth="1.5" />
+                {isActive ? <circle cx={p.x} cy={p.y} r={13} fill={EVL_CHART_COLORS.gold} opacity="0.2" className="evl-no-export" /> : null}
+                <circle cx={p.x} cy={p.y} r={p.isPeak ? 6.5 : 5} fill={p.isPeak ? EVL_CHART_COLORS.goldSoft : EVL_CHART_COLORS.gold} stroke="#fff" strokeWidth="1.5" />
                 <g className="evl-no-export">
                   <circle
                     cx={p.x}
                     cy={p.y}
-                    r={22}
+                    r={20}
                     fill="transparent"
                     className="evl-hit"
                     role="button"
@@ -197,19 +177,16 @@ export function EverestViewAltitudeProfile({
             );
           })}
 
-          <g transform={`translate(${pad.l}, ${H - 44})`}>
-            <rect width={380} height={48} rx="8" fill={EVL_CHART_COLORS.panel} stroke={EVL_CHART_COLORS.panelStroke} />
-            <line x1={14} y1={18} x2={42} y2={18} stroke={EVL_CHART_COLORS.gold} strokeWidth="3" />
-            <text x={50} y={22} fill={EVL_CHART_COLORS.textMuted} fontSize="10">Gold — Trekking route</text>
-            <line x1={14} y1={34} x2={42} y2={34} stroke={EVL_CHART_COLORS.flight} strokeWidth="2" strokeDasharray="6 4" />
-            <text x={50} y={38} fill={EVL_CHART_COLORS.textMuted} fontSize="10">Blue dash — Flight connection</text>
-          </g>
-          <text x={W - pad.r} y={H - 18} textAnchor="end" fill={EVL_CHART_COLORS.textMuted} fontSize="9" fontStyle="italic">
-            Elevations are approximate and provided for trekking reference.
-          </text>
-          <text x={W / 2} y={H - 4} textAnchor="middle" fill={EVL_CHART_COLORS.textMuted} fontSize="9" fontWeight="600" letterSpacing="0.16em">
-            AMBITION HOLIDAYS | NEPAL TREKKING
-          </text>
+          <EvlLegendStrip
+            w={W}
+            y={H - 72}
+            items={[
+              { kind: "line-gold", label: "Trekking elevation" },
+              { kind: "line-flight", label: "Flight connection" },
+            ]}
+            note="Elevations are approximate trekking reference only."
+          />
+          <EvlChartFooter w={W} h={H} />
         </svg>
 
         {activePoint ? (
@@ -224,7 +201,6 @@ export function EverestViewAltitudeProfile({
           />
         ) : null}
       </div>
-      <p className="evl-map-hint evl-no-export">Tap or click a point for elevation and day details.</p>
     </EvlChartShell>
   );
 }

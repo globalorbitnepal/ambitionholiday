@@ -1,11 +1,11 @@
 "use client";
 
-import { EVL_DAY_ROUTE, type EvlDayRouteRow } from "@/lib/everest-view-charts";
+import { EVL_DAY_NAV, EVL_DAY_ROUTE, type EvlDayRouteRow } from "@/lib/everest-view-charts";
 
-const MODE_LABEL: Record<EvlDayRouteRow["mode"], string> = {
-  flight: "Flight",
-  trek: "Trekking",
-  acclimatisation: "Acclimatisation",
+const MODE_SHORT: Record<EvlDayRouteRow["mode"], string> = {
+  flight: "✈",
+  trek: "Trek",
+  acclimatisation: "Acclim.",
 };
 
 type EvlDayRoutePanelProps = {
@@ -14,36 +14,38 @@ type EvlDayRoutePanelProps = {
 };
 
 export function EvlDayRoutePanel({ activeDay, onSelectDay }: EvlDayRoutePanelProps) {
+  const detail = activeDay ? EVL_DAY_ROUTE.find((r) => r.day === activeDay) : null;
+
   return (
-    <div className="evl-day-route-panel" aria-label="Day-by-day route">
-      <p className="evl-day-route-panel-title">Seven-day route strip</p>
-      <div className="evl-day-route-strip">
-      <ul className="evl-day-route-list">
-        {EVL_DAY_ROUTE.map((row) => {
+    <div className="evl-day-nav" aria-label="Seven-day route navigator">
+      <ul className="evl-day-nav-list">
+        {EVL_DAY_NAV.map((row) => {
           const isActive = activeDay === row.day;
           return (
             <li key={row.day}>
               <button
                 type="button"
-                className={`evl-day-route-card${isActive ? " is-active" : ""}`}
+                className={`evl-day-nav-item${isActive ? " is-active" : ""}`}
                 onClick={() => onSelectDay?.(row.day)}
                 aria-pressed={isActive}
               >
-                <div className="evl-day-route-card-head">
-                  <span className="evl-day-route-num-lg">DAY {row.day}</span>
-                  <span className={`evl-day-route-mode evl-day-route-mode--${row.mode}`}>{MODE_LABEL[row.mode]}</span>
-                </div>
-                <p className="evl-day-route-seq">{row.route}</p>
-                <div className="evl-day-route-meta">
-                  {row.elevationNote ? <span>{row.elevationNote}</span> : null}
-                  {row.overnight ? <span>Overnight: {row.overnight}</span> : null}
-                </div>
+                <span className="evl-day-nav-num">{row.day}</span>
+                <span className="evl-day-nav-body">
+                  <span className="evl-day-nav-mode">{MODE_SHORT[row.mode]}</span>
+                  <span className="evl-day-nav-heading">{row.heading}</span>
+                </span>
               </button>
             </li>
           );
         })}
       </ul>
-      </div>
+      {detail ? (
+        <div className="evl-day-nav-detail" role="status">
+          <strong>Day {detail.day}</strong>
+          <span>{detail.route}</span>
+          {detail.overnight ? <span className="evl-day-nav-detail-meta">Overnight: {detail.overnight}</span> : null}
+        </div>
+      ) : null}
     </div>
   );
 }

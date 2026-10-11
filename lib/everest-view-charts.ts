@@ -134,6 +134,17 @@ export const EVL_WALK_SEGMENTS_RETURN: EvlWalkSegment[] = [
   { id: "d6b", from: "phakding", to: "lukla", day: 6, cx: 288, cy: 338 },
 ];
 
+/** Compact copy for the route navigator (full route text remains in EVL_DAY_ROUTE). */
+export const EVL_DAY_NAV: { day: number; heading: string; mode: EvlDayRouteRow["mode"] }[] = [
+  { day: 1, heading: "Kathmandu ✈ Lukla · Trek to Phakding", mode: "trek" },
+  { day: 2, heading: "Phakding · Monjo · Namche Bazaar", mode: "trek" },
+  { day: 3, heading: "Namche Bazaar · Acclimatisation", mode: "acclimatisation" },
+  { day: 4, heading: "Namche · Khumjung · Syangboche ridge", mode: "trek" },
+  { day: 5, heading: "Syangboche ridge · Upper Namche · Monjo", mode: "trek" },
+  { day: 6, heading: "Monjo · Phakding · Lukla", mode: "trek" },
+  { day: 7, heading: "Lukla ✈ Kathmandu", mode: "flight" },
+];
+
 export const EVL_DAY_ROUTE: EvlDayRouteRow[] = [
   {
     day: 1,
