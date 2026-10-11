@@ -5415,6 +5415,146 @@ body.nav-mega-open .hero-copy {
   margin-bottom: 0.35rem;
 }
 
+.evl-map-stage {
+  position: relative;
+  width: 100%;
+}
+
+.evl-map-canvas {
+  min-height: 16rem;
+}
+
+.evl-hit {
+  cursor: pointer;
+}
+
+.evl-detail-card {
+  position: absolute;
+  z-index: 4;
+  width: min(17.5rem, calc(100% - 1rem));
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.65rem;
+  background: rgba(10, 16, 26, 0.96);
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+
+.evl-detail-card.is-pinned {
+  border-color: rgba(232, 212, 138, 0.75);
+}
+
+.evl-detail-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.evl-detail-card-day {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e8d48a;
+}
+
+.evl-detail-card-title {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f2f6fa;
+}
+
+.evl-detail-card-elev {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9eb0c4;
+}
+
+.evl-detail-card-copy {
+  margin: 0.55rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #b8c8d8;
+}
+
+.evl-detail-card-close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f6fa;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.evl-itinerary-grid {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 162, 39, 0.22);
+}
+
+.evl-itinerary-grid-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e8d48a;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.evl-itinerary-grid ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+@media (min-width: 768px) {
+  .evl-itinerary-grid ul {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.25rem;
+  }
+}
+
+.evl-itinerary-grid li {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #9eb0c4;
+}
+
+.evl-itinerary-grid li span {
+  display: inline-block;
+  min-width: 3.1rem;
+  margin-right: 0.35rem;
+  font-weight: 700;
+  color: #c9a227;
+}
+
+.evl-map-hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.75rem;
+  color: #7a8fa6;
+}
+
+.evl-download-err {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #f87171;
+}
+
+.evl-chart-footer {
+  margin-top: 0.25rem;
+}
+
 .lux-graph-legend {
   display: flex;
   flex-wrap: wrap;
