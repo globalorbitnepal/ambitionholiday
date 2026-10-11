@@ -348,7 +348,7 @@ jobs:
             fi
 
             echo "Local HTTP check (key pages)..."
-            for page in /everest-base-camp-trek /nepal /bhutan /tibet /himalayan-multi-countries-tour /journal /contact /company; do
+            for page in /everest-view-luxury-trek /nepal /bhutan /tibet /himalayan-multi-countries-tour /journal /contact /company; do
               code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${APP_PORT}${page}" || true)"
               echo "  ${page} -> ${code}"
               if [ "${code}" != "200" ]; then
@@ -356,6 +356,12 @@ jobs:
                 exit 1
               fi
             done
+            ebc_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${APP_PORT}/everest-base-camp-trek" || true)"
+            echo "  /everest-base-camp-trek -> ${ebc_code} (expect 308 to Everest View)"
+            if [ "${ebc_code}" != "308" ] && [ "${ebc_code}" != "301" ] && [ "${ebc_code}" != "307" ]; then
+              echo "ERROR: /everest-base-camp-trek should redirect after deploy (got ${ebc_code})"
+              exit 1
+            fi
 
             echo "Orbit configuration check..."
             ORBIT_HEALTH="$(curl -fsS --max-time 10 "http://127.0.0.1:${APP_PORT}/api/orbit/health" || echo '{"configured":false}')"
