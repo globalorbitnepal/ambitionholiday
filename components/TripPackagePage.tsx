@@ -104,12 +104,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
       ? pkg.hotelEverestViewStatus === "confirmed"
         ? pkg.hotelEverestViewPublicNote ||
-          "Hotel Everest View overnight is confirmed on your booking documents."
+          "Your Day 4 ridge-area lodge night is confirmed on your booking documents."
         : pkg.hotelEverestViewStatus === "unavailable"
           ? pkg.hotelEverestViewPublicNote ||
-            "Hotel Everest View is not currently available for this departure. Your coordinator will confirm any alternative before you travel."
+            "The planned ridge-area lodge is not available for this departure. Your coordinator will confirm any alternative before you travel."
           : pkg.hotelEverestViewPublicNote ||
-            "Hotel Everest View overnight is subject to confirmed availability and will be stated on your booking confirmation."
+            "The Syangboche ridge-area overnight is subject to confirmed lodge availability and will be stated on your booking confirmation."
       : "";
   const langtangCharts = isLangtangPackage(pkg);
   const mustangCharts = isMustangPackage(pkg);

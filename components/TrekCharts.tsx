@@ -448,8 +448,10 @@ function EverestViewRouteMap({ title }: { title: string }) {
   const gid = useId().replace(/:/g, "");
   const byId = Object.fromEntries(EVEREST_VIEW_MAP_STOPS.map((s) => [s.id, s]));
   const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
-  const trekOut = ["lukla", "phakding", "namche", "khumjung", "hev"].map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`).join(" ");
-  const trekReturn = `M${pt("hev")} L${pt("namche")} L${pt("monjo")} L${pt("lukla")}`;
+  const trekOut = ["lukla", "phakding", "namche", "khumjung", "ridge"]
+    .map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`)
+    .join(" ");
+  const trekReturn = `M${pt("ridge")} L${pt("namche")} L${pt("monjo")} L${pt("lukla")}`;
 
   return (
     <div className="lux-graph">
@@ -484,8 +486,8 @@ function EverestViewRouteMap({ title }: { title: string }) {
             <circle
               cx={stop.x * 10}
               cy={stop.y * 6}
-              r={stop.id === "hev" ? 7 : stop.id === "ktm" ? 6 : 5.5}
-              fill={stop.id === "hev" ? "#1a4d8c" : stop.id === "ktm" ? "#6b7280" : "#c9a227"}
+              r={stop.id === "ridge" ? 7 : stop.id === "ktm" ? 6 : 5.5}
+              fill={stop.id === "ridge" ? "#1a4d8c" : stop.id === "ktm" ? "#6b7280" : "#c9a227"}
               stroke="#fff"
               strokeWidth="2"
             />

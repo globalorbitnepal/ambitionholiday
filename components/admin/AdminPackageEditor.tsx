@@ -856,8 +856,10 @@ export default function AdminPackageEditor() {
           </label>
           {isEverestViewPackage(pkg) ? (
             <div className="admin-subcard" style={{ marginTop: "1.25rem" }}>
-              <h3 className="admin-h3">Hotel Everest View overnight (Day 4)</h3>
-              <p className="admin-muted">Controls how the key lodge night is described on the public page. Admin note is never shown to visitors.</p>
+              <h3 className="admin-h3">Day 4 ridge-area lodge (Everest View trek)</h3>
+              <p className="admin-muted">
+                Controls how the Syangboche ridge / panorama lodge night is described on the public page. Do not use a specific property name in the public note. Admin note is never shown to visitors.
+              </p>
               <label className="admin-field">
                 <span>Confirmation status</span>
                 <select

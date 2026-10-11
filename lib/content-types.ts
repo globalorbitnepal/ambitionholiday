@@ -1246,7 +1246,7 @@ export const DEFAULT_CONTENT: SiteContent = {
           {
             id: "offer-everest",
             title: "Everest View Luxury Trek",
-            subtitle: "Namche, Khumjung and Hotel Everest View",
+            subtitle: "Namche, Khumjung & ridge panoramas",
             meta: "7 Days",
             href: "/everest-view-luxury-trek",
             imageSrc: "/images/explore-hub/hub-offer-everest.webp",
@@ -1313,7 +1313,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         days: 7,
         maxAltitude: "3,880 m",
         difficulty: "Moderate",
-        description: "Namche Bazaar, Khumjung Village and Hotel Everest View — without trekking to Base Camp.",
+        description: "Namche Bazaar, Khumjung Village and Syangboche ridge panoramas — without trekking to Base Camp.",
         href: "/everest-view-luxury-trek",
         imageSrc: "/images/journeys/j-ebc.webp",
         imageAlt: "Trekker watching Himalayan peaks in the Everest region",

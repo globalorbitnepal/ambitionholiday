@@ -98,7 +98,7 @@ export const DEFAULT_NEPAL: NepalContent = {
           7,
           "/images/nepal/nepal-trek-ebc.webp",
           "Himalayan panorama above the Khumbu valley",
-          "Namche, Khumjung and Hotel Everest View",
+          "Namche, Khumjung & Syangboche ridge",
           "Moderate",
           "Private seven-day Everest region trek — Sherpa culture and panoramic views without Base Camp.",
           "Most Popular",

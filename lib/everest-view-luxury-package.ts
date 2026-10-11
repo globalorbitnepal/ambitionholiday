@@ -22,30 +22,36 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   badge: "PRIVATE EVEREST REGION EXPERIENCE",
   title: "Everest View Luxury Trek – 7 Days",
   subtitle:
-    "Experience the Everest Region, Sherpa Culture and Spectacular Himalayan Views — a private seven-day journey to Namche Bazaar, Khumjung Village and Hotel Everest View, without trekking to Everest Base Camp.",
+    "Experience the Everest Region, Sherpa Culture and Spectacular Himalayan Views — a private seven-day journey to Namche Bazaar, Khumjung Village and Syangboche ridge area, without trekking to Everest Base Camp.",
   duration: "7 Days / 6 Nights",
   days: 7,
   difficulty: "Moderate",
   destination: "Nepal · Everest Region",
-  maxAltitude: "Hotel Everest View area — approx. 3,880 m",
+  maxAltitude: "Syangboche ridge area — approx. 3,880 m",
   maxAltitudeFt: "12,730 ft",
   countryLabel: "Nepal",
-  activityLabel: "Private guided trek",
-  accommodationLabel: "Mountain lodges + Hotel Everest View (when confirmed)",
+  activityLabel: "Private Luxury Trek",
+  accommodationLabel: "Mountain lodges + selected ridge-area lodge (when confirmed)",
   mealsLabel: "As per confirmed itinerary",
   startEndLabel: "Kathmandu",
   groupSize: "Private departures",
   bestSeason: "March–May · September–November",
-  priceUsd: 0,
-  groupPrices: [],
+  priceUsd: 1899,
+  groupPrices: [
+    { id: "p1", label: "1 Pax (solo)", priceUsd: 2999 },
+    { id: "p2", label: "2–3 Pax", priceUsd: 2499 },
+    { id: "p3", label: "4–5 Pax", priceUsd: 2299 },
+    { id: "p4", label: "6–9 Pax", priceUsd: 2099 },
+    { id: "p5", label: "10–14 Pax", priceUsd: 1899 },
+  ],
   overview:
-    "The Everest View Luxury Trek is designed for travellers who want the atmosphere of the Khumbu — Lukla flights, Sherpa villages, Namche Bazaar and panoramic viewpoints — within a shorter, private itinerary.\n\nOver six nights you walk the lower Everest trail: Phakding, two nights in Namche for acclimatization, Khumjung Village and a planned stay at Hotel Everest View when availability is confirmed. The route then descends through Monjo and Lukla before the return flight to Kathmandu.\n\nThis is not an Everest Base Camp trek. You do not walk to Gorak Shep, Kala Patthar, Dingboche or Lobuche. Mountain views depend on season, weather and visibility. Luxury here means private guiding, thoughtful pacing, selected lodges and honest communication about what remote Khumbu accommodation can provide — not five-star resorts at every stop.",
+    "The Everest View Luxury Trek is designed for travellers who want the atmosphere of the Khumbu — Lukla flights, Sherpa villages, Namche Bazaar and panoramic viewpoints — within a shorter, private itinerary.\n\nOver six nights you walk the lower Everest trail: Phakding, two nights in Namche for acclimatization, Khumjung Village and a planned night in the Syangboche ridge panorama area when lodge availability is confirmed. The route then descends through Monjo and Lukla before the return flight to Kathmandu.\n\nThis is not an Everest Base Camp trek. You do not walk to Gorak Shep, Kala Patthar, Dingboche or Lobuche. Mountain views depend on season, weather and visibility. Luxury here means private guiding, thoughtful pacing, selected lodges and honest communication about what remote Khumbu accommodation can provide — not five-star resorts at every stop.",
   highlights: [
     "Scenic flight into the Everest region via Lukla, subject to weather and operational routing.",
     "Namche Bazaar — Sherpa culture, mountain-town atmosphere and acclimatization time.",
     "Dedicated acclimatization day in Namche with flexible local exploration.",
     "Khumjung Village and its monastery when open and accessible.",
-    "Planned overnight at Hotel Everest View when property and rooms are confirmed.",
+    "Planned overnight in the Syangboche ridge panorama area when lodge rooms are confirmed.",
     "Himalayan panoramas when visibility allows — Everest and neighbouring peaks are never guaranteed daily.",
     "Local culture, monasteries and life in high-altitude communities along the lower Khumbu trail.",
     "Private guided experience with a pace tailored to your group.",
@@ -55,9 +61,9 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   gallery: [
     HERO,
     "/images/nepal/nepal-trek-ebc.webp",
-    "/images/journeys/j-manaslu.webp",
+    "/images/journeys/j-ebc.webp",
     "/images/nepal/nepal-cover.webp",
-    "/images/journeys/j-heli.webp",
+    "/images/journeys/j-gokyo.webp",
   ],
   tripGalleryTitle: "Everest View Trek Gallery",
   galleryAlts: [
@@ -69,9 +75,9 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   ],
   hotelEverestViewStatus: "pending",
   hotelEverestViewAdminNote:
-    "Confirm property, room category, date and rate with Hotel Everest View before marking confirmed on the public page.",
+    "Confirm Day 4 ridge-area lodge: room category, date and rate before marking confirmed on the public page (do not publish a property name).",
   hotelEverestViewPublicNote:
-    "Overnight at Hotel Everest View is subject to confirmed availability and will be stated on your booking confirmation.",
+    "Overnight in the Syangboche ridge panorama area is subject to confirmed lodge availability and will be stated on your booking confirmation.",
   heroSrc: HERO,
   heroAlt: "Trekker watching sunrise over Himalayan peaks near the Everest region",
   altitudeChartM: "",
@@ -90,7 +96,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   faqs: [
     {
       q: "What is the Everest View Luxury Trek?",
-      a: "A private seven-day, six-night itinerary in the lower Khumbu — Lukla, Phakding, Namche Bazaar, Khumjung and Hotel Everest View when confirmed — without continuing to Everest Base Camp.",
+      a: "A private seven-day, six-night itinerary in the lower Khumbu — Lukla, Phakding, Namche Bazaar, Khumjung and Syangboche ridge area when confirmed — without continuing to Everest Base Camp.",
     },
     {
       q: "How many days does the trek take?",
@@ -102,23 +108,23 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "How difficult is the Everest View Trek?",
-      a: "Moderate. Expect several hours of walking on stone steps and valley trails, with a significant climb into Namche and a higher overnight near Hotel Everest View. No technical climbing.",
+      a: "Moderate. Expect several hours of walking on stone steps and valley trails, with a significant climb into Namche and a higher overnight near Syangboche ridge area. No technical climbing.",
     },
     {
       q: "What is the highest altitude on this itinerary?",
-      a: "The planned overnight at Hotel Everest View is approximately 3,880 m, subject to verification of the property location. Khumjung Village is approximately 3,780 m.",
+      a: "The planned ridge-area overnight is approximately 3,880 m at the Syangboche panorama viewpoint area. Khumjung Village is approximately 3,780 m.",
     },
     {
       q: "Is acclimatization included?",
-      a: "Yes — Day 3 is a dedicated acclimatization and exploration day in Namche Bazaar before climbing to Khumjung and Hotel Everest View.",
+      a: "Yes — Day 3 is a dedicated acclimatization and exploration day in Namche Bazaar before climbing to Khumjung and Syangboche ridge area.",
     },
     {
       q: "Will I definitely see Mount Everest?",
       a: "No. Views depend on weather, cloud and season. Clear panoramas are possible but never guaranteed on any day.",
     },
     {
-      q: "Is an overnight stay at Hotel Everest View guaranteed?",
-      a: "Not until the property, date and room category are confirmed in writing at booking. If unavailable, alternatives are agreed with you — not substituted silently.",
+      q: "Is the Day 4 ridge-area lodge night guaranteed?",
+      a: "Not until the lodge, date and room category are confirmed in writing at booking. If unavailable, alternatives are agreed with you — not substituted silently.",
     },
     {
       q: "Are flights to Lukla included?",
@@ -134,7 +140,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "What accommodation is provided during the trek?",
-      a: "Mountain lodges on most nights and Hotel Everest View on Night 4 when confirmed. Standards vary in remote areas — private bathrooms and heating are not guaranteed every night.",
+      a: "Mountain lodges on most nights and Syangboche ridge area on Night 4 when confirmed. Standards vary in remote areas — private bathrooms and heating are not guaranteed every night.",
     },
     {
       q: "Are meals included?",
@@ -158,7 +164,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "Does this trek reach Everest Base Camp?",
-      a: "No. The itinerary stops in the Namche–Khumjung–Hotel Everest View area and returns via Monjo and Lukla. It does not visit Base Camp, Kala Patthar, Gorak Shep, Dingboche or Lobuche.",
+      a: "No. The itinerary stops in the Namche–Khumjung–Syangboche ridge area and returns via Monjo and Lukla. It does not visit Base Camp, Kala Patthar, Gorak Shep, Dingboche or Lobuche.",
     },
     {
       q: "What fitness level is recommended?",
@@ -166,13 +172,13 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "How can I request a quote or customise the trip?",
-      a: "Use the enquiry form on this page or contact Ambition Holidays with your preferred dates, traveller count and any Hotel Everest View preferences.",
+      a: "Use the enquiry form on this page or contact Ambition Holidays with your preferred dates, traveller count and any Syangboche ridge area preferences.",
     },
   ],
   whyItems: [
     {
       title: "Lower Khumbu specialists",
-      body: "Guides who know Namche pacing, Khumjung side trails and when the ridge to Hotel Everest View is sensible — without pushing you toward Base Camp.",
+      body: "Guides who know Namche pacing, Khumjung side trails and when the Syangboche ridge viewpoint is sensible — without pushing you toward Base Camp.",
     },
     {
       title: "Honest luxury",
@@ -180,15 +186,15 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       title: "Acclimatization built in",
-      body: "Two nights in Namche before the higher Hotel Everest View night — time for your body, not just photos.",
+      body: "Two nights in Namche before the higher Syangboche ridge area night — time for your body, not just photos.",
     },
     {
       title: "Flight coordination",
       body: "We track Lukla operations, Ramechhap transfers when required, and explain delay realities before you fly.",
     },
     {
-      title: "Hotel Everest View transparency",
-      body: "The stay is highlighted on the itinerary but confirmed only when the property and rooms are secured.",
+      title: "Ridge lodge transparency",
+      body: "The panorama-area night is highlighted on the itinerary but confirmed only when lodge rooms are secured.",
     },
     {
       title: "Private pace",
@@ -198,7 +204,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   weatherBody:
     "Spring (March–May) and autumn (September–November) are the most popular Everest-region trekking seasons — generally stable walking weather, though cloud and wind still vary. Winter brings cold nights in Namche and possible snow on the Khumjung ridge. Monsoon (June–August) raises humidity, cloud and flight-cancellation risk. Khumbu reference temperatures on this page are indicative; the day you walk can be colder or clearer than averages.",
   altitudeBody:
-    "You sleep twice at Namche (~3,440 m) before the Hotel Everest View night (~3,880 m). Drink steadily, eat regularly and tell your guide if headache, nausea or dizziness persist — descent is the correct response to serious altitude illness, not pushing for a viewpoint.",
+    "You sleep twice at Namche (~3,440 m) before the Syangboche ridge area night (~3,880 m). Drink steadily, eat regularly and tell your guide if headache, nausea or dizziness persist — descent is the correct response to serious altitude illness, not pushing for a viewpoint.",
   packingItems: [],
   packingIntro:
     "Pack for warm valley afternoons and cold Namche mornings in the same week. Layers, waterproof shell and broken-in boots matter more than fashion.",
@@ -247,7 +253,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     "Helicopter charter from the Khumbu is available for emergencies or private returns when weather permits — priced per aircraft, not included in the standard walking quote.",
   beforeItems: [
     "Travel insurance with helicopter evacuation cover is mandatory.",
-    "Hotel Everest View requires advance confirmation — do not assume availability from the website text alone.",
+    "The ridge-area lodge night requires advance confirmation — do not assume availability from the website text alone.",
     "Rooms are typically twin-sharing unless a single supplement is confirmed where lodges allow.",
     "Tips for guide and porters are customary and entirely your choice.",
   ],
@@ -261,14 +267,14 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   whyTitle: "Why choose this Everest View itinerary?",
   khumbuTitle: "The lower Khumbu you walk",
   mapBody:
-    "Walking route: Lukla → Phakding → Namche Bazaar → Khumjung Village → Hotel Everest View → Monjo → Lukla. Dashed lines indicate flights between Kathmandu and Lukla. This map does not include Everest Base Camp, Gorak Shep, Kala Patthar, Dingboche or Lobuche.",
+    "Walking route: Lukla → Phakding → Namche Bazaar → Khumjung Village → Syangboche ridge area → Monjo → Lukla. Dashed lines indicate flights between Kathmandu and Lukla. This map does not include Everest Base Camp, Gorak Shep, Kala Patthar, Dingboche or Lobuche.",
   weatherNote:
-    "Month-by-month Khumbu reference for Namche and the lower trail. Hotel Everest View can be windier and colder than Namche on the same calendar day.",
+    "Month-by-month Khumbu reference for Namche and the lower trail. Syangboche ridge area can be windier and colder than Namche on the same calendar day.",
   metaTitle: "Everest View Luxury Trek 7 Days | Namche & Khumjung",
   metaDescription:
-    "Explore Nepal's Everest View Luxury Trek in 7 days. Discover Namche Bazaar, Khumjung Village, Sherpa culture and Hotel Everest View. Request a private trek quote.",
+    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas without Base Camp. Request a quote.",
   metaKeywords:
-    "Everest View Luxury Trek, Everest View Trek Nepal, 7 Days Everest View Trek, Namche Bazaar Trek, Khumjung Village Trek, Hotel Everest View Trek, Everest Panorama Trek, private Everest trek",
+    "Everest View Luxury Trek, Everest View Trek Nepal, 7 Days Everest View Trek, Namche Bazaar Trek, Khumjung Village Trek, Everest panorama trek, private Everest trek",
   focusKeyword: "Everest View Luxury Trek",
   tripadvisorLabel: "Excellent",
   tripadvisorScore: "5.0",
@@ -301,7 +307,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-dest",
       title: "Destination",
-      body: "Everest Region, Nepal — Lukla, Phakding, Namche Bazaar, Khumjung, Hotel Everest View (when confirmed), Monjo.",
+      body: "Everest Region, Nepal — Lukla, Phakding, Namche Bazaar, Khumjung, Syangboche ridge area (when confirmed), Monjo.",
     },
     {
       id: "ti-style",
@@ -316,12 +322,12 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-high",
       title: "Highest planned overnight",
-      body: "Hotel Everest View area — approximately 3,880 m, subject to property verification and confirmation.",
+      body: "Syangboche ridge area — approximately 3,880 m, subject to property verification and confirmation.",
     },
     {
       id: "ti-acc",
       title: "Accommodation",
-      body: "Nights 1–3 & 5–6: mountain lodges. Night 4: Hotel Everest View when confirmed. Standards vary in remote Khumbu.",
+      body: "Nights 1–3 & 5–6: mountain lodges. Night 4: Syangboche ridge area when confirmed. Standards vary in remote Khumbu.",
     },
     {
       id: "ti-meals",
@@ -355,6 +361,6 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   ],
   ogTitle: "Everest View Luxury Trek – 7 Days",
   ogDescription:
-    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung Village and Hotel Everest View when confirmed. Request a quote.",
+    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas when lodge nights are confirmed. Request a quote.",
   ogImageSrc: HERO,
 };

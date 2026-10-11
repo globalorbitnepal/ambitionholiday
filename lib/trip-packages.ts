@@ -252,7 +252,7 @@ export function packageHeadings(pkg: TrekPackage) {
       pkg.mapBody,
       "The luxury walking line from Lukla to Everest Base Camp, with Kala Patthar marked for sunrise.",
       evl
-        ? "Walking route: Lukla → Phakding → Namche → Khumjung → Hotel Everest View → Monjo → Lukla. Flights link Kathmandu and Lukla. This map does not include Everest Base Camp."
+        ? "Walking route: Lukla → Phakding → Namche → Khumjung → Syangboche ridge area → Monjo → Lukla. Flights link Kathmandu and Lukla. This map does not include Everest Base Camp."
         : "",
     ),
     weatherNote: pick(
@@ -1146,6 +1146,8 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_VIEW_PACKAGE_ID) {
       return {
         ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
         hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
         hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
         hotelEverestViewPublicNote: item.hotelEverestViewPublicNote ?? def.hotelEverestViewPublicNote,
