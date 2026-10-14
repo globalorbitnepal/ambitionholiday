@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
-import { enrichCatalogCard, FULL_PAGE_PACKAGE_IDS, type TrekPackage } from "@/lib/trip-packages";
+import {
+  enrichCatalogCard,
+  NEPAL_FLAGSHIP_TREK_PACKAGE_IDS,
+  type TrekPackage,
+} from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
   try {
@@ -61,7 +65,7 @@ export default function AdminDashboardHome() {
     return Number.isFinite(t) && Date.now() - t < 7 * 86400000;
   }).length;
 
-  const fullEditPackages = FULL_PAGE_PACKAGE_IDS.map((id) => tripPackages.find((p) => p.id === id)).filter(
+  const fullEditPackages = NEPAL_FLAGSHIP_TREK_PACKAGE_IDS.map((id) => tripPackages.find((p) => p.id === id)).filter(
     (p): p is TrekPackage => Boolean(p),
   );
 
@@ -171,10 +175,12 @@ export default function AdminDashboardHome() {
 
           <section className="admin-card">
             <div className="admin-card-head">
-              <h2>Full-edit package pages</h2>
+              <h2>Nepal flagship trek pages</h2>
               <Link className="admin-text-link" href="/admin/packages">All packages</Link>
             </div>
-            <p className="admin-muted">Same layout as Everest Base Camp — edit price, group discounts, itinerary, map, charts, gallery and SEO.</p>
+            <p className="admin-muted">
+              Everest View Luxury Trek and Everest Panorama Trek — full 20-tab editor (same as the live Nepal catalog).
+            </p>
             <div className="admin-pkg-grid admin-pkg-grid--dash">
               {fullEditPackages.map((pkg) => (
                 <article key={pkg.id} className="admin-pkg admin-pkg--featured">

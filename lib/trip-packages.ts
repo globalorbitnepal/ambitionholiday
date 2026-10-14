@@ -237,6 +237,12 @@ export const FULL_PAGE_PACKAGE_IDS = [
   EVEREST_PANORAMA_PACKAGE_ID,
 ] as const;
 
+/** Nepal destination page — only these published trek pages are shown in Luxury Trekking. */
+export const NEPAL_FLAGSHIP_TREK_PACKAGE_IDS = [
+  EVEREST_VIEW_PACKAGE_ID,
+  EVEREST_PANORAMA_PACKAGE_ID,
+] as const;
+
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
 export function isEbcPackage(pkg: Pick<TrekPackage, "id">) {
   return pkg.id === EBC_PACKAGE_ID;
@@ -882,6 +888,7 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   "ebc-lux": EVEREST_VIEW_PACKAGE_ID,
   ebc: EVEREST_VIEW_PACKAGE_ID,
   "trip-ebc-lux": EVEREST_VIEW_PACKAGE_ID,
+  "everest-panorama": EVEREST_PANORAMA_PACKAGE_ID,
 };
 
 export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
@@ -894,6 +901,10 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   }
   if (pkg.id === EVEREST_VIEW_PACKAGE_ID || pkg.catalogId === "everest-view-lux") {
     for (const legacy of Object.keys(CATALOG_PACKAGE_ALIASES)) keys.add(legacy);
+  }
+  if (pkg.id === EVEREST_PANORAMA_PACKAGE_ID || pkg.catalogId === "everest-panorama") {
+    keys.add("ept-pan");
+    keys.add("everest-panorama");
   }
   return keys;
 }

@@ -34,7 +34,7 @@ const GRID_JOURNEY_IDS = ["everest-view", "abc", "mustang", "manaslu", "langtang
 function coerceDestinationCatalog(
   savedRaw: Partial<NepalContent> | undefined,
   defaults: NepalContent,
-  options?: { flatten?: boolean },
+  options?: { flatten?: boolean; syncCategoryPackages?: string[] },
 ): NepalContent {
   const saved = { ...defaults, ...savedRaw };
   let cats = saved.categories?.length ? saved.categories : defaults.categories;
@@ -56,25 +56,33 @@ function coerceDestinationCatalog(
     wallpaperSrc: saved.wallpaperSrc || defaults.wallpaperSrc,
     closeTitle: saved.closeTitle || defaults.closeTitle,
     closeBody: saved.closeBody || defaults.closeBody,
-    categories: cats.map((cat) => ({
-      ...cat,
-      packages: (cat.packages || []).map((pkg) => {
-        const fallback = defById.get(pkg.id);
-        return {
-          ...fallback,
-          ...pkg,
-          badge: pkg.badge ?? fallback?.badge ?? "",
-          difficulty: pkg.difficulty || fallback?.difficulty || "Moderate",
-          description: pkg.description || fallback?.description || pkg.subtitle,
-          href:
-            fallback?.href &&
-            !fallback.href.includes("interest=") &&
-            (pkg.href || "").includes("interest=")
-              ? fallback.href
-              : pkg.href || fallback?.href || "",
-        };
-      }),
-    })),
+    categories: cats.map((cat) => {
+      const defCat = defaults.categories.find((c) => c.id === cat.id);
+      const syncFromDefaults = options?.syncCategoryPackages?.includes(cat.id) && defCat?.packages?.length;
+      const packageList = syncFromDefaults ? defCat!.packages : cat.packages || [];
+      return {
+        ...cat,
+        countLabel: syncFromDefaults ? defCat!.countLabel : cat.countLabel,
+        packages: packageList.map((pkg) => {
+          const savedPkg = (cat.packages || []).find((p) => p.id === pkg.id);
+          const merged = savedPkg ? { ...pkg, ...savedPkg } : pkg;
+          const fallback = defById.get(merged.id) ?? defById.get(pkg.id);
+          return {
+            ...fallback,
+            ...merged,
+            badge: merged.badge ?? fallback?.badge ?? "",
+            difficulty: merged.difficulty || fallback?.difficulty || "Moderate",
+            description: merged.description || fallback?.description || merged.subtitle,
+            href:
+              fallback?.href &&
+              !fallback.href.includes("interest=") &&
+              (merged.href || "").includes("interest=")
+                ? fallback.href
+                : merged.href || fallback?.href || "",
+          };
+        }),
+      };
+    }),
   };
 }
 
@@ -694,7 +702,7 @@ export async function readContent(): Promise<SiteContent> {
         restricted: parsed.permits?.restricted?.length ? parsed.permits.restricted : DEFAULT_CONTENT.permits.restricted,
         peaks: parsed.permits?.peaks?.length ? parsed.permits.peaks : DEFAULT_CONTENT.permits.peaks,
       },
-      nepal: coerceDestinationCatalog(parsed.nepal, DEFAULT_NEPAL),
+      nepal: coerceDestinationCatalog(parsed.nepal, DEFAULT_NEPAL, { syncCategoryPackages: ["trekking"] }),
       bhutan: coerceDestinationCatalog(parsed.bhutan, DEFAULT_BHUTAN, { flatten: true }),
       tibet: coerceDestinationCatalog(parsed.tibet, DEFAULT_TIBET, { flatten: true }),
       multi: coerceDestinationCatalog(parsed.multi, DEFAULT_MULTI, { flatten: true }),
