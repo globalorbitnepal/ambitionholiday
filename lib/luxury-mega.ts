@@ -44,7 +44,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageAlt: "Snow peaks of the Everest region",
       },
       {
-        title: "Everest Panorama Trek – 11 Days",
+        title: "Everest Panorama Luxury Trek – 11 Days",
         days: "11 Days",
         difficulty: "Moderate",
         href: "/everest-panorama-trek",

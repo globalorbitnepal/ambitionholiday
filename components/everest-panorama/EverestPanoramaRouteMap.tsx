@@ -72,7 +72,10 @@ function StopLabel({ node, active }: { node: EptRouteNode; active: boolean }) {
 const STOP_DETAILS: Record<string, { day: string; description: string }> = {
   ktm: { day: "Days 1–2, 9–11", description: "Kathmandu hotels, sightseeing and departure. Domestic flights link Kathmandu and Lukla." },
   lukla: { day: "Days 3 & 8–9", description: "Trekking starts and ends at Lukla Airport." },
-  evhotel: { day: "Day 5", description: "Planned overnight at Everest View Hotel when confirmed at booking." },
+  evhotel: {
+    day: "Day 5",
+    description: "Premium mountain-view overnight in the Everest viewpoint area when confirmed on your booking.",
+  },
   tengboche: { day: "Day 6", description: "Tengboche Monastery visit subject to opening hours." },
 };
 

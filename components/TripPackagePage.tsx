@@ -125,7 +125,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? `Highlights of ${pkg.title}`
     : `Highlights of ${pkg.title} – ${pkg.days} Days`;
   const hotelEverestViewNotice =
-    (isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg)) && pkg.hotelEverestViewStatus
+    isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
       ? pkg.hotelEverestViewStatus === "confirmed"
         ? pkg.hotelEverestViewPublicNote ||
           "Your Day 4 ridge-area lodge night is confirmed on your booking documents."
@@ -303,7 +303,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       </p>
       {groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
-          See group booking discount {showGroups ? "▴" : "▾"}
+          {everestPanoramaCharts ? "Private group pricing (per person)" : "See group booking discount"}{" "}
+          {showGroups ? "▴" : "▾"}
         </button>
       ) : null}
       {showGroups && groups.some((row) => row.priceUsd > 0) ? (
@@ -324,14 +325,15 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           </tbody>
         </table>
       ) : null}
+      {pkg.pricingDisclaimer ? <p className="lux-price-foot">{pkg.pricingDisclaimer}</p> : null}
       <Link href={enquire} className="lux-btn lux-btn-solid">
-        Book now
+        {everestPanoramaCharts ? "Plan Your Private Journey" : "Book now"}
       </Link>
       <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
-        Check availability
+        {everestPanoramaCharts ? "Check Your Preferred Dates" : "Check availability"}
       </Link>
       <Link href={enquire} className="lux-btn lux-btn-ghost">
-        Inquire now
+        {everestPanoramaCharts ? "Discuss Your Journey" : "Inquire now"}
       </Link>
       <a className="lux-wa" href="https://wa.me/9779851148898" target="_blank" rel="noreferrer">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -432,17 +434,18 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {premiumNav ? (
                 <div className="lux-hero-ctas">
                   <Link href={enquire} className="lux-btn lux-btn-solid">
-                    Plan Your Trek
+                    {everestPanoramaCharts ? "Plan Your Private Journey" : "Plan Your Trek"}
                   </Link>
                   <button
                     type="button"
                     className="lux-btn lux-btn-gold"
                     onClick={() => {
-                      setActiveToc("the-journey");
-                      scrollToId("the-journey");
+                      const target = everestPanoramaCharts ? "itinerary" : "the-journey";
+                      setActiveToc(target);
+                      scrollToId(target);
                     }}
                   >
-                    Explore the Journey
+                    {everestPanoramaCharts ? "Explore the 11-Day Itinerary" : "Explore the Journey"}
                   </button>
                 </div>
               ) : null}
@@ -605,6 +608,27 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <article id="trip-info" className="lux-card">
                 <p className="lux-kicker">Know the trail</p>
                 <h2>{pkg.tripInfoTitle || `${pkg.title} – Trip information`}</h2>
+                {pkg.luxuryExperience ? (
+                  <div className="lux-luxury-experience">
+                    <h3>{pkg.luxuryExperience.title}</h3>
+                    <p>{pkg.luxuryExperience.intro}</p>
+                    <div className="lux-luxury-pillars">
+                      {pkg.luxuryExperience.pillars.map((pillar) => (
+                        <div key={pillar.title} className="lux-luxury-pillar">
+                          <h4>{pillar.title}</h4>
+                          <ul className="lux-checks">
+                            {pillar.items.map((line) => (
+                              <li key={line}>
+                                <CheckMark />
+                                <span>{line}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
                 {pkg.tripInfo.map((block) => (
                   <div key={block.id} className="lux-info-block">
                     <h3>{block.title}</h3>

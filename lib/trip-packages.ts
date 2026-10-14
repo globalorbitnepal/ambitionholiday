@@ -94,6 +94,17 @@ export type TrekAboutBlock = {
   body: string;
 };
 
+export type TrekLuxuryPillar = {
+  title: string;
+  items: string[];
+};
+
+export type TrekLuxuryExperience = {
+  title: string;
+  intro: string;
+  pillars: TrekLuxuryPillar[];
+};
+
 export type TrekPackage = {
   id: string;
   catalogId: string;
@@ -213,6 +224,8 @@ export type TrekPackage = {
   journeyStages?: TrekJourneyStage[];
   aboutLead?: string;
   aboutSections?: TrekAboutBlock[];
+  luxuryExperience?: TrekLuxuryExperience;
+  pricingDisclaimer?: string;
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
@@ -1275,16 +1288,45 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_PANORAMA_PACKAGE_ID) {
       return {
         ...mergedPkg,
+        title: def.title,
+        subtitle: def.subtitle,
+        overview: def.overview,
+        highlights: def.highlights,
+        faqs: def.faqs,
+        tripInfo: def.tripInfo,
+        tripInfoTitle: def.tripInfoTitle,
+        whyItems: def.whyItems,
+        inclusions: def.inclusions,
+        exclusions: def.exclusions,
+        includeNote: def.includeNote,
+        luklaNote: def.luklaNote,
+        mapBody: def.mapBody,
+        altitudeBody: def.altitudeBody,
+        weatherBody: def.weatherBody,
+        metaTitle: def.metaTitle,
+        metaDescription: def.metaDescription,
+        metaKeywords: def.metaKeywords,
+        focusKeyword: def.focusKeyword,
+        ogTitle: def.ogTitle,
+        ogDescription: def.ogDescription,
+        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
+        luxuryExperience: def.luxuryExperience,
+        pricingDisclaimer: def.pricingDisclaimer,
+        accommodationLabel: def.accommodationLabel,
+        activityLabel: def.activityLabel,
+        maxAltitude: def.maxAltitude,
+        startLabel: def.startLabel,
+        beforeItems: def.beforeItems,
         itinerary: everestViewItinerary(item.itinerary, def.itinerary),
-        journeyStages: item.journeyStages?.length ? item.journeyStages : def.journeyStages,
-        aboutSections: item.aboutSections?.length ? item.aboutSections : def.aboutSections,
-        journeyTitle: (item.journeyTitle || "").trim() || def.journeyTitle,
-        journeySubheading: (item.journeySubheading || "").trim() || def.journeySubheading,
-        journeyIntro: (item.journeyIntro || "").trim() || def.journeyIntro,
-        aboutLead: (item.aboutLead || "").trim() || def.aboutLead,
-        hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
-        hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
-        hotelEverestViewPublicNote: (item.hotelEverestViewPublicNote || "").trim() || def.hotelEverestViewPublicNote,
+        journeyStages: def.journeyStages,
+        aboutSections: def.aboutSections,
+        journeyTitle: def.journeyTitle,
+        journeySubheading: def.journeySubheading,
+        journeyIntro: def.journeyIntro,
+        aboutLead: def.aboutLead,
+        hotelEverestViewStatus: undefined,
+        hotelEverestViewAdminNote: undefined,
+        hotelEverestViewPublicNote: undefined,
       };
     }
     if (def.id === LANGTANG_PACKAGE_ID) {

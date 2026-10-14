@@ -10,7 +10,7 @@ export const EVEREST_PANORAMA_ALTITUDE_STOPS: AltitudeStop[] = [
   { label: "Phakding", m: 2610 },
   { label: "Namche", m: 3440 },
   { label: "Khumjung", m: 3780 },
-  { label: "Everest View Hotel", m: 3880 },
+  { label: "Everest viewpoint area", m: 3880 },
   { label: "Tengboche", m: 3860 },
   { label: "Monjo", m: 2835 },
   { label: "Lukla", m: 2860 },

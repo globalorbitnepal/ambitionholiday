@@ -4862,6 +4862,43 @@ body.nav-mega-open .hero-copy {
   margin: 1rem 0 0.35rem;
 }
 
+.lux-luxury-experience {
+  margin: 0 0 1.75rem;
+  padding: 0 0 1.5rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+.lux-luxury-experience > h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1.35rem;
+}
+
+.lux-luxury-pillars {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.15rem;
+}
+
+@media (min-width: 900px) {
+  .lux-luxury-pillars {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.lux-luxury-pillar h4 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  color: #d4af37;
+}
+
+.lux-root--sky .lux-luxury-pillar h4 {
+  color: #e8d07a;
+}
+
+.lux-root--sky .lux-luxury-experience > h3 {
+  color: #f7f4ef;
+}
+
 .lux-journey-sub {
   font-size: 1.12rem;
   font-weight: 600;

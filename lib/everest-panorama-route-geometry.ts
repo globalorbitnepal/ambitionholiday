@@ -98,8 +98,8 @@ export const EPT_ROUTE_NODES: EptRouteNode[] = [
   },
   {
     id: "evhotel",
-    name: "Everest View Hotel",
-    displayName: "Everest View Hotel",
+    name: "Everest viewpoint area",
+    displayName: "Everest viewpoint area",
     elevationM: 3880,
     x: 818,
     y: 198,
