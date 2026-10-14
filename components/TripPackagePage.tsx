@@ -403,7 +403,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           ))}
         </section>
 
-        <nav className={`lux-toc${tocFloating ? " is-floating" : ""}`} aria-label="On this page">
+        <nav
+          className={`lux-toc${premiumNav ? " lux-toc--premium" : ""}${tocFloating ? " is-floating" : ""}`}
+          aria-label="On this page"
+        >
           {toc.map((item) => (
             <a
               key={item.id}
