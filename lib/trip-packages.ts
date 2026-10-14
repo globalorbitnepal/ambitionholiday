@@ -11,6 +11,7 @@ import { ABC_LUXURY_TRIP_PACKAGE } from "./abc-luxury-package";
 import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package";
+import { EVEREST_PANORAMA_TRIP_PACKAGE } from "./everest-panorama-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
@@ -77,6 +78,20 @@ export type TrekGroupPrice = {
   id: string;
   label: string;
   priceUsd: number;
+};
+
+export type TrekJourneyStage = {
+  id: string;
+  title: string;
+  body: string;
+  imageSrc?: string;
+  imageAlt?: string;
+};
+
+export type TrekAboutBlock = {
+  id: string;
+  title: string;
+  body: string;
 };
 
 export type TrekPackage = {
@@ -192,6 +207,12 @@ export type TrekPackage = {
   hotelEverestViewAdminNote?: string;
   /** Optional visitor-facing note when status is pending or unavailable. */
   hotelEverestViewPublicNote?: string;
+  journeyTitle?: string;
+  journeySubheading?: string;
+  journeyIntro?: string;
+  journeyStages?: TrekJourneyStage[];
+  aboutLead?: string;
+  aboutSections?: TrekAboutBlock[];
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
@@ -199,6 +220,7 @@ export const ABC_PACKAGE_ID = "abc-lux";
 export const MUSTANG_PACKAGE_ID = "mustang-lux";
 export const LANGTANG_PACKAGE_ID = "langtang-lux";
 export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
+export const EVEREST_PANORAMA_PACKAGE_ID = "ept-pan";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
 export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
@@ -211,6 +233,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   MUSTANG_PACKAGE_ID,
   LANGTANG_PACKAGE_ID,
   EVEREST_VIEW_PACKAGE_ID,
+  EVEREST_PANORAMA_PACKAGE_ID,
 ] as const;
 
 /** The built-in Everest map, altitude and weather charts only describe the Everest trail. */
@@ -232,6 +255,10 @@ export function isLangtangPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
 
 export function isEverestViewPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === EVEREST_VIEW_PACKAGE_ID || /everest-view-luxury/i.test(pkg.slug || "");
+}
+
+export function isEverestPanoramaPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
+  return pkg.id === EVEREST_PANORAMA_PACKAGE_ID || /everest-panorama-trek/i.test(pkg.slug || "");
 }
 
 const EVL_PROHIBITED_RE = /hotel\s+everest\s+view/i;
@@ -746,6 +773,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   MUSTANG_LUXURY_TRIP_PACKAGE,
   LANGTANG_LUXURY_TRIP_PACKAGE,
   EVEREST_VIEW_LUXURY_TRIP_PACKAGE,
+  EVEREST_PANORAMA_TRIP_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [

@@ -4853,6 +4853,73 @@ body.nav-mega-open .hero-copy {
     inset 0 1px 0 rgba(255, 248, 220, 0.55);
 }
 
+.lux-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0 0.35rem;
+}
+
+.lux-journey-sub {
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: #1a2230;
+  margin: 0.35rem 0 1rem;
+}
+
+.lux-journey-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  margin-top: 1.5rem;
+}
+
+.lux-journey-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(18, 21, 26, 0.08);
+}
+
+@media (max-width: 640px) {
+  .lux-journey-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lux-journey-stage-media {
+  margin: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.lux-journey-stage-num {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a6b12;
+  margin-bottom: 0.25rem;
+}
+
+.lux-about-lead {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+.lux-about-block {
+  margin-top: 1.35rem;
+}
+
+.lux-about-block h3 {
+  margin-bottom: 0.45rem;
+}
+
 .lux-info-item {
   display: flex;
   align-items: flex-start;

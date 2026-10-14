@@ -117,6 +117,17 @@ export default async function SlugPage({ params, searchParams }: Props) {
         <JsonLd
           data={{
             "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Nepal", item: absoluteUrl("/nepal") },
+              { "@type": "ListItem", position: 3, name: pkg.title, item: url },
+            ],
+          }}
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
             "@type": "TouristTrip",
             name: pkg.title,
             description: pkg.metaDescription || pkg.subtitle,

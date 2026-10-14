@@ -19,36 +19,57 @@ import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
 import {
   isAbcPackage,
   isEbcPackage,
+  isEverestPanoramaPackage,
   isEverestViewPackage,
   isLangtangPackage,
   isMustangPackage,
   packageHeadings,
   TREK_DAY_DISTANCE,
 } from "@/lib/trip-packages";
+import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
 import { ItineraryMetaIcon } from "@/components/itinerary-meta-icons";
 import { normalizeVideoSrc, youtubeId } from "@/lib/video-embed";
 
-const TOC = [
+const PREMIUM_TOC = [
   { id: "overview", label: "Overview" },
   { id: "book", label: "Availability" },
   { id: "highlights", label: "Highlights" },
-  { id: "why", label: "Why us" },
-  { id: "video", label: "Video" },
-  { id: "vreviews", label: "Video reviews" },
-  { id: "info", label: "Trip info" },
+  { id: "why-us", label: "Why Us" },
+  { id: "trip-info", label: "Trip Info" },
+  { id: "the-journey", label: "The Journey" },
+  { id: "about", label: "About" },
   { id: "itinerary", label: "Itinerary" },
-  { id: "map", label: "Trip Map" },
+  { id: "trip-map", label: "Trip Map" },
   { id: "altitude", label: "Altitude" },
   { id: "weather", label: "Weather" },
   { id: "includes", label: "Includes" },
   { id: "trip-gallery", label: "Gallery" },
   { id: "packing", label: "Packing" },
-  { id: "notes", label: "Flights" },
+  { id: "flights", label: "Flights" },
+  { id: "faqs", label: "FAQs" },
+];
+
+const STANDARD_TOC = [
+  { id: "overview", label: "Overview" },
+  { id: "book", label: "Availability" },
+  { id: "highlights", label: "Highlights" },
+  { id: "why-us", label: "Why us" },
+  { id: "video", label: "Video" },
+  { id: "vreviews", label: "Video reviews" },
+  { id: "trip-info", label: "Trip info" },
+  { id: "itinerary", label: "Itinerary" },
+  { id: "trip-map", label: "Trip Map" },
+  { id: "altitude", label: "Altitude" },
+  { id: "weather", label: "Weather" },
+  { id: "includes", label: "Includes" },
+  { id: "trip-gallery", label: "Gallery" },
+  { id: "packing", label: "Packing" },
+  { id: "flights", label: "Flights" },
   { id: "reviews", label: "Reviews" },
-  { id: "faq", label: "FAQs" },
+  { id: "faqs", label: "FAQs" },
 ];
 
 function teaserOf(body: string) {
@@ -104,7 +125,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? `Highlights of ${pkg.title}`
     : `Highlights of ${pkg.title} – ${pkg.days} Days`;
   const hotelEverestViewNotice =
-    isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
+    (isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg)) && pkg.hotelEverestViewStatus
       ? pkg.hotelEverestViewStatus === "confirmed"
         ? pkg.hotelEverestViewPublicNote ||
           "Your Day 4 ridge-area lodge night is confirmed on your booking documents."
@@ -118,8 +139,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const mustangCharts = isMustangPackage(pkg);
   const abcCharts = isAbcPackage(pkg);
   const everestViewCharts = isEverestViewPackage(pkg);
-  const builtInCharts = isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts;
-  const chartStops = everestViewCharts
+  const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
+  const premiumNav = Boolean(pkg.journeyStages?.length);
+  const builtInCharts =
+    isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts || everestPanoramaCharts;
+  const chartStops = everestPanoramaCharts
+    ? EVEREST_PANORAMA_ALTITUDE_STOPS
+    : everestViewCharts
     ? EVEREST_VIEW_ALTITUDE_STOPS
     : langtangCharts
       ? LANGTANG_ALTITUDE_STOPS
@@ -128,7 +154,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? ABC_ALTITUDE_STOPS
           : undefined;
-  const chartMaxM = everestViewCharts
+  const chartMaxM = everestPanoramaCharts
+    ? 4200
+    : everestViewCharts
     ? 4200
     : langtangCharts
       ? 5000
@@ -137,7 +165,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 4300
           : undefined;
-  const chartMinM = everestViewCharts
+  const chartMinM = everestPanoramaCharts
+    ? 1200
+    : everestViewCharts
     ? 1200
     : langtangCharts
       ? 1200
@@ -146,7 +176,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = everestViewCharts
+  const chartFile = everestPanoramaCharts
+    ? "everest-panorama-trek-altitude-profile"
+    : everestViewCharts
     ? "everest-view-luxury-trek-altitude-profile"
     : langtangCharts
       ? "langtang-valley-luxury-trek-altitude-profile"
@@ -155,7 +187,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = everestViewCharts
+  const mapVariant = everestPanoramaCharts
+    ? "everest-panorama"
+    : everestViewCharts
     ? "everest-view"
     : langtangCharts
       ? "langtang"
@@ -173,22 +207,24 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     overview: true,
     book: true,
     highlights: Boolean(pkg.highlights?.length),
-    why: Boolean(pkg.whyItems?.length),
+    "why-us": Boolean(pkg.whyItems?.length),
     video: Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
     vreviews: Boolean(pkg.videoReviews?.length),
-    info: Boolean(pkg.tripInfo?.length),
+    "trip-info": Boolean(pkg.tripInfo?.length),
+    "the-journey": Boolean(pkg.journeyStages?.length),
+    about: Boolean(pkg.aboutSections?.length || pkg.aboutLead?.trim()),
     itinerary: Boolean(pkg.itinerary?.length),
-    map: Boolean(pkg.routeMapSrc || builtInCharts),
+    "trip-map": Boolean(pkg.routeMapSrc || builtInCharts),
     altitude: Boolean(pkg.altitudeChartM || pkg.altitudeChartFt || pkg.altitudeBody || builtInCharts),
     weather: Boolean(pkg.weatherMonthlySrc || pkg.weatherBody || builtInCharts),
     includes: Boolean(pkg.inclusions?.length || pkg.exclusions?.length),
     "trip-gallery": gallery.length > 0,
     packing: packingGroups.some((group) => group.items.length),
-    notes: Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
+    flights: Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
     reviews: Boolean(pkg.reviews?.length),
-    faq: Boolean(pkg.faqs?.length),
+    faqs: Boolean(pkg.faqs?.length),
   };
-  const toc = TOC.filter((item) => show[item.id]);
+  const toc = (premiumNav ? PREMIUM_TOC : STANDARD_TOC).filter((item) => show[item.id]);
   const tocKey = toc.map((item) => item.id).join("|");
   const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
   const hasFromPrice = Number.isFinite(fromPrice);
@@ -390,6 +426,23 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
+              {premiumNav ? (
+                <div className="lux-hero-ctas">
+                  <Link href={enquire} className="lux-btn lux-btn-solid">
+                    Plan Your Trek
+                  </Link>
+                  <button
+                    type="button"
+                    className="lux-btn lux-btn-gold"
+                    onClick={() => {
+                      setActiveToc("the-journey");
+                      scrollToId("the-journey");
+                    }}
+                  >
+                    Explore the Journey
+                  </button>
+                </div>
+              ) : null}
               <div className="lux-rates">
                 <a className="lux-rate" href={pkg.tripadvisorHref || "#"} target="_blank" rel="noreferrer">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -425,8 +478,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </header>
 
             <article className="lux-card">
-              <p className="lux-kicker">The journey</p>
-              <h2>{heads.about}</h2>
+              <p className="lux-kicker">{premiumNav ? "Overview" : "The journey"}</p>
+              <h2>{premiumNav ? "Overview" : heads.about}</h2>
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
@@ -453,7 +506,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             ) : null}
 
             {pkg.whyItems?.length ? (
-              <article id="why" className="lux-card">
+              <article id="why-us" className="lux-card">
                 <p className="lux-kicker">Why walk with us</p>
                 <h2>{heads.why}</h2>
                 <div className="lux-why">
@@ -546,11 +599,74 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             ) : null}
 
             {pkg.tripInfo?.length ? (
-              <article id="info" className="lux-card">
+              <article id="trip-info" className="lux-card">
                 <p className="lux-kicker">Know the trail</p>
                 <h2>{pkg.tripInfoTitle || `${pkg.title} – Trip information`}</h2>
                 {pkg.tripInfo.map((block) => (
                   <div key={block.id} className="lux-info-block">
+                    <h3>{block.title}</h3>
+                    {block.body.split(/\n{2,}/).map((para) => (
+                      <p key={para.slice(0, 48)}>{para}</p>
+                    ))}
+                  </div>
+                ))}
+              </article>
+            ) : null}
+
+            {show["the-journey"] && pkg.journeyStages?.length ? (
+              <article id="the-journey" className="lux-card lux-journey">
+                <p className="lux-kicker">Route story</p>
+                <h2>{pkg.journeyTitle || "The Journey"}</h2>
+                {pkg.journeySubheading ? <p className="lux-journey-sub">{pkg.journeySubheading}</p> : null}
+                {(pkg.journeyIntro || "")
+                  .split(/\n{2,}/)
+                  .filter(Boolean)
+                  .map((para) => (
+                    <p key={para.slice(0, 48)}>{para}</p>
+                  ))}
+                <div className="lux-journey-stages">
+                  {pkg.journeyStages.map((stage, index) => (
+                    <div key={stage.id} className="lux-journey-stage">
+                      {stage.imageSrc ? (
+                        <figure className="lux-journey-stage-media">
+                          <MediaImage
+                            src={stage.imageSrc}
+                            alt={stage.imageAlt || stage.title}
+                            sizes="(max-width: 720px) 100vw, 320px"
+                            className="lux-photo"
+                            objectFit="cover"
+                          />
+                        </figure>
+                      ) : null}
+                      <div>
+                        <span className="lux-journey-stage-num">Stage {index + 1}</span>
+                        <h3>{stage.title}</h3>
+                        <p>{stage.body}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="lux-btn lux-btn-gold"
+                  style={{ marginTop: "1.25rem" }}
+                  onClick={() => {
+                    setActiveToc("itinerary");
+                    scrollToId("itinerary");
+                  }}
+                >
+                  View the Full Itinerary
+                </button>
+              </article>
+            ) : null}
+
+            {show.about && (pkg.aboutSections?.length || pkg.aboutLead) ? (
+              <article id="about" className="lux-card lux-about">
+                <p className="lux-kicker">Destination</p>
+                <h2>{pkg.aboutTitle || heads.about}</h2>
+                {pkg.aboutLead ? <p className="lux-about-lead">{pkg.aboutLead}</p> : null}
+                {pkg.aboutSections?.map((block) => (
+                  <div key={block.id} className="lux-about-block">
                     <h3>{block.title}</h3>
                     {block.body.split(/\n{2,}/).map((para) => (
                       <p key={para.slice(0, 48)}>{para}</p>
@@ -600,8 +716,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </article>
             ) : null}
 
-            {show.map ? (
-            <article id="map" className="lux-card">
+            {show["trip-map"] ? (
+            <article id="trip-map" className="lux-card">
               <p className="lux-kicker">The line on the map</p>
               <h2>Trip map</h2>
               {heads.mapBody ? <p>{heads.mapBody}</p> : null}
@@ -646,6 +762,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 </>
               ) : everestViewCharts ? (
                 <EverestViewAltitudeProfile sectionTitle={`Altitude profile of ${pkg.title}`} />
+              ) : everestPanoramaCharts ? (
+                <AltitudeProfileChart
+                  title={`Altitude profile of ${pkg.title}`}
+                  stops={chartStops}
+                  maxM={chartMaxM}
+                  minM={chartMinM}
+                  fileName={chartFile}
+                />
               ) : builtInCharts ? (
                 <AltitudeProfileChart
                   title={`Altitude profile of ${pkg.title}`}
@@ -666,7 +790,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : everestViewCharts ? (
+              ) : everestViewCharts || everestPanoramaCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
               ) : isEbcPackage(pkg) ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />
@@ -788,8 +912,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </article>
             ) : null}
 
-            {show.notes ? (
-            <article id="notes" className="lux-card">
+            {show.flights ? (
+            <article id="flights" className="lux-card">
               <p className="lux-kicker">Flights</p>
               <h2>{heads.notes}</h2>
               {pkg.flightBody ? (
@@ -826,7 +950,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             ) : null}
 
             {pkg.faqs.length ? (
-              <article id="faq" className="lux-card">
+              <article id="faqs" className="lux-card">
                 <p className="lux-kicker">Good questions</p>
                 <h2>Frequently asked</h2>
                 {pkg.faqs.map((faq, index) => {

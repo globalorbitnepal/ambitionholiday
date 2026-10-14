@@ -60,6 +60,7 @@ export async function POST(req: Request) {
   revalidatePath("/everest-base-camp-trek");
   revalidatePath("/everest-base-camp-luxury-trek");
   revalidatePath("/everest-view-luxury-trek");
+  revalidatePath("/everest-panorama-trek");
   revalidatePath("/annapurna-base-camp-luxury-trek");
   revalidatePath("/luxury-annapurna-base-camp-trek");
   revalidatePath("/saved");

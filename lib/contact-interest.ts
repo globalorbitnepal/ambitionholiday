@@ -27,6 +27,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Everest View Luxury Trek – 7 Days",
   },
+  "everest-panorama": {
+    select: "Luxury Tour & Trek",
+    label: "Everest Panorama Trek – 11 Days",
+  },
+  "ept-pan": {
+    select: "Luxury Tour & Trek",
+    label: "Everest Panorama Trek – 11 Days",
+  },
   "abc-lux": {
     select: "Luxury Tour & Trek",
     label: "Annapurna Base Camp luxury trek",
