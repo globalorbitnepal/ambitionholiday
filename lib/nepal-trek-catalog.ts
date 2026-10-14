@@ -85,7 +85,17 @@ export function isNepalTrekkingAdminPackage(pkg: TrekPackage, nepal: NepalConten
 
 /** One public Nepal trekking list → Nepal page, homepage journeys, header mega menu. */
 export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteContent {
-  const publishedCards = publishedNepalTrekCatalogCards(content.nepal, content.tripPackages);
+  const publishedCards = publishedNepalTrekCatalogCards(content.nepal, content.tripPackages).map((card) => {
+    const trip = findPublishedTripForCard(card, content.tripPackages);
+    if (!trip) return card;
+    return {
+      ...card,
+      title: trip.title,
+      subtitle: trip.subtitle || card.subtitle,
+      description: trip.subtitle || card.description,
+      badge: trip.badge || card.badge,
+    };
+  });
   const trekking = nepalTrekkingCategory(content.nepal);
   const countLabel = packageCountLabel(publishedCards.length);
 
@@ -109,8 +119,12 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
   const journeyPackages = publishedCards.map((card) => {
     const journey = catalogCardToJourney(card);
     const trip = findPublishedTripForCard(card, content.tripPackages);
-    if (trip?.maxAltitude) {
-      journey.maxAltitude = trip.maxAltitude.split("/")[0].trim();
+    if (trip) {
+      journey.subtitle = trip.subtitle || journey.subtitle;
+      journey.badge = trip.badge || journey.badge;
+      if (trip.maxAltitude) {
+        journey.maxAltitude = trip.maxAltitude.split("/")[0].trim();
+      }
     }
     return journey;
   });
