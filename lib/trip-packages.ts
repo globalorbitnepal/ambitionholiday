@@ -281,7 +281,7 @@ export function isEverestPanoramaPackage(pkg: Pick<TrekPackage, "id" | "slug">) 
   return pkg.id === EVEREST_PANORAMA_PACKAGE_ID || /everest-panorama-trek/i.test(pkg.slug || "");
 }
 
-const EVL_PROHIBITED_RE = /hotel\s+everest\s+view/i;
+const EVL_PROHIBITED_RE = /(?:hotel\s+everest\s+view|everest\s+view\s+hotel)/i;
 
 function everestViewPublicText(saved: string | undefined, def: string) {
   const value = (saved || "").trim();
@@ -315,10 +315,10 @@ function everestViewItinerary(
       ...defDay,
       title: everestViewPublicText(day.title, defDay.title),
       body: everestViewPublicText(day.body, defDay.body),
-      meals: (day.meals || "").trim() || defDay.meals,
-      stay: (day.stay || "").trim() || defDay.stay,
-      duration: (day.duration || "").trim() || defDay.duration,
-      altitude: (day.altitude || "").trim() || defDay.altitude,
+      meals: everestViewPublicText(day.meals, defDay.meals),
+      stay: everestViewPublicText(day.stay, defDay.stay),
+      duration: everestViewPublicText(day.duration, defDay.duration),
+      altitude: everestViewPublicText(day.altitude, defDay.altitude),
       distance: (day.distance || "").trim() || defDay.distance || "",
       imageSrc: (day.imageSrc || "").trim() || defDay.imageSrc || "",
       imageAlt: everestViewPublicText(day.imageAlt, defDay.imageAlt || ""),
@@ -1317,7 +1317,8 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         maxAltitude: def.maxAltitude,
         startLabel: def.startLabel,
         beforeItems: def.beforeItems,
-        itinerary: everestViewItinerary(item.itinerary, def.itinerary),
+        itinerary: def.itinerary,
+        itineraryIntro: def.itineraryIntro,
         journeyStages: def.journeyStages,
         aboutSections: def.aboutSections,
         journeyTitle: def.journeyTitle,
