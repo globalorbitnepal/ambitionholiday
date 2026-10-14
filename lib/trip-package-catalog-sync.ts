@@ -1,5 +1,6 @@
 import type { JourneyPackage, SiteContent } from "@/lib/content-types";
 import type { NepalContent } from "@/lib/nepal-defaults";
+import { ensureNepalTrekkingCatalogCard, syncNepalTrekkingCatalogSurfaces } from "@/lib/nepal-trek-catalog";
 import {
   cardLinkedToPackage,
   enrichCatalogCard,
@@ -30,7 +31,7 @@ function rewriteDestCatalog(dest: NepalContent, packages: TrekPackage[]): NepalC
 export function applyPublishedPackageHrefs(content: SiteContent): SiteContent {
   const pkgs = content.tripPackages || [];
   const nav = content.headerNav;
-  return {
+  const withHrefs: SiteContent = {
     ...content,
     headerNav: nav
       ? {
@@ -90,6 +91,7 @@ export function applyPublishedPackageHrefs(content: SiteContent): SiteContent {
       })),
     },
   };
+  return syncNepalTrekkingCatalogSurfaces(withHrefs);
 }
 
 /** After saving a trek page in admin — persist catalog cover, slug and stats everywhere that card appears. */
@@ -165,5 +167,5 @@ export function applyTripPackageToSiteContent(
       ),
     },
   };
-  return applyPublishedPackageHrefs(merged);
+  return ensureNepalTrekkingCatalogCard(applyPublishedPackageHrefs(merged), pkg);
 }

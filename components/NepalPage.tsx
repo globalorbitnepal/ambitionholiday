@@ -12,7 +12,7 @@ export default function NepalPage() {
       page={page}
       coverAlt="Dark Himalayan mountain cover of Nepal"
       tablistLabel="Nepal package categories"
-      showCategories
+      showCategories={false}
       cacheKey={updatedAt}
     />
   );

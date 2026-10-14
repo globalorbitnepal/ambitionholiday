@@ -1109,7 +1109,7 @@ export const DEFAULT_CONTENT: SiteContent = {
             id: "dest-nepal",
             title: "Nepal",
             subtitle: "The Heart of the Himalayas",
-            meta: "20+ Packages",
+            meta: "2 Packages",
             href: "/nepal",
             imageSrc: "/images/explore-hub/hub-nepal.webp",
             imageAlt: "Golden stupa among pines with Himalayan peaks",
