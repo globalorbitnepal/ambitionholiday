@@ -390,6 +390,19 @@ export default function AdminPackageEditor() {
           >
             Add group tier
           </button>
+          <AdminMediaField
+            label="Booking panel image (optional — shown above the price on the live page)"
+            value={pkg.pricePanelImageSrc || ""}
+            onChange={(pricePanelImageSrc) => patch({ pricePanelImageSrc })}
+          />
+          <label className="admin-field">
+            <span>Booking panel image alt text</span>
+            <input
+              value={pkg.pricePanelImageAlt || ""}
+              onChange={(e) => patch({ pricePanelImageAlt: e.target.value })}
+              placeholder="Describe the pricing graphic for accessibility"
+            />
+          </label>
           {isEverestPanoramaPackage(pkg) || pkg.luxuryExperience || pkg.pricingDisclaimer ? (
             <label className="admin-field" style={{ marginTop: 16 }}>
               <span>Pricing note under the group table (shown on the live booking box)</span>

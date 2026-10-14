@@ -32,25 +32,11 @@ import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
 import { ItineraryMetaIcon } from "@/components/itinerary-meta-icons";
 import { normalizeVideoSrc, youtubeId } from "@/lib/video-embed";
-
-const PREMIUM_TOC = [
-  { id: "overview", label: "Overview" },
-  { id: "book", label: "Availability" },
-  { id: "highlights", label: "Highlights" },
-  { id: "why-us", label: "Why Us" },
-  { id: "trip-info", label: "Trip Info" },
-  { id: "the-journey", label: "The Journey" },
-  { id: "about", label: "About" },
-  { id: "itinerary", label: "Itinerary" },
-  { id: "trip-map", label: "Trip Map" },
-  { id: "altitude", label: "Altitude" },
-  { id: "weather", label: "Weather" },
-  { id: "includes", label: "Includes" },
-  { id: "trip-gallery", label: "Gallery" },
-  { id: "packing", label: "Packing" },
-  { id: "flights", label: "Flights" },
-  { id: "faqs", label: "FAQs" },
-];
+import {
+  buildPackageSectionToc,
+  isPremiumKhumbuTrekPackage,
+  useScrollableSectionNav,
+} from "@/lib/premium-khumbu-trek-layout";
 
 const STANDARD_TOC = [
   { id: "overview", label: "Overview" },
@@ -140,8 +126,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const abcCharts = isAbcPackage(pkg);
   const everestViewCharts = isEverestViewPackage(pkg);
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
-  const premiumKhumbuTrek = everestViewCharts || everestPanoramaCharts;
+  const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
+  const scrollableSectionNav = useScrollableSectionNav(pkg, premiumNav);
   const builtInCharts =
     isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts || everestPanoramaCharts;
   const chartStops = everestPanoramaCharts
@@ -225,7 +212,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     reviews: Boolean(pkg.reviews?.length),
     faqs: Boolean(pkg.faqs?.length),
   };
-  const toc = (premiumNav ? PREMIUM_TOC : STANDARD_TOC).filter((item) => show[item.id]);
+  const toc = buildPackageSectionToc(pkg, show, premiumNav, STANDARD_TOC);
+  const useReferenceOverviewBlock = premiumKhumbuTrek || !premiumNav;
   const tocKey = toc.map((item) => item.id).join("|");
   const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
   const hasFromPrice = Number.isFinite(fromPrice);
@@ -289,6 +277,19 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const bookingPanel = (
     <div className="lux-price">
       <PackageActions pkg={pkg} />
+      {pkg.pricePanelImageSrc ? (
+        <div className="lux-price-visual">
+          <MediaImage
+            src={pkg.pricePanelImageSrc}
+            alt={pkg.pricePanelImageAlt || `${pkg.title} pricing`}
+            sizes="(min-width: 1100px) 320px, 92vw"
+            className="lux-price-panel-img lux-photo"
+            objectFit="contain"
+            objectPosition="center center"
+            priority={false}
+          />
+        </div>
+      ) : null}
       <p className="lux-price-main">
         {hasFromPrice ? (
           <>
@@ -304,7 +305,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       </p>
       {groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
-          {premiumKhumbuTrek ? "Private group pricing (per person)" : "See group booking discount"}{" "}
+          See group booking discount{" "}
           {showGroups ? "▴" : "▾"}
         </button>
       ) : null}
@@ -407,7 +408,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         </section>
 
         <nav
-          className={`lux-toc${premiumNav ? " lux-toc--premium" : ""}${tocFloating ? " is-floating" : ""}`}
+          className={`lux-toc${scrollableSectionNav ? " lux-toc--premium" : ""}${tocFloating ? " is-floating" : ""}`}
           aria-label="On this page"
         >
           {toc.map((item) => (
@@ -432,21 +433,20 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
-              {premiumNav ? (
+              {premiumNav && !premiumKhumbuTrek ? (
                 <div className="lux-hero-ctas">
                   <Link href={enquire} className="lux-btn lux-btn-solid">
-                    {everestPanoramaCharts ? "Plan Your Private Journey" : "Plan Your Trek"}
+                    Plan Your Trek
                   </Link>
                   <button
                     type="button"
                     className="lux-btn lux-btn-gold"
                     onClick={() => {
-                      const target = everestPanoramaCharts ? "itinerary" : "the-journey";
-                      setActiveToc(target);
-                      scrollToId(target);
+                      setActiveToc("the-journey");
+                      scrollToId("the-journey");
                     }}
                   >
-                    {everestPanoramaCharts ? "Explore the 11-Day Itinerary" : "Explore the Journey"}
+                    Explore the Journey
                   </button>
                 </div>
               ) : null}
@@ -485,8 +485,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </header>
 
             <article className="lux-card">
-              <p className="lux-kicker">{premiumNav ? "Overview" : "The journey"}</p>
-              <h2>{premiumNav ? "Overview" : heads.about}</h2>
+              <p className="lux-kicker">{useReferenceOverviewBlock ? "The journey" : "Overview"}</p>
+              <h2>{useReferenceOverviewBlock ? heads.about : "Overview"}</h2>
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}

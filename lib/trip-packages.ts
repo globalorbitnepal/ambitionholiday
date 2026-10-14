@@ -226,6 +226,9 @@ export type TrekPackage = {
   aboutSections?: TrekAboutBlock[];
   luxuryExperience?: TrekLuxuryExperience;
   pricingDisclaimer?: string;
+  /** Optional image above pricing in the booking panel (CMS-managed). */
+  pricePanelImageSrc?: string;
+  pricePanelImageAlt?: string;
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
@@ -364,6 +367,8 @@ function mergeEverestPanoramaPublicPackage(
     hotelEverestViewStatus: undefined,
     hotelEverestViewAdminNote: undefined,
     hotelEverestViewPublicNote: undefined,
+    pricePanelImageSrc: item.pricePanelImageSrc || mergedPkg.pricePanelImageSrc,
+    pricePanelImageAlt: item.pricePanelImageAlt || mergedPkg.pricePanelImageAlt,
   };
 }
 

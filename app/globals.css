@@ -6138,6 +6138,22 @@ a.lux-chart-dl {
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
+.lux-price-visual {
+  position: relative;
+  margin: 0 0 0.85rem;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(8, 12, 18, 0.45);
+  aspect-ratio: 4 / 3;
+  contain: strict;
+}
+
+.lux-price-visual .lux-price-panel-img {
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
 .lux-price-main {
   margin: 0;
   font-size: 1.85rem;
