@@ -1085,7 +1085,7 @@ function ItineraryMetaItem({
   return (
     <div className="lux-info-item">
       <span className="lux-info-icon" aria-hidden="true">
-        <ItineraryMetaIcon name={icon} />
+        <ItineraryMetaIcon name={icon} size={22} strokeWidth={icon === "meal" || icon === "bed" ? 2 : 1.75} />
       </span>
       <span className="lux-info-copy">
         <strong>{label}</strong>

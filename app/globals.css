@@ -4991,6 +4991,13 @@ body.nav-mega-open .hero-copy {
   border: 1px solid rgba(18, 21, 26, 0.12);
 }
 
+.lux-info-icon svg {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+}
+
 .lux-info-copy {
   display: flex;
   flex-direction: column;

@@ -6,10 +6,9 @@ type IconProps = {
   strokeWidth?: number;
 };
 
-/** Compact trek itinerary bar icons — tuned for ~24px boxes on gold meta strip. */
+/** Compact trek itinerary bar icons — tuned for gold meta strip (~38px boxes). */
 export function ItineraryMetaIcon({ name, size = 22, strokeWidth }: IconProps) {
-  const strokeW =
-    strokeWidth ?? (name === "meal" || name === "bed" ? 1.85 : 1.75);
+  const strokeW = strokeWidth ?? (name === "meal" || name === "bed" ? 2 : 1.75);
   const common = {
     width: size,
     height: size,
@@ -25,10 +24,14 @@ export function ItineraryMetaIcon({ name, size = 22, strokeWidth }: IconProps) {
   if (name === "meal") {
     return (
       <svg {...common}>
-        <path d="M5 3v5M6.5 3v5.5M8 3v5" />
-        <path d="M6.5 8.5V21" />
-        <path d="M15.5 3.5c0 2.8 1.8 4.2 3.5 4.5 1.7-.3 3.5-1.7 3.5-4.5V3.5" />
-        <path d="M19 8V21" />
+        {/* Fork */}
+        <path d="M6 3.5v6.5" />
+        <path d="M8 3.5v6.5" />
+        <path d="M10 3.5v6.5" />
+        <path d="M8 10v10.5" />
+        {/* Knife */}
+        <path d="M16.5 3.5v5.2c0 1.65 1.05 2.8 2.5 3.1 1.45-.3 2.5-1.45 2.5-3.1V3.5" />
+        <path d="M19 11.8V20.5" />
       </svg>
     );
   }
@@ -36,12 +39,11 @@ export function ItineraryMetaIcon({ name, size = 22, strokeWidth }: IconProps) {
   if (name === "bed") {
     return (
       <svg {...common}>
-        <path d="M2 10v10" />
-        <path d="M22 10v10" />
+        <path d="M2 10v11" />
+        <path d="M22 10v11" />
         <path d="M2 14h20" />
-        <path d="M2 10V7.5A2.5 2.5 0 0 1 4.5 5h7.5V10" />
-        <path d="M12 5h7.5A2.5 2.5 0 0 1 22 7.5V10" />
-        <path d="M5.5 8.5h4a1 1 0 0 1 1 1v2.5H2" />
+        <path d="M2 14V9.5A2.5 2.5 0 0 1 4.5 7H9.5V14" />
+        <path d="M9.5 7H18a2.5 2.5 0 0 1 2.5 2.5V14" />
       </svg>
     );
   }
