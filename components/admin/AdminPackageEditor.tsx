@@ -10,6 +10,7 @@ import { useAdminContent } from "@/components/admin/useAdminContent";
 import {
   cleanSlugInput,
   DEFAULT_TRIP_PACKAGES,
+  coerceTripPackages,
   isAbcPackage,
   isEbcPackage,
   isLangtangPackage,
@@ -129,13 +130,15 @@ export default function AdminPackageEditor() {
       baselineRef.current = null;
       return;
     }
+    const coerced = coerceTripPackages(content.tripPackages).find((item) => item.id === found.id);
+    const forEditor = coerced ?? found;
     setPkg((cur) => {
       if (cur && cur.id === found.id) return cur;
-      baselineRef.current = structuredClone(found);
-      return { ...found };
+      baselineRef.current = structuredClone(forEditor);
+      return { ...forEditor };
     });
     if (!baselineRef.current || baselineRef.current.id !== found.id) {
-      baselineRef.current = structuredClone(found);
+      baselineRef.current = structuredClone(forEditor);
     }
   }, [loaded, params.id, content.tripPackages, router]);
 
@@ -387,6 +390,17 @@ export default function AdminPackageEditor() {
           >
             Add group tier
           </button>
+          {isEverestPanoramaPackage(pkg) || pkg.luxuryExperience || pkg.pricingDisclaimer ? (
+            <label className="admin-field" style={{ marginTop: 16 }}>
+              <span>Pricing note under the group table (shown on the live booking box)</span>
+              <textarea
+                style={{ minHeight: 100 }}
+                value={pkg.pricingDisclaimer || ""}
+                onChange={(e) => patch({ pricingDisclaimer: e.target.value })}
+                placeholder="Per-person pricing depends on confirmed dates, accommodation availability…"
+              />
+            </label>
+          ) : null}
         </div>
       ) : null}
 
@@ -1404,6 +1418,122 @@ export default function AdminPackageEditor() {
       {tab === "info" ? (
         <div className="admin-card">
           <p className="admin-lead">Trip information blocks on the public page. Add, rewrite or remove any heading.</p>
+          {isEverestPanoramaPackage(pkg) || pkg.luxuryExperience ? (
+            <div className="admin-card" style={{ margin: "0 0 16px", padding: 12 }}>
+              <p className="admin-side-group-label" style={{ margin: "0 0 10px" }}>
+                Luxury experience (shown above trip info blocks on Everest Panorama / premium treks)
+              </p>
+              <label className="admin-field">
+                <span>Section title</span>
+                <input
+                  value={pkg.luxuryExperience?.title || ""}
+                  onChange={(e) =>
+                    patch({
+                      luxuryExperience: {
+                        title: e.target.value,
+                        intro: pkg.luxuryExperience?.intro || "",
+                        pillars: pkg.luxuryExperience?.pillars || [],
+                      },
+                    })
+                  }
+                />
+              </label>
+              <label className="admin-field">
+                <span>Introduction</span>
+                <textarea
+                  style={{ minHeight: 90 }}
+                  value={pkg.luxuryExperience?.intro || ""}
+                  onChange={(e) =>
+                    patch({
+                      luxuryExperience: {
+                        title: pkg.luxuryExperience?.title || "",
+                        intro: e.target.value,
+                        pillars: pkg.luxuryExperience?.pillars || [],
+                      },
+                    })
+                  }
+                />
+              </label>
+              {(pkg.luxuryExperience?.pillars || []).map((pillar, pi) => (
+                <div key={`${pillar.title}-${pi}`} className="admin-day">
+                  <strong>Pillar {pi + 1}</strong>
+                  <label className="admin-field">
+                    <span>Pillar heading</span>
+                    <input
+                      value={pillar.title}
+                      onChange={(e) => {
+                        const pillars = [...(pkg.luxuryExperience?.pillars || [])];
+                        pillars[pi] = { ...pillar, title: e.target.value };
+                        patch({
+                          luxuryExperience: {
+                            title: pkg.luxuryExperience?.title || "",
+                            intro: pkg.luxuryExperience?.intro || "",
+                            pillars,
+                          },
+                        });
+                      }}
+                    />
+                  </label>
+                  {pillar.items.map((line, li) => (
+                    <label key={li} className="admin-field">
+                      <span>Bullet {li + 1}</span>
+                      <input
+                        value={line}
+                        onChange={(e) => {
+                          const pillars = [...(pkg.luxuryExperience?.pillars || [])];
+                          const items = [...pillar.items];
+                          items[li] = e.target.value;
+                          pillars[pi] = { ...pillar, items };
+                          patch({
+                            luxuryExperience: {
+                              title: pkg.luxuryExperience?.title || "",
+                              intro: pkg.luxuryExperience?.intro || "",
+                              pillars,
+                            },
+                          });
+                        }}
+                      />
+                    </label>
+                  ))}
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-ghost admin-btn-sm"
+                    onClick={() => {
+                      const pillars = [...(pkg.luxuryExperience?.pillars || [])];
+                      pillars[pi] = { ...pillar, items: [...pillar.items, ""] };
+                      patch({
+                        luxuryExperience: {
+                          title: pkg.luxuryExperience?.title || "",
+                          intro: pkg.luxuryExperience?.intro || "",
+                          pillars,
+                        },
+                      });
+                    }}
+                  >
+                    Add bullet
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() =>
+                  patch({
+                    luxuryExperience: {
+                      title: pkg.luxuryExperience?.title || "What makes this a luxury trek?",
+                      intro: pkg.luxuryExperience?.intro || "",
+                      pillars: [
+                        ...(pkg.luxuryExperience?.pillars || []),
+                        { title: "New pillar", items: ["Detail line"] },
+                      ],
+                    },
+                  })
+                }
+              >
+                Add pillar
+              </button>
+            </div>
+          ) : null}
           <label className="admin-field">
             <span>Section title</span>
             <input value={pkg.tripInfoTitle || ""} onChange={(e) => patch({ tripInfoTitle: e.target.value })} />

@@ -304,6 +304,69 @@ function everestViewFaqs(
   return saved;
 }
 
+function everestPanoramaLuxuryExperience(
+  saved: TrekPackage["luxuryExperience"] | undefined,
+  def: TrekPackage["luxuryExperience"],
+): TrekPackage["luxuryExperience"] {
+  if (!def) return saved;
+  if (!saved?.pillars?.length) return def;
+  const blob = JSON.stringify(saved);
+  if (EVL_PROHIBITED_RE.test(blob)) return def;
+  return saved;
+}
+
+function mergeEverestPanoramaPublicPackage(
+  mergedPkg: TrekPackage,
+  item: TrekPackage,
+  def: TrekPackage,
+): TrekPackage {
+  return {
+    ...mergedPkg,
+    title: everestViewPublicText(item.title, def.title),
+    subtitle: everestViewPublicText(item.subtitle, def.subtitle),
+    overview: everestViewPublicText(item.overview, def.overview),
+    highlights: everestViewStringList(item.highlights, def.highlights),
+    faqs: everestViewFaqs(item.faqs, def.faqs),
+    tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,
+    tripInfoTitle: everestViewPublicText(item.tripInfoTitle, def.tripInfoTitle || ""),
+    whyItems: item.whyItems?.length ? item.whyItems : def.whyItems,
+    inclusions: item.inclusions?.length ? item.inclusions : def.inclusions,
+    exclusions: item.exclusions?.length ? item.exclusions : def.exclusions,
+    includeNote: everestViewPublicText(item.includeNote, def.includeNote || ""),
+    luklaNote: everestViewPublicText(item.luklaNote, def.luklaNote || ""),
+    mapBody: everestViewPublicText(item.mapBody, def.mapBody || ""),
+    altitudeBody: everestViewPublicText(item.altitudeBody, def.altitudeBody || ""),
+    weatherBody: everestViewPublicText(item.weatherBody, def.weatherBody || ""),
+    metaTitle: everestViewPublicText(item.metaTitle, def.metaTitle),
+    metaDescription: everestViewPublicText(item.metaDescription, def.metaDescription),
+    metaKeywords: everestViewPublicText(item.metaKeywords, def.metaKeywords || ""),
+    focusKeyword: everestViewPublicText(item.focusKeyword, def.focusKeyword || ""),
+    ogTitle: everestViewPublicText(item.ogTitle, def.ogTitle || ""),
+    ogDescription: everestViewPublicText(item.ogDescription, def.ogDescription || ""),
+    groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
+    luxuryExperience: everestPanoramaLuxuryExperience(item.luxuryExperience, def.luxuryExperience),
+    pricingDisclaimer: everestViewPublicText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
+    accommodationLabel: everestViewPublicText(item.accommodationLabel, def.accommodationLabel),
+    activityLabel: everestViewPublicText(item.activityLabel, def.activityLabel || ""),
+    maxAltitude: everestViewPublicText(item.maxAltitude, def.maxAltitude),
+    startLabel: everestViewPublicText(item.startLabel, def.startLabel || ""),
+    beforeItems: item.beforeItems?.length ? item.beforeItems : def.beforeItems,
+    itinerary: everestViewItinerary(item.itinerary, def.itinerary),
+    itineraryIntro: everestViewPublicText(item.itineraryIntro, def.itineraryIntro || ""),
+    journeyStages: item.journeyStages?.length ? item.journeyStages : def.journeyStages,
+    aboutSections: item.aboutSections?.length ? item.aboutSections : def.aboutSections,
+    journeyTitle: everestViewPublicText(item.journeyTitle, def.journeyTitle || ""),
+    journeySubheading: everestViewPublicText(item.journeySubheading, def.journeySubheading || ""),
+    journeyIntro: everestViewPublicText(item.journeyIntro, def.journeyIntro || ""),
+    aboutLead: everestViewPublicText(item.aboutLead, def.aboutLead || ""),
+    badge: everestViewPublicText(item.badge, def.badge),
+    duration: everestViewPublicText(item.duration, def.duration),
+    hotelEverestViewStatus: undefined,
+    hotelEverestViewAdminNote: undefined,
+    hotelEverestViewPublicNote: undefined,
+  };
+}
+
 function everestViewItinerary(
   saved: TrekPackage["itinerary"] | undefined,
   def: TrekPackage["itinerary"],
@@ -1286,49 +1349,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       };
     }
     if (def.id === EVEREST_PANORAMA_PACKAGE_ID) {
-      return {
-        ...mergedPkg,
-        title: def.title,
-        subtitle: def.subtitle,
-        overview: def.overview,
-        highlights: def.highlights,
-        faqs: def.faqs,
-        tripInfo: def.tripInfo,
-        tripInfoTitle: def.tripInfoTitle,
-        whyItems: def.whyItems,
-        inclusions: def.inclusions,
-        exclusions: def.exclusions,
-        includeNote: def.includeNote,
-        luklaNote: def.luklaNote,
-        mapBody: def.mapBody,
-        altitudeBody: def.altitudeBody,
-        weatherBody: def.weatherBody,
-        metaTitle: def.metaTitle,
-        metaDescription: def.metaDescription,
-        metaKeywords: def.metaKeywords,
-        focusKeyword: def.focusKeyword,
-        ogTitle: def.ogTitle,
-        ogDescription: def.ogDescription,
-        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
-        luxuryExperience: def.luxuryExperience,
-        pricingDisclaimer: def.pricingDisclaimer,
-        accommodationLabel: def.accommodationLabel,
-        activityLabel: def.activityLabel,
-        maxAltitude: def.maxAltitude,
-        startLabel: def.startLabel,
-        beforeItems: def.beforeItems,
-        itinerary: def.itinerary,
-        itineraryIntro: def.itineraryIntro,
-        journeyStages: def.journeyStages,
-        aboutSections: def.aboutSections,
-        journeyTitle: def.journeyTitle,
-        journeySubheading: def.journeySubheading,
-        journeyIntro: def.journeyIntro,
-        aboutLead: def.aboutLead,
-        hotelEverestViewStatus: undefined,
-        hotelEverestViewAdminNote: undefined,
-        hotelEverestViewPublicNote: undefined,
-      };
+      return mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
     }
     if (def.id === LANGTANG_PACKAGE_ID) {
       return {

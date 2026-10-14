@@ -140,6 +140,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const abcCharts = isAbcPackage(pkg);
   const everestViewCharts = isEverestViewPackage(pkg);
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
+  const premiumKhumbuTrek = everestViewCharts || everestPanoramaCharts;
   const premiumNav = Boolean(pkg.journeyStages?.length);
   const builtInCharts =
     isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts || everestPanoramaCharts;
@@ -303,7 +304,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       </p>
       {groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
-          {everestPanoramaCharts ? "Private group pricing (per person)" : "See group booking discount"}{" "}
+          {premiumKhumbuTrek ? "Private group pricing (per person)" : "See group booking discount"}{" "}
           {showGroups ? "▴" : "▾"}
         </button>
       ) : null}
@@ -327,13 +328,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       ) : null}
       {pkg.pricingDisclaimer ? <p className="lux-price-foot">{pkg.pricingDisclaimer}</p> : null}
       <Link href={enquire} className="lux-btn lux-btn-solid">
-        {everestPanoramaCharts ? "Plan Your Private Journey" : "Book now"}
+        Book now
       </Link>
       <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
-        {everestPanoramaCharts ? "Check Your Preferred Dates" : "Check availability"}
+        Check availability
       </Link>
       <Link href={enquire} className="lux-btn lux-btn-ghost">
-        {everestPanoramaCharts ? "Discuss Your Journey" : "Inquire now"}
+        Inquire now
       </Link>
       <a className="lux-wa" href="https://wa.me/9779851148898" target="_blank" rel="noreferrer">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -369,7 +370,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     priority
                     className="lux-gallery-photo lux-photo"
                     objectFit="cover"
-                    objectPosition="center 38%"
+                    objectPosition={index === 0 ? "center 42%" : "center center"}
                     quality={index === 0 ? 86 : 78}
                   />
                 </span>
@@ -1015,7 +1016,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           </strong>
           {hasPrice ? <span>/ person</span> : null}
         </div>
-        <Link href={enquire}>Inquire</Link>
+        <Link href={enquire}>{premiumKhumbuTrek ? "Book now" : "Inquire"}</Link>
       </div>
 
       <div id="reviews" className="lux-reviews-band">

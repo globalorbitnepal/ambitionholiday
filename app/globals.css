@@ -4440,8 +4440,10 @@ body.nav-mega-open .hero-copy {
   object-fit: cover;
   position: absolute;
   inset: 0;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
 }
 
 .lux-mosaic-actions,
@@ -4940,9 +4942,10 @@ body.nav-mega-open .hero-copy {
 .lux-journey-stage-media img.lux-photo {
   position: absolute !important;
   inset: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
+  object-position: center center;
 }
 
 .lux-journey-stage-num {
@@ -5035,6 +5038,7 @@ body.nav-mega-open .hero-copy {
   border-radius: 0.9rem;
   overflow: hidden;
   margin: 0 0 0.75rem;
+  contain: strict;
 }
 
 .lux-day-meta {
@@ -6644,30 +6648,49 @@ a.lux-chart-dl {
   contain: strict;
 }
 
-/* Next.js fill images: do not force height:100% (resolves against page root and covers all sections). */
+/* Hero gallery: parent .lux-gallery-media is position:absolute + contain — safe 100% fill. */
 .lux-gallery--trip .lux-gallery-media img.lux-gallery-photo,
 .lux-gallery--trip .lux-gallery-media img.lux-photo,
 .lux-gallery--trip .lux-gallery-pane:hover .lux-gallery-media img.lux-gallery-photo {
   transform: none !important;
   transition: none !important;
   object-fit: cover !important;
-  object-position: center 38% !important;
   position: absolute !important;
   inset: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100%;
+  min-height: 100%;
   max-width: none;
   max-height: none;
   opacity: 1 !important;
+}
+
+.lux-gallery--trip .lux-gallery-pane:nth-child(1) img.lux-gallery-photo,
+.lux-gallery--trip .lux-gallery-pane:nth-child(1) img.lux-photo {
+  object-position: center 42% !important;
+}
+
+.lux-gallery--trip .lux-gallery-pane:nth-child(2) img.lux-gallery-photo,
+.lux-gallery--trip .lux-gallery-pane:nth-child(3) img.lux-gallery-photo,
+.lux-gallery--trip .lux-gallery-pane:nth-child(2) img.lux-photo,
+.lux-gallery--trip .lux-gallery-pane:nth-child(3) img.lux-photo {
+  object-position: center center !important;
 }
 
 @media (max-width: 768px) {
   .lux-gallery--trip .lux-gallery-row {
     grid-template-columns: 1fr;
     height: auto;
+    gap: 0;
   }
-  .lux-gallery--trip .lux-gallery-pane {
-    min-height: 12rem;
+  .lux-gallery--trip .lux-gallery-pane:nth-child(2),
+  .lux-gallery--trip .lux-gallery-pane:nth-child(3) {
+    display: none;
+  }
+  .lux-gallery--trip .lux-gallery-pane:first-child {
+    min-height: clamp(16rem, 56vw, 22rem);
+    aspect-ratio: 16 / 10;
   }
 }
 
