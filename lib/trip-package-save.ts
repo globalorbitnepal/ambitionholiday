@@ -43,6 +43,12 @@ export function mergeTripPackageSnapshots(a: TrekPackage, b: TrekPackage): TrekP
     altitudeChartFt: pickNonempty(b.altitudeChartFt, a.altitudeChartFt),
     weatherMonthlySrc: pickNonempty(b.weatherMonthlySrc, a.weatherMonthlySrc),
     reviews: Array.isArray(b.reviews) ? b.reviews : a.reviews || [],
+    journeyStages: b.journeyStages?.length ? b.journeyStages : a.journeyStages,
+    aboutSections: b.aboutSections?.length ? b.aboutSections : a.aboutSections,
+    journeyTitle: pickNonempty(b.journeyTitle, a.journeyTitle),
+    journeySubheading: pickNonempty(b.journeySubheading, a.journeySubheading),
+    journeyIntro: pickNonempty(b.journeyIntro, a.journeyIntro),
+    aboutLead: pickNonempty(b.aboutLead, a.aboutLead),
     slugHistory: withSlugHistory(
       { slug: b.slug || a.slug, slugHistory: [...(a.slugHistory || []), ...(b.slugHistory || [])] },
       a,

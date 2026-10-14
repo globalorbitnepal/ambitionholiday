@@ -225,6 +225,7 @@ export const EVEREST_PANORAMA_PACKAGE_ID = "ept-pan";
 /** Package ids whose public URL slug must not change (SEO / redirects). */
 export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [EVEREST_VIEW_PACKAGE_ID]: "everest-view-luxury-trek",
+  [EVEREST_PANORAMA_PACKAGE_ID]: "everest-panorama-trek",
 };
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
@@ -1258,6 +1259,21 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
           },
           def,
         ).slugHistory,
+      };
+    }
+    if (def.id === EVEREST_PANORAMA_PACKAGE_ID) {
+      return {
+        ...mergedPkg,
+        itinerary: everestViewItinerary(item.itinerary, def.itinerary),
+        journeyStages: item.journeyStages?.length ? item.journeyStages : def.journeyStages,
+        aboutSections: item.aboutSections?.length ? item.aboutSections : def.aboutSections,
+        journeyTitle: (item.journeyTitle || "").trim() || def.journeyTitle,
+        journeySubheading: (item.journeySubheading || "").trim() || def.journeySubheading,
+        journeyIntro: (item.journeyIntro || "").trim() || def.journeyIntro,
+        aboutLead: (item.aboutLead || "").trim() || def.aboutLead,
+        hotelEverestViewStatus: item.hotelEverestViewStatus || def.hotelEverestViewStatus,
+        hotelEverestViewAdminNote: item.hotelEverestViewAdminNote ?? def.hotelEverestViewAdminNote,
+        hotelEverestViewPublicNote: (item.hotelEverestViewPublicNote || "").trim() || def.hotelEverestViewPublicNote,
       };
     }
     if (def.id === LANGTANG_PACKAGE_ID) {

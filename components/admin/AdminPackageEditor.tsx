@@ -15,6 +15,7 @@ import {
   isLangtangPackage,
   isMustangPackage,
   isEverestViewPackage,
+  isEverestPanoramaPackage,
   LOCKED_PACKAGE_SLUGS,
   packageHeadings,
   packageSeoInput,
@@ -23,7 +24,9 @@ import {
   blankPackageReview,
   withSlugHistory,
   tripPath,
+  type TrekAboutBlock,
   type TrekItineraryDay,
+  type TrekJourneyStage,
   type TrekPackage,
   type TrekReview,
 } from "@/lib/trip-packages";
@@ -36,19 +39,21 @@ const TABS = [
   ["facts", "3 · Trip facts"],
   ["headings", "4 · Section titles"],
   ["overview", "5 · Overview"],
-  ["why", "6 · Why & fit"],
-  ["video", "7 · Videos"],
-  ["info", "8 · Trip info"],
-  ["itinerary", "9 · Itinerary"],
-  ["charts", "10 · Map & charts"],
-  ["includes", "11 · Includes"],
-  ["photos", "12 · Gallery"],
-  ["packing", "13 · Packing"],
-  ["travel", "14 · Travel notes"],
-  ["faq", "15 · FAQ"],
-  ["ratings", "16 · Ratings"],
-  ["reviews", "17 · Reviews"],
-  ["seo", "18 · SEO"],
+  ["why", "6 · Why Us"],
+  ["journey", "7 · The Journey"],
+  ["about", "8 · About"],
+  ["video", "9 · Videos"],
+  ["info", "10 · Trip info"],
+  ["itinerary", "11 · Itinerary"],
+  ["charts", "12 · Map & charts"],
+  ["includes", "13 · Includes"],
+  ["photos", "14 · Gallery"],
+  ["packing", "15 · Packing"],
+  ["travel", "16 · Flights & notes"],
+  ["faq", "17 · FAQ"],
+  ["ratings", "18 · Ratings"],
+  ["reviews", "19 · Reviews"],
+  ["seo", "20 · SEO"],
 ] as const;
 type TabId = (typeof TABS)[number][0];
 
@@ -81,6 +86,20 @@ const emptyDay = (n: number): TrekItineraryDay => ({
   distance: "",
   body: "",
   imageSrc: "",
+});
+
+const blankJourneyStage = (): TrekJourneyStage => ({
+  id: `js-${Date.now()}`,
+  title: "New stage",
+  body: "",
+  imageSrc: "",
+  imageAlt: "",
+});
+
+const blankAboutBlock = (): TrekAboutBlock => ({
+  id: `ab-${Date.now()}`,
+  title: "New subsection",
+  body: "",
 });
 
 export default function AdminPackageEditor() {
@@ -194,8 +213,8 @@ export default function AdminPackageEditor() {
         <div>
           <h1>{pkg.title || "Untitled package"}</h1>
           <p className="admin-muted" style={{ marginTop: 4, marginBottom: 8 }}>
-            Full page editor — all 18 sections: title &amp; hero, pricing, facts, overview, why, videos, trip info, itinerary, map &amp; charts,
-            includes, gallery, packing, flights, FAQ, ratings, guest reviews &amp; SEO.
+            Full page editor — 20 tabs A–Z: title &amp; hero, pricing, facts, headings, overview, why us, the journey, about, videos, trip info,
+            itinerary, map &amp; charts, includes, gallery, packing, flights, FAQ, ratings, reviews &amp; SEO.
           </p>
           <p className="admin-lead admin-row-actions">
             <span className={`admin-badge admin-badge--${pkg.status === "published" ? "good" : "draft"}`}>{pkg.status}</span>
@@ -413,6 +432,10 @@ export default function AdminPackageEditor() {
 
       {tab === "overview" ? (
         <div className="admin-card">
+          <p className="admin-muted">
+            Shown in the Overview section on the live page (under the hero). For Everest Panorama–style pages, use{" "}
+            <strong>The Journey</strong> and <strong>About</strong> tabs for the dedicated nav sections.
+          </p>
           <label className="admin-field">
             <span>Overview (main story)</span>
             <textarea style={{ minHeight: 160 }} value={pkg.overview} onChange={(e) => patch({ overview: e.target.value })} />
@@ -664,7 +687,12 @@ export default function AdminPackageEditor() {
       {tab === "charts" ? (
         <div className="admin-card">
           <p className="admin-lead">
-            {isEbcPackage(pkg) || isAbcPackage(pkg) || isMustangPackage(pkg) || isLangtangPackage(pkg) || isEverestViewPackage(pkg)
+            {isEbcPackage(pkg) ||
+            isAbcPackage(pkg) ||
+            isMustangPackage(pkg) ||
+            isLangtangPackage(pkg) ||
+            isEverestViewPackage(pkg) ||
+            isEverestPanoramaPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -769,6 +797,166 @@ export default function AdminPackageEditor() {
         </div>
       ) : null}
 
+      {tab === "journey" ? (
+        <div className="admin-card">
+          <p className="admin-lead">
+            <strong>The Journey</strong> section on the live page (sticky nav). Add at least one stage to show this section and the
+            16-tab Everest Panorama menu. Hero button &quot;Explore the Journey&quot; scrolls here.
+          </p>
+          <label className="admin-field">
+            <span>Section heading</span>
+            <input
+              value={pkg.journeyTitle || ""}
+              placeholder="The Journey"
+              onChange={(e) => patch({ journeyTitle: e.target.value })}
+            />
+          </label>
+          <label className="admin-field">
+            <span>Subheading</span>
+            <input
+              value={pkg.journeySubheading || ""}
+              placeholder="From Kathmandu's Heritage Streets to the Heart of the Khumbu"
+              onChange={(e) => patch({ journeySubheading: e.target.value })}
+            />
+          </label>
+          <label className="admin-field">
+            <span>Introduction (paragraphs — blank line between)</span>
+            <textarea
+              style={{ minHeight: 140 }}
+              value={pkg.journeyIntro || ""}
+              onChange={(e) => patch({ journeyIntro: e.target.value })}
+            />
+          </label>
+          {(pkg.journeyStages || []).map((stage, si) => (
+            <div key={stage.id} className="admin-day">
+              <strong>Stage {si + 1}</strong>
+              <label className="admin-field">
+                <span>Stage title</span>
+                <input
+                  value={stage.title}
+                  onChange={(e) => {
+                    const journeyStages = [...(pkg.journeyStages || [])];
+                    journeyStages[si] = { ...stage, title: e.target.value };
+                    patch({ journeyStages });
+                  }}
+                />
+              </label>
+              <label className="admin-field">
+                <span>Stage body</span>
+                <textarea
+                  value={stage.body}
+                  onChange={(e) => {
+                    const journeyStages = [...(pkg.journeyStages || [])];
+                    journeyStages[si] = { ...stage, body: e.target.value };
+                    patch({ journeyStages });
+                  }}
+                />
+              </label>
+              <AdminMediaField
+                label="Stage image (optional)"
+                value={stage.imageSrc || ""}
+                onChange={(imageSrc) => {
+                  const journeyStages = [...(pkg.journeyStages || [])];
+                  journeyStages[si] = { ...stage, imageSrc };
+                  patch({ journeyStages });
+                }}
+              />
+              <label className="admin-field">
+                <span>Image alt text</span>
+                <input
+                  value={stage.imageAlt || ""}
+                  onChange={(e) => {
+                    const journeyStages = [...(pkg.journeyStages || [])];
+                    journeyStages[si] = { ...stage, imageAlt: e.target.value };
+                    patch({ journeyStages });
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() => patch({ journeyStages: (pkg.journeyStages || []).filter((_, i) => i !== si) })}
+              >
+                Remove stage
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="admin-btn admin-btn-ghost admin-btn-sm"
+            onClick={() => patch({ journeyStages: [...(pkg.journeyStages || []), blankJourneyStage()] })}
+          >
+            Add journey stage
+          </button>
+        </div>
+      ) : null}
+
+      {tab === "about" ? (
+        <div className="admin-card">
+          <p className="admin-lead">
+            <strong>About</strong> section on the live page — separate from Overview. Use subsections for Khumbu, culture, hotel night,
+            etc.
+          </p>
+          <label className="admin-field">
+            <span>About section heading</span>
+            <input
+              value={pkg.aboutTitle || ""}
+              placeholder="About the Everest Panorama Trek"
+              onChange={(e) => patch({ aboutTitle: e.target.value })}
+            />
+          </label>
+          <label className="admin-field">
+            <span>Lead paragraph (below heading)</span>
+            <textarea
+              style={{ minHeight: 100 }}
+              value={pkg.aboutLead || ""}
+              onChange={(e) => patch({ aboutLead: e.target.value })}
+            />
+          </label>
+          {(pkg.aboutSections || []).map((block, bi) => (
+            <div key={block.id} className="admin-day">
+              <label className="admin-field">
+                <span>Subsection heading</span>
+                <input
+                  value={block.title}
+                  onChange={(e) => {
+                    const aboutSections = [...(pkg.aboutSections || [])];
+                    aboutSections[bi] = { ...block, title: e.target.value };
+                    patch({ aboutSections });
+                  }}
+                />
+              </label>
+              <label className="admin-field">
+                <span>Subsection body (blank line between paragraphs)</span>
+                <textarea
+                  style={{ minHeight: 120 }}
+                  value={block.body}
+                  onChange={(e) => {
+                    const aboutSections = [...(pkg.aboutSections || [])];
+                    aboutSections[bi] = { ...block, body: e.target.value };
+                    patch({ aboutSections });
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-btn admin-btn-ghost admin-btn-sm"
+                onClick={() => patch({ aboutSections: (pkg.aboutSections || []).filter((_, i) => i !== bi) })}
+              >
+                Remove subsection
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="admin-btn admin-btn-ghost admin-btn-sm"
+            onClick={() => patch({ aboutSections: [...(pkg.aboutSections || []), blankAboutBlock()] })}
+          >
+            Add about subsection
+          </button>
+        </div>
+      ) : null}
+
       {tab === "packing" ? (
         <div className="admin-card">
           <label className="admin-field">
@@ -854,11 +1042,16 @@ export default function AdminPackageEditor() {
               }
             />
           </label>
-          {isEverestViewPackage(pkg) ? (
+          {isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg) ? (
             <div className="admin-subcard" style={{ marginTop: "1.25rem" }}>
-              <h3 className="admin-h3">Day 4 ridge-area lodge (Everest View trek)</h3>
+              <h3 className="admin-h3">
+                {isEverestPanoramaPackage(pkg)
+                  ? "Everest View Hotel overnight (Everest Panorama trek)"
+                  : "Day 4 ridge-area lodge (Everest View trek)"}
+              </h3>
               <p className="admin-muted">
-                Controls how the Syangboche ridge / panorama lodge night is described on the public page. Do not use a specific property name in the public note. Admin note is never shown to visitors.
+                Controls how the Everest View Hotel / ridge lodge night is described on the public page. Admin note is never shown to
+                visitors.
               </p>
               <label className="admin-field">
                 <span>Confirmation status</span>
