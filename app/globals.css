@@ -6602,10 +6602,10 @@ a.lux-chart-dl {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.45rem;
-  height: clamp(18rem, 54vh, 31rem);
+  height: clamp(20rem, 58vh, 34rem);
   max-width: 92rem;
   margin: 0 auto;
-  padding: calc(5.4rem + env(safe-area-inset-top)) clamp(0.85rem, 2.4vw, 2.4rem) 0.85rem;
+  padding: 0.35rem clamp(0.85rem, 2.4vw, 2.4rem) 0.85rem;
   transition: grid-template-columns 0.4s linear;
 }
 
@@ -6668,7 +6668,7 @@ a.lux-chart-dl {
 
 .lux-gallery--trip .lux-gallery-pane:nth-child(1) img.lux-gallery-photo,
 .lux-gallery--trip .lux-gallery-pane:nth-child(1) img.lux-photo {
-  object-position: center 42% !important;
+  object-position: center 62% !important;
 }
 
 .lux-gallery--trip .lux-gallery-pane:nth-child(2) img.lux-gallery-photo,

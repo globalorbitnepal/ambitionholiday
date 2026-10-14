@@ -370,7 +370,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                     priority
                     className="lux-gallery-photo lux-photo"
                     objectFit="cover"
-                    objectPosition={index === 0 ? "center 42%" : "center center"}
+                    objectPosition={index === 0 ? "center 62%" : "center 55%"}
                     quality={index === 0 ? 86 : 78}
                   />
                 </span>
