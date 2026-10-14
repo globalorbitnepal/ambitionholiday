@@ -309,7 +309,7 @@ export const EVEREST_PANORAMA_TRIP_PACKAGE: TrekPackage = {
   },
   videoReviews: [],
   reviews: [],
-  tripInfoTitle: "Everest Panorama Luxury Trek – Trip information",
+  tripInfoTitle: "Everest Panorama Luxury Trek – Trip Information",
   tripInfo: [
     {
       id: "ti-duration",

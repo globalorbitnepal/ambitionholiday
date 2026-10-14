@@ -292,6 +292,19 @@ function everestViewPublicText(saved: string | undefined, def: string) {
   return value;
 }
 
+/** CMS value when present (including empty string); defaults only when the field was never saved. */
+function cmsStoredText(saved: string | undefined, def: string) {
+  if (saved === undefined) return def;
+  const trimmed = saved.trim();
+  if (trimmed && EVL_PROHIBITED_RE.test(trimmed)) return def;
+  return trimmed;
+}
+
+function cmsStoredList<T>(saved: T[] | undefined, def: T[]): T[] {
+  if (saved === undefined) return def;
+  return saved;
+}
+
 function everestViewStringList(saved: string[] | undefined, def: string[]) {
   if (!saved?.length) return def;
   if (saved.some((line) => EVL_PROHIBITED_RE.test(line))) return def;
@@ -311,8 +324,11 @@ function everestPanoramaLuxuryExperience(
   saved: TrekPackage["luxuryExperience"] | undefined,
   def: TrekPackage["luxuryExperience"],
 ): TrekPackage["luxuryExperience"] {
-  if (!def) return saved;
-  if (!saved?.pillars?.length) return def;
+  if (saved === undefined) return def;
+  if (!saved?.pillars?.length) {
+    if (!saved.title?.trim() && !saved.intro?.trim()) return undefined;
+    return saved.pillars?.length ? saved : undefined;
+  }
   const blob = JSON.stringify(saved);
   if (EVL_PROHIBITED_RE.test(blob)) return def;
   return saved;
@@ -330,13 +346,13 @@ function mergeEverestPanoramaPublicPackage(
     overview: everestViewPublicText(item.overview, def.overview),
     highlights: everestViewStringList(item.highlights, def.highlights),
     faqs: everestViewFaqs(item.faqs, def.faqs),
-    tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,
-    tripInfoTitle: everestViewPublicText(item.tripInfoTitle, def.tripInfoTitle || ""),
-    whyItems: item.whyItems?.length ? item.whyItems : def.whyItems,
-    inclusions: item.inclusions?.length ? item.inclusions : def.inclusions,
-    exclusions: item.exclusions?.length ? item.exclusions : def.exclusions,
-    includeNote: everestViewPublicText(item.includeNote, def.includeNote || ""),
-    luklaNote: everestViewPublicText(item.luklaNote, def.luklaNote || ""),
+    tripInfo: cmsStoredList(item.tripInfo, def.tripInfo),
+    tripInfoTitle: cmsStoredText(item.tripInfoTitle, def.tripInfoTitle || ""),
+    whyItems: cmsStoredList(item.whyItems, def.whyItems),
+    inclusions: cmsStoredList(item.inclusions, def.inclusions),
+    exclusions: cmsStoredList(item.exclusions, def.exclusions),
+    includeNote: cmsStoredText(item.includeNote, def.includeNote || ""),
+    luklaNote: cmsStoredText(item.luklaNote, def.luklaNote || ""),
     mapBody: everestViewPublicText(item.mapBody, def.mapBody || ""),
     altitudeBody: everestViewPublicText(item.altitudeBody, def.altitudeBody || ""),
     weatherBody: everestViewPublicText(item.weatherBody, def.weatherBody || ""),
@@ -348,7 +364,7 @@ function mergeEverestPanoramaPublicPackage(
     ogDescription: everestViewPublicText(item.ogDescription, def.ogDescription || ""),
     groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
     luxuryExperience: everestPanoramaLuxuryExperience(item.luxuryExperience, def.luxuryExperience),
-    pricingDisclaimer: everestViewPublicText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
+    pricingDisclaimer: cmsStoredText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
     accommodationLabel: everestViewPublicText(item.accommodationLabel, def.accommodationLabel),
     activityLabel: everestViewPublicText(item.activityLabel, def.activityLabel || ""),
     maxAltitude: everestViewPublicText(item.maxAltitude, def.maxAltitude),
@@ -356,8 +372,8 @@ function mergeEverestPanoramaPublicPackage(
     beforeItems: item.beforeItems?.length ? item.beforeItems : def.beforeItems,
     itinerary: everestViewItinerary(item.itinerary, def.itinerary),
     itineraryIntro: everestViewPublicText(item.itineraryIntro, def.itineraryIntro || ""),
-    journeyStages: item.journeyStages?.length ? item.journeyStages : def.journeyStages,
-    aboutSections: item.aboutSections?.length ? item.aboutSections : def.aboutSections,
+    journeyStages: cmsStoredList(item.journeyStages, def.journeyStages || []),
+    aboutSections: cmsStoredList(item.aboutSections, def.aboutSections || []),
     journeyTitle: everestViewPublicText(item.journeyTitle, def.journeyTitle || ""),
     journeySubheading: everestViewPublicText(item.journeySubheading, def.journeySubheading || ""),
     journeyIntro: everestViewPublicText(item.journeyIntro, def.journeyIntro || ""),

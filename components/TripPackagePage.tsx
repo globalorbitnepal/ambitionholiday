@@ -198,7 +198,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     "why-us": Boolean(pkg.whyItems?.length),
     video: Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
     vreviews: Boolean(pkg.videoReviews?.length),
-    "trip-info": Boolean(pkg.tripInfo?.length),
+    "trip-info": Boolean(pkg.tripInfo?.length || pkg.luxuryExperience?.pillars?.length),
     "the-journey": Boolean(pkg.journeyStages?.length),
     about: Boolean(pkg.aboutSections?.length || pkg.aboutLead?.trim()),
     itinerary: Boolean(pkg.itinerary?.length),
@@ -605,32 +605,30 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               </article>
             ) : null}
 
-            {pkg.tripInfo?.length ? (
+            {pkg.tripInfo?.length || pkg.luxuryExperience?.pillars?.length ? (
               <article id="trip-info" className="lux-card">
                 <p className="lux-kicker">Know the trail</p>
-                <h2>{pkg.tripInfoTitle || `${pkg.title} – Trip information`}</h2>
-                {pkg.luxuryExperience ? (
-                  <div className="lux-luxury-experience">
-                    <h3>{pkg.luxuryExperience.title}</h3>
-                    <p>{pkg.luxuryExperience.intro}</p>
-                    <div className="lux-luxury-pillars">
-                      {pkg.luxuryExperience.pillars.map((pillar) => (
-                        <div key={pillar.title} className="lux-luxury-pillar">
-                          <h4>{pillar.title}</h4>
-                          <ul className="lux-checks">
-                            {pillar.items.map((line) => (
-                              <li key={line}>
-                                <CheckMark />
-                                <span>{line}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
+                <h2>{pkg.tripInfoTitle || `${pkg.title} – Trip Information`}</h2>
+                {pkg.luxuryExperience?.title || pkg.luxuryExperience?.intro ? (
+                  <div className="lux-info-block">
+                    {pkg.luxuryExperience.title ? <h3>{pkg.luxuryExperience.title}</h3> : null}
+                    {pkg.luxuryExperience.intro ? <p>{pkg.luxuryExperience.intro}</p> : null}
                   </div>
                 ) : null}
-                {pkg.tripInfo.map((block) => (
+                {pkg.luxuryExperience?.pillars?.map((pillar) => (
+                  <div key={pillar.title} className="lux-info-block">
+                    <h3>{pillar.title}</h3>
+                    <ul className="lux-checks">
+                      {pillar.items.map((line) => (
+                        <li key={line}>
+                          <CheckMark />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                {pkg.tripInfo?.map((block) => (
                   <div key={block.id} className="lux-info-block">
                     <h3>{block.title}</h3>
                     {block.body.split(/\n{2,}/).map((para) => (

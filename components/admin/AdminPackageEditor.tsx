@@ -403,17 +403,22 @@ export default function AdminPackageEditor() {
               placeholder="Describe the pricing graphic for accessibility"
             />
           </label>
-          {isEverestPanoramaPackage(pkg) || pkg.luxuryExperience || pkg.pricingDisclaimer ? (
-            <label className="admin-field" style={{ marginTop: 16 }}>
-              <span>Pricing note under the group table (shown on the live booking box)</span>
-              <textarea
-                style={{ minHeight: 100 }}
-                value={pkg.pricingDisclaimer || ""}
-                onChange={(e) => patch({ pricingDisclaimer: e.target.value })}
-                placeholder="Per-person pricing depends on confirmed dates, accommodation availability…"
-              />
-            </label>
-          ) : null}
+          <label className="admin-field" style={{ marginTop: 16 }}>
+            <span>Pricing note under the group table (leave empty to hide on the live page)</span>
+            <textarea
+              style={{ minHeight: 100 }}
+              value={pkg.pricingDisclaimer ?? ""}
+              onChange={(e) => patch({ pricingDisclaimer: e.target.value })}
+              placeholder="Optional — cleared text stays removed after Save & update live"
+            />
+          </label>
+          <button
+            type="button"
+            className="admin-btn admin-btn-ghost admin-btn-sm"
+            onClick={() => patch({ pricingDisclaimer: "" })}
+          >
+            Clear pricing note
+          </button>
         </div>
       ) : null}
 

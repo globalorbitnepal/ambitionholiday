@@ -49,6 +49,12 @@ export function mergeTripPackageSnapshots(a: TrekPackage, b: TrekPackage): TrekP
     journeySubheading: pickNonempty(b.journeySubheading, a.journeySubheading),
     journeyIntro: pickNonempty(b.journeyIntro, a.journeyIntro),
     aboutLead: pickNonempty(b.aboutLead, a.aboutLead),
+    pricingDisclaimer: b.pricingDisclaimer !== undefined ? b.pricingDisclaimer : a.pricingDisclaimer,
+    luxuryExperience: b.luxuryExperience !== undefined ? b.luxuryExperience : a.luxuryExperience,
+    pricePanelImageSrc: b.pricePanelImageSrc !== undefined ? b.pricePanelImageSrc : a.pricePanelImageSrc,
+    pricePanelImageAlt: b.pricePanelImageAlt !== undefined ? b.pricePanelImageAlt : a.pricePanelImageAlt,
+    tripInfo: Array.isArray(b.tripInfo) ? b.tripInfo : a.tripInfo,
+    tripInfoTitle: b.tripInfoTitle !== undefined ? b.tripInfoTitle : a.tripInfoTitle,
     slugHistory: withSlugHistory(
       { slug: b.slug || a.slug, slugHistory: [...(a.slugHistory || []), ...(b.slugHistory || [])] },
       a,
@@ -63,6 +69,10 @@ export function reconcileTripPackageForSave(
   baseline: TrekPackage | null,
 ): TrekPackage {
   const out: TrekPackage = { ...server, ...local };
+  if (local.pricingDisclaimer !== undefined) out.pricingDisclaimer = local.pricingDisclaimer;
+  if (local.luxuryExperience !== undefined) out.luxuryExperience = local.luxuryExperience;
+  if (local.tripInfo !== undefined) out.tripInfo = local.tripInfo;
+  if (local.tripInfoTitle !== undefined) out.tripInfoTitle = local.tripInfoTitle;
 
   if (!baseline) {
     out.watchVideo = local.watchVideo ?? server.watchVideo;
