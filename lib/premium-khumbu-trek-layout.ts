@@ -1,4 +1,9 @@
-import { isEverestPanoramaPackage, isEverestViewPackage, type TrekPackage } from "@/lib/trip-packages";
+import {
+  isEbcHelicopterTourPackage,
+  isEverestPanoramaPackage,
+  isEverestViewPackage,
+  type TrekPackage,
+} from "@/lib/trip-packages";
 
 export type TrekTocItem = { id: string; label: string };
 
@@ -40,8 +45,8 @@ export function buildPackageSectionToc(
 
 /** Horizontal sticky section nav on viewports below desktop (reference + Panorama). */
 export function useScrollableSectionNav(
-  pkg: Pick<TrekPackage, "id" | "slug">,
+  pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">,
   hasJourneyNav: boolean,
 ) {
-  return isPremiumKhumbuTrekPackage(pkg) || hasJourneyNav;
+  return isPremiumKhumbuTrekPackage(pkg) || isEbcHelicopterTourPackage(pkg) || hasJourneyNav;
 }

@@ -19,6 +19,7 @@ import type { TrekPackage, TrekVideo } from "@/lib/trip-packages";
 import {
   isAbcPackage,
   isEbcPackage,
+  isEbcHelicopterTourPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
   isLangtangPackage,
@@ -32,6 +33,7 @@ import TripPhotoLightbox from "@/components/TripPhotoLightbox";
 import { mediaSrc } from "@/lib/media-src";
 import { ItineraryMetaIcon } from "@/components/itinerary-meta-icons";
 import { normalizeVideoSrc, youtubeId } from "@/lib/video-embed";
+import { buildHelicopterTourSectionToc } from "@/lib/helicopter-tour-layout";
 import {
   buildPackageSectionToc,
   isPremiumKhumbuTrekPackage,
@@ -90,7 +92,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const [activeToc, setActiveToc] = useState("overview");
   const [tocFloating, setTocFloating] = useState(false);
   const [activeVideo, setActiveVideo] = useState<TrekVideo | null>(null);
-  const enquire = `/contact?interest=${pkg.catalogId || pkg.id}`;
+  const heliTour = isEbcHelicopterTourPackage(pkg);
+  const heliOptions = pkg.helicopterOptions?.length ? pkg.helicopterOptions : [];
+  const [heliOptionId, setHeliOptionId] = useState(heliOptions[0]?.id || "sharing");
+  const selectedHeliOption = heliOptions.find((opt) => opt.id === heliOptionId) || heliOptions[0];
+  const enquire = `/contact?interest=${encodeURIComponent(pkg.catalogId || pkg.id)}${
+    heliTour && selectedHeliOption ? `&tourOption=${encodeURIComponent(selectedHeliOption.id)}` : ""
+  }`;
   const gallery = useMemo(() => {
     const raw = pkg.gallery?.length ? pkg.gallery : [pkg.heroSrc];
     const unique = [pkg.heroSrc, ...raw.filter((src) => src !== pkg.heroSrc)];
@@ -196,24 +204,31 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     book: true,
     highlights: Boolean(pkg.highlights?.length),
     "why-us": Boolean(pkg.whyItems?.length),
-    video: Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
-    vreviews: Boolean(pkg.videoReviews?.length),
+    video: !heliTour && Boolean(pkg.watchVideo?.imageSrc || pkg.watchVideo?.videoSrc),
+    vreviews: !heliTour && Boolean(pkg.videoReviews?.length),
     "trip-info": Boolean(pkg.tripInfo?.length || pkg.luxuryExperience?.pillars?.length),
-    "the-journey": Boolean(pkg.journeyStages?.length),
-    about: Boolean(pkg.aboutSections?.length || pkg.aboutLead?.trim()),
+    "the-journey": !heliTour && Boolean(pkg.journeyStages?.length),
+    about: !heliTour && Boolean(pkg.aboutSections?.length || pkg.aboutLead?.trim()),
+    "tour-options": heliTour && Boolean(heliOptions.length),
     itinerary: Boolean(pkg.itinerary?.length),
-    "trip-map": Boolean(pkg.routeMapSrc || builtInCharts),
-    altitude: Boolean(pkg.altitudeChartM || pkg.altitudeChartFt || pkg.altitudeBody || builtInCharts),
-    weather: Boolean(pkg.weatherMonthlySrc || pkg.weatherBody || builtInCharts),
+    "trip-map": !heliTour && Boolean(pkg.routeMapSrc || builtInCharts),
+    "flight-route": heliTour && Boolean(pkg.mapBody?.trim()),
+    altitude: !heliTour && Boolean(pkg.altitudeChartM || pkg.altitudeChartFt || pkg.altitudeBody || builtInCharts),
+    "landing-options": heliTour && Boolean(pkg.khumbuBody?.trim()),
+    weather: Boolean(pkg.weatherMonthlySrc || pkg.weatherBody || (heliTour && pkg.weatherBody)),
     includes: Boolean(pkg.inclusions?.length || pkg.exclusions?.length),
     "trip-gallery": gallery.length > 0,
-    packing: packingGroups.some((group) => group.items.length),
-    flights: Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
+    packing: !heliTour && packingGroups.some((group) => group.items.length),
+    flights: !heliTour && Boolean(pkg.flightBody || pkg.bufferBody || pkg.heliBody || pkg.beforeItems?.length),
+    safety: heliTour && Boolean(pkg.heliBody?.trim() || pkg.beforeItems?.length),
+    "booking-policy": heliTour && Boolean(pkg.bufferBody?.trim()),
     reviews: Boolean(pkg.reviews?.length),
     faqs: Boolean(pkg.faqs?.length),
   };
-  const toc = buildPackageSectionToc(pkg, show, premiumNav, STANDARD_TOC);
-  const useReferenceOverviewBlock = premiumKhumbuTrek || !premiumNav;
+  const toc = heliTour
+    ? buildHelicopterTourSectionToc(show)
+    : buildPackageSectionToc(pkg, show, premiumNav, STANDARD_TOC);
+  const useReferenceOverviewBlock = premiumKhumbuTrek || heliTour || !premiumNav;
   const tocKey = toc.map((item) => item.id).join("|");
   const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
   const hasFromPrice = Number.isFinite(fromPrice);
@@ -290,8 +305,31 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           />
         </div>
       ) : null}
+      {heliTour && heliOptions.length ? (
+        <div className="lux-heli-options" role="group" aria-label="Tour option">
+          {heliOptions.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              className={heliOptionId === opt.id ? "is-on" : undefined}
+              onClick={() => setHeliOptionId(opt.id)}
+            >
+              {opt.id === "charter" ? "Private charter" : "Group sharing"}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <p className="lux-price-main">
-        {hasFromPrice ? (
+        {heliTour && selectedHeliOption ? (
+          selectedHeliOption.priceUsd > 0 ? (
+            <>
+              USD {selectedHeliOption.priceUsd.toLocaleString()}
+              <span>{selectedHeliOption.id === "charter" ? " / charter" : " / person"}</span>
+            </>
+          ) : (
+            selectedHeliOption.priceLabel || "Request a Quote"
+          )
+        ) : hasFromPrice ? (
           <>
             From USD {fromPrice.toLocaleString()} <span>/ person</span>
           </>
@@ -303,13 +341,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           "Request Private Quote"
         )}
       </p>
-      {groups.some((row) => row.priceUsd > 0) ? (
+      {!heliTour && groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
           See group booking discount{" "}
           {showGroups ? "▴" : "▾"}
         </button>
       ) : null}
-      {showGroups && groups.some((row) => row.priceUsd > 0) ? (
+      {!heliTour && showGroups && groups.some((row) => row.priceUsd > 0) ? (
         <table className="lux-price-table">
           <thead>
             <tr>
@@ -329,7 +367,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       ) : null}
       {pkg.pricingDisclaimer ? <p className="lux-price-foot">{pkg.pricingDisclaimer}</p> : null}
       <Link href={enquire} className="lux-btn lux-btn-solid">
-        Book now
+        {heliTour ? "Book Your Helicopter Tour" : "Book now"}
       </Link>
       <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
         Check availability
@@ -433,7 +471,24 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
-              {premiumNav && !premiumKhumbuTrek ? (
+              {heliTour ? (
+                <div className="lux-hero-ctas">
+                  <Link href={enquire} className="lux-btn lux-btn-solid">
+                    Book Your Helicopter Tour
+                  </Link>
+                  <button
+                    type="button"
+                    className="lux-btn lux-btn-gold"
+                    onClick={() => {
+                      setActiveToc("tour-options");
+                      scrollToId("tour-options");
+                    }}
+                  >
+                    Compare Tour Options
+                  </button>
+                </div>
+              ) : null}
+              {premiumNav && !premiumKhumbuTrek && !heliTour ? (
                 <div className="lux-hero-ctas">
                   <Link href={enquire} className="lux-btn lux-btn-solid">
                     Plan Your Trek
@@ -496,6 +551,31 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             <aside id="book-mobile" className="lux-aside lux-aside--inline" aria-label="Book this trip">
               {bookingPanel}
             </aside>
+
+            {show["tour-options"] && heliOptions.length ? (
+              <article id="tour-options" className="lux-card">
+                <p className="lux-kicker">How to travel</p>
+                <h2>Tour options</h2>
+                <div className="lux-why">
+                  {heliOptions.map((opt) => (
+                    <div key={opt.id} id={`tour-option-${opt.id}`}>
+                      <h3>{opt.label}</h3>
+                      <p>{opt.summary}</p>
+                      {opt.body.split(/\n{2,}/).map((para) => (
+                        <p key={para.slice(0, 48)}>{para}</p>
+                      ))}
+                      <p className="lux-meta-price">
+                        <strong>
+                          {opt.priceUsd > 0
+                            ? `USD ${opt.priceUsd.toLocaleString()}${opt.id === "charter" ? " / charter" : " / person"}`
+                            : opt.priceLabel || "Request a Quote"}
+                        </strong>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ) : null}
 
             {show.highlights ? (
               <article id="highlights" className="lux-card">
@@ -704,8 +784,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             {show.itinerary ? (
             <article id="itinerary" className="lux-card">
-              <p className="lux-kicker">{pkg.days}-day plan</p>
-              <h2>{pkg.title} itinerary</h2>
+              <p className="lux-kicker">{heliTour ? "Experience timeline" : `${pkg.days}-day plan`}</p>
+              <h2>{heliTour ? "Detailed itinerary" : `${pkg.title} itinerary`}</h2>
               {pkg.itineraryIntro ? <p>{pkg.itineraryIntro}</p> : null}
               <div className="lux-days">
                 {pkg.itinerary.map((day) => {
@@ -714,7 +794,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   return (
                     <div key={day.id} className={`lux-day${open ? " is-open" : ""}`}>
                       <div className="lux-day-line">
-                        <span className="lux-plan-day">Day {day.day}</span>
+                        <span className="lux-plan-day">{heliTour ? `Step ${day.day}` : `Day ${day.day}`}</span>
                         <strong>{day.title}</strong>
                       </div>
                       {!open ? <p className="lux-teaser">{teaserOf(day.body)}</p> : null}
@@ -724,11 +804,17 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                             <p key={para.slice(0, 40)}>{para}</p>
                           ))}
                           <div className="lux-info-bar" aria-label="Day details">
-                            <ItineraryMetaItem icon="meal" label="Meals" value={day.meals} />
-                            <ItineraryMetaItem icon="bed" label="Accommodation" value={day.stay} />
+                            {!heliTour ? (
+                              <>
+                                <ItineraryMetaItem icon="meal" label="Meals" value={day.meals} />
+                                <ItineraryMetaItem icon="bed" label="Accommodation" value={day.stay} />
+                              </>
+                            ) : null}
                             <ItineraryMetaItem icon="duration" label="Duration" value={day.duration} />
-                            <ItineraryMetaItem icon="altitude" label="Altitude" value={day.altitude} />
-                            <ItineraryMetaItem icon="distance" label="Distance" value={distance} />
+                            <ItineraryMetaItem icon="altitude" label={heliTour ? "Location" : "Altitude"} value={day.altitude} />
+                            {!heliTour ? (
+                              <ItineraryMetaItem icon="distance" label="Distance" value={distance} />
+                            ) : null}
                           </div>
                         </div>
                       ) : null}
@@ -740,6 +826,26 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 })}
               </div>
             </article>
+            ) : null}
+
+            {show["flight-route"] ? (
+              <article id="flight-route" className="lux-card">
+                <p className="lux-kicker">In the air</p>
+                <h2>Flight route and mountain views</h2>
+                {pkg.mapBody?.split(/\n{2,}/).map((para) => (
+                  <p key={para.slice(0, 48)}>{para}</p>
+                ))}
+              </article>
+            ) : null}
+
+            {show["landing-options"] ? (
+              <article id="landing-options" className="lux-card">
+                <p className="lux-kicker">On the ground</p>
+                <h2>{pkg.khumbuTitle || "Landing options"}</h2>
+                {pkg.khumbuBody?.split(/\n{2,}/).map((para) => (
+                  <p key={para.slice(0, 48)}>{para}</p>
+                ))}
+              </article>
             ) : null}
 
             {show["trip-map"] ? (
@@ -811,7 +917,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             {show.weather ? (
             <article id="weather" className="lux-card">
               <p className="lux-kicker">Seasons</p>
-              <h2>Weather on {pkg.title}</h2>
+              <h2>{heliTour ? "Weather and best season" : `Weather on ${pkg.title}`}</h2>
               {pkg.weatherBody ? <p>{pkg.weatherBody}</p> : null}
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
@@ -916,6 +1022,36 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                   </button>
                 </div>
               </section>
+            ) : null}
+
+            {show.safety ? (
+              <article id="safety" className="lux-card">
+                <p className="lux-kicker">Aviation</p>
+                <h2>{pkg.heliTitle || "Safety and flight information"}</h2>
+                {pkg.heliBody?.split(/\n{2,}/).map((para) => (
+                  <p key={para.slice(0, 48)}>{para}</p>
+                ))}
+                {pkg.beforeItems?.length ? (
+                  <>
+                    <h3>Read before you book</h3>
+                    <ul>
+                      {pkg.beforeItems.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </article>
+            ) : null}
+
+            {show["booking-policy"] ? (
+              <article id="booking-policy" className="lux-card">
+                <p className="lux-kicker">Policies</p>
+                <h2>{pkg.bufferTitle || pkg.notesTitle || "Booking and cancellation policy"}</h2>
+                {pkg.bufferBody?.split(/\n{2,}/).map((para) => (
+                  <p key={para.slice(0, 48)}>{para}</p>
+                ))}
+              </article>
             ) : null}
 
             {show.packing ? (

@@ -6176,6 +6176,33 @@ a.lux-chart-dl {
   color: rgba(232, 238, 244, 0.72);
 }
 
+.lux-heli-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin: 0 0 0.75rem;
+}
+
+.lux-heli-options button {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.4rem;
+  background: rgba(8, 14, 22, 0.55);
+  color: rgba(232, 238, 244, 0.88);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+  text-align: center;
+}
+
+.lux-heli-options button.is-on {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.18);
+  color: #f7fafc;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.22);
+}
+
 .lux-price-toggle {
   display: block;
   width: 100%;

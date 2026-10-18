@@ -270,14 +270,14 @@ export const DEFAULT_NEPAL: NepalContent = {
       countLabel: "6 Packages",
       packages: [
         pkg(
-          "ebc-heli-lux",
-          "Everest Base Camp Helicopter Luxury Tour",
+          "ebc-heli-tour",
+          "Everest Base Camp Helicopter Tour – 1 Day",
           1,
           "/images/nepal/nepal-heli-ebc.webp",
-          "Helicopter approaching Everest Base Camp",
-          "Kala Patthar landing window, same-day return",
+          "Helicopter approaching the Everest region on a one-day tour from Kathmandu",
+          "Group sharing or private charter · same-day return",
           "Easy",
-          "Kala Patthar landing window and a same-day return over the Khumbu icefall.",
+          "Scenic helicopter day from Kathmandu — group seats or private charter, subject to weather and operator confirmation.",
           "Most Popular",
         ),
         pkg(

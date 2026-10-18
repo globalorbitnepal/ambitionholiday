@@ -12,6 +12,7 @@ import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package";
 import { EVEREST_PANORAMA_TRIP_PACKAGE } from "./everest-panorama-package";
+import { EBC_HELICOPTER_TOUR_PACKAGE } from "./ebc-helicopter-tour-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
 export type TrekItineraryDay = {
@@ -229,6 +230,16 @@ export type TrekPackage = {
   /** Optional image above pricing in the booking panel (CMS-managed). */
   pricePanelImageSrc?: string;
   pricePanelImageAlt?: string;
+  helicopterOptions?: HelicopterTourOption[];
+};
+
+export type HelicopterTourOption = {
+  id: string;
+  label: string;
+  summary: string;
+  body: string;
+  priceUsd: number;
+  priceLabel?: string;
 };
 
 export const EBC_PACKAGE_ID = "ebc-lux";
@@ -237,11 +248,13 @@ export const MUSTANG_PACKAGE_ID = "mustang-lux";
 export const LANGTANG_PACKAGE_ID = "langtang-lux";
 export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
 export const EVEREST_PANORAMA_PACKAGE_ID = "ept-pan";
+export const EBC_HELI_TOUR_PACKAGE_ID = "ebc-heli-tour";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
 export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [EVEREST_VIEW_PACKAGE_ID]: "everest-view-luxury-trek",
   [EVEREST_PANORAMA_PACKAGE_ID]: "everest-panorama-trek",
+  [EBC_HELI_TOUR_PACKAGE_ID]: "everest-base-camp-helicopter-tour",
 };
 
 /** Trek pages with the full ABC-style builder in /admin (all 18 tabs). */
@@ -251,6 +264,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   LANGTANG_PACKAGE_ID,
   EVEREST_VIEW_PACKAGE_ID,
   EVEREST_PANORAMA_PACKAGE_ID,
+  EBC_HELI_TOUR_PACKAGE_ID,
 ] as const;
 
 /** Nepal destination page — only these published trek pages are shown in Luxury Trekking. */
@@ -282,6 +296,15 @@ export function isEverestViewPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
 
 export function isEverestPanoramaPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === EVEREST_PANORAMA_PACKAGE_ID || /everest-panorama-trek/i.test(pkg.slug || "");
+}
+
+export function isEbcHelicopterTourPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return (
+    pkg.id === EBC_HELI_TOUR_PACKAGE_ID ||
+    pkg.catalogId === EBC_HELI_TOUR_PACKAGE_ID ||
+    pkg.catalogId === "ebc-heli-lux" ||
+    /everest-base-camp-helicopter-tour/i.test(pkg.slug || "")
+  );
 }
 
 const EVL_PROHIBITED_RE = /(?:hotel\s+everest\s+view|everest\s+view\s+hotel)/i;
@@ -878,6 +901,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   LANGTANG_LUXURY_TRIP_PACKAGE,
   EVEREST_VIEW_LUXURY_TRIP_PACKAGE,
   EVEREST_PANORAMA_TRIP_PACKAGE,
+  EBC_HELICOPTER_TOUR_PACKAGE,
 ];
 
 export const RESERVED_PACKAGE_SLUGS = [
@@ -986,6 +1010,8 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   ebc: EVEREST_VIEW_PACKAGE_ID,
   "trip-ebc-lux": EVEREST_VIEW_PACKAGE_ID,
   "everest-panorama": EVEREST_PANORAMA_PACKAGE_ID,
+  "ebc-heli-lux": EBC_HELI_TOUR_PACKAGE_ID,
+  "everest-base-camp-helicopter": EBC_HELI_TOUR_PACKAGE_ID,
 };
 
 export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
@@ -1002,6 +1028,11 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   if (pkg.id === EVEREST_PANORAMA_PACKAGE_ID || pkg.catalogId === "everest-panorama") {
     keys.add("ept-pan");
     keys.add("everest-panorama");
+  }
+  if (pkg.id === EBC_HELI_TOUR_PACKAGE_ID || pkg.catalogId === "ebc-heli-tour" || pkg.catalogId === "ebc-heli-lux") {
+    keys.add("ebc-heli-tour");
+    keys.add("ebc-heli-lux");
+    keys.add("everest-base-camp-helicopter-tour");
   }
   return keys;
 }
@@ -1310,6 +1341,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       tripInfoTitle: item.tripInfoTitle || def.tripInfoTitle,
       tripInfo: item.tripInfo?.length ? item.tripInfo : def.tripInfo,
       optionalAddons: item.optionalAddons?.length ? item.optionalAddons : def.optionalAddons,
+      helicopterOptions: item.helicopterOptions?.length ? item.helicopterOptions : def.helicopterOptions,
       includeNote: item.includeNote || def.includeNote,
       luklaNote: item.luklaNote || def.luklaNote,
       routeMapSrc: item.routeMapSrc || def.routeMapSrc,

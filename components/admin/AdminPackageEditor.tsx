@@ -17,6 +17,7 @@ import {
   isMustangPackage,
   isEverestViewPackage,
   isEverestPanoramaPackage,
+  isEbcHelicopterTourPackage,
   LOCKED_PACKAGE_SLUGS,
   packageHeadings,
   packageSeoInput,
@@ -328,7 +329,72 @@ export default function AdminPackageEditor() {
 
       {tab === "pricing" ? (
         <div className="admin-card">
-          <p className="admin-muted">Guests see this on the Book now box. Change the main price and every matching group row, then press Save &amp; update live.</p>
+          <p className="admin-muted">
+            {isEbcHelicopterTourPackage(pkg)
+              ? "Helicopter tour: set group-sharing and private charter fares separately. Leave USD at 0 and use the quote label to show “Request Current Price” on the live page."
+              : "Guests see this on the Book now box. Change the main price and every matching group row, then press Save & update live."}
+          </p>
+          {isEbcHelicopterTourPackage(pkg) ? (
+            <div className="admin-subcard" style={{ marginBottom: "1.25rem" }}>
+              <h3 className="admin-h3">Tour options (group sharing &amp; private charter)</h3>
+              {(pkg.helicopterOptions || []).map((opt, index) => (
+                <div key={opt.id} className="admin-subcard" style={{ marginTop: "0.75rem" }}>
+                  <p className="admin-side-group-label">{opt.label}</p>
+                  <label className="admin-field">
+                    <span>Summary (short)</span>
+                    <input
+                      value={opt.summary}
+                      onChange={(e) => {
+                        const helicopterOptions = [...(pkg.helicopterOptions || [])];
+                        helicopterOptions[index] = { ...opt, summary: e.target.value };
+                        patch({ helicopterOptions });
+                      }}
+                    />
+                  </label>
+                  <label className="admin-field">
+                    <span>Description</span>
+                    <textarea
+                      value={opt.body}
+                      onChange={(e) => {
+                        const helicopterOptions = [...(pkg.helicopterOptions || [])];
+                        helicopterOptions[index] = { ...opt, body: e.target.value };
+                        patch({ helicopterOptions });
+                      }}
+                    />
+                  </label>
+                  <div className="admin-grid-2">
+                    <label className="admin-field">
+                      <span>Price USD (0 = show quote label)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={opt.priceUsd}
+                        onChange={(e) => {
+                          const helicopterOptions = [...(pkg.helicopterOptions || [])];
+                          helicopterOptions[index] = {
+                            ...opt,
+                            priceUsd: Math.max(0, Number(e.target.value) || 0),
+                          };
+                          patch({ helicopterOptions });
+                        }}
+                      />
+                    </label>
+                    <label className="admin-field">
+                      <span>Quote label when price is 0</span>
+                      <input
+                        value={opt.priceLabel || ""}
+                        onChange={(e) => {
+                          const helicopterOptions = [...(pkg.helicopterOptions || [])];
+                          helicopterOptions[index] = { ...opt, priceLabel: e.target.value };
+                          patch({ helicopterOptions });
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
           <label className="admin-field">
             <span>Main price USD per person</span>
             <input
