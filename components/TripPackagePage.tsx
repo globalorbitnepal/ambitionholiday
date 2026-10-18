@@ -115,9 +115,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? pkg.groupPrices
     : [{ id: "p1", label: "Per person", priceUsd: pkg.priceUsd }];
   const heads = packageHeadings(pkg);
-  const highlightHeading = /\d+\s*Days?/i.test(pkg.title)
-    ? `Highlights of ${pkg.title}`
-    : `Highlights of ${pkg.title} – ${pkg.days} Days`;
+  const highlightHeading = heliTour
+    ? "Experience highlights"
+    : /\d+\s*Days?/i.test(pkg.title)
+      ? `Highlights of ${pkg.title}`
+      : `Highlights of ${pkg.title} – ${pkg.days} Days`;
   const hotelEverestViewNotice =
     isEverestViewPackage(pkg) && pkg.hotelEverestViewStatus
       ? pkg.hotelEverestViewStatus === "confirmed"
@@ -239,7 +241,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     { icon: "cal", label: "Duration", value: pkg.duration },
     { icon: "gauge", label: "Difficulty", value: pkg.difficulty },
     { icon: "hike", label: "Activity", value: pkg.activityLabel || "Trekking / Hiking" },
-    { icon: "peak", label: "Max. altitude", value: pkg.maxAltitude },
+    {
+      icon: "peak",
+      label: heliTour ? "Region" : "Max. altitude",
+      value: pkg.maxAltitude,
+    },
     { icon: "cloud", label: "Best season", value: pkg.bestSeason },
     { icon: "bed", label: "Accommodation", value: pkg.accommodationLabel || "Lodge & hotel" },
     { icon: "meal", label: "Meals", value: pkg.mealsLabel || "Included on trek" },
@@ -540,8 +546,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </header>
 
             <article className="lux-card">
-              <p className="lux-kicker">{useReferenceOverviewBlock ? "The journey" : "Overview"}</p>
-              <h2>{useReferenceOverviewBlock ? heads.about : "Overview"}</h2>
+              <p className="lux-kicker">
+                {heliTour ? "Overview" : useReferenceOverviewBlock ? "The journey" : "Overview"}
+              </p>
+              <h2>{useReferenceOverviewBlock || heliTour ? heads.about : "Overview"}</h2>
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
@@ -556,14 +564,15 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <article id="tour-options" className="lux-card">
                 <p className="lux-kicker">How to travel</p>
                 <h2>Tour options</h2>
-                <div className="lux-why">
+                <p className="lux-lead" style={{ marginBottom: "1rem" }}>
+                  Choose group sharing (per seat) or a private charter. Pricing and landing details are confirmed before
+                  you pay.
+                </p>
+                <div className="lux-heli-tour-grid">
                   {heliOptions.map((opt) => (
-                    <div key={opt.id} id={`tour-option-${opt.id}`}>
+                    <div key={opt.id} id={`tour-option-${opt.id}`} className="lux-heli-tour-card">
                       <h3>{opt.label}</h3>
                       <p>{opt.summary}</p>
-                      {opt.body.split(/\n{2,}/).map((para) => (
-                        <p key={para.slice(0, 48)}>{para}</p>
-                      ))}
                       <p className="lux-meta-price">
                         <strong>
                           {opt.priceUsd > 0
@@ -571,6 +580,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                             : opt.priceLabel || "Request a Quote"}
                         </strong>
                       </p>
+                      <Link
+                        href={`${enquire}&tourOption=${encodeURIComponent(opt.id)}`}
+                        className="lux-btn lux-btn-gold lux-heli-tour-cta"
+                      >
+                        {opt.id === "charter" ? "Request charter quote" : "Request seat price"}
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -579,6 +594,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             {show.highlights ? (
               <article id="highlights" className="lux-card">
+                {heliTour ? <p className="lux-kicker">Why this tour</p> : null}
                 <h2>{highlightHeading}</h2>
                 <span className="lux-hi-rule" aria-hidden="true" />
                 <ul className="lux-checks">
@@ -594,7 +610,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             {pkg.whyItems?.length ? (
               <article id="why-us" className="lux-card">
-                <p className="lux-kicker">Why walk with us</p>
+                <p className="lux-kicker">{heliTour ? "Why us" : "Why walk with us"}</p>
                 <h2>{heads.why}</h2>
                 <div className="lux-why">
                   {pkg.whyItems.map((item) => (
@@ -687,7 +703,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
 
             {pkg.tripInfo?.length || pkg.luxuryExperience?.pillars?.length ? (
               <article id="trip-info" className="lux-card">
-                <p className="lux-kicker">Know the trail</p>
+                <p className="lux-kicker">{heliTour ? "Trip essentials" : "Know the trail"}</p>
                 <h2>{pkg.tripInfoTitle || `${pkg.title} – Trip Information`}</h2>
                 {pkg.luxuryExperience?.title || pkg.luxuryExperience?.intro ? (
                   <div className="lux-info-block">
@@ -1142,15 +1158,25 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       <div className="lux-mobile-bar">
         <div>
           <strong>
-            {hasFromPrice
-              ? `From USD ${fromPrice.toLocaleString()}`
-              : hasPrice
-                ? `USD ${pkg.priceUsd.toLocaleString()}`
-                : "Request Private Quote"}
+            {heliTour && selectedHeliOption
+              ? selectedHeliOption.priceUsd > 0
+                ? `USD ${selectedHeliOption.priceUsd.toLocaleString()}`
+                : selectedHeliOption.priceLabel || "Request a Quote"
+              : hasFromPrice
+                ? `From USD ${fromPrice.toLocaleString()}`
+                : hasPrice
+                  ? `USD ${pkg.priceUsd.toLocaleString()}`
+                  : "Request Private Quote"}
           </strong>
-          {hasPrice ? <span>/ person</span> : null}
+          {heliTour && selectedHeliOption?.priceUsd > 0 ? (
+            <span>{selectedHeliOption.id === "charter" ? "/ charter" : "/ person"}</span>
+          ) : hasPrice && !heliTour ? (
+            <span>/ person</span>
+          ) : null}
         </div>
-        <Link href={enquire}>{premiumKhumbuTrek ? "Book now" : "Inquire"}</Link>
+        <Link href={enquire}>
+          {heliTour ? "Book tour" : premiumKhumbuTrek ? "Book now" : "Inquire"}
+        </Link>
       </div>
 
       <div id="reviews" className="lux-reviews-band">

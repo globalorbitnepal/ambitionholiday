@@ -8,7 +8,7 @@ import SiteContentProvider from "@/components/SiteContentProvider";
 import TripPackagePage from "@/components/TripPackagePage";
 import { readContent } from "@/lib/content";
 import { getAllRoutes, getNavItemBySlug, getRouteBySlug } from "@/lib/nav";
-import { findTripBySlug, tripPath } from "@/lib/trip-packages";
+import { findTripBySlug, isEbcHelicopterTourPackage, tripPath } from "@/lib/trip-packages";
 import { absoluteUrl, SITE_NAME, SITE_URL, splitKeywords } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 
@@ -141,7 +141,9 @@ export default async function SlugPage({ params, searchParams }: Props) {
                   itemListElement: pkg.itinerary.map((day, index) => ({
                     "@type": "ListItem",
                     position: index + 1,
-                    name: `Day ${day.day}: ${day.title}`,
+                    name: isEbcHelicopterTourPackage(pkg)
+                      ? `Step ${index + 1}: ${day.title}`
+                      : `Day ${day.day}: ${day.title}`,
                   })),
                 }
               : undefined,

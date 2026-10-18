@@ -18,7 +18,7 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
   days: 1,
   difficulty: "Easy",
   destination: "Everest Region, Nepal",
-  maxAltitude: "Subject to approved route and landing plan",
+  maxAltitude: "Everest Region · overflight",
   maxAltitudeFt: "",
   countryLabel: "Nepal",
   activityLabel: "Helicopter tour · Kathmandu same-day return",
@@ -83,7 +83,8 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
       body: "Group sharing and private charter are priced and booked separately with distinct terms.",
     },
   ],
-  tripInfoTitle: "Everest Base Camp Helicopter Tour – Trip Information",
+  tripInfoTitle: "Trip information",
+  fitTitle: "Is this tour for you?",
   tripInfo: [
     {
       id: "ti-duration",
@@ -375,11 +376,13 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
   tripadvisorLabel: "Tripadvisor",
   tripadvisorScore: "",
   tripadvisorCount: "View reviews",
-  tripadvisorHref: "",
+  tripadvisorHref:
+    "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
   tripadvisorLogoSrc: "/images/reviews/tripadvisor-owl.png",
   googleLabel: "Google",
   googleScore: "",
-  googleCount: "",
-  googleHref: "",
+  googleCount: "View on Maps",
+  googleHref:
+    "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
   googleLogoSrc: "",
 };

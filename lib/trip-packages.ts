@@ -436,11 +436,20 @@ function everestViewItinerary(
 export function packageHeadings(pkg: TrekPackage) {
   const ebc = isEbcPackage(pkg);
   const evl = isEverestViewPackage(pkg);
+  const heli = isEbcHelicopterTourPackage(pkg);
   const pick = (value: string | undefined, ebcDefault: string, generic: string) =>
     value?.trim() || (ebc ? ebcDefault : generic);
   return {
-    about: pick(pkg.aboutTitle, "About this luxury trek", "About this journey"),
-    why: pick(pkg.whyTitle, "Why this luxury Everest Base Camp trek", "Why travel with Ambition Holidays"),
+    about: pick(
+      pkg.aboutTitle,
+      "About this luxury trek",
+      heli ? "About this helicopter tour" : "About this journey",
+    ),
+    why: pick(
+      pkg.whyTitle,
+      "Why this luxury Everest Base Camp trek",
+      heli ? "Why choose Ambition Holidays" : "Why travel with Ambition Holidays",
+    ),
     fit: pick(pkg.fitTitle, "Is this trek for you?", "Is this journey for you?"),
     khumbu: pick(
       pkg.khumbuTitle,
