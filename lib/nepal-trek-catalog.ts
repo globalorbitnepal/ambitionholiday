@@ -14,6 +14,47 @@ import { LUXURY_MEGA_PACKAGE_COUNT } from "@/lib/luxury-mega";
 
 export const NEPAL_TREKKING_CATEGORY_ID = "trekking";
 
+/** Merge saved Nepal CMS data with code defaults for Luxury Trekking (new catalog ids append in order). */
+export function coerceNepalContent(savedRaw?: Partial<NepalContent>): NepalContent {
+  const saved = { ...DEFAULT_NEPAL, ...savedRaw };
+  const cats = saved.categories?.length ? saved.categories : DEFAULT_NEPAL.categories;
+  const defById = new Map(DEFAULT_NEPAL.categories.flatMap((cat) => cat.packages.map((pkg) => [pkg.id, pkg])));
+  return {
+    ...saved,
+    coverSrc: saved.coverSrc || DEFAULT_NEPAL.coverSrc,
+    wallpaperSrc: saved.wallpaperSrc || DEFAULT_NEPAL.wallpaperSrc,
+    closeTitle: saved.closeTitle || DEFAULT_NEPAL.closeTitle,
+    closeBody: saved.closeBody || DEFAULT_NEPAL.closeBody,
+    categories: cats.map((cat) => {
+      const defCat = DEFAULT_NEPAL.categories.find((c) => c.id === cat.id);
+      const syncFromDefaults = cat.id === NEPAL_TREKKING_CATEGORY_ID && defCat?.packages?.length;
+      const packageList = syncFromDefaults ? defCat!.packages : cat.packages || [];
+      return {
+        ...cat,
+        countLabel: syncFromDefaults ? defCat!.countLabel : cat.countLabel,
+        packages: packageList.map((pkg) => {
+          const savedPkg = (cat.packages || []).find((p) => p.id === pkg.id);
+          const merged = savedPkg ? { ...pkg, ...savedPkg } : pkg;
+          const fallback = defById.get(merged.id) ?? defById.get(pkg.id);
+          return {
+            ...fallback,
+            ...merged,
+            badge: merged.badge ?? fallback?.badge ?? "",
+            difficulty: merged.difficulty || fallback?.difficulty || "Moderate",
+            description: merged.description || fallback?.description || merged.subtitle,
+            href:
+              fallback?.href &&
+              !fallback.href.includes("interest=") &&
+              (merged.href || "").includes("interest=")
+                ? fallback.href
+                : merged.href || fallback?.href || "",
+          };
+        }),
+      };
+    }),
+  };
+}
+
 export function nepalTrekkingCategory(nepal: NepalContent) {
   return nepal.categories?.find((cat) => cat.id === NEPAL_TREKKING_CATEGORY_ID);
 }

@@ -43,37 +43,53 @@ function mergeDestinations(
   });
 }
 
+function megaHrefKey(href: string) {
+  return (href || "").replace(/^\//, "").split("?")[0].toLowerCase();
+}
+
+/** Match CMS rows to code defaults by URL — never by slot index (prevents duplicates when a new package is inserted). */
 function mergePackages(
   parsed?: LuxuryMegaPackage[],
   fallback: LuxuryMegaPackage[] = [],
 ): LuxuryMegaPackage[] {
-  const length = Math.min(
-    LUXURY_MEGA_PACKAGE_COUNT,
-    Math.max(fallback.length, parsed?.length ?? 0),
-  );
-  return Array.from({ length }, (_, i) => {
-    const base = fallback[i];
-    const row = parsed?.[i];
-    if (!base && row) return { ...row };
-    if (!row && base) return { ...base };
-    if (!base && !row) {
-      return {
-        title: "",
-        days: "",
-        difficulty: "",
-        href: "/nepal",
-        imageSrc: fallback[0]?.imageSrc || "/images/nepal/nepal-cover.webp",
-        imageAlt: "",
-      };
-    }
-    return {
-      ...base,
-      ...row,
-      href: row!.href || base!.href,
-      imageSrc: row!.imageSrc || base!.imageSrc,
-      imageAlt: row!.imageAlt || base!.imageAlt,
-    };
-  }).filter((pkg) => pkg.title.trim().length > 0);
+  const parsedByHref = new Map<string, LuxuryMegaPackage>();
+  for (const row of parsed ?? []) {
+    const key = megaHrefKey(row.href);
+    if (!key || !row.title?.trim()) continue;
+    parsedByHref.set(key, row);
+  }
+
+  const out: LuxuryMegaPackage[] = [];
+  const seen = new Set<string>();
+
+  for (const base of fallback) {
+    if (out.length >= LUXURY_MEGA_PACKAGE_COUNT) break;
+    const key = megaHrefKey(base.href);
+    if (!key || seen.has(key)) continue;
+    const row = parsedByHref.get(key);
+    seen.add(key);
+    out.push(
+      row
+        ? {
+            ...base,
+            ...row,
+            href: row.href || base.href,
+            imageSrc: row.imageSrc || base.imageSrc,
+            imageAlt: row.imageAlt || base.imageAlt,
+          }
+        : { ...base },
+    );
+  }
+
+  for (const row of parsed ?? []) {
+    if (out.length >= LUXURY_MEGA_PACKAGE_COUNT) break;
+    const key = megaHrefKey(row.href);
+    if (!key || seen.has(key) || !row.title?.trim()) continue;
+    seen.add(key);
+    out.push({ ...row });
+  }
+
+  return out.filter((pkg) => pkg.title.trim().length > 0);
 }
 
 function mergeLuxuryCountries(parsed?: LuxuryMegaCountry[]): LuxuryMegaCountry[] {

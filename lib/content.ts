@@ -22,6 +22,7 @@ import { DEFAULT_MULTI } from "@/lib/multi-defaults";
 import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
+import { coerceNepalContent } from "@/lib/nepal-trek-catalog";
 import { coerceFooterPhones } from "@/lib/footer-contact";
 import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
 import { applyPublishedPackageHrefs } from "@/lib/trip-package-catalog-sync";
@@ -702,7 +703,7 @@ export async function readContent(): Promise<SiteContent> {
         restricted: parsed.permits?.restricted?.length ? parsed.permits.restricted : DEFAULT_CONTENT.permits.restricted,
         peaks: parsed.permits?.peaks?.length ? parsed.permits.peaks : DEFAULT_CONTENT.permits.peaks,
       },
-      nepal: coerceDestinationCatalog(parsed.nepal, DEFAULT_NEPAL, { syncCategoryPackages: ["trekking"] }),
+      nepal: coerceNepalContent(parsed.nepal),
       bhutan: coerceDestinationCatalog(parsed.bhutan, DEFAULT_BHUTAN, { flatten: true }),
       tibet: coerceDestinationCatalog(parsed.tibet, DEFAULT_TIBET, { flatten: true }),
       multi: coerceDestinationCatalog(parsed.multi, DEFAULT_MULTI, { flatten: true }),

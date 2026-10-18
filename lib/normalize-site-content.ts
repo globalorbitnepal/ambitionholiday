@@ -1,10 +1,13 @@
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
+import { coerceNepalContent } from "@/lib/nepal-trek-catalog";
 import { mergeHeaderNav } from "@/lib/header-nav";
 import { headerLogoSrc } from "@/lib/media-src";
+import { applyPublishedPackageHrefs } from "@/lib/trip-package-catalog-sync";
+import { coerceTripPackages } from "@/lib/trip-packages";
 
 /** Client-safe merge so pages never crash when CMS JSON is partial or mid-deploy. */
 export function normalizeSiteContent(data: SiteContent): SiteContent {
-  return {
+  const merged: SiteContent = {
     ...DEFAULT_CONTENT,
     ...data,
     header: {
@@ -39,6 +42,10 @@ export function normalizeSiteContent(data: SiteContent): SiteContent {
       ...DEFAULT_CONTENT.footer,
       ...data.footer,
     },
-    tripPackages: data.tripPackages?.length ? data.tripPackages : DEFAULT_CONTENT.tripPackages,
+    nepal: coerceNepalContent(data.nepal),
+    tripPackages: coerceTripPackages(
+      data.tripPackages?.length ? data.tripPackages : DEFAULT_CONTENT.tripPackages,
+    ),
   };
+  return applyPublishedPackageHrefs(merged);
 }

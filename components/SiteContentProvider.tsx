@@ -10,7 +10,6 @@ import {
 } from "react";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 import { coerceFooterPhones } from "@/lib/footer-contact";
-import { mergeHeaderNav } from "@/lib/header-nav";
 import { normalizeSiteContent } from "@/lib/normalize-site-content";
 
 const SiteContentContext = createContext<SiteContent | null>(null);
@@ -42,10 +41,9 @@ export default function SiteContentProvider({
       });
       if (!res.ok) return;
       const data = (await res.json()) as SiteContent;
-      const merged: SiteContent = {
+      const merged = normalizeSiteContent({
         ...DEFAULT_CONTENT,
         ...data,
-        headerNav: mergeHeaderNav(data.headerNav),
         mediaCatalog: data.mediaCatalog ?? DEFAULT_CONTENT.mediaCatalog,
         signature: {
           ...DEFAULT_CONTENT.signature,
@@ -188,7 +186,7 @@ export default function SiteContentProvider({
           legalLinks: data.footer?.legalLinks ?? DEFAULT_CONTENT.footer.legalLinks,
         },
         tripPackages: data.tripPackages?.length ? data.tripPackages : DEFAULT_CONTENT.tripPackages,
-      };
+      });
       setContent((prev) => (prev.updatedAt === merged.updatedAt ? prev : merged));
     } catch {
       // ignore network blips
