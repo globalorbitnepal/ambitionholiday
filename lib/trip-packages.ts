@@ -374,7 +374,19 @@ function mergeAmaDablamPublicPackage(
   item: TrekPackage,
   def: TrekPackage,
 ): TrekPackage {
-  return mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
+  const merged = mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
+  const savedAboutTitle = (item.aboutTitle || "").trim();
+  const aboutTitle =
+    !savedAboutTitle || savedAboutTitle === "About Ama Dablam"
+      ? def.aboutTitle || merged.aboutTitle
+      : merged.aboutTitle;
+  const mountainDef = def.aboutSections?.find((b) => b.id === "adb-about-mountain");
+  const aboutSections = (merged.aboutSections || []).map((block) =>
+    block.id === "adb-about-mountain" && block.title === "About Ama Dablam" && mountainDef
+      ? { ...block, title: mountainDef.title }
+      : block,
+  );
+  return { ...merged, aboutTitle, aboutSections };
 }
 
 function mergeEverestPanoramaPublicPackage(
@@ -421,6 +433,8 @@ function mergeEverestPanoramaPublicPackage(
     journeySubheading: everestViewPublicText(item.journeySubheading, def.journeySubheading || ""),
     journeyIntro: everestViewPublicText(item.journeyIntro, def.journeyIntro || ""),
     aboutLead: everestViewPublicText(item.aboutLead, def.aboutLead || ""),
+    aboutTitle: everestViewPublicText(item.aboutTitle, def.aboutTitle || ""),
+    whyTitle: everestViewPublicText(item.whyTitle, def.whyTitle || ""),
     badge: everestViewPublicText(item.badge, def.badge),
     duration: everestViewPublicText(item.duration, def.duration),
     hotelEverestViewStatus: undefined,

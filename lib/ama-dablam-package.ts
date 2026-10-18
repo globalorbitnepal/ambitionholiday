@@ -37,7 +37,7 @@ export const AMA_DABLAM_TRIP_PACKAGE: TrekPackage = {
   maxAltitude: "Ama Dablam Base Camp area — approx. 4,600 m (Day 7 excursion)",
   maxAltitudeFt: "15,092 ft",
   countryLabel: "Nepal",
-  activityLabel: "Private Luxury Trek",
+  activityLabel: "Private luxury trekking",
   accommodationLabel:
     "Confirmed Kathmandu accommodation + best suitable mountain lodges on trekking nights, subject to availability",
   mealsLabel: "As per confirmed board basis on your signed confirmation",
@@ -231,7 +231,7 @@ export const AMA_DABLAM_TRIP_PACKAGE: TrekPackage = {
   flightTitle: "Kathmandu ↔ Lukla flights",
   notesTitle: "Flights & buffer days",
   luklaNoteTitle: "Lukla flight information",
-  aboutTitle: "About Ama Dablam",
+  aboutTitle: "About the Ama Dablam Base Camp Luxury Trek",
   whyTitle: "Why travel with Ambition Holidays",
   mapBody:
     "Schematic route — not to scale. Kathmandu → Lukla → Phakding → Namche Bazaar → Tengboche → Pangboche → Ama Dablam Base Camp (Day 7 excursion) → return via Namche and Lukla → Kathmandu. Dashed lines indicate flights. Does not include Everest Base Camp, Kala Patthar, Gorak Shep, Dingboche or Lobuche.",

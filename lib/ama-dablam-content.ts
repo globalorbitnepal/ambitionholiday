@@ -63,7 +63,7 @@ export const AMA_DABLAM_ABOUT_LEAD =
 export const AMA_DABLAM_ABOUT_SECTIONS: TrekAboutBlock[] = [
   {
     id: "adb-about-mountain",
-    title: "About Ama Dablam",
+    title: "Ama Dablam — the mountain",
     body:
       "Rising above the Imja Khola valley, Ama Dablam’s ridges and faces have drawn mountaineers for decades. From the trekking corridor near Pangboche, the mountain’s profile dominates the skyline when clouds allow.\n\nThis package follows established Khumbu trails to the base camp area used by expedition teams — a demanding high walk, not a technical climb. Your guide sets the exact line, timing and turnaround point according to conditions.",
   },
