@@ -14,6 +14,33 @@ import { LUXURY_MEGA_PACKAGE_COUNT } from "@/lib/luxury-mega";
 
 export const NEPAL_TREKKING_CATEGORY_ID = "trekking";
 
+function catalogHrefKey(href: string) {
+  return (href || "").replace(/^\//, "").split("?")[0].toLowerCase();
+}
+
+/** One slot per catalog id, URL, and linked trek page — prevents duplicate Everest View rows. */
+export function dedupeNepalCatalogCards(cards: NepalPackage[], tripPackages: TrekPackage[]): NepalPackage[] {
+  const seenCardIds = new Set<string>();
+  const seenHrefs = new Set<string>();
+  const seenTripIds = new Set<string>();
+  const out: NepalPackage[] = [];
+  for (const card of cards) {
+    const id = (card.id || "").trim();
+    if (id && seenCardIds.has(id)) continue;
+    const hrefKey = catalogHrefKey(card.href);
+    if (hrefKey && seenHrefs.has(hrefKey)) continue;
+    const trip = findPublishedTripForCard(card, tripPackages);
+    if (trip) {
+      if (seenTripIds.has(trip.id)) continue;
+      seenTripIds.add(trip.id);
+    }
+    if (id) seenCardIds.add(id);
+    if (hrefKey) seenHrefs.add(hrefKey);
+    out.push(card);
+  }
+  return out;
+}
+
 /** Merge saved Nepal CMS data with code defaults for Luxury Trekking (new catalog ids append in order). */
 export function coerceNepalContent(savedRaw?: Partial<NepalContent>): NepalContent {
   const saved = { ...DEFAULT_NEPAL, ...savedRaw };
@@ -32,24 +59,27 @@ export function coerceNepalContent(savedRaw?: Partial<NepalContent>): NepalConte
       return {
         ...cat,
         countLabel: syncFromDefaults ? defCat!.countLabel : cat.countLabel,
-        packages: packageList.map((pkg) => {
-          const savedPkg = (cat.packages || []).find((p) => p.id === pkg.id);
-          const merged = savedPkg ? { ...pkg, ...savedPkg } : pkg;
-          const fallback = defById.get(merged.id) ?? defById.get(pkg.id);
-          return {
-            ...fallback,
-            ...merged,
-            badge: merged.badge ?? fallback?.badge ?? "",
-            difficulty: merged.difficulty || fallback?.difficulty || "Moderate",
-            description: merged.description || fallback?.description || merged.subtitle,
-            href:
-              fallback?.href &&
-              !fallback.href.includes("interest=") &&
-              (merged.href || "").includes("interest=")
-                ? fallback.href
-                : merged.href || fallback?.href || "",
-          };
-        }),
+        packages: dedupeNepalCatalogCards(
+          packageList.map((pkg) => {
+            const savedPkg = (cat.packages || []).find((p) => p.id === pkg.id);
+            const merged = savedPkg ? { ...pkg, ...savedPkg } : pkg;
+            const fallback = defById.get(merged.id) ?? defById.get(pkg.id);
+            return {
+              ...fallback,
+              ...merged,
+              badge: merged.badge ?? fallback?.badge ?? "",
+              difficulty: merged.difficulty || fallback?.difficulty || "Moderate",
+              description: merged.description || fallback?.description || merged.subtitle,
+              href:
+                fallback?.href &&
+                !fallback.href.includes("interest=") &&
+                (merged.href || "").includes("interest=")
+                  ? fallback.href
+                  : merged.href || fallback?.href || "",
+            };
+          }),
+          [],
+        ),
       };
     }),
   };
@@ -96,7 +126,7 @@ export function publishedNepalTrekCatalogCards(nepal: NepalContent, tripPackages
   const published = trekking.packages
     .map((card) => enrichCatalogCard(card, tripPackages))
     .filter((card) => Boolean(findPublishedTripForCard(card, tripPackages)));
-  return orderNepalTrekCatalogCards(published);
+  return dedupeNepalCatalogCards(orderNepalTrekCatalogCards(published), tripPackages);
 }
 
 function packageCountLabel(count: number) {
@@ -138,23 +168,22 @@ export function catalogCardToMega(card: NepalPackage): LuxuryMegaPackage {
 
 /** Trip package pages listed under Nepal → Luxury Trekking (admin sidebar + public catalogs). */
 export function tripPackagesForNepalTrekkingCatalog(nepal: NepalContent, tripPackages: TrekPackage[]): TrekPackage[] {
-  const trekking = nepalTrekkingCategory(nepal);
-  if (!trekking?.packages?.length) return [];
-  const seen = new Set<string>();
+  const cards = publishedNepalTrekCatalogCards(nepal, tripPackages);
   const ordered: TrekPackage[] = [];
-  for (const card of trekking.packages) {
+  for (const card of cards) {
     const trip = findPublishedTripForCard(card, tripPackages);
-    if (!trip || trip.status !== "published" || seen.has(trip.id)) continue;
-    seen.add(trip.id);
-    ordered.push(trip);
+    if (trip && trip.status === "published") ordered.push(trip);
   }
   return ordered;
 }
 
-export function isNepalTrekkingAdminPackage(pkg: TrekPackage, nepal: NepalContent) {
-  const trekking = nepalTrekkingCategory(nepal);
-  if (!trekking) return false;
-  return trekking.packages.some((card) => cardLinkedToPackage(card, pkg));
+/** True only for the single trek page bound to each Nepal Luxury Trekking catalog card (no alias duplicates). */
+export function isNepalTrekkingAdminPackage(
+  pkg: TrekPackage,
+  nepal: NepalContent,
+  tripPackages: TrekPackage[],
+) {
+  return tripPackagesForNepalTrekkingCatalog(nepal, tripPackages).some((row) => row.id === pkg.id);
 }
 
 /** One public Nepal trekking list → Nepal page, homepage journeys, header mega menu. */
@@ -229,7 +258,7 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
     nepal,
     journeys: {
       ...content.journeys,
-      packages: journeyPackages.length ? journeyPackages : content.journeys.packages,
+      packages: journeyPackages,
     },
     headerNav,
   };
@@ -239,7 +268,8 @@ export function ensureNepalTrekkingCatalogCard(content: SiteContent, pkg: TrekPa
   if (pkg.country !== "nepal" || pkg.status !== "published") return content;
   const trekking = nepalTrekkingCategory(content.nepal);
   if (!trekking) return content;
-  if (trekking.packages.some((card) => cardLinkedToPackage(card, pkg))) return content;
+  const catalogId = (pkg.catalogId || pkg.id).trim();
+  if (trekking.packages.some((card) => card.id === catalogId || cardLinkedToPackage(card, pkg))) return content;
 
   const newCard: NepalPackage = {
     id: pkg.catalogId || pkg.id,

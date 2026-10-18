@@ -17,7 +17,7 @@ import {
   type TrekPackage,
 } from "@/lib/trip-packages";
 import { analyzeSeo, seoScoreTone, slugify } from "@/lib/seo";
-import { isNepalTrekkingAdminPackage } from "@/lib/nepal-trek-catalog";
+import { tripPackagesForNepalTrekkingCatalog } from "@/lib/nepal-trek-catalog";
 import type { NepalPackage } from "@/lib/nepal-defaults";
 import type { SiteContent } from "@/lib/content-types";
 
@@ -120,17 +120,21 @@ export default function AdminPackagesList() {
 
   const packages = useMemo(() => {
     const needle = q.trim().toLowerCase();
+    const matchesQuery = (pkg: TrekPackage) =>
+      !needle || `${pkg.title} ${pkg.slug}`.toLowerCase().includes(needle);
+    if (country === "nepal") {
+      return tripPackagesForNepalTrekkingCatalog(content.nepal, content.tripPackages).filter(matchesQuery);
+    }
     const seen = new Set<string>();
     return content.tripPackages.filter((pkg) => {
       if (country !== "all" && pkg.country !== country) return false;
-      if (country === "nepal" && !isNepalTrekkingAdminPackage(pkg, content.nepal)) return false;
-      if (needle && !`${pkg.title} ${pkg.slug}`.toLowerCase().includes(needle)) return false;
+      if (!matchesQuery(pkg)) return false;
       const keys = [pkg.id, pkg.catalogId, ...tripSlugAliases(pkg.slug)].filter(Boolean);
       if (keys.some((key) => seen.has(key))) return false;
       keys.forEach((key) => seen.add(key));
       return true;
     });
-  }, [content.tripPackages, country, q]);
+  }, [content.nepal, content.tripPackages, country, q]);
 
   const catalogCards = useMemo(() => {
     const dests = country === "all" ? DESTS : [destKey];

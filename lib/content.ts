@@ -23,6 +23,7 @@ import { DEFAULT_HELICOPTER } from "@/lib/helicopter-defaults";
 import { DEFAULT_PHOTOGRAPHY } from "@/lib/photography-defaults";
 import type { NepalContent } from "@/lib/nepal-defaults";
 import { coerceNepalContent } from "@/lib/nepal-trek-catalog";
+import { normalizeSiteContent } from "@/lib/normalize-site-content";
 import { coerceFooterPhones } from "@/lib/footer-contact";
 import { coerceTripPackages, type TrekPackage } from "@/lib/trip-packages";
 import { applyPublishedPackageHrefs } from "@/lib/trip-package-catalog-sync";
@@ -418,9 +419,8 @@ export async function readContent(): Promise<SiteContent> {
             ? parsed.journeys.wallpaperSrc
             : DEFAULT_CONTENT.journeys.wallpaperSrc,
         categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
-        packages: decorateJourneyPackages(
-          parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
-        ),
+        // Homepage HANDCRAFTED JOURNEYS list is filled from Nepal trekking catalog in applyPublishedPackageHrefs.
+        packages: [],
         eyebrow:
           !parsed.journeys?.eyebrow || parsed.journeys.eyebrow === "OUR SIGNATURE JOURNEYS"
             ? DEFAULT_CONTENT.journeys.eyebrow
@@ -760,9 +760,11 @@ export async function readContent(): Promise<SiteContent> {
       },
     });
     await healStalePrimaryContent(merged);
-    return applyPublishedPackageHrefs(merged);
+    return normalizeSiteContent(applyPublishedPackageHrefs(merged));
   } catch {
-    return applyPublishedPackageHrefs(withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT)));
+    return normalizeSiteContent(
+      applyPublishedPackageHrefs(withSharedSectionWallpaper(structuredClone(DEFAULT_CONTENT))),
+    );
   }
 }
 

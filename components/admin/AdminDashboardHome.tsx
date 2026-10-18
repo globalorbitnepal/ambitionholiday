@@ -4,11 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
-import {
-  enrichCatalogCard,
-  NEPAL_FLAGSHIP_TREK_PACKAGE_IDS,
-  type TrekPackage,
-} from "@/lib/trip-packages";
+import { tripPackagesForNepalTrekkingCatalog } from "@/lib/nepal-trek-catalog";
+import { enrichCatalogCard, type TrekPackage } from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
   try {
@@ -65,9 +62,9 @@ export default function AdminDashboardHome() {
     return Number.isFinite(t) && Date.now() - t < 7 * 86400000;
   }).length;
 
-  const fullEditPackages = NEPAL_FLAGSHIP_TREK_PACKAGE_IDS.map((id) => tripPackages.find((p) => p.id === id)).filter(
-    (p): p is TrekPackage => Boolean(p),
-  );
+  const fullEditPackages = loaded
+    ? tripPackagesForNepalTrekkingCatalog(content.nepal, content.tripPackages)
+    : [];
 
   if (!loaded) return <p className="admin-muted">Loading dashboard…</p>;
 

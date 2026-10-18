@@ -611,7 +611,7 @@ function LuxuryGlassPanel({
                 tripPackages,
               );
               return (
-              <li key={`${country.id}-${index}-${pkg.href}`}>
+              <li key={`${country.id}-${pkg.href.replace(/^\//, "").split("?")[0] || index}`}>
                 <Link
                   href={pkg.href}
                   onClick={onNavigate}

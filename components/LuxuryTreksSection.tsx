@@ -108,9 +108,10 @@ export default function LuxuryTreksSection() {
                 subtitle: raw.subtitle || pkg.subtitle,
                 description: raw.description || "",
               };
+              const hrefKey = (pkg.href || "").replace(/^\//, "").split("?")[0];
               return (
                 <PackageCard
-                  key={pkg.id}
+                  key={`${raw.id || hrefKey}-${hrefKey}`}
                   pkg={listing}
                   href={pkg.href}
                   priority={index < 3}
