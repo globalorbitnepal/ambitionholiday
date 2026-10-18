@@ -16,6 +16,7 @@ import {
   isLangtangPackage,
   isMustangPackage,
   isEverestViewPackage,
+  isAmaDablamPackage,
   isEverestPanoramaPackage,
   isEbcHelicopterTourPackage,
   LOCKED_PACKAGE_SLUGS,
@@ -790,7 +791,8 @@ export default function AdminPackageEditor() {
             isMustangPackage(pkg) ||
             isLangtangPackage(pkg) ||
             isEverestViewPackage(pkg) ||
-            isEverestPanoramaPackage(pkg)
+            isEverestPanoramaPackage(pkg) ||
+            isAmaDablamPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -1502,7 +1504,7 @@ export default function AdminPackageEditor() {
       {tab === "info" ? (
         <div className="admin-card">
           <p className="admin-lead">Trip information blocks on the public page. Add, rewrite or remove any heading.</p>
-          {isEverestPanoramaPackage(pkg) || pkg.luxuryExperience ? (
+          {isEverestPanoramaPackage(pkg) || isAmaDablamPackage(pkg) || pkg.luxuryExperience ? (
             <div className="admin-card" style={{ margin: "0 0 16px", padding: 12 }}>
               <p className="admin-side-group-label" style={{ margin: "0 0 10px" }}>
                 Luxury experience (shown above trip info blocks on Everest Panorama / premium treks)

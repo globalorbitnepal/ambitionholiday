@@ -20,6 +20,7 @@ import {
   isAbcPackage,
   isEbcPackage,
   isEbcHelicopterTourPackage,
+  isAmaDablamPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
   isLangtangPackage,
@@ -27,6 +28,7 @@ import {
   packageHeadings,
   TREK_DAY_DISTANCE,
 } from "@/lib/trip-packages";
+import { AMA_DABLAM_ALTITUDE_STOPS } from "@/lib/ama-dablam-charts";
 import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
@@ -137,14 +139,23 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const abcCharts = isAbcPackage(pkg);
   const everestViewCharts = isEverestViewPackage(pkg);
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
+  const amaDablamCharts = isAmaDablamPackage(pkg);
+  const khumbuSchematicCharts = everestPanoramaCharts || amaDablamCharts;
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
   const scrollableSectionNav = useScrollableSectionNav(pkg, premiumNav);
   const builtInCharts =
-    isEbcPackage(pkg) || abcCharts || mustangCharts || langtangCharts || everestViewCharts || everestPanoramaCharts;
+    isEbcPackage(pkg) ||
+    abcCharts ||
+    mustangCharts ||
+    langtangCharts ||
+    everestViewCharts ||
+    khumbuSchematicCharts;
   const chartStops = everestPanoramaCharts
     ? EVEREST_PANORAMA_ALTITUDE_STOPS
+    : amaDablamCharts
+      ? AMA_DABLAM_ALTITUDE_STOPS
     : everestViewCharts
     ? EVEREST_VIEW_ALTITUDE_STOPS
     : langtangCharts
@@ -154,7 +165,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? ABC_ALTITUDE_STOPS
           : undefined;
-  const chartMaxM = everestPanoramaCharts
+  const chartMaxM = amaDablamCharts
+    ? 4800
+    : everestPanoramaCharts
     ? 4200
     : everestViewCharts
     ? 4200
@@ -165,7 +178,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 4300
           : undefined;
-  const chartMinM = everestPanoramaCharts
+  const chartMinM = khumbuSchematicCharts
     ? 1200
     : everestViewCharts
     ? 1200
@@ -176,7 +189,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = everestPanoramaCharts
+  const chartFile = amaDablamCharts
+    ? "ama-dablam-base-camp-luxury-trek-altitude-profile"
+    : everestPanoramaCharts
     ? "everest-panorama-trek-altitude-profile"
     : everestViewCharts
     ? "everest-view-luxury-trek-altitude-profile"
@@ -187,7 +202,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = everestPanoramaCharts
+  const mapVariant = amaDablamCharts
+    ? "ama-dablam"
+    : everestPanoramaCharts
     ? "everest-panorama"
     : everestViewCharts
     ? "everest-view"
@@ -916,7 +933,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 </>
               ) : everestViewCharts ? (
                 <EverestViewAltitudeProfile sectionTitle={`Altitude profile of ${pkg.title}`} />
-              ) : everestPanoramaCharts ? (
+              ) : khumbuSchematicCharts ? (
                 <AltitudeProfileChart
                   title={`Altitude profile of ${pkg.title}`}
                   stops={chartStops}
@@ -944,7 +961,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : everestViewCharts || everestPanoramaCharts ? (
+              ) : everestViewCharts || khumbuSchematicCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
               ) : isEbcPackage(pkg) ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />

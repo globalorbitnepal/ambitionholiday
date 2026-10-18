@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "3 Packages",
+      countLabel: "4 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -115,6 +115,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Eleven-day private luxury Khumbu journey through Namche, Khumjung, Everest viewpoints and Tengboche Monastery.",
           "New",
           "/everest-panorama-trek",
+        ),
+        pkg(
+          "ama-dablam-lux",
+          "Ama Dablam Base Camp Luxury Trek – 12 Days",
+          12,
+          "/images/journeys/j-gokyo.webp",
+          "Ama Dablam rising above the Khumbu near Pangboche",
+          "Private luxury · Pangboche · Ama Dablam Base Camp",
+          "Challenging",
+          "Twelve-day private Khumbu trek through Namche, Tengboche and Pangboche with a guided excursion toward Ama Dablam Base Camp.",
+          "New",
+          "/ama-dablam-base-camp-luxury-trek",
         ),
         pkg(
           "ebc-heli-tour",

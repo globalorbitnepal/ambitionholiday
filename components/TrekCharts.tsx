@@ -12,6 +12,7 @@ import {
 import { ABC_MAP_STOPS } from "@/lib/abc-charts";
 import { LANGTANG_MAP_STOPS } from "@/lib/langtang-charts";
 import { EverestViewRouteMap as EverestViewRouteMapInfographic } from "@/components/everest-view/EverestViewRouteMap";
+import { AmaDablamRouteMap } from "@/components/ama-dablam/AmaDablamRouteMap";
 import { EverestPanoramaRouteMap } from "@/components/everest-panorama/EverestPanoramaRouteMap";
 import { MUSTANG_MAP_STOPS } from "@/lib/mustang-charts";
 import { mediaSrc } from "@/lib/media-src";
@@ -449,13 +450,14 @@ export function TrekRouteMap({
   variant = "ebc",
 }: {
   title?: string;
-  variant?: "ebc" | "abc" | "mustang" | "langtang" | "everest-view" | "everest-panorama";
+  variant?: "ebc" | "abc" | "mustang" | "langtang" | "everest-view" | "everest-panorama" | "ama-dablam";
 }) {
   if (variant === "abc") return <AbcRouteMap title={title || "Annapurna Base Camp Luxury Trek map"} />;
   if (variant === "mustang") return <MustangRouteMap title={title || "Luxury Upper Mustang Trek map"} />;
   if (variant === "langtang") return <LangtangRouteMap title={title || "Langtang Valley Luxury Trek — 10 days route map"} />;
   if (variant === "everest-view") return <EverestViewRouteMapInfographic sectionTitle={title || "Everest View Luxury Trek — route map"} />;
   if (variant === "everest-panorama") return <EverestPanoramaRouteMap sectionTitle={title || "Everest Panorama Trek — route map"} />;
+  if (variant === "ama-dablam") return <AmaDablamRouteMap sectionTitle={title || "Ama Dablam Base Camp Luxury Trek — route map"} />;
   return <EbcRouteMap title={title} />;
 }
 

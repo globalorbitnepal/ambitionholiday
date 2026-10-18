@@ -12,6 +12,7 @@ import { LANGTANG_LUXURY_TRIP_PACKAGE } from "./langtang-luxury-package";
 import { MUSTANG_LUXURY_TRIP_PACKAGE } from "./mustang-luxury-package";
 import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package";
 import { EVEREST_PANORAMA_TRIP_PACKAGE } from "./everest-panorama-package";
+import { AMA_DABLAM_TRIP_PACKAGE } from "./ama-dablam-package";
 import { EBC_HELICOPTER_TOUR_PACKAGE } from "./ebc-helicopter-tour-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
@@ -248,12 +249,14 @@ export const MUSTANG_PACKAGE_ID = "mustang-lux";
 export const LANGTANG_PACKAGE_ID = "langtang-lux";
 export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
 export const EVEREST_PANORAMA_PACKAGE_ID = "ept-pan";
+export const AMA_DABLAM_PACKAGE_ID = "adb-lux";
 export const EBC_HELI_TOUR_PACKAGE_ID = "ebc-heli-tour";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
 export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [EVEREST_VIEW_PACKAGE_ID]: "everest-view-luxury-trek",
   [EVEREST_PANORAMA_PACKAGE_ID]: "everest-panorama-trek",
+  [AMA_DABLAM_PACKAGE_ID]: "ama-dablam-base-camp-luxury-trek",
   [EBC_HELI_TOUR_PACKAGE_ID]: "everest-base-camp-helicopter-tour",
 };
 
@@ -264,6 +267,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   LANGTANG_PACKAGE_ID,
   EVEREST_VIEW_PACKAGE_ID,
   EVEREST_PANORAMA_PACKAGE_ID,
+  AMA_DABLAM_PACKAGE_ID,
   EBC_HELI_TOUR_PACKAGE_ID,
 ] as const;
 
@@ -296,6 +300,14 @@ export function isEverestViewPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
 
 export function isEverestPanoramaPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
   return pkg.id === EVEREST_PANORAMA_PACKAGE_ID || /everest-panorama-trek/i.test(pkg.slug || "");
+}
+
+export function isAmaDablamPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return (
+    pkg.id === AMA_DABLAM_PACKAGE_ID ||
+    pkg.catalogId === "ama-dablam-lux" ||
+    /ama-dablam-base-camp-luxury-trek/i.test(pkg.slug || "")
+  );
 }
 
 export function isEbcHelicopterTourPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
@@ -355,6 +367,14 @@ function everestPanoramaLuxuryExperience(
   const blob = JSON.stringify(saved);
   if (EVL_PROHIBITED_RE.test(blob)) return def;
   return saved;
+}
+
+function mergeAmaDablamPublicPackage(
+  mergedPkg: TrekPackage,
+  item: TrekPackage,
+  def: TrekPackage,
+): TrekPackage {
+  return mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
 }
 
 function mergeEverestPanoramaPublicPackage(
@@ -910,6 +930,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   LANGTANG_LUXURY_TRIP_PACKAGE,
   EVEREST_VIEW_LUXURY_TRIP_PACKAGE,
   EVEREST_PANORAMA_TRIP_PACKAGE,
+  AMA_DABLAM_TRIP_PACKAGE,
   EBC_HELICOPTER_TOUR_PACKAGE,
 ];
 
@@ -1019,6 +1040,7 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   ebc: EVEREST_VIEW_PACKAGE_ID,
   "trip-ebc-lux": EVEREST_VIEW_PACKAGE_ID,
   "everest-panorama": EVEREST_PANORAMA_PACKAGE_ID,
+  "ama-dablam-lux": AMA_DABLAM_PACKAGE_ID,
   "ebc-heli-lux": EBC_HELI_TOUR_PACKAGE_ID,
   "everest-base-camp-helicopter": EBC_HELI_TOUR_PACKAGE_ID,
 };
@@ -1037,6 +1059,10 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   if (pkg.id === EVEREST_PANORAMA_PACKAGE_ID || pkg.catalogId === "everest-panorama") {
     keys.add("ept-pan");
     keys.add("everest-panorama");
+  }
+  if (pkg.id === AMA_DABLAM_PACKAGE_ID || pkg.catalogId === "ama-dablam-lux") {
+    keys.add("adb-lux");
+    keys.add("ama-dablam-lux");
   }
   if (pkg.id === EBC_HELI_TOUR_PACKAGE_ID || pkg.catalogId === "ebc-heli-tour" || pkg.catalogId === "ebc-heli-lux") {
     keys.add("ebc-heli-tour");
@@ -1412,6 +1438,9 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     }
     if (def.id === EVEREST_PANORAMA_PACKAGE_ID) {
       return mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
+    }
+    if (def.id === AMA_DABLAM_PACKAGE_ID) {
+      return mergeAmaDablamPublicPackage(mergedPkg, item, def);
     }
     if (def.id === EBC_HELI_TOUR_PACKAGE_ID) {
       return {

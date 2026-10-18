@@ -28,7 +28,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
   {
     id: "nepal",
     title: "Nepal",
-    countLabel: "3 Packages",
+    countLabel: "4 Packages",
     tagline: "Mountains. Culture. Wildlife. Extraordinary Journeys.",
     href: "/nepal",
     flagSrc: "/images/flags/flag-nepal.webp",
@@ -50,6 +50,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         href: "/everest-panorama-trek",
         imageSrc: "/images/journeys/j-gokyo.webp",
         imageAlt: "Himalayan panorama in the Khumbu",
+      },
+      {
+        title: "Ama Dablam Base Camp Luxury Trek – 12 Days",
+        days: "12 Days",
+        difficulty: "Challenging",
+        href: "/ama-dablam-base-camp-luxury-trek",
+        imageSrc: "/images/journeys/j-gokyo.webp",
+        imageAlt: "Ama Dablam and Himalayan ridges in the Khumbu",
       },
       {
         title: "Everest Base Camp Helicopter Tour – 1 Day",

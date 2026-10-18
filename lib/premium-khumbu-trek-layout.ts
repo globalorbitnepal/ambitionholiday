@@ -1,4 +1,5 @@
 import {
+  isAmaDablamPackage,
   isEbcHelicopterTourPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
@@ -27,8 +28,8 @@ export const PANORAMA_EXTENDED_TOC: TrekTocItem[] = [
   { id: "faqs", label: "FAQs" },
 ];
 
-export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug">) {
-  return isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg);
+export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg) || isAmaDablamPackage(pkg);
 }
 
 /** Everest View / Panorama / helicopter day tours — same title + booking layout on the public page. */
@@ -44,7 +45,9 @@ export function buildPackageSectionToc(
   standardToc: TrekTocItem[],
 ): TrekTocItem[] {
   const source =
-    hasJourneyNav && isEverestPanoramaPackage(pkg) ? PANORAMA_EXTENDED_TOC : standardToc;
+    hasJourneyNav && (isEverestPanoramaPackage(pkg) || isAmaDablamPackage(pkg))
+      ? PANORAMA_EXTENDED_TOC
+      : standardToc;
   return source.filter((item) => show[item.id]);
 }
 
