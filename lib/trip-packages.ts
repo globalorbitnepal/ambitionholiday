@@ -1167,7 +1167,7 @@ export function enrichCatalogCard<
     ...card,
     id: card.id && CATALOG_PACKAGE_ALIASES[card.id] ? trip.catalogId || card.id : card.id,
     href: tripPath(trip),
-    imageSrc: trip.heroSrc || card.imageSrc,
+    imageSrc: (trip.heroSrc || "").trim() || (card.imageSrc || "").trim(),
     imageAlt: trip.heroAlt || card.imageAlt || trip.title,
     title: trip.title,
     difficulty: trip.difficulty || card.difficulty,

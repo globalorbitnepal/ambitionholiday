@@ -71,6 +71,8 @@ export function coerceNepalContent(savedRaw?: Partial<NepalContent>): NepalConte
               badge: merged.badge ?? fallback?.badge ?? "",
               difficulty: merged.difficulty || fallback?.difficulty || "Moderate",
               description: merged.description || fallback?.description || merged.subtitle,
+              imageSrc: (merged.imageSrc || "").trim() || fallback?.imageSrc || "",
+              imageAlt: (merged.imageAlt || "").trim() || fallback?.imageAlt || merged.title || "",
               href:
                 fallback?.href &&
                 !fallback.href.includes("interest=") &&

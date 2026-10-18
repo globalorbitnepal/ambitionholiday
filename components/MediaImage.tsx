@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { mediaSrc } from "@/lib/media-src";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 
@@ -38,10 +38,24 @@ export default function MediaImage({
   const initial = mediaSrc(src, cacheKey) || FALLBACK_SRC;
   const [current, setCurrent] = useState(initial);
   const [loaded, setLoaded] = useState(priority);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  const markLoadedIfAlreadyComplete = useCallback(() => {
+    const el = imgRef.current;
+    if (el?.complete && el.naturalWidth > 0) setLoaded(true);
+  }, []);
+
   useEffect(() => {
     setCurrent(mediaSrc(src, cacheKey) || FALLBACK_SRC);
     setLoaded(priority);
   }, [src, cacheKey, priority]);
+
+  useEffect(() => {
+    if (priority) return;
+    const id = requestAnimationFrame(() => markLoadedIfAlreadyComplete());
+    return () => cancelAnimationFrame(id);
+  }, [current, priority, markLoadedIfAlreadyComplete]);
+
   const resolved = current || FALLBACK_SRC;
   const style = { objectPosition, objectFit };
   const imageQuality = quality ?? (priority ? 74 : 68);
@@ -54,11 +68,20 @@ export default function MediaImage({
     setLoaded(true);
   };
 
+  const bindImgRef = useCallback(
+    (el: HTMLImageElement | null) => {
+      imgRef.current = el;
+      if (!priority && el?.complete && el.naturalWidth > 0) setLoaded(true);
+    },
+    [priority],
+  );
+
   if (isRuntimeUpload(resolved)) {
     return (
       // Runtime CMS uploads are served from disk, not the build-time public folder.
       // eslint-disable-next-line @next/next/no-img-element
       <img
+        ref={bindImgRef}
         src={resolved}
         alt={alt}
         className={`absolute inset-0 h-full w-full ${fadeClass}`}
@@ -75,6 +98,7 @@ export default function MediaImage({
 
   return (
     <Image
+      ref={bindImgRef}
       src={resolved}
       alt={alt}
       fill
@@ -87,6 +111,7 @@ export default function MediaImage({
       className={fadeClass}
       style={style}
       onLoad={onLoad}
+      onLoadingComplete={onLoad}
       onError={onError}
     />
   );

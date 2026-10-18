@@ -114,7 +114,7 @@ export default function LuxuryTreksSection() {
                   key={`${raw.id || hrefKey}-${hrefKey}`}
                   pkg={listing}
                   href={pkg.href}
-                  priority={index < 3}
+                  priority={index < LUXURY_MEGA_PACKAGE_COUNT}
                 />
               );
             })}
