@@ -103,7 +103,7 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
     ...content.nepal,
     tabHint:
       publishedCards.length <= 2
-        ? "Private Himalayan treks — published packages only."
+        ? "Private Himalayan treks and day experiences — published packages only."
         : content.nepal.tabHint,
     categories: trekking
       ? [
