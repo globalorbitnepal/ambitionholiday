@@ -1,14 +1,14 @@
 import type { TrekLuxuryExperience } from "./trip-packages";
 
 export const AMA_DABLAM_PRICING_DISCLAIMER =
-  "Per-person rates are quoted in USD when confirmed with the operator. Final pricing depends on travel dates, group size, flight operations, lodge availability and the services on your signed confirmation. Until supplier fares are verified, use Request a Private Quote.";
+  "Proposed retail rates per person in USD. Final pricing depends on confirmed travel dates, accommodation availability, flight operations and the service configuration on your signed confirmation. Single-room supplements and helicopter upgrades are quoted separately unless explicitly included.";
 
 export const AMA_DABLAM_GROUP_PRICES = [
-  { id: "g1", label: "1 traveller", priceUsd: 0 },
-  { id: "g2", label: "2–3 travellers", priceUsd: 0 },
-  { id: "g3", label: "4–5 travellers", priceUsd: 0 },
-  { id: "g4", label: "6–9 travellers", priceUsd: 0 },
-  { id: "g5", label: "10–14 travellers", priceUsd: 0 },
+  { id: "g1", label: "1 traveller", priceUsd: 3999 },
+  { id: "g2", label: "2–3 travellers", priceUsd: 3299 },
+  { id: "g3", label: "4–5 travellers", priceUsd: 3099 },
+  { id: "g4", label: "6–9 travellers", priceUsd: 2899 },
+  { id: "g5", label: "10–14 travellers", priceUsd: 2699 },
 ] as const;
 
 export const AMA_DABLAM_LUXURY_EXPERIENCE: TrekLuxuryExperience = {

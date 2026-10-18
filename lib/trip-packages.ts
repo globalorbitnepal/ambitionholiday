@@ -386,7 +386,12 @@ function mergeAmaDablamPublicPackage(
       ? { ...block, title: mountainDef.title }
       : block,
   );
-  return { ...merged, aboutTitle, aboutSections };
+  const savedDisclaimer = (item.pricingDisclaimer || "").trim();
+  const pricingDisclaimer =
+    !savedDisclaimer || /Until supplier fares|Request a Private Quote/i.test(savedDisclaimer)
+      ? def.pricingDisclaimer || merged.pricingDisclaimer
+      : merged.pricingDisclaimer;
+  return { ...merged, aboutTitle, aboutSections, pricingDisclaimer };
 }
 
 function mergeEverestPanoramaPublicPackage(
