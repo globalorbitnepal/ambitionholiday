@@ -1054,7 +1054,9 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
     keys.add(`trip-${pkg.catalogId}`);
   }
   if (pkg.id === EVEREST_VIEW_PACKAGE_ID || pkg.catalogId === "everest-view-lux") {
-    for (const legacy of Object.keys(CATALOG_PACKAGE_ALIASES)) keys.add(legacy);
+    for (const [legacy, target] of Object.entries(CATALOG_PACKAGE_ALIASES)) {
+      if (target === EVEREST_VIEW_PACKAGE_ID) keys.add(legacy);
+    }
   }
   if (pkg.id === EVEREST_PANORAMA_PACKAGE_ID || pkg.catalogId === "everest-panorama") {
     keys.add("ept-pan");
@@ -1098,15 +1100,27 @@ export function findPublishedTripForCard(
   packages: TrekPackage[],
 ) {
   const published = packages.filter((pkg) => pkg.status === "published");
-  const direct = published.find((pkg) => cardLinkedToPackage(card, pkg));
-  if (direct) return direct;
-  const aliasId = card.id ? CATALOG_PACKAGE_ALIASES[card.id] : undefined;
-  if (aliasId) return published.find((pkg) => pkg.id === aliasId);
-  const cleanSlug = (card.href || "").replace(/^\//, "");
+  const cardId = (card.id || "").trim();
+  if (cardId) {
+    const byCatalog = published.find((pkg) => packageCatalogKeys(pkg).has(cardId));
+    if (byCatalog) return byCatalog;
+    const aliasId = CATALOG_PACKAGE_ALIASES[cardId];
+    if (aliasId) {
+      const aliased = published.find((pkg) => pkg.id === aliasId);
+      if (aliased) return aliased;
+    }
+  }
+  const cleanSlug = (card.href || "").replace(/^\//, "").split("?")[0];
+  if (cleanSlug) {
+    const bySlug = published.find(
+      (pkg) => pkg.slug === cleanSlug || packageLookupSlugs(pkg).has(cleanSlug),
+    );
+    if (bySlug) return bySlug;
+  }
   if (cleanSlug === "everest-base-camp-trek" || cleanSlug === "everest-base-camp-luxury-trek") {
     return published.find((pkg) => pkg.id === EVEREST_VIEW_PACKAGE_ID);
   }
-  return undefined;
+  return published.find((pkg) => cardLinkedToPackage(card, pkg));
 }
 
 function tripMaxAltitudeLabel(pkg: TrekPackage) {

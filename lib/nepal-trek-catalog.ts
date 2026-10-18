@@ -4,6 +4,7 @@ import { DEFAULT_NEPAL, type NepalContent, type NepalPackage } from "@/lib/nepal
 import type { SiteContent } from "@/lib/content-types";
 import {
   cardLinkedToPackage,
+  coerceTripPackages,
   enrichCatalogCard,
   findPublishedTripForCard,
   isEbcHelicopterTourPackage,
@@ -98,6 +99,21 @@ export function defaultNepalTrekkingCatalogOrder(): string[] {
   );
 }
 
+/**
+ * Full Luxury Trekking row in catalog order — always one row per default slot (CMS cannot drop a slot).
+ * New packages: append to DEFAULT_NEPAL trekking.packages; they become the next slot automatically.
+ */
+export function nepalTrekkingCatalogSlots(nepal: NepalContent): NepalPackage[] {
+  const trekking = nepalTrekkingCategory(nepal);
+  const byId = new Map((trekking?.packages ?? []).map((card) => [card.id, card]));
+  const slots: NepalPackage[] = [];
+  for (const id of defaultNepalTrekkingCatalogOrder()) {
+    const card = byId.get(id) ?? nepalCatalogDefaultCard(id);
+    if (card) slots.push(card);
+  }
+  return slots;
+}
+
 /** Keep flagship cards in catalog order; any extra published cards follow at the end (3rd, 4th, …). */
 export function nepalCatalogDefaultCard(cardId: string): NepalPackage | undefined {
   for (const cat of DEFAULT_NEPAL.categories) {
@@ -121,12 +137,13 @@ export function orderNepalTrekCatalogCards(cards: NepalPackage[]): NepalPackage[
 
 /** Catalog cards on the Nepal trekking tab that have a published trek page. */
 export function publishedNepalTrekCatalogCards(nepal: NepalContent, tripPackages: TrekPackage[]): NepalPackage[] {
-  const trekking = nepalTrekkingCategory(nepal);
-  if (!trekking?.packages?.length) return [];
-  const published = trekking.packages
-    .map((card) => enrichCatalogCard(card, tripPackages))
-    .filter((card) => Boolean(findPublishedTripForCard(card, tripPackages)));
-  return dedupeNepalCatalogCards(orderNepalTrekCatalogCards(published), tripPackages);
+  const slots = nepalTrekkingCatalogSlots(nepal);
+  if (!slots.length) return [];
+  const coerced = coerceTripPackages(tripPackages);
+  const published = slots
+    .map((card) => enrichCatalogCard(card, coerced))
+    .filter((card) => Boolean(findPublishedTripForCard(card, coerced)));
+  return dedupeNepalCatalogCards(published, coerced);
 }
 
 function packageCountLabel(count: number) {
@@ -170,8 +187,9 @@ export function catalogCardToMega(card: NepalPackage): LuxuryMegaPackage {
 export function tripPackagesForNepalTrekkingCatalog(nepal: NepalContent, tripPackages: TrekPackage[]): TrekPackage[] {
   const cards = publishedNepalTrekCatalogCards(nepal, tripPackages);
   const ordered: TrekPackage[] = [];
+  const coerced = coerceTripPackages(tripPackages);
   for (const card of cards) {
-    const trip = findPublishedTripForCard(card, tripPackages);
+    const trip = findPublishedTripForCard(card, coerced);
     if (trip && trip.status === "published") ordered.push(trip);
   }
   return ordered;
@@ -188,8 +206,9 @@ export function isNepalTrekkingAdminPackage(
 
 /** One public Nepal trekking list → Nepal page, homepage journeys, header mega menu. */
 export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteContent {
-  const publishedCards = publishedNepalTrekCatalogCards(content.nepal, content.tripPackages).map((card) => {
-    const trip = findPublishedTripForCard(card, content.tripPackages);
+  const tripPackages = coerceTripPackages(content.tripPackages);
+  const publishedCards = publishedNepalTrekCatalogCards(content.nepal, tripPackages).map((card) => {
+    const trip = findPublishedTripForCard(card, tripPackages);
     const catalogDef = nepalCatalogDefaultCard(card.id);
     if (!trip) return card;
     return {
@@ -222,7 +241,7 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
 
   const journeyPackages = publishedCards.map((card) => {
     const journey = catalogCardToJourney(card);
-    const trip = findPublishedTripForCard(card, content.tripPackages);
+    const trip = findPublishedTripForCard(card, tripPackages);
     const catalogDef = nepalCatalogDefaultCard(card.id);
     journey.subtitle = catalogDef?.subtitle || card.subtitle || journey.subtitle;
     journey.description = "";
