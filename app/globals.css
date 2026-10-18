@@ -6175,6 +6175,12 @@ a.lux-chart-dl {
   color: rgba(232, 238, 244, 0.72);
 }
 
+.lux-price-main--quote {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
 .lux-heli-options {
   display: grid;
   grid-template-columns: 1fr 1fr;

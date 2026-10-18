@@ -33,7 +33,7 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
     { id: "charter", label: "Private charter (per aircraft)", priceUsd: 0 },
   ],
   pricingDisclaimer:
-    "Group-sharing and private charter fares are quoted separately. Displayed rates are placeholders until confirmed with the operator — use Request Current Price or Request a Private Charter Quote.",
+    "Group sharing and private charter are quoted separately. Confirm your fare with us before payment.",
   overview:
     "This is a one-day helicopter experience from Kathmandu, not a trekking expedition. You fly into the Everest region for panoramic views of the Khumbu, glaciers and the Everest Base Camp area from the air when the approved route and visibility allow.\n\nChoose a group-sharing seat with other passengers or discuss a private charter for your party. Stops and landings depend on the confirmed operating plan, weather, pilot discretion and permissions — flying over Everest Base Camp is not the same as landing there.\n\nTotal time on the ground and in the air is typically around four to five hours from Kathmandu, subject to check-in, air traffic and operational conditions.",
   highlights: [
@@ -53,7 +53,7 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
       body:
         "Individual-seat booking is subject to availability and the operator’s departure plan. Departure time and routing are confirmed by the operator before flight day.\n\nScenic views of the Everest region depend on visibility. Landing options depend on the selected departure and the confirmed operating plan. Special landings may require a private charter or additional payment.\n\nPassenger and baggage weight restrictions apply. Fare is per person — request the current configured rate before booking.",
       priceUsd: 0,
-      priceLabel: "Request Current Price",
+      priceLabel: "Price on request",
     },
     {
       id: "charter",
@@ -62,7 +62,7 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
       body:
         "Private charter is subject to aircraft availability and permitted passenger capacity. Route and timing can be discussed with the operator within safety and regulatory limits.\n\nSpecial stops or landing requests require explicit operator approval. Price is quoted for the aircraft/charter according to the approved configuration — not calculated by multiplying the group-sharing seat price.\n\nOptional landings, extra stops and upgrades may cost more. Capacity and weight limits are confirmed at quotation stage.",
       priceUsd: 0,
-      priceLabel: "Request a Private Charter Quote",
+      priceLabel: "Charter on request",
     },
   ],
   whyItems: [

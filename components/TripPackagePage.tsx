@@ -37,6 +37,7 @@ import { buildHelicopterTourSectionToc } from "@/lib/helicopter-tour-layout";
 import {
   buildPackageSectionToc,
   isPremiumKhumbuTrekPackage,
+  isPremiumNepalPackagePage,
   useScrollableSectionNav,
 } from "@/lib/premium-khumbu-trek-layout";
 
@@ -137,6 +138,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const everestViewCharts = isEverestViewPackage(pkg);
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
+  const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
   const scrollableSectionNav = useScrollableSectionNav(pkg, premiumNav);
   const builtInCharts =
@@ -325,7 +327,11 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           ))}
         </div>
       ) : null}
-      <p className="lux-price-main">
+      <p
+        className={`lux-price-main${
+          heliTour && selectedHeliOption && !(selectedHeliOption.priceUsd > 0) ? " lux-price-main--quote" : ""
+        }`}
+      >
         {heliTour && selectedHeliOption ? (
           selectedHeliOption.priceUsd > 0 ? (
             <>
@@ -333,7 +339,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               <span>{selectedHeliOption.id === "charter" ? " / charter" : " / person"}</span>
             </>
           ) : (
-            selectedHeliOption.priceLabel || "Request a Quote"
+            selectedHeliOption.priceLabel || "Price on request"
           )
         ) : hasFromPrice ? (
           <>
@@ -373,7 +379,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       ) : null}
       {pkg.pricingDisclaimer ? <p className="lux-price-foot">{pkg.pricingDisclaimer}</p> : null}
       <Link href={enquire} className="lux-btn lux-btn-solid">
-        {heliTour ? "Book Your Helicopter Tour" : "Book now"}
+        Book now
       </Link>
       <Link href={`${enquire}&intent=availability`} className="lux-btn lux-btn-gold">
         Check availability
@@ -477,24 +483,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
-              {heliTour ? (
-                <div className="lux-hero-ctas">
-                  <Link href={enquire} className="lux-btn lux-btn-solid">
-                    Book Your Helicopter Tour
-                  </Link>
-                  <button
-                    type="button"
-                    className="lux-btn lux-btn-gold"
-                    onClick={() => {
-                      setActiveToc("tour-options");
-                      scrollToId("tour-options");
-                    }}
-                  >
-                    Compare Tour Options
-                  </button>
-                </div>
-              ) : null}
-              {premiumNav && !premiumKhumbuTrek && !heliTour ? (
+              {premiumNav && !premiumNepalPage ? (
                 <div className="lux-hero-ctas">
                   <Link href={enquire} className="lux-btn lux-btn-solid">
                     Plan Your Trek
@@ -546,10 +535,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             </header>
 
             <article className="lux-card">
-              <p className="lux-kicker">
-                {heliTour ? "Overview" : useReferenceOverviewBlock ? "The journey" : "Overview"}
-              </p>
-              <h2>{useReferenceOverviewBlock || heliTour ? heads.about : "Overview"}</h2>
+              <p className="lux-kicker">{useReferenceOverviewBlock ? "The journey" : "Overview"}</p>
+              <h2>{useReferenceOverviewBlock ? heads.about : "Overview"}</h2>
               {pkg.overview.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 48)}>{para}</p>
               ))}
@@ -1174,9 +1161,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
             <span>/ person</span>
           ) : null}
         </div>
-        <Link href={enquire}>
-          {heliTour ? "Book tour" : premiumKhumbuTrek ? "Book now" : "Inquire"}
-        </Link>
+        <Link href={enquire}>{premiumNepalPage ? "Book now" : "Inquire"}</Link>
       </div>
 
       <div id="reviews" className="lux-reviews-band">

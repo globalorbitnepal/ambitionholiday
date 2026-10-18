@@ -31,6 +31,11 @@ export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug">
   return isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg);
 }
 
+/** Everest View / Panorama / helicopter day tours — same title + booking layout on the public page. */
+export function isPremiumNepalPackagePage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return isPremiumKhumbuTrekPackage(pkg) || isEbcHelicopterTourPackage(pkg);
+}
+
 /** Everest Panorama keeps 16 sections; other treks use the provided standard list. */
 export function buildPackageSectionToc(
   pkg: TrekPackage,
