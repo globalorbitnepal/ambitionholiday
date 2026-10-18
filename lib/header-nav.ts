@@ -47,18 +47,33 @@ function mergePackages(
   parsed?: LuxuryMegaPackage[],
   fallback: LuxuryMegaPackage[] = [],
 ): LuxuryMegaPackage[] {
-  const slots = fallback.slice(0, LUXURY_MEGA_PACKAGE_COUNT);
-  return slots.map((base, i) => {
+  const length = Math.min(
+    LUXURY_MEGA_PACKAGE_COUNT,
+    Math.max(fallback.length, parsed?.length ?? 0),
+  );
+  return Array.from({ length }, (_, i) => {
+    const base = fallback[i];
     const row = parsed?.[i];
-    if (!row) return { ...base };
+    if (!base && row) return { ...row };
+    if (!row && base) return { ...base };
+    if (!base && !row) {
+      return {
+        title: "",
+        days: "",
+        difficulty: "",
+        href: "/nepal",
+        imageSrc: fallback[0]?.imageSrc || "/images/nepal/nepal-cover.webp",
+        imageAlt: "",
+      };
+    }
     return {
       ...base,
       ...row,
-      href: row.href || base.href,
-      imageSrc: row.imageSrc || base.imageSrc,
-      imageAlt: row.imageAlt || base.imageAlt,
+      href: row!.href || base!.href,
+      imageSrc: row!.imageSrc || base!.imageSrc,
+      imageAlt: row!.imageAlt || base!.imageAlt,
     };
-  });
+  }).filter((pkg) => pkg.title.trim().length > 0);
 }
 
 function mergeLuxuryCountries(parsed?: LuxuryMegaCountry[]): LuxuryMegaCountry[] {

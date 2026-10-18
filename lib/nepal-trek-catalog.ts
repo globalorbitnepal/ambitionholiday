@@ -6,9 +6,11 @@ import {
   cardLinkedToPackage,
   enrichCatalogCard,
   findPublishedTripForCard,
+  isEbcHelicopterTourPackage,
   tripPath,
   type TrekPackage,
 } from "@/lib/trip-packages";
+import { LUXURY_MEGA_PACKAGE_COUNT } from "@/lib/luxury-mega";
 
 export const NEPAL_TREKKING_CATEGORY_ID = "trekking";
 
@@ -26,6 +28,14 @@ export function defaultNepalTrekkingCatalogOrder(): string[] {
 }
 
 /** Keep flagship cards in catalog order; any extra published cards follow at the end (3rd, 4th, …). */
+export function nepalCatalogDefaultCard(cardId: string): NepalPackage | undefined {
+  for (const cat of DEFAULT_NEPAL.categories) {
+    const hit = cat.packages.find((p) => p.id === cardId);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
 export function orderNepalTrekCatalogCards(cards: NepalPackage[]): NepalPackage[] {
   const rank = new Map(defaultNepalTrekkingCatalogOrder().map((id, index) => [id, index]));
   const known: NepalPackage[] = [];
@@ -110,12 +120,13 @@ export function isNepalTrekkingAdminPackage(pkg: TrekPackage, nepal: NepalConten
 export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteContent {
   const publishedCards = publishedNepalTrekCatalogCards(content.nepal, content.tripPackages).map((card) => {
     const trip = findPublishedTripForCard(card, content.tripPackages);
+    const catalogDef = nepalCatalogDefaultCard(card.id);
     if (!trip) return card;
     return {
       ...card,
       title: trip.title,
-      subtitle: trip.subtitle || card.subtitle,
-      description: trip.subtitle || card.description,
+      subtitle: catalogDef?.subtitle || card.subtitle,
+      description: catalogDef?.description || catalogDef?.subtitle || card.description,
       badge: trip.badge || card.badge,
     };
   });
@@ -142,16 +153,20 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
   const journeyPackages = publishedCards.map((card) => {
     const journey = catalogCardToJourney(card);
     const trip = findPublishedTripForCard(card, content.tripPackages);
+    const catalogDef = nepalCatalogDefaultCard(card.id);
+    journey.subtitle = catalogDef?.subtitle || card.subtitle || journey.subtitle;
+    journey.description = "";
     if (trip) {
-      journey.subtitle = trip.subtitle || journey.subtitle;
       journey.badge = trip.badge || journey.badge;
-      if (trip.maxAltitude) {
+      if (isEbcHelicopterTourPackage(trip)) {
+        journey.maxAltitude = trip.startEndLabel || "Kathmandu";
+      } else if (trip.maxAltitude) {
         journey.maxAltitude = trip.maxAltitude.split("/")[0].trim();
       }
     }
     return journey;
   });
-  const megaPackages = publishedCards.map(catalogCardToMega);
+  const megaPackages = publishedCards.map(catalogCardToMega).slice(0, LUXURY_MEGA_PACKAGE_COUNT);
 
   const headerNav = content.headerNav
     ? {
@@ -161,7 +176,7 @@ export function syncNepalTrekkingCatalogSurfaces(content: SiteContent): SiteCont
             ? {
                 ...country,
                 countLabel,
-                packages: megaPackages,
+                packages: megaPackages.slice(0, LUXURY_MEGA_PACKAGE_COUNT),
               }
             : country,
         ),

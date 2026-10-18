@@ -5,6 +5,7 @@ import MediaImage from "@/components/MediaImage";
 import SectionWallpaper from "@/components/SectionWallpaper";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { JourneyPackage } from "@/lib/content-types";
+import { LUXURY_MEGA_PACKAGE_COUNT } from "@/lib/luxury-mega";
 import { enrichCatalogCard } from "@/lib/trip-packages";
 
 function CalendarIcon() {
@@ -51,8 +52,10 @@ function PackageCard({ pkg, href, priority }: { pkg: JourneyPackage; href: strin
       <div className="jour-card-copy">
         <div className="min-w-0">
           <h3 className="font-[family-name:var(--font-cormorant)]">{pkg.title}</h3>
-          <p className="jour-card-sub">{pkg.subtitle}</p>
-          <p className="jour-card-desc">{pkg.description}</p>
+          {pkg.subtitle ? <p className="jour-card-sub">{pkg.subtitle}</p> : null}
+          {pkg.description && pkg.description.trim() !== (pkg.subtitle || "").trim() ? (
+            <p className="jour-card-desc">{pkg.description}</p>
+          ) : null}
         </div>
         <span className="jour-card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
@@ -98,9 +101,21 @@ export default function LuxuryTreksSection() {
           </header>
 
           <div className="jour-grid">
-            {journeys.packages.map((raw) => {
+            {journeys.packages.slice(0, LUXURY_MEGA_PACKAGE_COUNT).map((raw, index) => {
               const pkg = enrichCatalogCard(raw, tripPackages);
-              return <PackageCard key={pkg.id} pkg={pkg} href={pkg.href} priority />;
+              const listing = {
+                ...pkg,
+                subtitle: raw.subtitle || pkg.subtitle,
+                description: raw.description || "",
+              };
+              return (
+                <PackageCard
+                  key={pkg.id}
+                  pkg={listing}
+                  href={pkg.href}
+                  priority={index < 3}
+                />
+              );
             })}
           </div>
         </div>

@@ -28,7 +28,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
   {
     id: "nepal",
     title: "Nepal",
-    countLabel: "2 Packages",
+    countLabel: "3 Packages",
     tagline: "Mountains. Culture. Wildlife. Extraordinary Journeys.",
     href: "/nepal",
     flagSrc: "/images/flags/flag-nepal.webp",
@@ -50,6 +50,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         href: "/everest-panorama-trek",
         imageSrc: "/images/journeys/j-gokyo.webp",
         imageAlt: "Himalayan panorama in the Khumbu",
+      },
+      {
+        title: "Everest Base Camp Helicopter Tour – 1 Day",
+        days: "1 Day",
+        difficulty: "Easy",
+        href: "/everest-base-camp-helicopter-tour",
+        imageSrc: "/images/nepal/nepal-heli-ebc.webp",
+        imageAlt: "Helicopter flight toward the Everest region",
       },
     ],
   },
