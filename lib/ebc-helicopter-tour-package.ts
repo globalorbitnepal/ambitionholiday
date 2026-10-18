@@ -27,13 +27,16 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
   startEndLabel: "Kathmandu",
   groupSize: "Group sharing or private charter",
   bestSeason: "March–May · September–November (weather dependent)",
-  priceUsd: 0,
+  priceUsd: 1399,
   groupPrices: [
-    { id: "share", label: "Group sharing (per person)", priceUsd: 0 },
-    { id: "charter", label: "Private charter (per aircraft)", priceUsd: 0 },
+    { id: "h1", label: "1 traveller", priceUsd: 1699 },
+    { id: "h2", label: "2–3 travellers", priceUsd: 1499 },
+    { id: "h3", label: "4–5 travellers", priceUsd: 1399 },
+    { id: "h4", label: "6–9 travellers", priceUsd: 0 },
+    { id: "h5", label: "10–14 travellers", priceUsd: 0 },
   ],
   pricingDisclaimer:
-    "Group sharing and private charter are quoted separately. Confirm your fare with us before payment.",
+    "Per-person group-sharing fares by party size. Private charter is quoted separately. Larger groups (6+) — request a quote.",
   overview:
     "This is a one-day helicopter experience from Kathmandu, not a trekking expedition. You fly into the Everest region for panoramic views of the Khumbu, glaciers and the Everest Base Camp area from the air when the approved route and visibility allow.\n\nChoose a group-sharing seat with other passengers or discuss a private charter for your party. Stops and landings depend on the confirmed operating plan, weather, pilot discretion and permissions — flying over Everest Base Camp is not the same as landing there.\n\nTotal time on the ground and in the air is typically around four to five hours from Kathmandu, subject to check-in, air traffic and operational conditions.",
   highlights: [
@@ -52,8 +55,8 @@ export const EBC_HELICOPTER_TOUR_PACKAGE: TrekPackage = {
       summary: "Reserve an individual seat and share the aircraft with other passengers.",
       body:
         "Individual-seat booking is subject to availability and the operator’s departure plan. Departure time and routing are confirmed by the operator before flight day.\n\nScenic views of the Everest region depend on visibility. Landing options depend on the selected departure and the confirmed operating plan. Special landings may require a private charter or additional payment.\n\nPassenger and baggage weight restrictions apply. Fare is per person — request the current configured rate before booking.",
-      priceUsd: 0,
-      priceLabel: "Price on request",
+      priceUsd: 1399,
+      priceLabel: "From USD 1,399 per person",
     },
     {
       id: "charter",

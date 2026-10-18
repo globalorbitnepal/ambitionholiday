@@ -1413,6 +1413,15 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
     if (def.id === EVEREST_PANORAMA_PACKAGE_ID) {
       return mergeEverestPanoramaPublicPackage(mergedPkg, item, def);
     }
+    if (def.id === EBC_HELI_TOUR_PACKAGE_ID) {
+      return {
+        ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
+        helicopterOptions: item.helicopterOptions?.length ? item.helicopterOptions : def.helicopterOptions,
+        pricingDisclaimer: item.pricingDisclaimer?.trim() ? item.pricingDisclaimer : def.pricingDisclaimer,
+      };
+    }
     if (def.id === LANGTANG_PACKAGE_ID) {
       return {
         ...mergedPkg,

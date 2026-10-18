@@ -297,6 +297,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     return pkg.galleryAlts?.[index] || (index === 0 ? pkg.heroAlt : `${pkg.title} ${index + 1}`);
   }
 
+  const heliCharterSelected = heliTour && heliOptionId === "charter";
+  const heliUseGroupTable = heliTour && !heliCharterSelected && groups.some((row) => row.priceUsd > 0 || row.label);
+
   const bookingPanel = (
     <div className="lux-price">
       <PackageActions pkg={pkg} />
@@ -329,18 +332,24 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       ) : null}
       <p
         className={`lux-price-main${
-          heliTour && selectedHeliOption && !(selectedHeliOption.priceUsd > 0) ? " lux-price-main--quote" : ""
+          heliCharterSelected && selectedHeliOption && !(selectedHeliOption.priceUsd > 0)
+            ? " lux-price-main--quote"
+            : ""
         }`}
       >
-        {heliTour && selectedHeliOption ? (
+        {heliCharterSelected && selectedHeliOption ? (
           selectedHeliOption.priceUsd > 0 ? (
             <>
               USD {selectedHeliOption.priceUsd.toLocaleString()}
-              <span>{selectedHeliOption.id === "charter" ? " / charter" : " / person"}</span>
+              <span> / charter</span>
             </>
           ) : (
-            selectedHeliOption.priceLabel || "Price on request"
+            selectedHeliOption.priceLabel || "Charter on request"
           )
+        ) : heliTour && hasFromPrice ? (
+          <>
+            From USD {fromPrice.toLocaleString()} <span>/ person</span>
+          </>
         ) : hasFromPrice ? (
           <>
             From USD {fromPrice.toLocaleString()} <span>/ person</span>
@@ -353,25 +362,31 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
           "Request Private Quote"
         )}
       </p>
-      {!heliTour && groups.some((row) => row.priceUsd > 0) ? (
+      {(!heliTour || heliUseGroupTable) && groups.some((row) => row.priceUsd > 0) ? (
         <button type="button" className="lux-price-toggle" onClick={() => setShowGroups((v) => !v)}>
           See group booking discount{" "}
           {showGroups ? "▴" : "▾"}
         </button>
       ) : null}
-      {!heliTour && showGroups && groups.some((row) => row.priceUsd > 0) ? (
+      {(!heliTour || heliUseGroupTable) && showGroups && groups.length ? (
         <table className="lux-price-table">
           <thead>
             <tr>
               <th>No. of people</th>
-              <th>Price per person</th>
+              <th>Price per person (USD)</th>
             </tr>
           </thead>
           <tbody>
             {groups.map((row) => (
               <tr key={row.id}>
                 <td>{row.label}</td>
-                <td>{row.priceUsd > 0 ? `USD ${row.priceUsd.toLocaleString()}` : "On request"}</td>
+                <td>
+                  {row.priceUsd > 0
+                    ? `USD ${row.priceUsd.toLocaleString()}`
+                    : heliTour
+                      ? "Request a quote"
+                      : "On request"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -562,9 +577,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                       <p>{opt.summary}</p>
                       <p className="lux-meta-price">
                         <strong>
-                          {opt.priceUsd > 0
-                            ? `USD ${opt.priceUsd.toLocaleString()}${opt.id === "charter" ? " / charter" : " / person"}`
-                            : opt.priceLabel || "Request a Quote"}
+                          {opt.id === "charter"
+                            ? opt.priceUsd > 0
+                              ? `USD ${opt.priceUsd.toLocaleString()} / charter`
+                              : opt.priceLabel || "Charter on request"
+                            : hasFromPrice
+                              ? `From USD ${fromPrice.toLocaleString()} / person`
+                              : opt.priceLabel || "Price on request"}
                         </strong>
                       </p>
                       <Link
@@ -1145,10 +1164,12 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
       <div className="lux-mobile-bar">
         <div>
           <strong>
-            {heliTour && selectedHeliOption
+            {heliCharterSelected && selectedHeliOption
               ? selectedHeliOption.priceUsd > 0
                 ? `USD ${selectedHeliOption.priceUsd.toLocaleString()}`
-                : selectedHeliOption.priceLabel || "Request a Quote"
+                : selectedHeliOption.priceLabel || "Charter on request"
+              : heliTour && hasFromPrice
+                ? `From USD ${fromPrice.toLocaleString()}`
               : hasFromPrice
                 ? `From USD ${fromPrice.toLocaleString()}`
                 : hasPrice
