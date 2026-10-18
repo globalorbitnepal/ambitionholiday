@@ -386,12 +386,7 @@ function mergeAmaDablamPublicPackage(
       ? { ...block, title: mountainDef.title }
       : block,
   );
-  const savedDisclaimer = (item.pricingDisclaimer || "").trim();
-  const pricingDisclaimer =
-    !savedDisclaimer || /Until supplier fares|Request a Private Quote/i.test(savedDisclaimer)
-      ? def.pricingDisclaimer || merged.pricingDisclaimer
-      : merged.pricingDisclaimer;
-  return { ...merged, aboutTitle, aboutSections, pricingDisclaimer };
+  return { ...merged, aboutTitle, aboutSections };
 }
 
 function mergeEverestPanoramaPublicPackage(
@@ -1481,7 +1476,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
         groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
         helicopterOptions: item.helicopterOptions?.length ? item.helicopterOptions : def.helicopterOptions,
-        pricingDisclaimer: item.pricingDisclaimer?.trim() ? item.pricingDisclaimer : def.pricingDisclaimer,
+        pricingDisclaimer: cmsStoredText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
       };
     }
     if (def.id === LANGTANG_PACKAGE_ID) {
