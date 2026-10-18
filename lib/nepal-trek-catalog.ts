@@ -1,6 +1,6 @@
 import type { JourneyPackage } from "@/lib/content-types";
 import type { LuxuryMegaPackage } from "@/lib/luxury-mega";
-import type { NepalContent, NepalPackage } from "@/lib/nepal-defaults";
+import { DEFAULT_NEPAL, type NepalContent, type NepalPackage } from "@/lib/nepal-defaults";
 import type { SiteContent } from "@/lib/content-types";
 import {
   cardLinkedToPackage,
@@ -16,13 +16,36 @@ export function nepalTrekkingCategory(nepal: NepalContent) {
   return nepal.categories?.find((cat) => cat.id === NEPAL_TREKKING_CATEGORY_ID);
 }
 
+/** Canonical slot order for Nepal header / journeys — new packages are appended here, never inserted at the top. */
+export function defaultNepalTrekkingCatalogOrder(): string[] {
+  return (
+    DEFAULT_NEPAL.categories
+      .find((cat) => cat.id === NEPAL_TREKKING_CATEGORY_ID)
+      ?.packages.map((card) => card.id) ?? []
+  );
+}
+
+/** Keep flagship cards in catalog order; any extra published cards follow at the end (3rd, 4th, …). */
+export function orderNepalTrekCatalogCards(cards: NepalPackage[]): NepalPackage[] {
+  const rank = new Map(defaultNepalTrekkingCatalogOrder().map((id, index) => [id, index]));
+  const known: NepalPackage[] = [];
+  const extras: NepalPackage[] = [];
+  for (const card of cards) {
+    if (rank.has(card.id)) known.push(card);
+    else extras.push(card);
+  }
+  known.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
+  return [...known, ...extras];
+}
+
 /** Catalog cards on the Nepal trekking tab that have a published trek page. */
 export function publishedNepalTrekCatalogCards(nepal: NepalContent, tripPackages: TrekPackage[]): NepalPackage[] {
   const trekking = nepalTrekkingCategory(nepal);
   if (!trekking?.packages?.length) return [];
-  return trekking.packages
+  const published = trekking.packages
     .map((card) => enrichCatalogCard(card, tripPackages))
     .filter((card) => Boolean(findPublishedTripForCard(card, tripPackages)));
+  return orderNepalTrekCatalogCards(published);
 }
 
 function packageCountLabel(count: number) {
