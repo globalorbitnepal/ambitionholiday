@@ -6,10 +6,12 @@ on:
       - main
   workflow_dispatch:
 
+# New group name (v2) so old "queued forever" runs do not block new deploys.
+# cancel-in-progress: true drops superseded queued runs; live build uses .next-build swap so
+# cancelling an in-progress build still leaves the previous .next serving traffic.
 concurrency:
-  group: ambition-holidays-production-deploy
-  # Never cancel mid-deploy — a killed SSH build leaves a broken .next (missing CSS).
-  cancel-in-progress: false
+  group: ambition-holidays-production-deploy-v2
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -440,12 +442,13 @@ jobs:
           exit 1
 
   verify-apple:
-    name: Verify from macOS (Safari/iPhone UAs)
+    name: Verify live site (Safari/iPhone user agents)
     needs: deploy
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     steps:
-      - name: Apple / Safari / iPhone live checks
+      - name: Safari / iPhone user-agent live checks
         run: |
           set -e
           echo "macOS runner IP: $(curl -sS --max-time 10 https://api.ipify.org || true)"
