@@ -1,0 +1,21 @@
+# Optional: after installing a self-hosted runner on the VPS (see scripts/install-github-runner.sh),
+# enable this workflow and disable the SSH deploy in deploy.yml if GitHub-hosted runners stay queued.
+name: Deploy Ambition Holidays (VPS runner)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ambition-holidays-vps-runner-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy on VPS
+    runs-on: [self-hosted, Linux, ambition-holidays]
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run deploy script
+        run: bash scripts/deploy-on-vps.sh
