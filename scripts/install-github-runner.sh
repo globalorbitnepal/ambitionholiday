@@ -18,8 +18,9 @@ fi
 mkdir -p "${RUNNER_DIR}"
 cd "${RUNNER_DIR}"
 if [ ! -f ./config.sh ]; then
+  RUNNER_VERSION="${RUNNER_VERSION:-2.338.0}"
   curl -fsSL -o actions-runner-linux-x64.tar.gz \
-    https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
+    "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz"
   tar xzf actions-runner-linux-x64.tar.gz
 fi
 

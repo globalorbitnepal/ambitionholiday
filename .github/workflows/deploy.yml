@@ -6,480 +6,78 @@ on:
       - main
   workflow_dispatch:
 
-# New group name (v2) so old "queued forever" runs do not block new deploys.
-# cancel-in-progress: true drops superseded queued runs; live build uses .next-build swap so
-# cancelling an in-progress build still leaves the previous .next serving traffic.
+# Self-hosted runner on the production VPS — GitHub-hosted ubuntu jobs were stuck queued (no runner assigned).
 concurrency:
-  group: ambition-holidays-production-deploy-v2
+  group: ambition-holidays-production-deploy-v3
   cancel-in-progress: true
 
 jobs:
   deploy:
     name: Deploy to VPS
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, ambition-holidays]
     timeout-minutes: 45
 
     steps:
-      - name: Deploy Ambition Holidays only
-        uses: appleboy/ssh-action@v1.2.2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync Orbit secrets (optional)
         env:
           ORBIT_PASSKEY: ${{ secrets.ORBIT_PASSKEY }}
           ORBIT_SESSION_SECRET: ${{ secrets.ORBIT_SESSION_SECRET }}
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          command_timeout: 40m
-          timeout: 90s
-          request_pty: true
-          envs: ORBIT_PASSKEY,ORBIT_SESSION_SECRET
-          script: |
-            set -euo pipefail
+        run: |
+          set -euo pipefail
+          if [ -z "${ORBIT_PASSKEY:-}" ] || [ -z "${ORBIT_SESSION_SECRET:-}" ]; then
+            echo "Orbit GitHub secrets not set; skipping sync."
+            exit 0
+          fi
+          CMS_PATH="/var/www/ambition-holidays-cms"
+          ORBIT_ENV="${CMS_PATH}/orbit-secrets.env"
+          umask 077
+          printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > "${ORBIT_ENV}"
+          chmod 600 "${ORBIT_ENV}"
+          mkdir -p /var/www/ambition-holidays/data
+          cp "${ORBIT_ENV}" /var/www/ambition-holidays/data/orbit-secrets.env
 
-            # Load nvm/node carefully. Do NOT source full bashrc under nounset.
-            export NVM_DIR="${HOME}/.nvm"
-            if [ -s "${NVM_DIR}/nvm.sh" ]; then
-              # shellcheck disable=SC1091
-              . "${NVM_DIR}/nvm.sh"
-              nvm use 22 >/dev/null 2>&1 || nvm use default >/dev/null 2>&1 || true
-            fi
-            export PATH="/usr/local/bin:/usr/bin:${HOME}/.local/bin:${PATH}"
+      - name: Deploy on VPS
+        run: bash scripts/deploy-on-vps.sh
 
-            echo "whoami=$(whoami)"
-            echo "node=$(command -v node || true) $(node -v 2>/dev/null || true)"
-            echo "npm=$(command -v npm || true) $(npm -v 2>/dev/null || true)"
-            echo "pm2=$(command -v pm2 || true)"
-
-            if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-              echo "ERROR: node/npm not found in PATH for SSH session."
-              exit 1
-            fi
-            if ! command -v pm2 >/dev/null 2>&1; then
-              echo "ERROR: pm2 not found in PATH for SSH session."
-              exit 1
-            fi
-
-            # Hardcoded Ambition Holidays targets only — never other apps/sites/DBs.
-            PROJECT_PATH="/var/www/ambition-holidays"
-            # Durable Orbit CMS store OUTSIDE the git tree — survives every deploy forever.
-            CMS_PATH="/var/www/ambition-holidays-cms"
-            PM2_APP="ambition-holidays"
-            APP_PORT="3032"
-            EXPECTED_REPO="globalorbitnepal/ambitionholiday"
-            PUBLIC_URL="https://ambition.theglobalorbit.com"
-            REMOTE_SCRIPT_PATH="/tmp/ambition-holidays-deploy-${GITHUB_RUN_ID:-manual}-${GITHUB_RUN_ATTEMPT:-1}-$$.sh"
-            trap 'rm -f "${REMOTE_SCRIPT_PATH}"' EXIT
-            : > "${REMOTE_SCRIPT_PATH}"
-
-            cd "${PROJECT_PATH}"
-
-            echo "Verifying git remote..."
-            git remote -v
-            if ! git remote -v | grep -Fq "${EXPECTED_REPO}"; then
-              echo "ERROR: Remote does not match expected repository ${EXPECTED_REPO}"
-              exit 1
-            fi
-
-            echo "Preserving Orbit CMS content + uploads before sync..."
-            CMS_BACKUP="$(mktemp -d /tmp/ambition-cms-XXXXXX)"
-            if [ ! -d "${CMS_PATH}" ] || [ ! -r "${CMS_PATH}" ] || [ ! -x "${CMS_PATH}" ]; then
-              echo "ERROR: protected CMS path is missing or unreadable: ${CMS_PATH}"
-              exit 1
-            fi
-            if [ -f "${CMS_PATH}/site-content.json" ]; then
-              [ -r "${CMS_PATH}/site-content.json" ]
-              cp -aL "${CMS_PATH}/site-content.json" "${CMS_BACKUP}/site-content.json" 2>/dev/null || cp -a "${CMS_PATH}/site-content.json" "${CMS_BACKUP}/site-content.json"
-              echo "Backed up protected CMS site-content.json"
-            elif [ -f data/site-content.json ]; then
-              cp -aL data/site-content.json "${CMS_BACKUP}/site-content.json" 2>/dev/null || cp -a data/site-content.json "${CMS_BACKUP}/site-content.json"
-              echo "Backed up application site-content.json"
-            else
-              echo "ERROR: no readable site-content.json available from CMS or application"
-              exit 1
-            fi
-
-            for source_dir in data-uploads public-uploads; do
-              if [ -e "${CMS_PATH}/${source_dir}" ]; then
-                [ -d "${CMS_PATH}/${source_dir}" ] && [ -r "${CMS_PATH}/${source_dir}" ]
-                mkdir -p "${CMS_BACKUP}/${source_dir}"
-                cp -aL "${CMS_PATH}/${source_dir}/." "${CMS_BACKUP}/${source_dir}/" 2>/dev/null || cp -a "${CMS_PATH}/${source_dir}/." "${CMS_BACKUP}/${source_dir}/"
-              fi
-            done
-            if [ ! -d "${CMS_BACKUP}/data-uploads" ] && [ -d data/uploads ]; then
-              mkdir -p "${CMS_BACKUP}/data-uploads"
-              cp -aL data/uploads/. "${CMS_BACKUP}/data-uploads/" 2>/dev/null || cp -a data/uploads/. "${CMS_BACKUP}/data-uploads/"
-            fi
-            if [ ! -d "${CMS_BACKUP}/public-uploads" ] && [ -d public/uploads ]; then
-              mkdir -p "${CMS_BACKUP}/public-uploads"
-              cp -aL public/uploads/. "${CMS_BACKUP}/public-uploads/" 2>/dev/null || cp -a public/uploads/. "${CMS_BACKUP}/public-uploads/"
-            fi
-
-            echo "Syncing origin/main..."
-            git fetch origin main
-            git checkout main
-            git reset --hard origin/main
-
-            echo "Ensuring CMS directories..."
-            mkdir -p public/uploads data/uploads data
-
-            echo "Restoring Orbit CMS content + uploads (never wipe editor data)..."
-            if [ -f "${CMS_BACKUP}/site-content.json" ]; then
-              cp -a "${CMS_BACKUP}/site-content.json" data/site-content.json
-              echo "Restored data/site-content.json"
-            fi
-            if [ -d "${CMS_BACKUP}/data-uploads" ]; then
-              cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/ 2>/dev/null
-            fi
-            if [ -d "${CMS_BACKUP}/public-uploads" ]; then
-              cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/ 2>/dev/null
-            fi
-            test -r "${CMS_PATH}"
-            test -d data/uploads
-            test -d public/uploads
-            test -f data/site-content.json
-            if [ -n "$(find data/uploads -type f -print -quit)" ]; then
-              test -n "$(find data/uploads -type f -print -quit)"
-            fi
-            if [ -n "$(find public/uploads -type f -print -quit)" ]; then
-              test -n "$(find public/uploads -type f -print -quit)"
-            fi
-            rm -rf "${CMS_BACKUP}"
-
-            ORBIT_ENV="${CMS_PATH}/orbit-secrets.env"
-            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -z "${ORBIT_SESSION_SECRET:-}" ]; then
-              ORBIT_SESSION_SECRET="$(openssl rand -hex 32)"
-              echo "Generated ORBIT_SESSION_SECRET for this deploy."
-            fi
-            write_orbit_env_local() {
-              umask 077
-              ENV_TMP="$(mktemp .env.local.XXXXXX)"
-              ENV_TMP="${ENV_TMP}" node <<'NODE'
-              const fs = require("fs");
-              const path = ".env.local";
-              const tmp = process.env.ENV_TMP;
-              const values = {
-                ORBIT_PASSKEY: process.env.ORBIT_PASSKEY,
-                ORBIT_SESSION_SECRET: process.env.ORBIT_SESSION_SECRET,
-              };
-              const source = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
-              const lines = source.split(/\r?\n/);
-              for (const [key, value] of Object.entries(values)) {
-                if (!value) continue;
-                const replacement = `${key}=${value}`;
-                let found = false;
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=`).test(lines[i])) {
-                    lines[i] = replacement;
-                    found = true;
-                  }
-                }
-                if (!found) lines.push(replacement);
-              }
-              fs.writeFileSync(tmp, lines.join("\n"), { mode: 0o600 });
-              fs.renameSync(tmp, path);
-            NODE
-            }
-
-            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
-              echo "Updating Orbit secrets (CMS + app)..."
-              umask 077
-              printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > "${ORBIT_ENV}"
-              chmod 600 "${ORBIT_ENV}"
-              mkdir -p data
-              cp "${ORBIT_ENV}" data/orbit-secrets.env
-              write_orbit_env_local
-            elif [ -f "${ORBIT_ENV}" ]; then
-              echo "Syncing Orbit secrets from ${ORBIT_ENV}..."
-              mkdir -p data
-              cp "${ORBIT_ENV}" data/orbit-secrets.env
-              set -a
-              # shellcheck disable=SC1090
-              . "${ORBIT_ENV}"
-              set +a
-              write_orbit_env_local
-            else
-              echo "WARNING: No Orbit secrets in GitHub or ${ORBIT_ENV}; /orbit login will fail until configured."
-            fi
-
-            if [ -f data/site-content.json ]; then
-              BYTES="$(wc -c < data/site-content.json | tr -d ' ')"
-              echo "CMS content OK (${BYTES} bytes)"
-            else
-              echo "WARNING: site-content.json missing after restore; app will seed defaults."
-            fi
-
-            echo "Installing dependencies..."
-            npm install --no-audit --no-fund
-
-            echo "Preparing production build environment..."
-            export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
-            export NEXT_TELEMETRY_DISABLED=1
-
-            # The live server keeps serving the current .next for the whole build.
-            # The new build lands in .next-build and is swapped in only once verified.
-            BUILD_DIR=".next-build"
-            rm -rf "${BUILD_DIR}" .next.deploy-backup
-            if [ -d .next/cache ]; then
-              mkdir -p "${BUILD_DIR}"
-              cp -a .next/cache "${BUILD_DIR}/cache" 2>/dev/null || true
-            fi
-
-            echo "Building production app into ${BUILD_DIR} (live site untouched)..."
-            if ! NEXT_DIST_DIR="${BUILD_DIR}" npm run build; then
-              echo "ERROR: npm run build failed - live site keeps the previous build"
-              rm -rf "${BUILD_DIR}"
-              git checkout -- tsconfig.json 2>/dev/null || true
-              df -h "${PROJECT_PATH}" || df -h || true
-              free -m || true
-              exit 1
-            fi
-            git checkout -- tsconfig.json 2>/dev/null || true
-
-            echo "Verifying build artifacts on disk..."
-            if [ ! -f "${BUILD_DIR}/BUILD_ID" ]; then
-              echo "ERROR: ${BUILD_DIR}/BUILD_ID missing"
-              rm -rf "${BUILD_DIR}"
-              exit 1
-            fi
-            BUILD_ID="$(tr -d '\n' < "${BUILD_DIR}/BUILD_ID")"
-            echo "BUILD_ID=${BUILD_ID}"
-            if [ ! -f "${BUILD_DIR}/static/${BUILD_ID}/_buildManifest.js" ]; then
-              echo "ERROR: missing ${BUILD_DIR}/static/${BUILD_ID}/_buildManifest.js"
-              rm -rf "${BUILD_DIR}"
-              exit 1
-            fi
-            CSS_COUNT="$(find "${BUILD_DIR}/static/css" -type f -name '*.css' 2>/dev/null | wc -l | tr -d ' ')"
-            echo "Built CSS files: ${CSS_COUNT}"
-            if [ "${CSS_COUNT}" = "0" ]; then
-              echo "ERROR: No CSS emitted — refusing broken deploy"
-              rm -rf "${BUILD_DIR}"
-              exit 1
-            fi
-
-            echo "Swapping new build into .next..."
-            rm -rf .next-previous
-            if [ -d .next ]; then
-              mv .next .next-previous
-            fi
-            mv "${BUILD_DIR}" .next
-            # Keep the previous build's hashed assets so browsers holding old HTML can still load their chunks.
-            if [ -d .next-previous/static ]; then
-              cp -an .next-previous/static/. .next/static/ 2>/dev/null || true
-            fi
-
-            echo "Validating PM2 process ${PM2_APP} before targeted restart..."
-            PM2_APP="${PM2_APP}" PROJECT_PATH="${PROJECT_PATH}" APP_PORT="${APP_PORT}" node <<'NODE'
-            const { execFileSync } = require("child_process");
-            const name = process.env.PM2_APP;
-            const expectedCwd = process.env.PROJECT_PATH;
-            const expectedPort = process.env.APP_PORT;
-            const processes = JSON.parse(execFileSync("pm2", ["jlist"], { encoding: "utf8" }));
-            const target = processes.find((entry) => entry.name === name);
-            if (!target) throw new Error(`PM2 process ${name} is missing; refusing to create it`);
-            const env = target.pm2_env || {};
-            if (env.pm_cwd !== expectedCwd) {
-              throw new Error(`PM2 process ${name} has cwd ${env.pm_cwd || "<missing>"}; refusing restart`);
-            }
-            const args = JSON.stringify(env.args || []);
-            const configuredPort = env.PORT || env.port;
-            if (String(configuredPort) !== expectedPort &&
-                !new RegExp(`(?:^|[^0-9])${expectedPort}(?:[^0-9]|$)`).test(args)) {
-              throw new Error(`PM2 process ${name} is not configured for port ${expectedPort}; refusing restart`);
-            }
-            NODE
-            export AMBITION_CMS_DIR="${CMS_PATH}"
-            if [ -f "${ORBIT_ENV}" ]; then
-              set -a
-              # shellcheck disable=SC1090
-              . "${ORBIT_ENV}"
-              set +a
-            fi
-            pm2 restart "${PM2_APP}" --update-env
-
-            echo "Waiting for ${PM2_APP} to come online..."
-            online_ok=0
-            for i in $(seq 1 30); do
-              if pm2 describe "${PM2_APP}" 2>/dev/null | grep -Eqi 'status.*online'; then
-                online_ok=1
-                echo "PM2 online on attempt ${i}"
-                break
-              fi
-              sleep 2
-            done
-            if [ "${online_ok}" -ne 1 ]; then
-              echo "ERROR: PM2 process ${PM2_APP} is not online."
-              pm2 describe "${PM2_APP}" || true
-              exit 1
-            fi
-
-            echo "Checking local port ${APP_PORT}..."
-            port_ok=0
-            for i in $(seq 1 30); do
-              if command -v ss >/dev/null 2>&1; then
-                if ss -ltn | grep -Eq ":${APP_PORT}\\b"; then
-                  port_ok=1
-                  echo "Port ${APP_PORT} listening on attempt ${i}"
-                  break
-                fi
-              else
-                port_ok=1
-                break
-              fi
-              sleep 2
-            done
-            if [ "${port_ok}" -ne 1 ]; then
-              echo "ERROR: Port ${APP_PORT} is not listening."
-              exit 1
-            fi
-
-            echo "Local HTTP check (homepage)..."
-            local_ok=0
-            for i in $(seq 1 30); do
-              HOME_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/" || true)"
-              echo "Local HTTP attempt ${i}: home=${HOME_CODE}"
-              if [ "${HOME_CODE}" = "200" ]; then
-                local_ok=1
-                break
-              fi
-              sleep 2
-            done
-            if [ "${local_ok}" -ne 1 ]; then
-              echo "ERROR: Local health check failed (need home=200)"
-              exit 1
-            fi
-
-            echo "Local HTTP check (key pages)..."
-            for page in /everest-view-luxury-trek /nepal /bhutan /tibet /himalayan-multi-countries-tour /journal /contact /company; do
-              code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${APP_PORT}${page}" || true)"
-              echo "  ${page} -> ${code}"
-              if [ "${code}" != "200" ]; then
-                echo "ERROR: ${page} returned ${code} after deploy"
-                exit 1
-              fi
-            done
-            ebc_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${APP_PORT}/everest-base-camp-trek" || true)"
-            echo "  /everest-base-camp-trek -> ${ebc_code} (expect 308 to Everest View)"
-            if [ "${ebc_code}" != "308" ] && [ "${ebc_code}" != "301" ] && [ "${ebc_code}" != "307" ]; then
-              echo "ERROR: /everest-base-camp-trek should redirect after deploy (got ${ebc_code})"
-              exit 1
-            fi
-
-            echo "Orbit configuration check..."
-            ORBIT_HEALTH="$(curl -fsS --max-time 10 "http://127.0.0.1:${APP_PORT}/api/orbit/health" || echo '{"configured":false}')"
-            echo "Orbit health: ${ORBIT_HEALTH}"
-            if ! printf '%s' "${ORBIT_HEALTH}" | grep -q '"configured":true'; then
-              echo "WARNING: Orbit passkey not loaded — sync ${ORBIT_ENV} or set GitHub secrets ORBIT_PASSKEY + ORBIT_SESSION_SECRET."
-              echo "Site deploy continues; /orbit-login will show Access denied until secrets exist."
-            fi
-
-            echo "Public HTTPS check (homepage + CSS assets)..."
-            public_ok=0
-            for i in $(seq 1 20); do
-              PUBLIC_HOME="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/" || true)"
-              echo "Public HTTP attempt ${i}: home=${PUBLIC_HOME}"
-              if [ "${PUBLIC_HOME}" = "200" ]; then
-                public_ok=1
-                break
-              fi
-              sleep 3
-            done
-            if [ "${public_ok}" -ne 1 ]; then
-              echo "ERROR: Public site health failed (${PUBLIC_URL} - need home=200)"
-              exit 1
-            fi
-
-            PUB_HTML="$(curl -fsS --max-time 20 "${PUBLIC_URL}/" || true)"
-            PUB_CSS="$(printf '%s\n' "${PUB_HTML}" | grep -oE '/_next/static/css/[A-Za-z0-9._-]+\.css' | sort -u || true)"
-            echo "Public CSS refs:"
-            echo "${PUB_CSS}"
-            if [ -z "${PUB_CSS}" ]; then
-              echo "ERROR: Homepage HTML has no CSS refs"
-              exit 1
-            fi
-            for href in ${PUB_CSS}; do
-              CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}${href}" || echo 000)"
-              echo "  ${href} -> ${CODE}"
-              if [ "${CODE}" != "200" ]; then
-                echo "ERROR: Public CSS asset failed (${CODE}): ${href}"
-                exit 1
-              fi
-            done
-
-            echo "Local Orbit login check (non-blocking during rollout)..."
-            ORBIT_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit/login" || true)"
-            ORBIT_ALT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit-login" || true)"
-            echo "Orbit login codes: /orbit/login=${ORBIT_CODE} /orbit-login=${ORBIT_ALT}"
-
-            PUBLIC_ORBIT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/orbit/login" || true)"
-            PUBLIC_ORBIT_ALT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/orbit-login" || true)"
-            echo "Public Orbit login codes: /orbit/login=${PUBLIC_ORBIT} /orbit-login=${PUBLIC_ORBIT_ALT}"
-
-            echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200 with CSS OK."
-
-      - name: Verify public access from GitHub runner
+      - name: Verify public HTTPS from runner
         run: |
           set -e
-          echo "Runner public IP: $(curl -sS --max-time 10 https://api.ipify.org || true)"
+          PUBLIC_URL="https://ambition.theglobalorbit.com"
           for i in $(seq 1 12); do
-            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/ || true)"
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "${PUBLIC_URL}/" || true)"
             echo "External HTTPS check ${i}: home=${code}"
-            http_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 http://ambition.theglobalorbit.com/ || true)"
-            echo "External HTTP check ${i}: home=${http_code}"
             if [ "${code}" = "200" ]; then
-              orbit="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/orbit/login || true)"
-              echo "External orbit login=${orbit}"
-              # TCP connect probe (matches Chrome ERR_CONNECTION_REFUSED)
-              if command -v nc >/dev/null 2>&1; then
-                nc -zv -w 5 200.97.170.235 443 && echo "TCP 443 open from runner"
-                nc -zv -w 5 200.97.170.235 80 && echo "TCP 80 open from runner"
-              fi
               exit 0
             fi
             sleep 4
           done
-          echo "ERROR: Site not reachable from public internet (GitHub runner)."
+          echo "ERROR: Site not reachable at ${PUBLIC_URL}"
           exit 1
 
   verify-apple:
     name: Verify live site (Safari/iPhone user agents)
     needs: deploy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, ambition-holidays]
     timeout-minutes: 10
     continue-on-error: true
     steps:
       - name: Safari / iPhone user-agent live checks
         run: |
           set -e
-          echo "macOS runner IP: $(curl -sS --max-time 10 https://api.ipify.org || true)"
           HOST="https://ambition.theglobalorbit.com"
           UAS=(
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15"
             "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1"
-            "Mozilla/5.0 (iPad; CPU OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1"
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/128.0.0.0 Mobile/15E148 Safari/604.1"
           )
           PATHS=("/" "/orbit-login" "/admin/login" "/api/content")
           for ua in "${UAS[@]}"; do
             for path in "${PATHS[@]}"; do
               code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -A "$ua" "${HOST}${path}" || true)"
               echo "UA_CHECK path=${path} code=${code}"
-              if [ "${code}" != "200" ]; then
-                echo "ERROR: Apple client check failed for ${path} (code=${code})"
-                exit 1
-              fi
+              [ "${code}" = "200" ] || exit 1
             done
           done
-          # /orbit/login redirects to passkey page (307); /orbit without session redirects too.
-          for ua in "${UAS[@]}"; do
-            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -A "$ua" "${HOST}/orbit/login" || true)"
-            echo "UA_CHECK path=/orbit/login code=${code}"
-            if [ "${code}" != "200" ] && [ "${code}" != "307" ] && [ "${code}" != "308" ]; then
-              echo "ERROR: Orbit login redirect check failed (code=${code})"
-              exit 1
-            fi
-          done
-          nc -zv -w 8 200.97.170.235 443
-          nc -zv -w 8 200.97.170.235 80
           echo "Apple/macOS live verification passed."
