@@ -174,6 +174,22 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
       q: "How can I request a quote or customise the trip?",
       a: "Use the enquiry form on this page or contact Ambition Holidays with your preferred dates, traveller count and any Syangboche ridge area preferences.",
     },
+    {
+      q: "What travel insurance is required?",
+      a: "Comprehensive insurance covering high-altitude trekking (to at least your highest planned overnight) and emergency helicopter evacuation is mandatory. Evacuation costs are not prepaid in the package price — your insurer coordinates rescue when a claim is approved.",
+    },
+    {
+      q: "What is the cancellation and refund policy?",
+      a: "Deposits, notice periods and refund eligibility are defined on your written booking confirmation and invoice. This page is not the contract — ask your coordinator for the current policy before you pay.",
+    },
+    {
+      q: "What happens in a medical emergency on the trail?",
+      a: "Your guide coordinates descent and local emergency response. Helicopter evacuation is arranged when medically necessary and weather permits, through your travel insurer or a private charter — not as an automatic included service.",
+    },
+    {
+      q: "What if the Syangboche ridge-area lodge is unavailable?",
+      a: "Your coordinator proposes an agreed alternative (such as a confirmed lodge night in Namche or Khumjung, or a revised ridge-day plan) before you travel. We do not substitute accommodation without your approval.",
+    },
   ],
   whyItems: [
     {
@@ -248,7 +264,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     "The lower Khumbu links Lukla, the Dudh Koshi valley, Namche Bazaar and side valleys such as Khumjung. Sagarmatha National Park protects much of the trail. This itinerary explores that cultural and scenic band — not the glacier camps beneath Everest.",
   flightBody: EVEREST_VIEW_LUKLA_NOTE,
   bufferBody:
-    "Allow at least one buffer day on international tickets around Lukla flights. Weather delays are normal, not exceptional.",
+    "Allow at least one buffer day on international tickets on each side of the Lukla sectors. Weather delays are normal in the Everest region. If Ramechhap/Manthali routing applies, road-transfer days also need flexibility — your coordinator states timing on the final itinerary.",
   heliBody:
     "Helicopter charter from the Khumbu is available for emergencies or private returns when weather permits — priced per aircraft, not included in the standard walking quote.",
   beforeItems: [
@@ -272,7 +288,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     "Month-by-month Khumbu reference for Namche and the lower trail. Syangboche ridge area can be windier and colder than Namche on the same calendar day.",
   metaTitle: "Everest View Luxury Trek 7 Days | Namche & Khumjung",
   metaDescription:
-    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas without Base Camp. Request a quote.",
+    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas without Everest Base Camp. Flights, lodges and pacing confirmed on your booking.",
   metaKeywords:
     "Everest View Luxury Trek, Everest View Trek Nepal, 7 Days Everest View Trek, Namche Bazaar Trek, Khumjung Village Trek, Everest panorama trek, private Everest trek",
   focusKeyword: "Everest View Luxury Trek",
@@ -329,7 +345,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     {
       id: "ti-acc",
       title: "Accommodation",
-      body: "Nights 1–3 & 5–6: mountain lodges. Night 4: Syangboche ridge area when confirmed. Standards vary in remote Khumbu.",
+      body: "Nights 1–3 & 5–6: mountain lodges (twin rooms typical). Night 4: Syangboche ridge area when confirmed in writing. If unavailable, an agreed alternative is confirmed before travel — not a silent swap. Ensuite heating and Wi-Fi are not guaranteed every night.",
     },
     {
       id: "ti-meals",
@@ -351,6 +367,21 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
       title: "Permits",
       body: "Sagarmatha National Park and applicable trekking permits when included in your quote.",
     },
+    {
+      id: "ti-insurance",
+      title: "Travel insurance",
+      body: "Mandatory comprehensive cover including high-altitude trekking and helicopter evacuation. Carry policy documents and emergency contact numbers on the trail.",
+    },
+    {
+      id: "ti-cancel",
+      title: "Cancellation & refunds",
+      body: "Payment schedule, cancellation windows and refund treatment are on your signed confirmation — not summarised on this page. Flight disruptions also follow airline and local operator rules.",
+    },
+    {
+      id: "ti-evac",
+      title: "Emergency evacuation",
+      body: "Not included in the standard package rate. Arranged when medically necessary through your insurer or private charter, subject to weather and aircraft availability.",
+    },
   ],
   optionalAddons: EVEREST_VIEW_ADDONS,
   includeNote: EVEREST_VIEW_INCLUDE_NOTE,
@@ -363,6 +394,6 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
   ],
   ogTitle: "Everest View Luxury Trek – 7 Days",
   ogDescription:
-    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas when lodge nights are confirmed. Request a quote.",
+    "Private seven-day Everest View Luxury Trek — Namche Bazaar, Khumjung and Syangboche ridge panoramas when lodge nights are confirmed. Lower Khumbu · no Base Camp.",
   ogImageSrc: HERO,
 };

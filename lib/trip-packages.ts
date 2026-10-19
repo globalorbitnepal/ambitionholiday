@@ -445,6 +445,57 @@ function mergeEverestPanoramaPublicPackage(
   };
 }
 
+const EVL_LEGACY_DISTANCE_RE =
+  /introductory valley walk|valley trail with final ascent|short acclimatization walks|upper trail via syangboche|descent through upper namche|valley trail to lukla/i;
+
+function everestViewFlightNote(saved: string | undefined, def: string) {
+  const s = (saved || "").trim();
+  if (!s) return def;
+  if (!/ramechhap|manthali/i.test(s) && /ramechhap|manthali/i.test(def)) return def;
+  return s;
+}
+
+function everestViewItineraryDistance(saved: string | undefined, def: string) {
+  const s = (saved || "").trim();
+  if (!s || EVL_LEGACY_DISTANCE_RE.test(s)) return def;
+  if (!/\d+\s*km/i.test(s) && /\d+\s*km/i.test(def)) return def;
+  return s;
+}
+
+function mergeEverestViewTripInfo(
+  saved: TrekPackage["tripInfo"] | undefined,
+  def: TrekPackage["tripInfo"],
+): TrekPackage["tripInfo"] {
+  if (!def?.length) return saved || [];
+  if (!saved?.length) return def;
+  const byId = new Map(saved.filter((b) => b.id).map((b) => [b.id, b]));
+  const merged = def.map((block) => {
+    const cms = byId.get(block.id);
+    if (!cms) return block;
+    return {
+      ...block,
+      title: cms.title?.trim() || block.title,
+      body:
+        block.id === "ti-acc"
+          ? everestViewPublicText(cms.body, block.body)
+          : cms.body?.trim() || block.body,
+    };
+  });
+  const defIds = new Set(def.map((b) => b.id));
+  const extras = saved.filter((b) => b.id && !defIds.has(b.id));
+  return extras.length ? [...merged, ...extras] : merged;
+}
+
+function appendEverestViewFaqs(
+  saved: TrekPackage["faqs"] | undefined,
+  def: TrekPackage["faqs"],
+): TrekPackage["faqs"] {
+  if (!saved?.length) return def;
+  const seen = new Set(saved.map((f) => f.q.trim().toLowerCase()));
+  const extra = (def || []).filter((f) => !seen.has(f.q.trim().toLowerCase()));
+  return extra.length ? [...saved, ...extra] : saved;
+}
+
 function everestViewItinerary(
   saved: TrekPackage["itinerary"] | undefined,
   def: TrekPackage["itinerary"],
@@ -460,7 +511,7 @@ function everestViewItinerary(
       stay: everestViewPublicText(day.stay, defDay.stay),
       duration: everestViewPublicText(day.duration, defDay.duration),
       altitude: everestViewPublicText(day.altitude, defDay.altitude),
-      distance: (day.distance || "").trim() || defDay.distance || "",
+      distance: everestViewItineraryDistance(day.distance, defDay.distance || ""),
       imageSrc: (day.imageSrc || "").trim() || defDay.imageSrc || "",
       imageAlt: everestViewPublicText(day.imageAlt, defDay.imageAlt || ""),
     };
@@ -1431,7 +1482,12 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         metaDescription: everestViewPublicText(item.metaDescription, def.metaDescription),
         metaKeywords: everestViewPublicText(item.metaKeywords, def.metaKeywords),
         highlights: everestViewStringList(item.highlights, def.highlights),
-        faqs: everestViewFaqs(item.faqs, def.faqs),
+        faqs: everestViewFaqs(appendEverestViewFaqs(item.faqs, def.faqs), def.faqs),
+        tripInfo: mergeEverestViewTripInfo(item.tripInfo, def.tripInfo),
+        flightBody: everestViewFlightNote(item.flightBody, def.flightBody || ""),
+        bufferBody: everestViewPublicText(item.bufferBody, def.bufferBody || ""),
+        luklaNote: everestViewFlightNote(item.luklaNote, def.luklaNote || ""),
+        ogDescription: everestViewPublicText(item.ogDescription, def.ogDescription || ""),
         tripadvisorLabel: def.tripadvisorLabel,
         tripadvisorScore: def.tripadvisorScore,
         tripadvisorCount: def.tripadvisorCount,

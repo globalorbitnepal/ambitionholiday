@@ -12,7 +12,7 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     title: "Kathmandu → Lukla flight & trek to Phakding",
     altitude: "Lukla ~2,860 m · Phakding ~2,610 m",
     duration: "Flight + approx. 3–4 hours walking",
-    distance: "Introductory valley walk",
+    distance: "Approx. 8 km / 5 mi (Lukla–Phakding) · net descent ~250 m",
     meals: "As per confirmed package",
     stay: "Mountain lodge, Phakding",
     body:
@@ -24,7 +24,7 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     title: "Phakding → Monjo → Namche Bazaar",
     altitude: "Monjo ~2,835 m · Namche Bazaar ~3,440 m",
     duration: "Approx. 5–7 hours walking",
-    distance: "Valley trail with final ascent to Namche",
+    distance: "Approx. 11–12 km / 7 mi (Phakding–Monjo–Namche) · ascent ~830 m",
     meals: "As per confirmed package",
     stay: "Mountain lodge, Namche Bazaar",
     body:
@@ -35,8 +35,8 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     day: 3,
     title: "Acclimatization & cultural exploration in Namche Bazaar",
     altitude: "Sleep Namche ~3,440 m",
-    duration: "Flexible local day",
-    distance: "Short acclimatization walks as advised",
+    duration: "Flexible local day (typically 2–4 hours on trail if walking)",
+    distance: "Optional acclimatisation walks — approx. 2–5 km when guided",
     meals: "As per confirmed package",
     stay: "Mountain lodge, Namche Bazaar",
     body:
@@ -48,7 +48,7 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     title: "Namche Bazaar → Khumjung / Syangboche ridge area",
     altitude: "Khumjung ~3,780 m · Syangboche ridge area ~3,880 m",
     duration: "Approx. 4–6 hours walking",
-    distance: "Upper trail via Syangboche area",
+    distance: "Approx. 5–7 km / 3–4 mi (Namche–Khumjung–ridge area) · ascent ~440 m",
     meals: "As per confirmed package",
     stay: "Selected mountain lodge — Syangboche ridge area (subject to confirmation)",
     body:
@@ -60,7 +60,7 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     title: "Syangboche ridge area → Monjo",
     altitude: "Monjo ~2,835 m",
     duration: "Approx. 5–7 hours walking",
-    distance: "Descent through upper Namche area",
+    distance: "Approx. 14–16 km / 9–10 mi descent · loss ~1,045 m to Monjo",
     meals: "As per confirmed package",
     stay: "Mountain lodge, Monjo",
     body:
@@ -72,7 +72,7 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     title: "Monjo → Phakding → Lukla",
     altitude: "Lukla ~2,860 m",
     duration: "Approx. 5–7 hours walking",
-    distance: "Valley trail to Lukla",
+    distance: "Approx. 13–15 km / 8–9 mi (Monjo–Phakding–Lukla) · gentle net ascent to Lukla",
     meals: "As per confirmed package",
     stay: "Mountain lodge, Lukla",
     body:
@@ -127,4 +127,4 @@ export const EVEREST_VIEW_INCLUDE_NOTE =
   "The Syangboche ridge panorama overnight is a distinctive highlight but not guaranteed until lodge availability, room category and route are confirmed in writing. Lukla flights may operate via Ramechhap/Manthali during some periods — road transfers and timing will be stated on your final itinerary. This package does not include Everest Base Camp, Kala Patthar, Gorak Shep, Dingboche or Lobuche.";
 
 export const EVEREST_VIEW_LUKLA_NOTE =
-  "Domestic flights between Kathmandu and Lukla are sensitive to weather and visibility. Delays and cancellations are common. Your coordinator explains the confirmed departure airport, baggage limits and contingency plans. Buffer time on international tickets is strongly recommended.";
+  "Domestic flights between Kathmandu and Lukla depend on weather, visibility and airline operations. Delays, diversions and cancellations are common — especially during monsoon and in winter.\n\nDuring busy trekking seasons, Lukla sectors are sometimes operated from Ramechhap (Manthali) Airport instead of Kathmandu. When that routing applies, an early-morning road transfer from Kathmandu (typically about four to five hours each way) replaces the Kathmandu–Lukla flight sector on the schedule your coordinator confirms. Pick-up times, baggage limits and ticket routing are stated on your final itinerary.\n\nAllow buffer days on international tickets. Extra hotel nights, meals, road transfers and insurance claims from disruption follow your signed booking terms and policy coverage unless explicitly included on your confirmation.";
