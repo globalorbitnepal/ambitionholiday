@@ -83,8 +83,8 @@ export const EVEREST_VIEW_ITINERARY: TrekItineraryDay[] = [
     day: 7,
     title: "Lukla → Kathmandu flight",
     altitude: "Kathmandu ~1,400 m",
-    duration: "Flight day",
-    distance: "Mountain flight — weather dependent",
+    duration: "No trekking · domestic flight approx. 35–40 min when operated (weather dependent)",
+    distance: "No walking distance · Lukla–Kathmandu flight sector only",
     meals: "As per confirmed package",
     stay: "—",
     body:

@@ -104,7 +104,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "Is this trek suitable for beginners?",
-      a: "Fit first-time trekkers can enjoy it with preparation, but moderate fitness, hill walking practice and respect for altitude are essential. Your guide sets the pace.",
+      a: "Fit first-time trekkers can complete it with preparation. The itinerary lists approximate walking times of about three to seven hours on trekking days, plus a full acclimatisation day in Namche before higher ground. Prior hill walking, moderate fitness and following your guide’s altitude advice are essential.",
     },
     {
       q: "How difficult is the Everest View Trek?",
@@ -116,7 +116,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "Is acclimatization included?",
-      a: "Yes — Day 3 is a dedicated acclimatization and exploration day in Namche Bazaar before climbing to Khumjung and Syangboche ridge area.",
+      a: "Yes. Day 3 is a dedicated acclimatisation day in Namche Bazaar (~3,440 m). Your guide may lead optional short walks (typically about two to five kilometres) to support adjustment before Day 4 toward Khumjung and the Syangboche ridge area (~3,880 m). Report headache, nausea or dizziness promptly.",
     },
     {
       q: "Will I definitely see Mount Everest?",
@@ -132,11 +132,11 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "Can Lukla flights be delayed or cancelled?",
-      a: "Yes. Mountain flights are weather-dependent and delays are common. Build buffer time into international tickets and read your booking terms for delay costs.",
+      a: "Yes. Everest-region flights depend on weather and visibility; delays and cancellations are common. Allow buffer days on international tickets. Extra lodge nights, meals, road transfers (including Ramechhap/Manthali routing when used) and insurance claims follow your signed booking confirmation, airline rules and your travel insurance — not automatic refunds unless your documents state them.",
     },
     {
       q: "What happens if flights are disrupted?",
-      a: "Extra nights, meals, transfers and insurance claims are handled according to your policy and published booking conditions. Your coordinator assists with rebooking when airlines permit.",
+      a: "Your coordinator assists with rebooking when airlines permit. Extra nights, meals, ground transfers and insurance claims are handled under your booking confirmation, supplier policies and insurer — see the Flights section on this page and your written confirmation for what is and is not included.",
     },
     {
       q: "What accommodation is provided during the trek?",
@@ -144,11 +144,11 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "Are meals included?",
-      a: "Meals follow the board basis confirmed at booking. Ask for the exact meal plan when you request a quote.",
+      a: "Meals are included only as stated on your signed booking confirmation and in the Includes list on this page (board basis per the agreed package plan). Drinks, snacks and items outside that plan are excluded unless your confirmation says otherwise. Confirm the exact meal plan with your coordinator before you travel.",
     },
     {
       q: "What permits are required?",
-      a: "Sagarmatha National Park entry and applicable trekking permits. Ambition Holidays arranges these when included in your package.",
+      a: "Sagarmatha National Park entry and applicable local trekking permits are required for this route. When permits are included in your package, Ambition Holidays arranges them for your confirmed dates. Carry your passport and permit copies on the trail.",
     },
     {
       q: "What should I pack?",
@@ -168,7 +168,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "What fitness level is recommended?",
-      a: "Ability to walk four to six hours on uneven ground on consecutive days, with training on hills or stairs in the weeks before travel.",
+      a: "Comfort walking about four to six hours on uneven, stepped trails on consecutive trekking days, in line with the approximate hours shown in the itinerary. Train on hills or stairs with a daypack for several weeks before travel.",
     },
     {
       q: "How can I request a quote or customise the trip?",
@@ -180,7 +180,7 @@ export const EVEREST_VIEW_LUXURY_TRIP_PACKAGE: TrekPackage = {
     },
     {
       q: "What is the cancellation and refund policy?",
-      a: "Deposits, notice periods and refund eligibility are defined on your written booking confirmation and invoice. This page is not the contract — ask your coordinator for the current policy before you pay.",
+      a: "Our published Terms and Conditions (/terms-and-conditions) state that cancellation and refund details appear there and in your booking letter. Deposit, payment schedule, notice periods and refund eligibility are confirmed in writing on your invoice before you pay — this trek page does not list percentages, deadlines or penalties. Read /terms-and-conditions and your confirmation, or ask your coordinator before payment.",
     },
     {
       q: "What happens in a medical emergency on the trail?",

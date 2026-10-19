@@ -446,7 +446,7 @@ function mergeEverestPanoramaPublicPackage(
 }
 
 const EVL_LEGACY_DISTANCE_RE =
-  /introductory valley walk|valley trail with final ascent|short acclimatization walks|upper trail via syangboche|descent through upper namche|valley trail to lukla/i;
+  /introductory valley walk|valley trail with final ascent|short acclimatization walks|upper trail via syangboche|descent through upper namche|valley trail to lukla|mountain flight — weather dependent/i;
 
 function everestViewFlightNote(saved: string | undefined, def: string) {
   const s = (saved || "").trim();
@@ -486,14 +486,52 @@ function mergeEverestViewTripInfo(
   return extras.length ? [...merged, ...extras] : merged;
 }
 
-function appendEverestViewFaqs(
+const EVL_FAQ_QUESTION_ALIASES: Record<string, string> = {
+  "what meals are included?": "are meals included?",
+  "what fitness level is needed?": "what fitness level is recommended?",
+  "what happens if flights are delayed?": "can lukla flights be delayed or cancelled?",
+  "what are cancellation and refund conditions?": "what is the cancellation and refund policy?",
+};
+
+function normalizeFaqQuestion(q: string) {
+  return q.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/** Publish canonical Everest View FAQ answers; dedupe CMS duplicates that ask the same thing. */
+function mergeEverestViewFaqsPublished(
   saved: TrekPackage["faqs"] | undefined,
   def: TrekPackage["faqs"],
 ): TrekPackage["faqs"] {
-  if (!saved?.length) return def;
-  const seen = new Set(saved.map((f) => f.q.trim().toLowerCase()));
-  const extra = (def || []).filter((f) => !seen.has(f.q.trim().toLowerCase()));
-  return extra.length ? [...saved, ...extra] : saved;
+  if (!def?.length) return saved || [];
+  const defByQ = new Map(def.map((f) => [normalizeFaqQuestion(f.q), f]));
+  const resolveDef = (q: string) => {
+    const n = normalizeFaqQuestion(q);
+    const alias = EVL_FAQ_QUESTION_ALIASES[n];
+    return defByQ.get(n) || (alias ? defByQ.get(alias) : undefined);
+  };
+  const usedCanonical = new Set<string>();
+  const merged: TrekPackage["faqs"] = [];
+  for (const row of saved || []) {
+    const canonical = resolveDef(row.q);
+    if (canonical) {
+      const key = normalizeFaqQuestion(canonical.q);
+      if (!usedCanonical.has(key)) {
+        merged.push(canonical);
+        usedCanonical.add(key);
+      }
+      continue;
+    }
+    const key = normalizeFaqQuestion(row.q);
+    if (!merged.some((f) => normalizeFaqQuestion(f.q) === key)) merged.push(row);
+  }
+  for (const row of def) {
+    const key = normalizeFaqQuestion(row.q);
+    if (!usedCanonical.has(key)) {
+      merged.push(row);
+      usedCanonical.add(key);
+    }
+  }
+  return everestViewFaqs(merged, def);
 }
 
 function everestViewItinerary(
@@ -509,7 +547,10 @@ function everestViewItinerary(
       body: everestViewPublicText(day.body, defDay.body),
       meals: everestViewPublicText(day.meals, defDay.meals),
       stay: everestViewPublicText(day.stay, defDay.stay),
-      duration: everestViewPublicText(day.duration, defDay.duration),
+      duration:
+        defDay.day === 7 && (day.duration || "").trim() === "Flight day"
+          ? defDay.duration
+          : everestViewPublicText(day.duration, defDay.duration),
       altitude: everestViewPublicText(day.altitude, defDay.altitude),
       distance: everestViewItineraryDistance(day.distance, defDay.distance || ""),
       imageSrc: (day.imageSrc || "").trim() || defDay.imageSrc || "",
@@ -1482,7 +1523,7 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         metaDescription: everestViewPublicText(item.metaDescription, def.metaDescription),
         metaKeywords: everestViewPublicText(item.metaKeywords, def.metaKeywords),
         highlights: everestViewStringList(item.highlights, def.highlights),
-        faqs: everestViewFaqs(appendEverestViewFaqs(item.faqs, def.faqs), def.faqs),
+        faqs: mergeEverestViewFaqsPublished(item.faqs, def.faqs),
         tripInfo: mergeEverestViewTripInfo(item.tripInfo, def.tripInfo),
         flightBody: everestViewFlightNote(item.flightBody, def.flightBody || ""),
         bufferBody: everestViewPublicText(item.bufferBody, def.bufferBody || ""),
