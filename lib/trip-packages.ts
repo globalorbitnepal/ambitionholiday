@@ -1593,9 +1593,9 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
         ...mergedPkg,
         priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
         groupPrices: cmsGroupHasRates ? item.groupPrices : def.groupPrices,
-        pricingDisclaimer: cmsStoredText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
-        heroCtaPrimary: cmsStoredText(item.heroCtaPrimary, ""),
-        heroCtaSecondary: cmsStoredText(item.heroCtaSecondary, ""),
+        pricingDisclaimer: "",
+        heroCtaPrimary: "",
+        heroCtaSecondary: "",
       };
     }
     if (def.id === EBC_HELI_TOUR_PACKAGE_ID) {

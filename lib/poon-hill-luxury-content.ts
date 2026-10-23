@@ -3,9 +3,6 @@ import type { TrekLuxuryExperience } from "./trip-packages";
 
 export const POON_HILL_SLUG = "poon-hill-luxury-trek";
 
-export const POON_HILL_PRICING_DISCLAIMER =
-  "Published USD rates per person for private departures. Final invoice reflects confirmed flights, lodge availability, meals and services on your signed booking confirmation.";
-
 export const POON_HILL_GROUP_PRICES = [
   { id: "phl-g1", label: "1 person", priceUsd: 1499 },
   { id: "phl-g2", label: "2 people", priceUsd: 1099 },
@@ -105,7 +102,7 @@ export const POON_HILL_EXCLUSIONS = [
 ];
 
 export const POON_HILL_INCLUDE_NOTE =
-  "Inclusions follow your signed confirmation. Flights, meals and lodge nights are not guaranteed in the selling price until your approved package configuration confirms them.";
+  "Inclusions match your signed booking confirmation. Items not listed as included are excluded unless added in writing.";
 
 export const POON_HILL_FLIGHT_NOTE =
   "Kathmandu ↔ Pokhara sectors operate on domestic schedules that change with weather, visibility and airline load. Morning flights are typical but not promised. Allow buffer time on international tickets if you connect the same day. Road transfer between Kathmandu and Pokhara is an operational alternative when airlines cancel — any extra cost follows your booking terms.";
