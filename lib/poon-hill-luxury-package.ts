@@ -7,6 +7,7 @@ import {
   POON_HILL_ITINERARY,
   POON_HILL_ITINERARY_INTRO,
   POON_HILL_LUXURY_EXPERIENCE,
+  POON_HILL_GROUP_PRICES,
   POON_HILL_PRICING_DISCLAIMER,
   POON_HILL_SLUG,
 } from "./poon-hill-luxury-content";
@@ -38,12 +39,10 @@ export const POON_HILL_LUXURY_TRIP_PACKAGE: TrekPackage = {
   startEndLabel: "Kathmandu",
   groupSize: "Private departures",
   bestSeason: "March–May · September–November (weather dependent)",
-  priceUsd: 0,
-  groupPrices: [{ id: "g1", label: "Private party — quote on request", priceUsd: 0 }],
+  priceUsd: 799,
+  groupPrices: [...POON_HILL_GROUP_PRICES],
   pricingDisclaimer: POON_HILL_PRICING_DISCLAIMER,
   luxuryExperience: POON_HILL_LUXURY_EXPERIENCE,
-  heroCtaPrimary: "Plan Your Private Trek",
-  heroCtaSecondary: "Explore the Itinerary",
   overview:
     "The Poon Hill Luxury Trek compresses one of Nepal's most celebrated short viewpoints into five days with flights between Kathmandu and Pokhara when included on your confirmed quote. You walk the classic foothill corridor through Ulleri and Ghorepani, with an early-morning ascent to Poon Hill for sunrise panoramas when weather allows.\n\nLuxury here means private guiding, coordinated flights and transfers, honest pacing on steep stone steps, and the best suitable lodges available — not five-star resorts in every village. Mountain views, flight operations and room availability depend on season and supplier confirmation.\n\nAbout Poon Hill: the viewpoint sits above Ghorepani on a forested ridge, looking towards the Annapurna and Dhaulagiri massifs when clouds lift. It is a popular sunrise walk, not a high pass or technical climb. Clear skies and named peaks are never guaranteed on any morning.",
   highlights: [

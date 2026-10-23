@@ -4,7 +4,15 @@ import type { TrekLuxuryExperience } from "./trip-packages";
 export const POON_HILL_SLUG = "poon-hill-luxury-trek";
 
 export const POON_HILL_PRICING_DISCLAIMER =
-  "Retail rates are confirmed on your signed quotation. Kathmandu–Pokhara flights, lodge nights, meals and porter ratios follow the service plan stated on your booking confirmation — not assumed from this page alone.";
+  "Published USD rates per person for private departures. Final invoice reflects confirmed flights, lodge availability, meals and services on your signed booking confirmation.";
+
+export const POON_HILL_GROUP_PRICES = [
+  { id: "phl-g1", label: "1 person", priceUsd: 1499 },
+  { id: "phl-g2", label: "2 people", priceUsd: 1099 },
+  { id: "phl-g3", label: "3–4 people", priceUsd: 999 },
+  { id: "phl-g4", label: "5–7 people", priceUsd: 899 },
+  { id: "phl-g5", label: "8+ people", priceUsd: 799 },
+] as const;
 
 export const POON_HILL_ITINERARY_INTRO =
   "Five days and four nights from Kathmandu through Pokhara, the Annapurna foothills and the Poon Hill sunrise viewpoint — a private itinerary subject to confirmed flights, road access and lodge availability. Walking times on Day 4 will be stated on your final operational brief once the descent route and vehicle pickup are verified for your travel dates.";

@@ -1588,13 +1588,14 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       return mergeAmaDablamPublicPackage(mergedPkg, item, def);
     }
     if (def.id === POON_HILL_PACKAGE_ID) {
+      const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
       return {
         ...mergedPkg,
         priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
-        groupPrices: item.groupPrices?.some((row) => row.priceUsd > 0) ? item.groupPrices : def.groupPrices,
+        groupPrices: cmsGroupHasRates ? item.groupPrices : def.groupPrices,
         pricingDisclaimer: cmsStoredText(item.pricingDisclaimer, def.pricingDisclaimer || ""),
-        heroCtaPrimary: cmsStoredText(item.heroCtaPrimary, def.heroCtaPrimary || ""),
-        heroCtaSecondary: cmsStoredText(item.heroCtaSecondary, def.heroCtaSecondary || ""),
+        heroCtaPrimary: cmsStoredText(item.heroCtaPrimary, ""),
+        heroCtaSecondary: cmsStoredText(item.heroCtaSecondary, ""),
       };
     }
     if (def.id === EBC_HELI_TOUR_PACKAGE_ID) {
