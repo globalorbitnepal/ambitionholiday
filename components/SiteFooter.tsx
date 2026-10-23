@@ -103,7 +103,7 @@ function ColumnTitle({
     <div>
       <div className="mb-3 flex items-center gap-2 text-gold">
         {children}
-        <h3 className="font-[family-name:var(--font-cormorant)] text-[1.1rem] font-semibold uppercase tracking-[0.1em]">
+        <h3 className="footer-col-title font-[family-name:var(--font-cormorant)] text-[1.27rem] font-extrabold uppercase tracking-[0.11em] [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]">
           {title}
         </h3>
       </div>
@@ -115,7 +115,7 @@ function ChevronLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href || "#"}
-      className="group flex items-start gap-2 text-[0.86rem] font-semibold text-white/80 transition-colors hover:text-gold"
+      className="group flex items-start gap-2 text-[0.99rem] font-bold text-white/[0.93] transition-colors hover:text-gold [text-shadow:0_1px_10px_rgba(0,0,0,0.42)]"
     >
       <span className="mt-[0.15rem] text-gold/90 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
         ›
@@ -183,12 +183,8 @@ export default function SiteFooter() {
 
   const logoSrc = headerLogoSrc(footer.logoSrc || header.logoSrc, updatedAt);
 
-  function scrollTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
   return (
-    <footer className="relative border-t border-gold/25 bg-transparent text-white">
+    <footer className="site-footer relative border-t border-gold/25 bg-transparent text-white">
       <div className="border-b border-gold/25 bg-black/30 backdrop-blur-md">
         <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-4 px-4 py-3.5 sm:px-8 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-4">
           <div className="lg:border-r lg:border-gold/15 lg:pr-6">
@@ -282,7 +278,7 @@ export default function SiteFooter() {
       ) : null}
 
       {/* Main columns */}
-      <div className="mx-auto max-w-[88rem] px-4 pb-8 pt-8 sm:px-8 lg:px-10">
+      <div className="footer-main-content mx-auto max-w-[88rem] px-4 pb-8 pt-8 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
           <div className="space-y-3 lg:border-r lg:border-gold/15 lg:pr-5">
             <ColumnTitle title={footer.helpTitle}>
@@ -297,13 +293,15 @@ export default function SiteFooter() {
                 <path d="M12 19v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
               </svg>
             </ColumnTitle>
-            <p className="text-[0.84rem] font-semibold leading-relaxed text-white/85">{footer.helpBody}</p>
+            <p className="text-[0.97rem] font-bold leading-relaxed text-white/[0.93] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+              {footer.helpBody}
+            </p>
             <div className="space-y-1.5 pt-1">
               {(footer.phones ?? []).map((p) => (
                 <a
                   key={p.id}
                   href={p.href || "#"}
-                  className="flex items-center gap-2 text-[0.86rem] font-semibold text-white/90 hover:text-gold"
+                  className="flex items-center gap-2 text-[0.99rem] font-bold text-white/95 hover:text-gold [text-shadow:0_1px_10px_rgba(0,0,0,0.4)]"
                 >
                   <span className="text-gold" aria-hidden="true">
                     ☎
@@ -313,14 +311,14 @@ export default function SiteFooter() {
               ))}
               <a
                 href={footer.emailHref || `mailto:${footer.email}`}
-                className="flex items-center gap-2 text-[0.86rem] font-semibold text-white/90 hover:text-gold"
+                className="flex items-center gap-2 text-[0.99rem] font-bold text-white/[0.94] hover:text-gold [text-shadow:0_1px_10px_rgba(0,0,0,0.4)]"
               >
                 <span className="text-gold" aria-hidden="true">
                   ✉
                 </span>
                 {footer.email}
               </a>
-              <p className="flex items-start gap-2 text-[0.8rem] font-semibold text-white/70">
+              <p className="flex items-start gap-2 text-[0.92rem] font-bold text-white/82 [text-shadow:0_1px_10px_rgba(0,0,0,0.4)]">
                 <span className="text-gold" aria-hidden="true">
                   ◷
                 </span>
@@ -400,7 +398,7 @@ export default function SiteFooter() {
                 </svg>
               </button>
             </form>
-            <label className="flex items-start gap-2 text-[0.74rem] font-semibold leading-snug text-white/65">
+            <label className="flex items-start gap-2 text-[0.85rem] font-bold leading-snug text-white/78 [text-shadow:0_1px_10px_rgba(0,0,0,0.38)]">
               <input type="checkbox" className="mt-0.5 accent-[var(--gold,#c9a227)]" />
               <span>{footer.newsletterNote}</span>
             </label>
@@ -429,10 +427,10 @@ export default function SiteFooter() {
               />
             </div>
             <div className="text-center lg:px-4">
-              <p className="mx-auto max-w-xl text-[0.95rem] font-semibold leading-relaxed text-white/90">
+              <p className="mx-auto max-w-xl text-[1.09rem] font-bold leading-relaxed text-white/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.48)]">
                 {footer.mission}
               </p>
-              <p className="mt-2.5 text-[1.35rem] font-semibold italic text-gold sm:text-[1.45rem]">
+              <p className="mt-2.5 text-[1.55rem] font-extrabold italic text-gold sm:text-[1.67rem] [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
                 {footer.missionScript}
               </p>
             </div>
@@ -452,7 +450,7 @@ export default function SiteFooter() {
 
       {/* Copyright bar */}
       <div className="border-t border-gold/20 bg-black/35 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.74rem] font-semibold text-white/70 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
+        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.85rem] font-bold text-white/82 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
           <p>{footer.copyright}</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             {(footer.legalLinks ?? []).map((l, i) => (
@@ -464,27 +462,17 @@ export default function SiteFooter() {
               </span>
             ))}
           </div>
-          <div className="flex items-center gap-3">
-            <p className="font-semibold text-white/70">
-              {footer.creditPrefix || "Developed By"}{" "}
-              <a
-                href={footer.creditHref || "https://theglobalorbit.com/"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold transition-colors hover:text-[#e0c45a] hover:underline"
-              >
-                {footer.creditName || "The Global Orbit"}
-              </a>
-            </p>
-            <button
-              type="button"
-              onClick={scrollTop}
-              aria-label="Back to top"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/50 text-gold transition-colors hover:bg-gold/10"
+          <p className="text-center sm:text-right">
+            {footer.creditPrefix || "Developed By"}{" "}
+            <a
+              href={footer.creditHref || "https://theglobalorbit.com/"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold transition-colors hover:text-[#e0c45a] hover:underline"
             >
-              <span aria-hidden="true">↑</span>
-            </button>
-          </div>
+              {footer.creditName || "The Global Orbit"}
+            </a>
+          </p>
         </div>
       </div>
     </footer>

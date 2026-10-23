@@ -7358,3 +7358,22 @@ header[data-nav-glass="solid"] [data-glass="solid"] {
     transition: opacity 0.15s ease, visibility 0.15s ease;
   }
 }
+
+/* Footer: wider mountain vista + readable premium type on DuskAtmosphere */
+.home-light:has(.site-footer) .dusk-atmosphere > img {
+  transform: scale(0.84);
+  transform-origin: center 42%;
+}
+
+.home-light:has(.site-footer) .dusk-atmosphere > div:last-child {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 12, 20, 0.42) 0%,
+    rgba(6, 14, 22, 0.34) 45%,
+    rgba(4, 10, 16, 0.58) 100%
+  ) !important;
+}
+
+.site-footer .footer-main-content {
+  font-size: 1.02rem;
+}

@@ -26,7 +26,7 @@ export default function DuskAtmosphere({
       : "absolute inset-0 bg-[linear-gradient(180deg,rgba(4,12,20,0.32)_0%,rgba(6,14,22,0.26)_45%,rgba(4,10,16,0.48)_100%)]";
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    <div aria-hidden="true" className="dusk-atmosphere pointer-events-none absolute inset-0 z-0 overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
