@@ -28,7 +28,7 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
   {
     id: "nepal",
     title: "Nepal",
-    countLabel: "4 Packages",
+    countLabel: "5 Packages",
     tagline: "Mountains. Culture. Wildlife. Extraordinary Journeys.",
     href: "/nepal",
     flagSrc: "/images/flags/flag-nepal.webp",
@@ -66,6 +66,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         href: "/ama-dablam-base-camp-luxury-trek",
         imageSrc: "/images/journeys/j-gokyo.webp",
         imageAlt: "Ama Dablam and Himalayan ridges in the Khumbu",
+      },
+      {
+        title: "Poon Hill Luxury Trek – 5 Days",
+        days: "5 Days",
+        difficulty: "Moderate to challenging",
+        href: "/poon-hill-luxury-trek",
+        imageSrc: "/images/journal/annapurna-clean.webp",
+        imageAlt: "Annapurna peaks from the Poon Hill viewpoint area",
       },
     ],
   },

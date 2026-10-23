@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "4 Packages",
+      countLabel: "5 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -139,6 +139,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Twelve-day private Khumbu trek through Namche, Tengboche and Pangboche with a guided excursion toward Ama Dablam Base Camp.",
           "New",
           "/ama-dablam-base-camp-luxury-trek",
+        ),
+        pkg(
+          "poon-hill-lux",
+          "Poon Hill Luxury Trek – 5 Days",
+          5,
+          "/images/journal/annapurna-clean.webp",
+          "Sunrise panorama from Poon Hill above Ghorepani",
+          "Private luxury · Ghorepani · Poon Hill sunrise",
+          "Moderate to challenging",
+          "Five-day private Annapurna trek with Pokhara flights, village trails and the Poon Hill sunrise viewpoint when weather allows.",
+          "New",
+          "/poon-hill-luxury-trek",
         ),
       ],
     },

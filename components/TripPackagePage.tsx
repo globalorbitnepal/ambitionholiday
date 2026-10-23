@@ -23,12 +23,14 @@ import {
   isAmaDablamPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
+  isPoonHillLuxuryPackage,
   isLangtangPackage,
   isMustangPackage,
   packageHeadings,
   TREK_DAY_DISTANCE,
 } from "@/lib/trip-packages";
 import { AMA_DABLAM_ALTITUDE_STOPS } from "@/lib/ama-dablam-charts";
+import { POON_HILL_ALTITUDE_STOPS, POON_HILL_MONTHLY_WEATHER } from "@/lib/poon-hill-charts";
 import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
@@ -143,7 +145,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const everestViewCharts = isEverestViewPackage(pkg);
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
   const amaDablamCharts = isAmaDablamPackage(pkg);
-  const khumbuSchematicCharts = everestPanoramaCharts || amaDablamCharts;
+  const poonHillCharts = isPoonHillLuxuryPackage(pkg);
+  const khumbuSchematicCharts = everestPanoramaCharts || amaDablamCharts || poonHillCharts;
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
@@ -154,11 +157,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     mustangCharts ||
     langtangCharts ||
     everestViewCharts ||
-    khumbuSchematicCharts;
+    khumbuSchematicCharts ||
+    poonHillCharts;
   const chartStops = everestPanoramaCharts
     ? EVEREST_PANORAMA_ALTITUDE_STOPS
     : amaDablamCharts
       ? AMA_DABLAM_ALTITUDE_STOPS
+    : poonHillCharts
+      ? POON_HILL_ALTITUDE_STOPS
     : everestViewCharts
     ? EVEREST_VIEW_ALTITUDE_STOPS
     : langtangCharts
@@ -168,7 +174,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? ABC_ALTITUDE_STOPS
           : undefined;
-  const chartMaxM = amaDablamCharts
+  const chartMaxM = poonHillCharts
+    ? 3400
+    : amaDablamCharts
     ? 4800
     : everestPanoramaCharts
     ? 4200
@@ -181,7 +189,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 4300
           : undefined;
-  const chartMinM = khumbuSchematicCharts
+  const chartMinM = poonHillCharts
+    ? 600
+    : khumbuSchematicCharts
     ? 1200
     : everestViewCharts
     ? 1200
@@ -192,7 +202,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = amaDablamCharts
+  const chartFile = poonHillCharts
+    ? "poon-hill-luxury-trek-altitude-profile"
+    : amaDablamCharts
     ? "ama-dablam-base-camp-luxury-trek-altitude-profile"
     : everestPanoramaCharts
     ? "everest-panorama-trek-altitude-profile"
@@ -205,7 +217,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = amaDablamCharts
+  const mapVariant = poonHillCharts
+    ? "poon-hill"
+    : amaDablamCharts
     ? "ama-dablam"
     : everestPanoramaCharts
     ? "everest-panorama"
@@ -518,7 +532,27 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {pkg.badge ? <p className="lux-kicker">{pkg.badge}</p> : null}
               <h1>{pkg.title}</h1>
               <p className="lux-lead">{pkg.subtitle}</p>
-              {premiumNav && !premiumNepalPage ? (
+              {premiumNepalPage && (pkg.heroCtaPrimary || pkg.heroCtaSecondary) ? (
+                <div className="lux-hero-ctas">
+                  {pkg.heroCtaPrimary ? (
+                    <Link href={enquire} className="lux-btn lux-btn-solid">
+                      {pkg.heroCtaPrimary}
+                    </Link>
+                  ) : null}
+                  {pkg.heroCtaSecondary ? (
+                    <button
+                      type="button"
+                      className="lux-btn lux-btn-gold"
+                      onClick={() => {
+                        setActiveToc("itinerary");
+                        scrollToId("itinerary");
+                      }}
+                    >
+                      {pkg.heroCtaSecondary}
+                    </button>
+                  ) : null}
+                </div>
+              ) : premiumNav && !premiumNepalPage ? (
                 <div className="lux-hero-ctas">
                   <Link href={enquire} className="lux-btn lux-btn-solid">
                     Plan Your Trek
@@ -964,7 +998,17 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
               {heads.weatherNote ? <p className="lux-note">{heads.weatherNote}</p> : null}
               {pkg.weatherMonthlySrc ? (
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
-              ) : everestViewCharts || khumbuSchematicCharts ? (
+              ) : everestViewCharts ? (
+                <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
+              ) : poonHillCharts ? (
+                <MonthlyWeatherChart
+                  title={`Weather on ${pkg.title}`}
+                  months={POON_HILL_MONTHLY_WEATHER}
+                  minT={-4}
+                  maxT={26}
+                  downloadName="poon-hill-luxury-trek-monthly-weather"
+                />
+              ) : khumbuSchematicCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
               ) : isEbcPackage(pkg) ? (
                 <MonthlyWeatherChart title={`Weather on ${pkg.title}`} />

@@ -3,6 +3,7 @@ import {
   isEbcHelicopterTourPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
+  isPoonHillLuxuryPackage,
   type TrekPackage,
 } from "@/lib/trip-packages";
 
@@ -29,7 +30,12 @@ export const PANORAMA_EXTENDED_TOC: TrekTocItem[] = [
 ];
 
 export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
-  return isEverestViewPackage(pkg) || isEverestPanoramaPackage(pkg) || isAmaDablamPackage(pkg);
+  return (
+    isEverestViewPackage(pkg) ||
+    isEverestPanoramaPackage(pkg) ||
+    isAmaDablamPackage(pkg) ||
+    isPoonHillLuxuryPackage(pkg)
+  );
 }
 
 /** Everest View / Panorama / helicopter day tours — same title + booking layout on the public page. */

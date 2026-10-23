@@ -47,6 +47,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Langtang Valley luxury trek",
   },
+  "poon-hill-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Poon Hill Luxury Trek – 5 Days",
+  },
+  "phl-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Poon Hill Luxury Trek – 5 Days",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

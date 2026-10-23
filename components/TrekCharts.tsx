@@ -15,6 +15,7 @@ import { EverestViewRouteMap as EverestViewRouteMapInfographic } from "@/compone
 import { AmaDablamRouteMap } from "@/components/ama-dablam/AmaDablamRouteMap";
 import { EverestPanoramaRouteMap } from "@/components/everest-panorama/EverestPanoramaRouteMap";
 import { MUSTANG_MAP_STOPS } from "@/lib/mustang-charts";
+import { POON_HILL_MAP_STOPS } from "@/lib/poon-hill-charts";
 import { mediaSrc } from "@/lib/media-src";
 
 function downloadExt(src: string) {
@@ -199,16 +200,25 @@ export function AltitudeProfileChart({
   );
 }
 
-export function MonthlyWeatherChart({ title = "Weather on the Everest Base Camp Luxury Trek" }: { title?: string }) {
+export function MonthlyWeatherChart({
+  title = "Weather on the Everest Base Camp Luxury Trek",
+  months = EBC_MONTHLY_WEATHER,
+  minT = -22,
+  maxT = 22,
+  downloadName = "ebc-monthly-weather",
+}: {
+  title?: string;
+  months?: { month: string; maxC: number; minC: number }[];
+  minT?: number;
+  maxT?: number;
+  downloadName?: string;
+}) {
   const [unit, setUnit] = useState<"c" | "f">("c");
   const svgRef = useRef<SVGSVGElement>(null);
   const gid = useId().replace(/:/g, "");
   const W = 980;
   const H = 430;
   const pad = { l: 54, r: 28, t: 40, b: 52 };
-  const months = EBC_MONTHLY_WEATHER;
-  const minT = -22;
-  const maxT = 22;
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const yOf = (c: number) => pad.t + (1 - (c - minT) / (maxT - minT)) * innerH;
@@ -223,7 +233,7 @@ export function MonthlyWeatherChart({ title = "Weather on the Everest Base Camp 
     <div className="lux-graph">
       <div className="lux-graph-head">
         <h3>{title}</h3>
-        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, "ebc-monthly-weather")}>
+        <button type="button" className="lux-chart-dl" onClick={() => downloadPng(svgRef.current, downloadName)}>
           Download PNG
         </button>
       </div>
@@ -445,13 +455,91 @@ function MustangRouteMap({ title }: { title: string }) {
   );
 }
 
+function PoonHillRouteMap({ title }: { title: string }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gid = useId().replace(/:/g, "");
+  const byId = Object.fromEntries(POON_HILL_MAP_STOPS.map((s) => [s.id, s]));
+  const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
+  const trekUp = ["hile", "ulleri", "ghorepani"].map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`).join(" ");
+  const viewpoint = `M${pt("ghorepani")} L${pt("poon")}`;
+  const trekDown = `M${pt("poon")} L${pt("ghorepani")} L${pt("hile2")}`;
+
+  return (
+    <div className="lux-graph">
+      <div className="lux-graph-head">
+        <h3>{title}</h3>
+        <button
+          type="button"
+          className="lux-chart-dl"
+          onClick={() => downloadPng(svgRef.current, "poon-hill-luxury-trek-route-map")}
+        >
+          Download PNG
+        </button>
+      </div>
+      <svg ref={svgRef} className="lux-graph-svg lux-map-svg" viewBox="0 0 1000 560" role="img" aria-label={title}>
+        <defs>
+          <linearGradient id={`${gid}-sky`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#dce8f4" />
+            <stop offset="55%" stopColor="#f0f4f8" />
+            <stop offset="100%" stopColor="#e8dcc8" />
+          </linearGradient>
+        </defs>
+        <rect width="1000" height="560" fill={`url(#${gid}-sky)`} />
+        <Watermark w={1000} h={560} />
+        <path d="M0 360 C180 300 320 380 480 320 C640 260 820 340 1000 280 L1000 560 L0 560 Z" fill="#9cb896" opacity="0.35" />
+        <path d={`M${pt("ktm")} L${pt("pkr")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("pkr2")} L${pt("ktm")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("pkr")} L${pt("hile")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={`M${pt("hile2")} L${pt("pkr2")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={trekUp} fill="none" stroke="#c9a227" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={viewpoint} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="8 6" />
+        <path d={trekDown} fill="none" stroke="#c9a227" strokeWidth="4.5" strokeLinecap="round" opacity="0.9" />
+        {POON_HILL_MAP_STOPS.filter((s) => s.id !== "pkr2" && s.id !== "hile2").map((stop) => (
+          <g key={stop.id}>
+            <circle
+              cx={stop.x * 10}
+              cy={stop.y * 6}
+              r={stop.id === "poon" ? 7 : 5.5}
+              fill={stop.id === "poon" ? "#1a4d8c" : "#c9a227"}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <text x={stop.x * 10 + 10} y={stop.y * 6 - 8} fontSize="13" fontWeight="700" fill="#111827">
+              {stop.name}
+            </text>
+            <text x={stop.x * 10 + 10} y={stop.y * 6 + 8} fontSize="11" fill="#4b5563">
+              {stop.sub}
+            </text>
+          </g>
+        ))}
+        <g transform="translate(28 28)">
+          <rect width="268" height="102" rx="10" fill="#fff" stroke="#e5d39a" />
+          <text x="14" y="24" fontSize="12" fontWeight="700" fill="#1a2129">
+            Ambition Holidays
+          </text>
+          <text x="14" y="44" fontSize="11" fill="#4b5563">
+            Gold — trekking route
+          </text>
+          <text x="14" y="62" fontSize="11" fill="#4b5563">
+            Blue dash — Poon Hill viewpoint (Day 4)
+          </text>
+          <text x="14" y="80" fontSize="11" fill="#4b5563">
+            Blue / gold dash — flights &amp; road transfers
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 export function TrekRouteMap({
   title = "Everest Base Camp Luxury Trek map",
   variant = "ebc",
 }: {
   title?: string;
-  variant?: "ebc" | "abc" | "mustang" | "langtang" | "everest-view" | "everest-panorama" | "ama-dablam";
+  variant?: "ebc" | "abc" | "mustang" | "langtang" | "everest-view" | "everest-panorama" | "ama-dablam" | "poon-hill";
 }) {
+  if (variant === "poon-hill") return <PoonHillRouteMap title={title || "Poon Hill Luxury Trek — route map"} />;
   if (variant === "abc") return <AbcRouteMap title={title || "Annapurna Base Camp Luxury Trek map"} />;
   if (variant === "mustang") return <MustangRouteMap title={title || "Luxury Upper Mustang Trek map"} />;
   if (variant === "langtang") return <LangtangRouteMap title={title || "Langtang Valley Luxury Trek — 10 days route map"} />;
