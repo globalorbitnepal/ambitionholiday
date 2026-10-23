@@ -14,6 +14,7 @@ import { EVEREST_VIEW_LUXURY_TRIP_PACKAGE } from "./everest-view-luxury-package"
 import { EVEREST_PANORAMA_TRIP_PACKAGE } from "./everest-panorama-package";
 import { AMA_DABLAM_TRIP_PACKAGE } from "./ama-dablam-package";
 import { POON_HILL_LUXURY_TRIP_PACKAGE } from "./poon-hill-luxury-package";
+import { GHOREPANI_POONHILL_LUXURY_TRIP_PACKAGE } from "./ghorepani-poonhill-luxury-package";
 import { EBC_HELICOPTER_TOUR_PACKAGE } from "./ebc-helicopter-tour-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
@@ -254,6 +255,7 @@ export const EVEREST_VIEW_PACKAGE_ID = "evl-lux";
 export const EVEREST_PANORAMA_PACKAGE_ID = "ept-pan";
 export const AMA_DABLAM_PACKAGE_ID = "adb-lux";
 export const POON_HILL_PACKAGE_ID = "phl-lux";
+export const GHOREPANI_POONHILL_PACKAGE_ID = "gph-lux";
 export const EBC_HELI_TOUR_PACKAGE_ID = "ebc-heli-tour";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
@@ -262,6 +264,7 @@ export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [EVEREST_PANORAMA_PACKAGE_ID]: "everest-panorama-trek",
   [AMA_DABLAM_PACKAGE_ID]: "ama-dablam-base-camp-luxury-trek",
   [POON_HILL_PACKAGE_ID]: "poon-hill-luxury-trek",
+  [GHOREPANI_POONHILL_PACKAGE_ID]: "ghorepani-poonhill-luxury-trek",
   [EBC_HELI_TOUR_PACKAGE_ID]: "everest-base-camp-helicopter-tour",
 };
 
@@ -274,6 +277,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   EVEREST_PANORAMA_PACKAGE_ID,
   AMA_DABLAM_PACKAGE_ID,
   POON_HILL_PACKAGE_ID,
+  GHOREPANI_POONHILL_PACKAGE_ID,
   EBC_HELI_TOUR_PACKAGE_ID,
 ] as const;
 
@@ -321,6 +325,14 @@ export function isPoonHillLuxuryPackage(pkg: Pick<TrekPackage, "id" | "slug" | "
     pkg.id === POON_HILL_PACKAGE_ID ||
     pkg.catalogId === "poon-hill-lux" ||
     /poon-hill-luxury-trek/i.test(pkg.slug || "")
+  );
+}
+
+export function isGhorepaniPoonhillLuxuryPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return (
+    pkg.id === GHOREPANI_POONHILL_PACKAGE_ID ||
+    pkg.catalogId === "ghorepani-poonhill-lux" ||
+    /ghorepani-poonhill-luxury-trek/i.test(pkg.slug || "")
   );
 }
 
@@ -1052,6 +1064,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   EVEREST_PANORAMA_TRIP_PACKAGE,
   AMA_DABLAM_TRIP_PACKAGE,
   POON_HILL_LUXURY_TRIP_PACKAGE,
+  GHOREPANI_POONHILL_LUXURY_TRIP_PACKAGE,
   EBC_HELICOPTER_TOUR_PACKAGE,
 ];
 
@@ -1163,6 +1176,7 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   "everest-panorama": EVEREST_PANORAMA_PACKAGE_ID,
   "ama-dablam-lux": AMA_DABLAM_PACKAGE_ID,
   "poon-hill-lux": POON_HILL_PACKAGE_ID,
+  "ghorepani-poonhill-lux": GHOREPANI_POONHILL_PACKAGE_ID,
   "ebc-heli-lux": EBC_HELI_TOUR_PACKAGE_ID,
   "everest-base-camp-helicopter": EBC_HELI_TOUR_PACKAGE_ID,
 };
@@ -1191,6 +1205,10 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   if (pkg.id === POON_HILL_PACKAGE_ID || pkg.catalogId === "poon-hill-lux") {
     keys.add("phl-lux");
     keys.add("poon-hill-lux");
+  }
+  if (pkg.id === GHOREPANI_POONHILL_PACKAGE_ID || pkg.catalogId === "ghorepani-poonhill-lux") {
+    keys.add("gph-lux");
+    keys.add("ghorepani-poonhill-lux");
   }
   if (pkg.id === EBC_HELI_TOUR_PACKAGE_ID || pkg.catalogId === "ebc-heli-tour" || pkg.catalogId === "ebc-heli-lux") {
     keys.add("ebc-heli-tour");
@@ -1588,6 +1606,17 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       return mergeAmaDablamPublicPackage(mergedPkg, item, def);
     }
     if (def.id === POON_HILL_PACKAGE_ID) {
+      const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
+      return {
+        ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: cmsGroupHasRates ? item.groupPrices : def.groupPrices,
+        pricingDisclaimer: "",
+        heroCtaPrimary: "",
+        heroCtaSecondary: "",
+      };
+    }
+    if (def.id === GHOREPANI_POONHILL_PACKAGE_ID) {
       const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
       return {
         ...mergedPkg,

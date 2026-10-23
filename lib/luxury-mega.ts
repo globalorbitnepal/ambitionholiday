@@ -75,6 +75,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageSrc: "/images/journal/annapurna-clean.webp",
         imageAlt: "Annapurna peaks from the Poon Hill viewpoint area",
       },
+      {
+        title: "Ghorepani Poon Hill Luxury Trek – 9 Days",
+        days: "9 Days",
+        difficulty: "Moderate",
+        href: "/ghorepani-poonhill-luxury-trek",
+        imageSrc: "/images/journal/annapurna.webp",
+        imageAlt: "Himalayan ridges above the Ghorepani–Poon Hill trail",
+      },
     ],
   },
   {

@@ -18,6 +18,7 @@ import {
   isEverestViewPackage,
   isAmaDablamPackage,
   isPoonHillLuxuryPackage,
+  isGhorepaniPoonhillLuxuryPackage,
   isEverestPanoramaPackage,
   isEbcHelicopterTourPackage,
   LOCKED_PACKAGE_SLUGS,
@@ -794,7 +795,8 @@ export default function AdminPackageEditor() {
             isEverestViewPackage(pkg) ||
             isEverestPanoramaPackage(pkg) ||
             isAmaDablamPackage(pkg) ||
-            isPoonHillLuxuryPackage(pkg)
+            isPoonHillLuxuryPackage(pkg) ||
+            isGhorepaniPoonhillLuxuryPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -1509,6 +1511,7 @@ export default function AdminPackageEditor() {
           {isEverestPanoramaPackage(pkg) ||
           isAmaDablamPackage(pkg) ||
           isPoonHillLuxuryPackage(pkg) ||
+          isGhorepaniPoonhillLuxuryPackage(pkg) ||
           pkg.luxuryExperience ? (
             <div className="admin-card" style={{ margin: "0 0 16px", padding: 12 }}>
               <p className="admin-side-group-label" style={{ margin: "0 0 10px" }}>

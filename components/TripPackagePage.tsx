@@ -23,6 +23,7 @@ import {
   isAmaDablamPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
+  isGhorepaniPoonhillLuxuryPackage,
   isPoonHillLuxuryPackage,
   isLangtangPackage,
   isMustangPackage,
@@ -31,6 +32,10 @@ import {
 } from "@/lib/trip-packages";
 import { AMA_DABLAM_ALTITUDE_STOPS } from "@/lib/ama-dablam-charts";
 import { POON_HILL_ALTITUDE_STOPS, POON_HILL_MONTHLY_WEATHER } from "@/lib/poon-hill-charts";
+import {
+  GHOREPANI_POONHILL_ALTITUDE_STOPS,
+  GHOREPANI_POONHILL_MONTHLY_WEATHER,
+} from "@/lib/ghorepani-poonhill-charts";
 import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
@@ -146,7 +151,10 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const everestPanoramaCharts = isEverestPanoramaPackage(pkg);
   const amaDablamCharts = isAmaDablamPackage(pkg);
   const poonHillCharts = isPoonHillLuxuryPackage(pkg);
-  const khumbuSchematicCharts = everestPanoramaCharts || amaDablamCharts || poonHillCharts;
+  const ghorepaniPoonhillCharts = isGhorepaniPoonhillLuxuryPackage(pkg);
+  const annapurnaPoonCharts = poonHillCharts || ghorepaniPoonhillCharts;
+  const khumbuSchematicCharts =
+    everestPanoramaCharts || amaDablamCharts || poonHillCharts || ghorepaniPoonhillCharts;
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
@@ -158,11 +166,13 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     langtangCharts ||
     everestViewCharts ||
     khumbuSchematicCharts ||
-    poonHillCharts;
+    annapurnaPoonCharts;
   const chartStops = everestPanoramaCharts
     ? EVEREST_PANORAMA_ALTITUDE_STOPS
     : amaDablamCharts
       ? AMA_DABLAM_ALTITUDE_STOPS
+    : ghorepaniPoonhillCharts
+      ? GHOREPANI_POONHILL_ALTITUDE_STOPS
     : poonHillCharts
       ? POON_HILL_ALTITUDE_STOPS
     : everestViewCharts
@@ -174,7 +184,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? ABC_ALTITUDE_STOPS
           : undefined;
-  const chartMaxM = poonHillCharts
+  const chartMaxM = annapurnaPoonCharts
     ? 3400
     : amaDablamCharts
     ? 4800
@@ -189,7 +199,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 4300
           : undefined;
-  const chartMinM = poonHillCharts
+  const chartMinM = annapurnaPoonCharts
     ? 600
     : khumbuSchematicCharts
     ? 1200
@@ -202,7 +212,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = poonHillCharts
+  const chartFile = ghorepaniPoonhillCharts
+    ? "ghorepani-poonhill-luxury-trek-altitude-profile"
+    : poonHillCharts
     ? "poon-hill-luxury-trek-altitude-profile"
     : amaDablamCharts
     ? "ama-dablam-base-camp-luxury-trek-altitude-profile"
@@ -217,7 +229,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = poonHillCharts
+  const mapVariant = ghorepaniPoonhillCharts
+    ? "ghorepani-poonhill"
+    : poonHillCharts
     ? "poon-hill"
     : amaDablamCharts
     ? "ama-dablam"
@@ -1000,6 +1014,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
               ) : everestViewCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
+              ) : ghorepaniPoonhillCharts ? (
+                <MonthlyWeatherChart
+                  title={`Weather on ${pkg.title}`}
+                  months={GHOREPANI_POONHILL_MONTHLY_WEATHER}
+                  minT={-4}
+                  maxT={26}
+                  downloadName="ghorepani-poonhill-luxury-trek-monthly-weather"
+                />
               ) : poonHillCharts ? (
                 <MonthlyWeatherChart
                   title={`Weather on ${pkg.title}`}
