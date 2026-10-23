@@ -185,7 +185,7 @@ export default function SiteFooter() {
 
   return (
     <footer className="site-footer relative border-t border-gold/25 bg-transparent text-white">
-      <div className="border-b border-gold/25 bg-black/30 backdrop-blur-md">
+      <div className="border-b border-gold/25 bg-black/40 backdrop-blur-md">
         <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-4 px-4 py-3.5 sm:px-8 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-4">
           <div className="lg:border-r lg:border-gold/15 lg:pr-6">
             <div className="mb-2 flex flex-col items-center text-center">
@@ -406,7 +406,7 @@ export default function SiteFooter() {
         </div>
 
         {/* Brand row — light-black premium glass */}
-        <div className="hl-dark-glass relative mt-10 overflow-hidden rounded-xl">
+        <div className="hl-dark-glass relative mt-10 overflow-hidden rounded-xl bg-black/45 backdrop-blur-md">
           <div
             className="pointer-events-none absolute inset-0 opacity-40"
             aria-hidden="true"
@@ -449,7 +449,7 @@ export default function SiteFooter() {
       </div>
 
       {/* Copyright bar */}
-      <div className="border-t border-gold/20 bg-black/35 backdrop-blur-md">
+      <div className="border-t border-gold/20 bg-black/45 backdrop-blur-md">
         <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.85rem] font-bold text-white/82 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
           <p>{footer.copyright}</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">

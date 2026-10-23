@@ -7359,21 +7359,32 @@ header[data-nav-glass="solid"] [data-glass="solid"] {
   }
 }
 
-/* Footer: wider mountain vista + readable premium type on DuskAtmosphere */
-.home-light:has(.site-footer) .dusk-atmosphere > img {
-  transform: scale(0.84);
-  transform-origin: center 42%;
-}
-
-.home-light:has(.site-footer) .dusk-atmosphere > div:last-child {
+/* Footer: full panorama (object-contain) + readable type */
+.dusk-atmosphere-wash {
   background: linear-gradient(
     180deg,
-    rgba(4, 12, 20, 0.42) 0%,
-    rgba(6, 14, 22, 0.34) 45%,
-    rgba(4, 10, 16, 0.58) 100%
-  ) !important;
+    rgba(6, 12, 20, 0.38) 0%,
+    rgba(8, 14, 22, 0.22) 38%,
+    rgba(6, 10, 18, 0.48) 100%
+  );
 }
 
 .site-footer .footer-main-content {
+  position: relative;
   font-size: 1.02rem;
+}
+
+.site-footer .footer-main-content::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -0.5rem -0.25rem 0;
+  z-index: -1;
+  border-radius: 1rem;
+  background: radial-gradient(
+    ellipse 92% 78% at 50% 42%,
+    rgba(6, 12, 20, 0.62) 0%,
+    rgba(6, 12, 20, 0.28) 55%,
+    transparent 78%
+  );
 }

@@ -2,43 +2,36 @@
 
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { mediaSrc } from "@/lib/media-src";
-import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
-
-const FALLBACK = SECTION_WALLPAPER;
+import { FOOTER_ATMOSPHERE } from "@/lib/section-wallpaper";
 
 type AtmosphereTone = "dusk" | "bright";
-type AtmosphereFit = "cover" | "contain";
 
-/** Original dusk Himalayan peaks behind post-hero glass. Not the hero hiker photo. */
-export default function DuskAtmosphere({
-  tone = "dusk",
-  fit = "cover",
-}: {
-  tone?: AtmosphereTone;
-  /** contain = full frame, no crop/zoom (trip package page) */
-  fit?: AtmosphereFit;
-}) {
+/** Full panoramic peaks behind the footer — not cropped like post-hero section wallpaper. */
+export default function DuskAtmosphere({ tone = "dusk" }: { tone?: AtmosphereTone }) {
   const { atmosphere } = useSiteContent();
-  const src = mediaSrc(atmosphere?.imageSrc || FALLBACK) || FALLBACK;
+  const src = mediaSrc(atmosphere?.footerImageSrc || FOOTER_ATMOSPHERE) || FOOTER_ATMOSPHERE;
   const wash =
     tone === "bright"
       ? "absolute inset-0 bg-[linear-gradient(180deg,rgba(236,246,255,0.55)_0%,rgba(214,232,246,0.38)_42%,rgba(198,222,240,0.46)_100%)]"
-      : "absolute inset-0 bg-[linear-gradient(180deg,rgba(4,12,20,0.32)_0%,rgba(6,14,22,0.26)_45%,rgba(4,10,16,0.48)_100%)]";
+      : "dusk-atmosphere-wash absolute inset-0";
 
   return (
-    <div aria-hidden="true" className="dusk-atmosphere pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    <div
+      aria-hidden="true"
+      className="dusk-atmosphere pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0a1018]"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""
-        className={`media-image-fade h-full w-full opacity-100 ${
-          fit === "contain" ? "object-contain object-center" : "object-cover object-[center_38%]"
-        } ${tone === "bright" ? "brightness-[1.18] saturate-[1.08]" : ""}`}
+        className={`media-image-fade h-full w-full object-contain object-center opacity-100 ${
+          tone === "bright" ? "brightness-[1.18] saturate-[1.08]" : ""
+        }`}
         loading="eager"
         decoding="async"
         fetchPriority="high"
         onError={(event) => {
-          event.currentTarget.src = FALLBACK;
+          event.currentTarget.src = FOOTER_ATMOSPHERE;
         }}
       />
       <div className={wash} />

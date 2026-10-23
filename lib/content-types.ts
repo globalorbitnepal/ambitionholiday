@@ -1,5 +1,5 @@
 import { DEFAULT_HEADER_NAV, type HeaderNavContent } from "@/lib/header-nav";
-import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
+import { FOOTER_ATMOSPHERE, SECTION_WALLPAPER } from "@/lib/section-wallpaper";
 import { DEFAULT_NEPAL, type NepalContent } from "@/lib/nepal-defaults";
 import { DEFAULT_BHUTAN } from "@/lib/bhutan-defaults";
 import { DEFAULT_TIBET } from "@/lib/tibet-defaults";
@@ -901,6 +901,8 @@ export type SiteContent = {
   mediaCatalog: Record<string, MediaCatalogEntry>;
   atmosphere: {
     imageSrc: string;
+    /** Footer panoramic background (full frame, no crop). */
+    footerImageSrc: string;
   };
   hero: {
     visible: boolean;
@@ -946,6 +948,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   mediaCatalog: {},
   atmosphere: {
     imageSrc: SECTION_WALLPAPER,
+    footerImageSrc: FOOTER_ATMOSPHERE,
   },
   hero: {
     visible: true,

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { OrbitMediaButtons } from "@/components/OrbitMediaPicker";
 import OrbitThumb from "@/components/OrbitThumb";
-import type { SiteContent } from "@/lib/content-types";
+import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 import type { DestShowcaseCard, HeaderNavContent } from "@/lib/header-nav";
 import type { LuxuryMegaCountry, LuxuryMegaCountryId } from "@/lib/luxury-mega";
 import { headerLogoSrc } from "@/lib/media-src";
@@ -193,7 +193,12 @@ export default function OrbitHeaderEditor({ content, onChange }: Props) {
           />
         </div>
         <OrbitMediaButtons
-          onPicked={(url) => onChange({ ...content, atmosphere: { imageSrc: url } })}
+          onPicked={(url) =>
+            onChange({
+              ...content,
+              atmosphere: { ...content.atmosphere, ...DEFAULT_CONTENT.atmosphere, imageSrc: url },
+            })
+          }
         />
       </Card>
 

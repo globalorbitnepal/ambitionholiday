@@ -855,6 +855,8 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
         content.atmosphere?.imageSrc === publicPath
           ? DEFAULT_CONTENT.atmosphere.imageSrc
           : content.atmosphere?.imageSrc || DEFAULT_CONTENT.atmosphere.imageSrc,
+      footerImageSrc:
+        content.atmosphere?.footerImageSrc || DEFAULT_CONTENT.atmosphere.footerImageSrc,
     },
     hero: {
       ...content.hero,
