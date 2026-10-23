@@ -7277,3 +7277,84 @@ header[data-nav-glass="solid"] [data-glass="solid"] {
   -webkit-backdrop-filter: none !important;
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
+
+/* Fixed golden-glass back to top — home, treks, destination pages */
+.site-back-to-top {
+  position: fixed;
+  z-index: 90;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: max(1.15rem, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 1px solid rgba(201, 162, 39, 0.48);
+  border-radius: 999px;
+  color: var(--gold-soft);
+  cursor: pointer;
+  background: linear-gradient(
+    145deg,
+    rgba(212, 175, 55, 0.28) 0%,
+    rgba(8, 12, 18, 0.62) 55%,
+    rgba(12, 18, 28, 0.72) 100%
+  );
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate3d(0, 14px, 0) scale(0.92);
+  transition:
+    opacity 0.28s ease,
+    visibility 0.28s ease,
+    transform 0.28s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.site-back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.site-back-to-top:hover {
+  color: #f0d36a;
+  border-color: rgba(224, 196, 90, 0.72);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.42),
+    0 0 20px rgba(201, 162, 39, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.site-back-to-top:active {
+  transform: translate3d(0, 1px, 0) scale(0.97);
+}
+
+.site-back-to-top:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .site-back-to-top {
+    right: max(1.35rem, env(safe-area-inset-right, 0px));
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+    width: 3.15rem;
+    height: 3.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-back-to-top {
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+  }
+}

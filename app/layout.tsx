@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import BackToTopButton from "@/components/BackToTopButton";
 import NavigationUX from "@/components/NavigationUX";
 import { DEFAULT_SITE_LOGO } from "@/lib/media-src";
 import { SECTION_WALLPAPER } from "@/lib/section-wallpaper";
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className="antialiased">
         <NavigationUX />
         {children}
+        <BackToTopButton />
       </body>
     </html>
   );
