@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "8 Packages",
+      countLabel: "9 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -188,24 +188,6 @@ export const DEFAULT_NEPAL: NepalContent = {
           "New",
           "/kathmandu-chitwan-poon-hill-luxury-tour",
         ),
-      ],
-    },
-    {
-      id: "cultural",
-      label: "Luxury Cultural & Heritage",
-      countLabel: "7 Packages",
-      packages: [
-        pkg(
-          "ktm-valley-lux",
-          "Kathmandu Valley Luxury Tour",
-          5,
-          "/images/nepal/nepal-cult-ktm.webp",
-          "Kathmandu Durbar Square temples at dusk",
-          "Palaces, courtyards and boutique stays",
-          "Easy",
-          "Palaces, courtyards and boutique stays across Kathmandu’s living heritage.",
-          "Most Popular",
-        ),
         pkg(
           "kathmandu-heritage-lux",
           "Kathmandu Heritage Luxury Tour",
@@ -217,6 +199,24 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Five-day private heritage tour through Swayambhunath, Kathmandu, Patan and Bhaktapur squares, Pashupatinath, Boudhanath and a leisure day.",
           "New",
           "/kathmandu-heritage-luxury-tour",
+        ),
+      ],
+    },
+    {
+      id: "cultural",
+      label: "Luxury Cultural & Heritage",
+      countLabel: "6 Packages",
+      packages: [
+        pkg(
+          "ktm-valley-lux",
+          "Kathmandu Valley Luxury Tour",
+          5,
+          "/images/nepal/nepal-cult-ktm.webp",
+          "Kathmandu Durbar Square temples at dusk",
+          "Palaces, courtyards and boutique stays",
+          "Easy",
+          "Palaces, courtyards and boutique stays across Kathmandu’s living heritage.",
+          "Most Popular",
         ),
         pkg(
           "heritage-lux",
