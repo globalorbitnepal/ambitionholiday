@@ -41,8 +41,8 @@ export const ANNAPURNA_PANORAMA_LUXURY_TRIP_PACKAGE: TrekPackage = {
   priceUsd: 1199,
   groupPrices: [...ANNAPURNA_PANORAMA_GROUP_PRICES],
   pricingDisclaimer: "",
-  heroCtaPrimary: "Book This Trip",
-  heroCtaSecondary: "Explore Itinerary",
+  heroCtaPrimary: "",
+  heroCtaSecondary: "",
   luxuryExperience: ANNAPURNA_PANORAMA_LUXURY_EXPERIENCE,
   overview:
     "The Annapurna Panorama Luxury Trek spreads the classic Ghorepani–Poon Hill experience across ten days with time for Kathmandu, efficient flights to Pokhara and a longer descent through Gurung villages to Tolkha and Dhampus.\n\nYou begin with cultural sightseeing in the Kathmandu Valley, then fly west to Pokhara and enter the foothills towards Ulleri and Ghorepani. A pre-dawn walk to Poon Hill offers panoramic scenery when weather allows; forest trails continue to Tadapani and Ghandruk before the route turns through Tolkha towards Dhampus and returns to Pokhara by road.\n\nLuxury on this journey means private coordination, experienced guiding and the best suitable lodges available — not five-star resorts on every ridge. Flights, road access, walking durations and room categories are confirmed on your signed booking, not assumed from this page.",
