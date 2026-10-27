@@ -18,6 +18,7 @@ import {
   isEverestViewPackage,
   isAmaDablamPackage,
   isPoonHillLuxuryPackage,
+  isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
   isEverestPanoramaPackage,
   isEbcHelicopterTourPackage,
@@ -325,6 +326,22 @@ export default function AdminPackageEditor() {
             <label className="admin-field">
               <span>Badge / hero eyebrow</span>
               <input value={pkg.badge} onChange={(e) => patch({ badge: e.target.value })} />
+            </label>
+            <label className="admin-field">
+              <span>Hero primary CTA label</span>
+              <input
+                value={pkg.heroCtaPrimary || ""}
+                placeholder="e.g. Book This Trip"
+                onChange={(e) => patch({ heroCtaPrimary: e.target.value })}
+              />
+            </label>
+            <label className="admin-field">
+              <span>Hero secondary CTA label</span>
+              <input
+                value={pkg.heroCtaSecondary || ""}
+                placeholder="e.g. Explore Itinerary"
+                onChange={(e) => patch({ heroCtaSecondary: e.target.value })}
+              />
             </label>
           </div>
         </div>
@@ -796,7 +813,8 @@ export default function AdminPackageEditor() {
             isEverestPanoramaPackage(pkg) ||
             isAmaDablamPackage(pkg) ||
             isPoonHillLuxuryPackage(pkg) ||
-            isGhorepaniPoonhillLuxuryPackage(pkg)
+            isGhorepaniPoonhillLuxuryPackage(pkg) ||
+            isAnnapurnaPanoramaLuxuryPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -1512,6 +1530,7 @@ export default function AdminPackageEditor() {
           isAmaDablamPackage(pkg) ||
           isPoonHillLuxuryPackage(pkg) ||
           isGhorepaniPoonhillLuxuryPackage(pkg) ||
+          isAnnapurnaPanoramaLuxuryPackage(pkg) ||
           pkg.luxuryExperience ? (
             <div className="admin-card" style={{ margin: "0 0 16px", padding: 12 }}>
               <p className="admin-side-group-label" style={{ margin: "0 0 10px" }}>

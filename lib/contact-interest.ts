@@ -63,6 +63,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Ghorepani Poon Hill Luxury Trek – 9 Days",
   },
+  "annapurna-panorama-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Annapurna Panorama Luxury Trek – 10 Days",
+  },
+  "apn-pan": {
+    select: "Luxury Tour & Trek",
+    label: "Annapurna Panorama Luxury Trek – 10 Days",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

@@ -23,6 +23,7 @@ import {
   isAmaDablamPackage,
   isEverestPanoramaPackage,
   isEverestViewPackage,
+  isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
   isPoonHillLuxuryPackage,
   isLangtangPackage,
@@ -36,6 +37,10 @@ import {
   GHOREPANI_POONHILL_ALTITUDE_STOPS,
   GHOREPANI_POONHILL_MONTHLY_WEATHER,
 } from "@/lib/ghorepani-poonhill-charts";
+import {
+  ANNAPURNA_PANORAMA_ALTITUDE_STOPS,
+  ANNAPURNA_PANORAMA_MONTHLY_WEATHER,
+} from "@/lib/annapurna-panorama-charts";
 import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
@@ -152,9 +157,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const amaDablamCharts = isAmaDablamPackage(pkg);
   const poonHillCharts = isPoonHillLuxuryPackage(pkg);
   const ghorepaniPoonhillCharts = isGhorepaniPoonhillLuxuryPackage(pkg);
-  const annapurnaPoonCharts = poonHillCharts || ghorepaniPoonhillCharts;
+  const annapurnaPanoramaCharts = isAnnapurnaPanoramaLuxuryPackage(pkg);
+  const annapurnaPoonCharts = poonHillCharts || ghorepaniPoonhillCharts || annapurnaPanoramaCharts;
   const khumbuSchematicCharts =
-    everestPanoramaCharts || amaDablamCharts || poonHillCharts || ghorepaniPoonhillCharts;
+    everestPanoramaCharts ||
+    amaDablamCharts ||
+    poonHillCharts ||
+    ghorepaniPoonhillCharts ||
+    annapurnaPanoramaCharts;
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
@@ -171,6 +181,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? EVEREST_PANORAMA_ALTITUDE_STOPS
     : amaDablamCharts
       ? AMA_DABLAM_ALTITUDE_STOPS
+    : annapurnaPanoramaCharts
+      ? ANNAPURNA_PANORAMA_ALTITUDE_STOPS
     : ghorepaniPoonhillCharts
       ? GHOREPANI_POONHILL_ALTITUDE_STOPS
     : poonHillCharts
@@ -212,7 +224,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = ghorepaniPoonhillCharts
+  const chartFile = annapurnaPanoramaCharts
+    ? "annapurna-panorama-luxury-trek-altitude-profile"
+    : ghorepaniPoonhillCharts
     ? "ghorepani-poonhill-luxury-trek-altitude-profile"
     : poonHillCharts
     ? "poon-hill-luxury-trek-altitude-profile"
@@ -229,7 +243,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = ghorepaniPoonhillCharts
+  const mapVariant = annapurnaPanoramaCharts
+    ? "annapurna-panorama"
+    : ghorepaniPoonhillCharts
     ? "ghorepani-poonhill"
     : poonHillCharts
     ? "poon-hill"
@@ -1014,6 +1030,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
               ) : everestViewCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
+              ) : annapurnaPanoramaCharts ? (
+                <MonthlyWeatherChart
+                  title={`Weather on ${pkg.title}`}
+                  months={ANNAPURNA_PANORAMA_MONTHLY_WEATHER}
+                  minT={-4}
+                  maxT={26}
+                  downloadName="annapurna-panorama-luxury-trek-monthly-weather"
+                />
               ) : ghorepaniPoonhillCharts ? (
                 <MonthlyWeatherChart
                   title={`Weather on ${pkg.title}`}

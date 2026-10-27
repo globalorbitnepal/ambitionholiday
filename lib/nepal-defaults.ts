@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "6 Packages",
+      countLabel: "7 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -163,6 +163,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Nine-day Annapurna journey with Kathmandu sightseeing, a private drive to Pokhara, Poon Hill sunrise, Tadapani, Ghandruk and a return flight when included.",
           "New",
           "/ghorepani-poonhill-luxury-trek",
+        ),
+        pkg(
+          "annapurna-panorama-lux",
+          "Annapurna Panorama Luxury Trek – 10 Days",
+          10,
+          "/images/journal/annapurna-clean.webp",
+          "Panoramic Annapurna views from the Poon Hill trail",
+          "Private luxury · Poon Hill · Ghandruk · Dhampus",
+          "Moderate",
+          "Ten-day Annapurna panorama with Kathmandu sightseeing, Pokhara flights, Poon Hill sunrise, Tolkha, Dhampus and return flight when included.",
+          "New",
+          "/annapurna-panorama-luxury-trek",
         ),
       ],
     },

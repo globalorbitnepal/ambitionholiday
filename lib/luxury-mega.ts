@@ -83,6 +83,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageSrc: "/images/journal/annapurna.webp",
         imageAlt: "Himalayan ridges above the Ghorepani–Poon Hill trail",
       },
+      {
+        title: "Annapurna Panorama Luxury Trek – 10 Days",
+        days: "10 Days",
+        difficulty: "Moderate",
+        href: "/annapurna-panorama-luxury-trek",
+        imageSrc: "/images/journal/annapurna-clean.webp",
+        imageAlt: "Annapurna panorama above foothill villages",
+      },
     ],
   },
   {
