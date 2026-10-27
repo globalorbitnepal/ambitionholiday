@@ -254,8 +254,20 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "wildlife",
       label: "Luxury Wildlife & Nature",
-      countLabel: "6 Packages",
+      countLabel: "7 Packages",
       packages: [
+        pkg(
+          "kathmandu-chitwan-poonhill-lux",
+          "Kathmandu – Chitwan – Poon Hill Luxury Tour",
+          10,
+          "/images/nepal/nepal-wild-chitpok.webp",
+          "Jungle river, Pokhara lake and Annapurna peaks on one private tour",
+          "Culture · Chitwan · Poon Hill trek",
+          "Moderate",
+          "Ten-day private journey — Kathmandu sightseeing, Chitwan wildlife programme, Pokhara flights and a trek to Ghorepani and Poon Hill.",
+          "New",
+          "/kathmandu-chitwan-poon-hill-luxury-tour",
+        ),
         pkg(
           "chitwan-lux",
           "Chitwan Luxury Wildlife Safari",

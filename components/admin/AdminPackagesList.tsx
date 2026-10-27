@@ -17,7 +17,7 @@ import {
   type TrekPackage,
 } from "@/lib/trip-packages";
 import { analyzeSeo, seoScoreTone, slugify } from "@/lib/seo";
-import { tripPackagesForNepalTrekkingCatalog } from "@/lib/nepal-trek-catalog";
+import { tripPackagesForNepalAdminCatalog } from "@/lib/nepal-trek-catalog";
 import type { NepalPackage } from "@/lib/nepal-defaults";
 import type { SiteContent } from "@/lib/content-types";
 
@@ -123,7 +123,7 @@ export default function AdminPackagesList() {
     const matchesQuery = (pkg: TrekPackage) =>
       !needle || `${pkg.title} ${pkg.slug}`.toLowerCase().includes(needle);
     if (country === "nepal") {
-      return tripPackagesForNepalTrekkingCatalog(content.nepal, content.tripPackages).filter(matchesQuery);
+      return tripPackagesForNepalAdminCatalog(content.nepal, content.tripPackages).filter(matchesQuery);
     }
     const seen = new Set<string>();
     return content.tripPackages.filter((pkg) => {

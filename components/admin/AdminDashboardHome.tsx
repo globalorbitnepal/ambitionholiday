@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminContent } from "@/components/admin/useAdminContent";
 import type { StoredInquiry } from "@/app/api/admin/inquiries/route";
-import { tripPackagesForNepalTrekkingCatalog } from "@/lib/nepal-trek-catalog";
+import { tripPackagesForNepalAdminCatalog } from "@/lib/nepal-trek-catalog";
 import { enrichCatalogCard, type TrekPackage } from "@/lib/trip-packages";
 
 function formatWhen(iso: string) {
@@ -63,7 +63,7 @@ export default function AdminDashboardHome() {
   }).length;
 
   const fullEditPackages = loaded
-    ? tripPackagesForNepalTrekkingCatalog(content.nepal, content.tripPackages)
+    ? tripPackagesForNepalAdminCatalog(content.nepal, content.tripPackages)
     : [];
 
   if (!loaded) return <p className="admin-muted">Loading dashboard…</p>;

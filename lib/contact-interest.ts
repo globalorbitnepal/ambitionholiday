@@ -71,6 +71,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Annapurna Panorama Luxury Trek – 10 Days",
   },
+  "kathmandu-chitwan-poonhill-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu – Chitwan – Poon Hill Luxury Tour",
+  },
+  "kcp-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu – Chitwan – Poon Hill Luxury Tour",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

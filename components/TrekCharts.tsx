@@ -18,6 +18,7 @@ import { MUSTANG_MAP_STOPS } from "@/lib/mustang-charts";
 import { POON_HILL_MAP_STOPS } from "@/lib/poon-hill-charts";
 import { GHOREPANI_POONHILL_MAP_STOPS } from "@/lib/ghorepani-poonhill-charts";
 import { ANNAPURNA_PANORAMA_MAP_STOPS } from "@/lib/annapurna-panorama-charts";
+import { KATHMANDU_CHITWAN_POON_HILL_MAP_STOPS } from "@/lib/kathmandu-chitwan-poon-hill-charts";
 import { mediaSrc } from "@/lib/media-src";
 
 function downloadExt(src: string) {
@@ -538,6 +539,90 @@ function AnnapurnaPanoramaRouteMap({ title }: { title: string }) {
   );
 }
 
+function KathmanduChitwanPoonHillRouteMap({ title }: { title: string }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gid = useId().replace(/:/g, "");
+  const byId = Object.fromEntries(KATHMANDU_CHITWAN_POON_HILL_MAP_STOPS.map((s) => [s.id, s]));
+  const pt = (id: string) => `${byId[id].x * 10},${byId[id].y * 6}`;
+  const trekUp = ["hile", "ghorepani"].map((id, i) => `${i === 0 ? "M" : "L"}${pt(id)}`).join(" ");
+  const viewpoint = `M${pt("ghorepani")} L${pt("poon")}`;
+  const trekDown = `M${pt("poon")} L${pt("ulleri")}`;
+
+  return (
+    <div className="lux-graph">
+      <div className="lux-graph-head">
+        <h3>{title}</h3>
+        <button
+          type="button"
+          className="lux-chart-dl"
+          onClick={() => downloadPng(svgRef.current, "kathmandu-chitwan-poon-hill-luxury-tour-route-map")}
+        >
+          Download PNG
+        </button>
+      </div>
+      <svg ref={svgRef} className="lux-graph-svg lux-map-svg" viewBox="0 0 1000 560" role="img" aria-label={title}>
+        <defs>
+          <linearGradient id={`${gid}-sky`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#dce8f4" />
+            <stop offset="55%" stopColor="#f0f4f8" />
+            <stop offset="100%" stopColor="#e8dcc8" />
+          </linearGradient>
+        </defs>
+        <rect width="1000" height="560" fill={`url(#${gid}-sky)`} />
+        <Watermark w={1000} h={560} />
+        <path d="M0 360 C180 300 320 380 480 320 C640 260 820 340 1000 280 L1000 560 L0 560 Z" fill="#9cb896" opacity="0.35" />
+        <path d="M0 420 C200 400 400 440 600 400 L1000 420 L1000 560 L0 560 Z" fill="#7a9e6a" opacity="0.22" />
+        <path d={`M${pt("ktm")} L${pt("ktm2")}`} fill="none" stroke="#8a7018" strokeWidth="2.5" strokeDasharray="5 5" opacity="0.85" />
+        <path d={`M${pt("ktm2")} L${pt("chit")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("chit")} L${pt("chit2")}`} fill="none" stroke="#2d6a4f" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={`M${pt("chit2")} L${pt("pkr")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={`M${pt("pkr")} L${pt("hile")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={`M${pt("ulleri")} L${pt("pkr2")}`} fill="none" stroke="#8a7018" strokeWidth="3" strokeDasharray="6 6" />
+        <path d={`M${pt("pkr2")} L${pt("ktm3")}`} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="9 7" />
+        <path d={trekUp} fill="none" stroke="#c9a227" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={viewpoint} fill="none" stroke="#1a4d8c" strokeWidth="3" strokeDasharray="8 6" />
+        <path d={trekDown} fill="none" stroke="#c9a227" strokeWidth="4.5" strokeLinecap="round" opacity="0.92" />
+        {KATHMANDU_CHITWAN_POON_HILL_MAP_STOPS.map((stop) => (
+          <g key={stop.id}>
+            <circle
+              cx={stop.x * 10}
+              cy={stop.y * 6}
+              r={stop.id === "poon" ? 7 : 5.5}
+              fill={stop.id === "poon" ? "#1a4d8c" : stop.id.startsWith("chit") ? "#2d6a4f" : "#c9a227"}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <text x={stop.x * 10 + 10} y={stop.y * 6 - 8} fontSize="13" fontWeight="700" fill="#111827">
+              {stop.name}
+            </text>
+            <text x={stop.x * 10 + 10} y={stop.y * 6 + 8} fontSize="11" fill="#4b5563">
+              {stop.sub}
+            </text>
+          </g>
+        ))}
+        <g transform="translate(28 28)">
+          <rect width="320" height="118" rx="10" fill="#fff" stroke="#e5d39a" />
+          <text x="14" y="24" fontSize="12" fontWeight="700" fill="#1a2129">
+            Ambition Holidays
+          </text>
+          <text x="14" y="44" fontSize="11" fill="#4b5563">
+            Gold — trekking route (illustrative)
+          </text>
+          <text x="14" y="62" fontSize="11" fill="#4b5563">
+            Blue dash — domestic flights &amp; Poon Hill
+          </text>
+          <text x="14" y="80" fontSize="11" fill="#4b5563">
+            Brown dash — road transfers
+          </text>
+          <text x="14" y="98" fontSize="11" fill="#4b5563">
+            Green dash — Chitwan programme (confirm activities)
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 function GhorepaniPoonhillRouteMap({ title }: { title: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const gid = useId().replace(/:/g, "");
@@ -711,8 +796,16 @@ export function TrekRouteMap({
     | "ama-dablam"
     | "poon-hill"
     | "ghorepani-poonhill"
-    | "annapurna-panorama";
+    | "annapurna-panorama"
+    | "kathmandu-chitwan-poon-hill";
 }) {
+  if (variant === "kathmandu-chitwan-poon-hill") {
+    return (
+      <KathmanduChitwanPoonHillRouteMap
+        title={title || "Kathmandu – Chitwan – Poon Hill Luxury Tour — route map"}
+      />
+    );
+  }
   if (variant === "annapurna-panorama") {
     return <AnnapurnaPanoramaRouteMap title={title || "Annapurna Panorama Luxury Trek — route map"} />;
   }

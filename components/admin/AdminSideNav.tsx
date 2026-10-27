@@ -14,7 +14,7 @@ import {
   IconSettings,
   IconStar,
 } from "@/components/admin/AdminNavIcons";
-import { tripPackagesForNepalTrekkingCatalog } from "@/lib/nepal-trek-catalog";
+import { tripPackagesForNepalAdminCatalog } from "@/lib/nepal-trek-catalog";
 import { tripPath } from "@/lib/trip-packages";
 
 const MAIN_NAV = [
@@ -41,7 +41,7 @@ export default function AdminSideNav() {
 
   const packages = useMemo(() => {
     if (!loaded) return [];
-    return tripPackagesForNepalTrekkingCatalog(content.nepal, content.tripPackages);
+    return tripPackagesForNepalAdminCatalog(content.nepal, content.tripPackages);
   }, [content.nepal, content.tripPackages, loaded]);
 
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));

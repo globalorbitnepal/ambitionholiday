@@ -5,6 +5,7 @@ import {
   isEverestViewPackage,
   isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
+  isKathmanduChitwanPoonHillLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   type TrekPackage,
 } from "@/lib/trip-packages";
@@ -38,7 +39,8 @@ export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug" 
     isAmaDablamPackage(pkg) ||
     isPoonHillLuxuryPackage(pkg) ||
     isGhorepaniPoonhillLuxuryPackage(pkg) ||
-    isAnnapurnaPanoramaLuxuryPackage(pkg)
+    isAnnapurnaPanoramaLuxuryPackage(pkg) ||
+    isKathmanduChitwanPoonHillLuxuryTourPackage(pkg)
   );
 }
 

@@ -91,6 +91,14 @@ export const LUXURY_MEGA_COUNTRIES: LuxuryMegaCountry[] = [
         imageSrc: "/images/journal/annapurna-clean.webp",
         imageAlt: "Annapurna panorama above foothill villages",
       },
+      {
+        title: "Kathmandu – Chitwan – Poon Hill Luxury Tour",
+        days: "10 Days",
+        difficulty: "Moderate",
+        href: "/kathmandu-chitwan-poon-hill-luxury-tour",
+        imageSrc: "/images/nepal/nepal-wild-chitpok.webp",
+        imageAlt: "Chitwan jungle and Pokhara lakeside with Himalayan peaks",
+      },
     ],
   },
   {

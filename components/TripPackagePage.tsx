@@ -25,6 +25,7 @@ import {
   isEverestViewPackage,
   isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
+  isKathmanduChitwanPoonHillLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   isLangtangPackage,
   isMustangPackage,
@@ -41,6 +42,10 @@ import {
   ANNAPURNA_PANORAMA_ALTITUDE_STOPS,
   ANNAPURNA_PANORAMA_MONTHLY_WEATHER,
 } from "@/lib/annapurna-panorama-charts";
+import {
+  KATHMANDU_CHITWAN_POON_HILL_ALTITUDE_STOPS,
+  KATHMANDU_CHITWAN_POON_HILL_MONTHLY_WEATHER,
+} from "@/lib/kathmandu-chitwan-poon-hill-charts";
 import { EVEREST_PANORAMA_ALTITUDE_STOPS } from "@/lib/everest-panorama-charts";
 import TrekVideoLightbox from "@/components/TrekVideoLightbox";
 import TripPhotoLightbox from "@/components/TripPhotoLightbox";
@@ -158,13 +163,15 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const poonHillCharts = isPoonHillLuxuryPackage(pkg);
   const ghorepaniPoonhillCharts = isGhorepaniPoonhillLuxuryPackage(pkg);
   const annapurnaPanoramaCharts = isAnnapurnaPanoramaLuxuryPackage(pkg);
-  const annapurnaPoonCharts = poonHillCharts || ghorepaniPoonhillCharts || annapurnaPanoramaCharts;
+  const kcpTourCharts = isKathmanduChitwanPoonHillLuxuryTourPackage(pkg);
+  const annapurnaPoonCharts = poonHillCharts || ghorepaniPoonhillCharts || annapurnaPanoramaCharts || kcpTourCharts;
   const khumbuSchematicCharts =
     everestPanoramaCharts ||
     amaDablamCharts ||
     poonHillCharts ||
     ghorepaniPoonhillCharts ||
-    annapurnaPanoramaCharts;
+    annapurnaPanoramaCharts ||
+    kcpTourCharts;
   const premiumKhumbuTrek = isPremiumKhumbuTrekPackage(pkg);
   const premiumNepalPage = isPremiumNepalPackagePage(pkg);
   const premiumNav = Boolean(pkg.journeyStages?.length);
@@ -181,6 +188,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     ? EVEREST_PANORAMA_ALTITUDE_STOPS
     : amaDablamCharts
       ? AMA_DABLAM_ALTITUDE_STOPS
+    : kcpTourCharts
+      ? KATHMANDU_CHITWAN_POON_HILL_ALTITUDE_STOPS
     : annapurnaPanoramaCharts
       ? ANNAPURNA_PANORAMA_ALTITUDE_STOPS
     : ghorepaniPoonhillCharts
@@ -211,7 +220,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 4300
           : undefined;
-  const chartMinM = annapurnaPoonCharts
+  const chartMinM = kcpTourCharts
+    ? 0
+    : annapurnaPoonCharts
     ? 600
     : khumbuSchematicCharts
     ? 1200
@@ -224,7 +235,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? 700
           : undefined;
-  const chartFile = annapurnaPanoramaCharts
+  const chartFile = kcpTourCharts
+    ? "kathmandu-chitwan-poon-hill-luxury-tour-altitude-profile"
+    : annapurnaPanoramaCharts
     ? "annapurna-panorama-luxury-trek-altitude-profile"
     : ghorepaniPoonhillCharts
     ? "ghorepani-poonhill-luxury-trek-altitude-profile"
@@ -243,7 +256,9 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
         : abcCharts
           ? "abc-altitude-profile"
           : "ebc-altitude-profile";
-  const mapVariant = annapurnaPanoramaCharts
+  const mapVariant = kcpTourCharts
+    ? "kathmandu-chitwan-poon-hill"
+    : annapurnaPanoramaCharts
     ? "annapurna-panorama"
     : ghorepaniPoonhillCharts
     ? "ghorepani-poonhill"
@@ -1030,6 +1045,14 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
                 <UploadedChart title={`Weather on ${pkg.title}`} src={pkg.weatherMonthlySrc} file={`${pkg.slug}-monthly-weather`} />
               ) : everestViewCharts ? (
                 <EverestViewMonthlyWeather sectionTitle={`Weather on ${pkg.title}`} />
+              ) : kcpTourCharts ? (
+                <MonthlyWeatherChart
+                  title={`Weather on ${pkg.title}`}
+                  months={KATHMANDU_CHITWAN_POON_HILL_MONTHLY_WEATHER}
+                  minT={-4}
+                  maxT={26}
+                  downloadName="kathmandu-chitwan-poon-hill-luxury-tour-monthly-weather"
+                />
               ) : annapurnaPanoramaCharts ? (
                 <MonthlyWeatherChart
                   title={`Weather on ${pkg.title}`}
