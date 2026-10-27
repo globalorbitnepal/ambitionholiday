@@ -6,6 +6,7 @@ import {
   isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
   isKathmanduChitwanPoonHillLuxuryTourPackage,
+  isKathmanduHeritageLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   type TrekPackage,
 } from "@/lib/trip-packages";
@@ -46,7 +47,11 @@ export function isPremiumKhumbuTrekPackage(pkg: Pick<TrekPackage, "id" | "slug" 
 
 /** Everest View / Panorama / helicopter day tours — same title + booking layout on the public page. */
 export function isPremiumNepalPackagePage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
-  return isPremiumKhumbuTrekPackage(pkg) || isEbcHelicopterTourPackage(pkg);
+  return (
+    isPremiumKhumbuTrekPackage(pkg) ||
+    isEbcHelicopterTourPackage(pkg) ||
+    isKathmanduHeritageLuxuryTourPackage(pkg)
+  );
 }
 
 /** Everest Panorama keeps 16 sections; other treks use the provided standard list. */
@@ -68,5 +73,5 @@ export function useScrollableSectionNav(
   pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">,
   hasJourneyNav: boolean,
 ) {
-  return isPremiumKhumbuTrekPackage(pkg) || isEbcHelicopterTourPackage(pkg) || hasJourneyNav;
+  return isPremiumNepalPackagePage(pkg) || hasJourneyNav;
 }

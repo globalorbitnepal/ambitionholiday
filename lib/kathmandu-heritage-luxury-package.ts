@@ -1,0 +1,292 @@
+import type { TrekPackage } from "./trip-packages";
+import {
+  KATHMANDU_HERITAGE_EXCLUSIONS,
+  KATHMANDU_HERITAGE_GROUP_PRICES,
+  KATHMANDU_HERITAGE_INCLUDE_NOTE,
+  KATHMANDU_HERITAGE_INCLUSIONS,
+  KATHMANDU_HERITAGE_ITINERARY,
+  KATHMANDU_HERITAGE_ITINERARY_INTRO,
+  KATHMANDU_HERITAGE_LUXURY_EXPERIENCE,
+  KATHMANDU_HERITAGE_SLUG,
+  KATHMANDU_HERITAGE_TRANSFER_NOTE,
+} from "./kathmandu-heritage-luxury-content";
+
+const HERO = "/images/nepal/nepal-cult-ktm.webp";
+
+export const KATHMANDU_HERITAGE_LUXURY_TRIP_PACKAGE: TrekPackage = {
+  id: "kmh-lux",
+  catalogId: "kathmandu-heritage-lux",
+  slug: KATHMANDU_HERITAGE_SLUG,
+  country: "nepal",
+  status: "published",
+  featured: true,
+  badge: "LUXURY CULTURAL TOUR IN NEPAL",
+  title: "Kathmandu Heritage Luxury Tour",
+  subtitle:
+    "Discover the cultural heart of Nepal on a five-day journey through Kathmandu Valley's historic squares, sacred temples and remarkable Buddhist heritage, with time to relax and explore at your own pace.",
+  duration: "5 Days / 4 Nights",
+  days: 5,
+  difficulty: "Easy",
+  destination: "Nepal · Kathmandu Valley",
+  maxAltitude: "Kathmandu Valley · ~1,400 m",
+  maxAltitudeFt: "",
+  countryLabel: "Nepal",
+  activityLabel: "Private cultural heritage tour",
+  accommodationLabel: "Confirmed Kathmandu hotel category — subject to availability on booking",
+  mealsLabel: "As per confirmed board basis on your signed confirmation",
+  startEndLabel: "Kathmandu",
+  groupSize: "Private or group departures — enquire for dates",
+  bestSeason: "October–April (clearer valley views; festivals year-round)",
+  priceUsd: 799,
+  groupPrices: [...KATHMANDU_HERITAGE_GROUP_PRICES],
+  pricingDisclaimer: "",
+  heroCtaPrimary: "",
+  heroCtaSecondary: "",
+  luxuryExperience: KATHMANDU_HERITAGE_LUXURY_EXPERIENCE,
+  overview:
+    "The Kathmandu Heritage Luxury Tour is a measured introduction to the valley's royal squares, hilltop stupas and riverside temples — without promising services that have not been verified on your quote.\n\nTwo full sightseeing days combine Swayambhunath, Kathmandu and Patan Durbar Squares, then Bhaktapur, Pashupatinath and Boudhanath on a route your operator confirms for traffic and access. A leisure day follows for independent shopping or rest before departure.\n\nLuxury here means private coordination, comfortable city hotels when included and guiding when listed on your confirmation — not guaranteed five-star properties, included entrance fees or fixed minute-by-minute schedules unless your signed documents say so.",
+  highlights: [
+    "Five days focused on Kathmandu Valley heritage.",
+    "Swayambhunath Stupa and hilltop valley views when weather allows.",
+    "Kathmandu Durbar Square's royal architecture.",
+    "Newari craftsmanship at Patan Durbar Square.",
+    "Bhaktapur Durbar Square temples and courtyards.",
+    "Pashupatinath Temple on the Bagmati River.",
+    "Boudhanath Stupa and its pilgrimage neighbourhood.",
+    "Leisure day for shopping and independent exploration.",
+  ],
+  inclusions: KATHMANDU_HERITAGE_INCLUSIONS,
+  exclusions: KATHMANDU_HERITAGE_EXCLUSIONS,
+  gallery: [
+    HERO,
+    "/images/nepal/nepal-cult-heritage.webp",
+    "/images/nepal/nepal-cult-spiritual.webp",
+    "/images/nepal/nepal-cult-ktmpokchit.webp",
+    "/images/nepal/nepal-cover.webp",
+  ],
+  tripGalleryTitle: "Kathmandu Heritage Luxury Tour Gallery",
+  galleryAlts: [
+    "Kathmandu Durbar Square temples at dusk",
+    "Bhaktapur heritage square and Nyatapola temple",
+    "Buddhist stupa and prayer flags in the Kathmandu Valley",
+    "Traditional Newari architecture in the valley",
+    "Himalayan foothills above the Kathmandu Valley",
+  ],
+  heroSrc: HERO,
+  heroAlt: "Kathmandu Durbar Square heritage temples in warm evening light",
+  altitudeChartM: "",
+  altitudeChartFt: "",
+  altitudeGainSrc: "",
+  routeMapSrc: "",
+  weatherDailySrc: "",
+  weatherMonthlySrc: "",
+  routeMapFile: "kathmandu-heritage-luxury-tour-route-map",
+  altitudeMFile: "kathmandu-heritage-luxury-tour-altitude-meters",
+  altitudeFtFile: "kathmandu-heritage-luxury-tour-altitude-feet",
+  weatherDailyFile: "kathmandu-heritage-luxury-tour-daily-temperature",
+  weatherMonthlyFile: "kathmandu-heritage-luxury-tour-monthly-temperature",
+  itineraryIntro: KATHMANDU_HERITAGE_ITINERARY_INTRO,
+  itinerary: KATHMANDU_HERITAGE_ITINERARY,
+  faqs: [
+    {
+      q: "How long is the Kathmandu Heritage Luxury Tour?",
+      a: "Five days / four nights from arrival through two sightseeing days, a leisure day and departure.",
+    },
+    {
+      q: "Which sites are included?",
+      a: "The published itinerary covers Swayambhunath, Kathmandu and Patan Durbar Squares, Bhaktapur Durbar Square, Pashupatinath and Boudhanath, plus a free day and airport days as confirmed on your quote.",
+    },
+    {
+      q: "Is this a trekking package?",
+      a: "No — it is a cultural sightseeing tour in the Kathmandu Valley with easy pacing and city hotel nights.",
+    },
+    {
+      q: "Are entrance fees and guides included?",
+      a: "Only when explicitly listed on your signed confirmation. This page does not guarantee them.",
+    },
+    {
+      q: "What happens on Day 4?",
+      a: "A leisure day for rest, shopping or independent exploration. Optional activities are quoted separately when available.",
+    },
+    {
+      q: "What is the starting price?",
+      a: "From USD 799 per person for larger groups is a draft rate. Your invoice reflects verified costs and party size.",
+    },
+    {
+      q: "What is the best season?",
+      a: "October through April often brings clearer valley views. Festivals and religious events occur throughout the year — ask about dates when you enquire.",
+    },
+    {
+      q: "How do I book?",
+      a: "Use Book now, Check availability or the enquiry form with your travel dates and group size.",
+    },
+  ],
+  whyItems: [
+    {
+      title: "Valley in depth",
+      body: "Major squares and stupas across two structured sightseeing days — not a rushed whistle-stop.",
+    },
+    {
+      title: "Respectful temple copy",
+      body: "Pashupatinath and active pilgrimage sites are described with appropriate access and custom notes.",
+    },
+    {
+      title: "Time to breathe",
+      body: "Day 4 stays free for shopping or rest before your international flight.",
+    },
+    {
+      title: "Private coordination",
+      body: "One team handles hotels, transport and guiding when included on your quote.",
+    },
+    {
+      title: "No trek clutter",
+      body: "No altitude charts or trail maps — content matches a heritage city tour.",
+    },
+    {
+      title: "Draft pricing",
+      body: "Published USD tiers are for operator review until costs are verified.",
+    },
+  ],
+  weatherBody:
+    "Autumn and spring generally offer pleasant valley temperatures and clearer views from Swayambhunath. Winter days are mild in Kathmandu; summer brings monsoon rain and humidity. Festival dates can affect traffic around major sites — your coordinator advises when you book.",
+  altitudeBody: "",
+  packingItems: [],
+  packingIntro:
+    "Pack modest, comfortable clothing suitable for temple visits, walking shoes for cobbled squares, a light layer for evenings and a day bag for sightseeing.",
+  packingGroups: [
+    {
+      id: "kmh-clothing",
+      title: "Clothing",
+      items: [
+        "Modest layers for temples and stupas",
+        "Comfortable walking shoes",
+        "Sun hat and light rain jacket (seasonal)",
+        "Evening casual wear",
+      ],
+    },
+    {
+      id: "kmh-personal",
+      title: "Personal",
+      items: [
+        "Passport and visa",
+        "Travel insurance documents",
+        "Reusable water bottle",
+        "Sunscreen and sunglasses",
+        "Power adapter",
+      ],
+    },
+  ],
+  suitableBody:
+    "Suited to travellers who want a comfortable cultural introduction to Kathmandu Valley landmarks with easy pacing and city hotel nights.",
+  trainingBody: "",
+  khumbuBody: "",
+  flightBody: KATHMANDU_HERITAGE_TRANSFER_NOTE,
+  bufferBody:
+    "Allow buffer on international flights around arrival and departure transfers when included. Valley traffic can shift sightseeing start times.",
+  heliBody: "",
+  beforeItems: [
+    "Dress respectfully at Pashupatinath, Boudhanath and active religious sites.",
+    "Confirm sightseeing order, guide and entrance fees with your coordinator before travel.",
+    "Tips for guide and driver teams are customary and your choice.",
+  ],
+  permitsLabel: "",
+  regionLabel: "Kathmandu Valley — Durbar Squares, Swayambhunath, Pashupatinath, Boudhanath",
+  startLabel: "Kathmandu",
+  flightTitle: "Airport transfers and valley transport",
+  notesTitle: "Transfers and sightseeing timing",
+  luklaNoteTitle: "",
+  aboutTitle: "Cultural heritage and landmarks",
+  aboutLead:
+    "Kathmandu Valley UNESCO-listed squares and living pilgrimage sites sit within a compact geography — your guide and driver follow the confirmed route while you explore courtyards, woodcarving and sacred architecture at a measured pace.",
+  aboutSections: [
+    {
+      id: "kmh-landmarks",
+      title: "What you explore",
+      body:
+        "Royal Durbar Squares in Kathmandu, Patan and Bhaktapur showcase Newari brick, timber and metalwork. Swayambhunath and Boudhanath anchor Buddhist practice; Pashupatinath is a major Hindu sacred complex where visitor rules apply.\n\nPhotography, footwear and access can vary by site and season. Your coordinator confirms opening arrangements and any fees before travel — we do not invent included entrances on this page.",
+    },
+  ],
+  whyTitle: "Why choose this five-day heritage tour?",
+  khumbuTitle: "",
+  mapBody: "",
+  weatherNote: "",
+  metaTitle: "Kathmandu Heritage Luxury Tour – 5 Days | Ambition Holidays",
+  metaDescription:
+    "Explore Kathmandu Valley on a 5-day heritage luxury tour featuring Swayambhunath, Kathmandu Durbar Square, Patan, Bhaktapur, Pashupatinath and Boudhanath.",
+  metaKeywords:
+    "Kathmandu Heritage Luxury Tour, Kathmandu Heritage Tour 5 Days, Kathmandu Luxury Cultural Tour, Kathmandu Valley Heritage Tour, Nepal Cultural Luxury Tour, Kathmandu Durbar Square Tour, Patan and Bhaktapur Heritage Tour, Boudhanath and Pashupatinath Tour, Luxury Tour Package Nepal",
+  focusKeyword: "Kathmandu Heritage Luxury Tour",
+  tripadvisorLabel: "Tripadvisor",
+  tripadvisorScore: "",
+  tripadvisorCount: "View reviews",
+  tripadvisorHref:
+    "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
+  tripadvisorLogoSrc: "/images/reviews/tripadvisor-owl.png",
+  googleLabel: "Google",
+  googleScore: "",
+  googleCount: "View on Maps",
+  googleHref:
+    "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
+  googleLogoSrc: "",
+  watchVideo: {
+    id: "kmh-watch",
+    title: "",
+    subtitle: "",
+    duration: "",
+    imageSrc: "",
+    imageAlt: "",
+    videoSrc: "",
+  },
+  videoReviews: [],
+  reviews: [],
+  tripInfoTitle: "Kathmandu Heritage Luxury Tour – Trip Information",
+  tripInfo: [
+    { id: "ti-duration", title: "Duration", body: "5 days / 4 nights in Nepal." },
+    { id: "ti-country", title: "Country", body: "Nepal." },
+    { id: "ti-dest", title: "Destination", body: "Kathmandu Valley." },
+    { id: "ti-type", title: "Tour type", body: "Cultural and heritage sightseeing." },
+    {
+      id: "ti-pace",
+      title: "Pace",
+      body: "Sightseeing on Days 2 and 3; leisure on Day 4.",
+    },
+    {
+      id: "ti-transport",
+      title: "Transportation",
+      body: "According to the confirmed tour arrangement — typically private valley transfers when included.",
+    },
+    {
+      id: "ti-acc",
+      title: "Accommodation",
+      body: "Confirmed hotel category from package data — stated on your booking confirmation.",
+    },
+    {
+      id: "ti-guide",
+      title: "Guide",
+      body: "Licensed guide when included on your signed quote only.",
+    },
+    {
+      id: "ti-group",
+      title: "Group type",
+      body: "Private parties or group departures according to availability.",
+    },
+    {
+      id: "ti-season",
+      title: "Best season",
+      body: "October–April for comfortable valley weather; monsoon months are wetter with occasional site access changes.",
+    },
+  ],
+  optionalAddons: [
+    "Extra Kathmandu hotel nights.",
+    "Single-room supplement where available.",
+    "Optional day trips or spa — quoted separately when verified.",
+  ],
+  includeNote: KATHMANDU_HERITAGE_INCLUDE_NOTE,
+  luklaNote: KATHMANDU_HERITAGE_TRANSFER_NOTE,
+  reviewsWallpaperSrc: "/images/atmosphere/ebc-premium-section.webp",
+  slugHistory: [],
+  ogTitle: "Kathmandu Heritage Luxury Tour – 5 Days | Ambition Holidays",
+  ogDescription:
+    "Five-day luxury cultural tour — Swayambhunath, Durbar Squares, Pashupatinath, Boudhanath and a leisure day in Kathmandu Valley.",
+  ogImageSrc: HERO,
+};

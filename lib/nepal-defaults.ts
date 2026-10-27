@@ -193,7 +193,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "cultural",
       label: "Luxury Cultural & Heritage",
-      countLabel: "6 Packages",
+      countLabel: "7 Packages",
       packages: [
         pkg(
           "ktm-valley-lux",
@@ -205,6 +205,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Easy",
           "Palaces, courtyards and boutique stays across Kathmandu’s living heritage.",
           "Most Popular",
+        ),
+        pkg(
+          "kathmandu-heritage-lux",
+          "Kathmandu Heritage Luxury Tour",
+          5,
+          "/images/nepal/nepal-cult-ktm.webp",
+          "Kathmandu Durbar Square heritage temples at dusk",
+          "Swayambhunath · Durbar Squares · Boudhanath",
+          "Easy",
+          "Five-day private heritage tour through Swayambhunath, Kathmandu, Patan and Bhaktapur squares, Pashupatinath, Boudhanath and a leisure day.",
+          "New",
+          "/kathmandu-heritage-luxury-tour",
         ),
         pkg(
           "heritage-lux",

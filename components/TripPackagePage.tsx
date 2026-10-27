@@ -26,6 +26,7 @@ import {
   isAnnapurnaPanoramaLuxuryPackage,
   isGhorepaniPoonhillLuxuryPackage,
   isKathmanduChitwanPoonHillLuxuryTourPackage,
+  isKathmanduHeritageLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   isLangtangPackage,
   isMustangPackage,
@@ -113,6 +114,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const [tocFloating, setTocFloating] = useState(false);
   const [activeVideo, setActiveVideo] = useState<TrekVideo | null>(null);
   const heliTour = isEbcHelicopterTourPackage(pkg);
+  const heritageTour = isKathmanduHeritageLuxuryTourPackage(pkg);
   const heliOptions = pkg.helicopterOptions?.length ? pkg.helicopterOptions : [];
   const [heliOptionId, setHeliOptionId] = useState(heliOptions[0]?.id || "sharing");
   const selectedHeliOption = heliOptions.find((opt) => opt.id === heliOptionId) || heliOptions[0];
@@ -311,7 +313,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const toc = heliTour
     ? buildHelicopterTourSectionToc(show)
     : buildPackageSectionToc(pkg, show, premiumNav, STANDARD_TOC);
-  const useReferenceOverviewBlock = premiumKhumbuTrek || heliTour || !premiumNav;
+  const useReferenceOverviewBlock = premiumKhumbuTrek || heliTour || heritageTour || !premiumNav;
   const tocKey = toc.map((item) => item.id).join("|");
   const fromPrice = groups.filter((row) => row.priceUsd > 0).reduce((min, row) => Math.min(min, row.priceUsd), Infinity);
   const hasFromPrice = Number.isFinite(fromPrice);
@@ -324,7 +326,7 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
     { icon: "hike", label: "Activity", value: pkg.activityLabel || "Trekking / Hiking" },
     {
       icon: "peak",
-      label: heliTour ? "Region" : "Max. altitude",
+      label: heliTour || heritageTour ? "Region" : "Max. altitude",
       value: pkg.maxAltitude,
     },
     { icon: "cloud", label: "Best season", value: pkg.bestSeason },

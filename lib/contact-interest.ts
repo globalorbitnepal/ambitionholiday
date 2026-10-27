@@ -79,6 +79,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Kathmandu – Chitwan – Poon Hill Luxury Tour",
   },
+  "kathmandu-heritage-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu Heritage Luxury Tour",
+  },
+  "kmh-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu Heritage Luxury Tour",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

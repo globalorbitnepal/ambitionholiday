@@ -15,6 +15,7 @@ import { LUXURY_MEGA_PACKAGE_COUNT } from "@/lib/luxury-mega";
 
 export const NEPAL_TREKKING_CATEGORY_ID = "trekking";
 export const NEPAL_WILDLIFE_CATEGORY_ID = "wildlife";
+export const NEPAL_CULTURAL_CATEGORY_ID = "cultural";
 
 function catalogHrefKey(href: string) {
   return (href || "").replace(/^\//, "").split("?")[0].toLowerCase();
@@ -57,7 +58,9 @@ export function coerceNepalContent(savedRaw?: Partial<NepalContent>): NepalConte
     categories: cats.map((cat) => {
       const defCat = DEFAULT_NEPAL.categories.find((c) => c.id === cat.id);
       const syncFromDefaults =
-        (cat.id === NEPAL_TREKKING_CATEGORY_ID || cat.id === NEPAL_WILDLIFE_CATEGORY_ID) &&
+        (cat.id === NEPAL_TREKKING_CATEGORY_ID ||
+          cat.id === NEPAL_WILDLIFE_CATEGORY_ID ||
+          cat.id === NEPAL_CULTURAL_CATEGORY_ID) &&
         defCat?.packages?.length;
       const packageList = syncFromDefaults ? defCat!.packages : cat.packages || [];
       return {
