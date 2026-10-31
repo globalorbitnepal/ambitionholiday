@@ -20,6 +20,7 @@ import { KATHMANDU_CHITWAN_POON_HILL_LUXURY_TRIP_PACKAGE } from "./kathmandu-chi
 import { KATHMANDU_HERITAGE_LUXURY_TRIP_PACKAGE } from "./kathmandu-heritage-luxury-package";
 import { KATHMANDU_POKHARA_LUXURY_TRIP_PACKAGE } from "./kathmandu-pokhara-luxury-package";
 import { KATHMANDU_POKHARA_CHITWAN_LUXURY_TRIP_PACKAGE } from "./kathmandu-pokhara-chitwan-luxury-package";
+import { NEPAL_LUXURY_TOUR_TRIP_PACKAGE } from "./nepal-luxury-tour-package";
 import { EBC_HELICOPTER_TOUR_PACKAGE } from "./ebc-helicopter-tour-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
@@ -266,6 +267,7 @@ export const KATHMANDU_CHITWAN_POON_HILL_PACKAGE_ID = "kcp-lux";
 export const KATHMANDU_HERITAGE_PACKAGE_ID = "kmh-lux";
 export const KATHMANDU_POKHARA_PACKAGE_ID = "ktp-lux";
 export const KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID = "kpc9-lux";
+export const NEPAL_LUXURY_TOUR_PACKAGE_ID = "nlt-lux";
 export const EBC_HELI_TOUR_PACKAGE_ID = "ebc-heli-tour";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
@@ -280,6 +282,7 @@ export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [KATHMANDU_HERITAGE_PACKAGE_ID]: "kathmandu-heritage-luxury-tour",
   [KATHMANDU_POKHARA_PACKAGE_ID]: "kathmandu-pokhara-luxury-tour",
   [KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID]: "kathmandu-pokhara-chitwan-luxury-tour",
+  [NEPAL_LUXURY_TOUR_PACKAGE_ID]: "nepal-luxury-tour",
   [EBC_HELI_TOUR_PACKAGE_ID]: "everest-base-camp-helicopter-tour",
 };
 
@@ -298,6 +301,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   KATHMANDU_HERITAGE_PACKAGE_ID,
   KATHMANDU_POKHARA_PACKAGE_ID,
   KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID,
+  NEPAL_LUXURY_TOUR_PACKAGE_ID,
   EBC_HELI_TOUR_PACKAGE_ID,
 ] as const;
 
@@ -397,6 +401,14 @@ export function isKathmanduPokharaChitwanLuxuryTourPackage(
     pkg.id === KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID ||
     pkg.catalogId === "kathmandu-pokhara-chitwan-lux" ||
     /kathmandu-pokhara-chitwan-luxury-tour/i.test(pkg.slug || "")
+  );
+}
+
+export function isNepalLuxuryTourPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return (
+    pkg.id === NEPAL_LUXURY_TOUR_PACKAGE_ID ||
+    pkg.catalogId === "nepal-luxury-tour" ||
+    /nepal-luxury-tour/i.test(pkg.slug || "")
   );
 }
 
@@ -1134,6 +1146,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   KATHMANDU_HERITAGE_LUXURY_TRIP_PACKAGE,
   KATHMANDU_POKHARA_LUXURY_TRIP_PACKAGE,
   KATHMANDU_POKHARA_CHITWAN_LUXURY_TRIP_PACKAGE,
+  NEPAL_LUXURY_TOUR_TRIP_PACKAGE,
   EBC_HELICOPTER_TOUR_PACKAGE,
 ];
 
@@ -1251,6 +1264,7 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   "kathmandu-heritage-lux": KATHMANDU_HERITAGE_PACKAGE_ID,
   "kathmandu-pokhara-lux": KATHMANDU_POKHARA_PACKAGE_ID,
   "kathmandu-pokhara-chitwan-lux": KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID,
+  "nepal-luxury-tour": NEPAL_LUXURY_TOUR_PACKAGE_ID,
   "ebc-heli-lux": EBC_HELI_TOUR_PACKAGE_ID,
   "everest-base-camp-helicopter": EBC_HELI_TOUR_PACKAGE_ID,
 };
@@ -1303,6 +1317,10 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   if (pkg.id === KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID || pkg.catalogId === "kathmandu-pokhara-chitwan-lux") {
     keys.add("kpc9-lux");
     keys.add("kathmandu-pokhara-chitwan-lux");
+  }
+  if (pkg.id === NEPAL_LUXURY_TOUR_PACKAGE_ID || pkg.catalogId === "nepal-luxury-tour") {
+    keys.add("nlt-lux");
+    keys.add("nepal-luxury-tour");
   }
   if (pkg.id === EBC_HELI_TOUR_PACKAGE_ID || pkg.catalogId === "ebc-heli-tour" || pkg.catalogId === "ebc-heli-lux") {
     keys.add("ebc-heli-tour");
@@ -1766,6 +1784,17 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       };
     }
     if (def.id === KATHMANDU_POKHARA_CHITWAN_PACKAGE_ID) {
+      const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
+      return {
+        ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: cmsGroupHasRates ? item.groupPrices : def.groupPrices,
+        pricingDisclaimer: "",
+        heroCtaPrimary: "",
+        heroCtaSecondary: "",
+      };
+    }
+    if (def.id === NEPAL_LUXURY_TOUR_PACKAGE_ID) {
       const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
       return {
         ...mergedPkg,

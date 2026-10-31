@@ -29,6 +29,7 @@ import {
   isKathmanduHeritageLuxuryTourPackage,
   isKathmanduPokharaLuxuryTourPackage,
   isKathmanduPokharaChitwanLuxuryTourPackage,
+  isNepalLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   isLangtangPackage,
   isMustangPackage,
@@ -119,7 +120,8 @@ export default function TripPackagePage({ pkg }: { pkg: TrekPackage }) {
   const heritageTour =
     isKathmanduHeritageLuxuryTourPackage(pkg) ||
     isKathmanduPokharaLuxuryTourPackage(pkg) ||
-    isKathmanduPokharaChitwanLuxuryTourPackage(pkg);
+    isKathmanduPokharaChitwanLuxuryTourPackage(pkg) ||
+    isNepalLuxuryTourPackage(pkg);
   const heliOptions = pkg.helicopterOptions?.length ? pkg.helicopterOptions : [];
   const [heliOptionId, setHeliOptionId] = useState(heliOptions[0]?.id || "sharing");
   const selectedHeliOption = heliOptions.find((opt) => opt.id === heliOptionId) || heliOptions[0];

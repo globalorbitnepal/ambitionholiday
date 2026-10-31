@@ -1,0 +1,301 @@
+import type { TrekPackage } from "./trip-packages";
+import {
+  NEPAL_LUXURY_TOUR_EXCLUSIONS,
+  NEPAL_LUXURY_TOUR_GROUP_PRICES,
+  NEPAL_LUXURY_TOUR_INCLUDE_NOTE,
+  NEPAL_LUXURY_TOUR_INCLUSIONS,
+  NEPAL_LUXURY_TOUR_ITINERARY,
+  NEPAL_LUXURY_TOUR_ITINERARY_INTRO,
+  NEPAL_LUXURY_TOUR_LUXURY_EXPERIENCE,
+  NEPAL_LUXURY_TOUR_SLUG,
+  NEPAL_LUXURY_TOUR_TRANSPORT_NOTE,
+} from "./nepal-luxury-tour-content";
+
+const HERO = "/images/nepal/nepal-cult-lumbini.webp";
+
+export const NEPAL_LUXURY_TOUR_TRIP_PACKAGE: TrekPackage = {
+  id: "nlt-lux",
+  catalogId: "nepal-luxury-tour",
+  slug: NEPAL_LUXURY_TOUR_SLUG,
+  country: "nepal",
+  status: "published",
+  featured: true,
+  badge: "PRIVATE LUXURY TOUR IN NEPAL",
+  title: "Nepal Luxury Tour – 13 Days",
+  subtitle:
+    "Discover Nepal's cultural heritage, sacred Buddhist sites, Himalayan scenery, traditional hilltop villages, and unforgettable wildlife experiences on a 13-day journey.",
+  duration: "13 Days / 12 Nights",
+  days: 13,
+  difficulty: "Easy",
+  destination: "Nepal · Kathmandu · Nagarkot · Chitwan · Lumbini · Pokhara · Bandipur",
+  maxAltitude: "Nagarkot · ~2,175 m (approx.)",
+  maxAltitudeFt: "",
+  countryLabel: "Nepal",
+  activityLabel: "Private luxury tour · culture, scenery & wildlife",
+  accommodationLabel:
+    "Confirmed hotels and lodge categories across twelve nights — subject to availability on booking",
+  mealsLabel: "As per confirmed board basis on your signed confirmation",
+  startEndLabel: "Kathmandu",
+  groupSize: "Private or group departures — enquire for dates",
+  bestSeason: "October–April (roads, wildlife and viewpoints; monsoon affects travel)",
+  priceUsd: 2499,
+  groupPrices: [...NEPAL_LUXURY_TOUR_GROUP_PRICES],
+  pricingDisclaimer: "",
+  heroCtaPrimary: "",
+  heroCtaSecondary: "",
+  luxuryExperience: NEPAL_LUXURY_TOUR_LUXURY_EXPERIENCE,
+  overview:
+    "The Nepal Luxury Tour spans twelve nights from Kathmandu through the valley's living heritage, a Nagarkot hill stay, Chitwan's Terai programme, Lumbini's sacred garden, Pokhara's lakeside and Sarangkot viewpoints, and Bandipur's pedestrian lanes before a final night in the capital.\n\nThis is a road-based circuit unless your quote includes domestic flights — we do not assume air sectors on this page. Mountain panoramas and wildlife sightings depend on weather and natural conditions; jungle activities follow your booked lodge plan.\n\nLuxury means private coordination and suitable accommodation categories when included — not guaranteed five-star properties, included guides, entrance fees or fixed driving times until your signed confirmation states them. Days 8 and 12 especially require operator verification of Lumbini–Pokhara and Bandipur–Kathmandu durations.",
+  highlights: [
+    "Kathmandu's historic landmarks and living heritage squares.",
+    "Swayambhunath and Boudhanath — two great valley stupas.",
+    "Patan and Bhaktapur UNESCO heritage sites.",
+    "Nagarkot's scenic surroundings when weather allows.",
+    "Chitwan jungle experiences per your lodge programme.",
+    "Lumbini's Buddhist heritage — Maya Devi Temple and Sacred Garden.",
+    "Sarangkot sunrise in Pokhara, weather permitting.",
+    "Phewa Lake and Pokhara sightseeing on the confirmed plan.",
+    "Bandipur's traditional Newari architecture and village lanes.",
+  ],
+  inclusions: NEPAL_LUXURY_TOUR_INCLUSIONS,
+  exclusions: NEPAL_LUXURY_TOUR_EXCLUSIONS,
+  gallery: [
+    HERO,
+    "/images/nepal/nepal-cult-ktm.webp",
+    "/images/nepal/nepal-cult-heritage.webp",
+    "/images/nepal/nepal-wild-chitwan.webp",
+    "/images/nepal/nepal-cult-pokhara.webp",
+    "/images/journal/blog-lakes.webp",
+    "/images/nepal/nepal-cover.webp",
+  ],
+  tripGalleryTitle: "Nepal Luxury Tour Gallery",
+  galleryAlts: [
+    "Lumbini Sacred Garden and Buddhist heritage",
+    "Kathmandu Durbar Square temples",
+    "Bhaktapur heritage square detail",
+    "Rhino in Chitwan grassland",
+    "Phewa Lake and Pokhara valley",
+    "Lakeside light on Phewa Lake",
+    "Himalayan foothills above the Kathmandu Valley",
+  ],
+  heroSrc: HERO,
+  heroAlt: "Lumbini monastic architecture representing Nepal's spiritual heritage on the luxury circuit",
+  altitudeChartM: "",
+  altitudeChartFt: "",
+  altitudeGainSrc: "",
+  routeMapSrc: "",
+  weatherDailySrc: "",
+  weatherMonthlySrc: "",
+  routeMapFile: "nepal-luxury-tour-route-map",
+  altitudeMFile: "nepal-luxury-tour-altitude-meters",
+  altitudeFtFile: "nepal-luxury-tour-altitude-feet",
+  weatherDailyFile: "nepal-luxury-tour-daily-temperature",
+  weatherMonthlyFile: "nepal-luxury-tour-monthly-temperature",
+  itineraryIntro: NEPAL_LUXURY_TOUR_ITINERARY_INTRO,
+  itinerary: NEPAL_LUXURY_TOUR_ITINERARY,
+  faqs: [
+    {
+      q: "How long is the Nepal Luxury Tour?",
+      a: "Thirteen days / twelve nights with the published overnight plan across Kathmandu, Nagarkot, Chitwan, Lumbini, Pokhara and Bandipur.",
+    },
+    {
+      q: "Which destinations are included?",
+      a: "Kathmandu, Patan, Bhaktapur, Nagarkot, Chitwan, Lumbini, Pokhara and Bandipur on the confirmed route.",
+    },
+    {
+      q: "Are all twelve nights of accommodation included?",
+      a: "When listed on your signed confirmation — room category is stated on your booking documents.",
+    },
+    {
+      q: "Are domestic flights included?",
+      a: "Not unless explicitly on your invoice. This circuit is primarily overland.",
+    },
+    {
+      q: "How long is the drive from Lumbini to Pokhara?",
+      a: "Verify with your coordinator before travel — Day 8 timing must be confirmed operationally.",
+    },
+    {
+      q: "How long is the drive from Bandipur to Kathmandu?",
+      a: "Verify with operations — Day 12 requires sign-off before fixed schedules are published.",
+    },
+    {
+      q: "What Chitwan activities are included?",
+      a: "Those on your booked lodge programme only — not guaranteed wildlife sightings.",
+    },
+    {
+      q: "Will we see mountains from Nagarkot or Sarangkot?",
+      a: "Possible when weather allows — never guaranteed.",
+    },
+    {
+      q: "Can the tour be customized?",
+      a: "Enquire with your dates and any route changes you need.",
+    },
+    {
+      q: "What is the starting price?",
+      a: "From USD 2,499 per person for larger groups is a draft rate pending cost verification.",
+    },
+  ],
+  whyItems: [
+    {
+      title: "Complete Nepal sampler",
+      body: "Heritage, wildlife, Lumbini, lakeside and hill village in one private circuit.",
+    },
+    {
+      title: "Twelve mapped nights",
+      body: "Accommodation plan matches the published day-by-day overnight locations.",
+    },
+    {
+      title: "Road timing honesty",
+      body: "Lumbini–Pokhara and Bandipur–KTM flagged for operator review.",
+    },
+    {
+      title: "No wildlife promises",
+      body: "Chitwan activities follow your lodge plan.",
+    },
+    {
+      title: "Admin-ready",
+      body: "Full itinerary and pricing editable without code changes.",
+    },
+    {
+      title: "Draft pricing",
+      body: "USD tiers are for review until suppliers confirm costs.",
+    },
+  ],
+  weatherBody:
+    "Autumn and spring generally suit valley sightseeing, Terai wildlife and Pokhara lake weather. Monsoon months bring rain on hill roads and possible schedule changes. Winter mornings at Nagarkot and Sarangkot can be cold but clear.",
+  altitudeBody: "",
+  packingItems: [],
+  packingIntro:
+    "Pack modest temple clothing, walking shoes, layers for Nagarkot and Sarangkot mornings, insect repellent for Chitwan, and a day bag for sightseeing days.",
+  packingGroups: [
+    {
+      id: "nlt-clothing",
+      title: "Clothing & gear",
+      items: [
+        "Modest layers for temples and monasteries",
+        "Comfortable walking shoes",
+        "Warm layer for hill mornings",
+        "Insect repellent for Terai nights",
+        "Sun hat and rain jacket (seasonal)",
+      ],
+    },
+    {
+      id: "nlt-docs",
+      title: "Documents",
+      items: ["Passport and visa", "Travel insurance", "Confirmed transport vouchers when issued"],
+    },
+  ],
+  suitableBody:
+    "Suited to travellers who want an easy-paced, multi-region introduction to Nepal with private road travel when included and without multi-day trekking.",
+  trainingBody: "",
+  khumbuBody: "",
+  flightBody: NEPAL_LUXURY_TOUR_TRANSPORT_NOTE,
+  bufferBody:
+    "Allow buffer on international flights around arrival and departure transfers when included. Monsoon and road works can shift Day 8 and Day 12 driving plans.",
+  heliBody: "",
+  beforeItems: [
+    "Confirm Lumbini–Pokhara and Bandipur–Kathmandu driving plans with your coordinator.",
+    "Verify Chitwan lodge programme and Lumbini entrance arrangements on your quote.",
+    "Tips for guide and driver teams are customary and your choice.",
+  ],
+  permitsLabel: "",
+  regionLabel: "Kathmandu · Nagarkot · Chitwan · Lumbini · Pokhara · Bandipur",
+  startLabel: "Kathmandu → Nagarkot → Chitwan → Lumbini → Pokhara → Bandipur → Kathmandu",
+  flightTitle: "Road transportation",
+  notesTitle: "Driving times and operational checks",
+  luklaNoteTitle: "",
+  aboutTitle: "Spiritual and wildlife highlights",
+  aboutLead:
+    "Lumbini's Maya Devi Temple and monastic zone contrast with Chitwan's rivers and sal forest — each day follows the operator's confirmed plan, not generic safari or pilgrimage marketing.",
+  aboutSections: [
+    {
+      id: "nlt-spiritual-wild",
+      title: "Lumbini and Chitwan on the same journey",
+      body:
+        "Day 5 jungle activities come from your lodge programme; Day 7 heritage visits follow site access and opening rules.\n\nWe do not guarantee wildlife species or uninterrupted mountain views. Optional monastery visits beyond the confirmed Lumbini plan may be quoted separately.",
+    },
+  ],
+  whyTitle: "Why choose this thirteen-day circuit?",
+  khumbuTitle: "",
+  mapBody: "",
+  weatherNote: "",
+  metaTitle: "Nepal Luxury Tour – 13 Days | Ambition Holidays",
+  metaDescription:
+    "Explore Nepal on a 13-day luxury tour featuring Kathmandu heritage, Nagarkot, Chitwan wildlife, Lumbini's Buddhist sites, Pokhara's scenery, and Bandipur village.",
+  metaKeywords:
+    "Nepal Luxury Tour, Nepal Luxury Tour 13 Days, Kathmandu Lumbini Pokhara Tour, Chitwan Lumbini Bandipur Tour, Luxury Nepal Circuit, Nepal Cultural Wildlife Tour",
+  focusKeyword: "Nepal Luxury Tour",
+  tripadvisorLabel: "Tripadvisor",
+  tripadvisorScore: "",
+  tripadvisorCount: "View reviews",
+  tripadvisorHref:
+    "https://www.tripadvisor.com/Search?q=Ambition%20Himalaya%20Treks%20and%20Expeditions",
+  tripadvisorLogoSrc: "/images/reviews/tripadvisor-owl.png",
+  googleLabel: "Google",
+  googleScore: "",
+  googleCount: "View on Maps",
+  googleHref:
+    "https://www.google.com/maps/search/?api=1&query=Ambition+Himalaya+Treks+and+Expeditions",
+  googleLogoSrc: "",
+  watchVideo: {
+    id: "nlt-watch",
+    title: "",
+    subtitle: "",
+    duration: "",
+    imageSrc: "",
+    imageAlt: "",
+    videoSrc: "",
+  },
+  videoReviews: [],
+  reviews: [],
+  tripInfoTitle: "Nepal Luxury Tour – Trip Information",
+  tripInfo: [
+    { id: "ti-name", title: "Tour name", body: "Nepal Luxury Tour." },
+    { id: "ti-duration", title: "Duration", body: "13 days / 12 nights." },
+    { id: "ti-country", title: "Country", body: "Nepal." },
+    {
+      id: "ti-dest",
+      title: "Destinations",
+      body: "Kathmandu, Patan, Bhaktapur, Nagarkot, Chitwan, Lumbini, Pokhara and Bandipur.",
+    },
+    { id: "ti-style", title: "Tour style", body: "Cultural, scenic, wildlife and spiritual." },
+    {
+      id: "ti-transport",
+      title: "Transportation",
+      body: "Private road transfers when included — verify Day 8 and Day 12 durations operationally.",
+    },
+    {
+      id: "ti-acc",
+      title: "Accommodation",
+      body: "Twelve nights per published plan — category confirmed on booking.",
+    },
+    {
+      id: "ti-diff",
+      title: "Difficulty",
+      body: "Easy sightseeing; walking on cobbles, lodge trails and village lanes varies.",
+    },
+    {
+      id: "ti-season",
+      title: "Best season",
+      body: "October–April broadly suits this circuit; monsoon affects roads and viewpoints.",
+    },
+    {
+      id: "ti-group",
+      title: "Group type",
+      body: "Private or group departures — enquire for dates.",
+    },
+  ],
+  optionalAddons: [
+    "Extra Kathmandu hotel nights.",
+    "Single-room supplement where available.",
+    "Domestic flights if quoted as an alternative to long road sectors.",
+  ],
+  includeNote: NEPAL_LUXURY_TOUR_INCLUDE_NOTE,
+  luklaNote: NEPAL_LUXURY_TOUR_TRANSPORT_NOTE,
+  reviewsWallpaperSrc: "/images/atmosphere/ebc-premium-section.webp",
+  slugHistory: [],
+  ogTitle: "Nepal Luxury Tour – 13 Days | Ambition Holidays",
+  ogDescription:
+    "Thirteen-day luxury Nepal circuit — heritage, Nagarkot, Chitwan, Lumbini, Pokhara, Bandipur and Kathmandu.",
+  ogImageSrc: HERO,
+};

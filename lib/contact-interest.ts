@@ -103,6 +103,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Kathmandu – Pokhara – Chitwan Luxury Tour",
   },
+  "nepal-luxury-tour": {
+    select: "Luxury Tour & Trek",
+    label: "Nepal Luxury Tour – 13 Days",
+  },
+  "nlt-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Nepal Luxury Tour – 13 Days",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

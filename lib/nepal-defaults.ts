@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "11 Packages",
+      countLabel: "12 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -223,6 +223,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Nine-day tour — Kathmandu valley, Nagarkot, Pokhara, Sarangkot and Chitwan jungle with domestic flights when included.",
           "New",
           "/kathmandu-pokhara-chitwan-luxury-tour",
+        ),
+        pkg(
+          "nepal-luxury-tour",
+          "Nepal Luxury Tour – 13 Days",
+          13,
+          "/images/nepal/nepal-cult-lumbini.webp",
+          "Lumbini Sacred Garden on Nepal's luxury cultural circuit",
+          "Heritage · Chitwan · Lumbini · Pokhara · Bandipur",
+          "Easy",
+          "Thirteen-day luxury circuit — Kathmandu valley, Nagarkot, Chitwan, Lumbini, Pokhara, Bandipur and return to Kathmandu.",
+          "New",
+          "/nepal-luxury-tour",
         ),
       ],
     },
