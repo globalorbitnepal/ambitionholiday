@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "9 Packages",
+      countLabel: "10 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -199,6 +199,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Five-day private heritage tour through Swayambhunath, Kathmandu, Patan and Bhaktapur squares, Pashupatinath, Boudhanath and a leisure day.",
           "New",
           "/kathmandu-heritage-luxury-tour",
+        ),
+        pkg(
+          "kathmandu-pokhara-lux",
+          "Kathmandu Pokhara Luxury Tour",
+          7,
+          "/images/nepal/nepal-cult-pokhara.webp",
+          "Phewa Lake at Pokhara with Himalayan peaks beyond",
+          "Kathmandu · Bandipur · Pokhara · Sarangkot",
+          "Easy",
+          "Seven-day private tour — Kathmandu heritage, Bandipur village, Pokhara lakeside, Sarangkot and return flight when included.",
+          "New",
+          "/kathmandu-pokhara-luxury-tour",
         ),
       ],
     },

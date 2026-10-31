@@ -18,6 +18,7 @@ import { GHOREPANI_POONHILL_LUXURY_TRIP_PACKAGE } from "./ghorepani-poonhill-lux
 import { ANNAPURNA_PANORAMA_LUXURY_TRIP_PACKAGE } from "./annapurna-panorama-luxury-package";
 import { KATHMANDU_CHITWAN_POON_HILL_LUXURY_TRIP_PACKAGE } from "./kathmandu-chitwan-poon-hill-luxury-package";
 import { KATHMANDU_HERITAGE_LUXURY_TRIP_PACKAGE } from "./kathmandu-heritage-luxury-package";
+import { KATHMANDU_POKHARA_LUXURY_TRIP_PACKAGE } from "./kathmandu-pokhara-luxury-package";
 import { EBC_HELICOPTER_TOUR_PACKAGE } from "./ebc-helicopter-tour-package";
 import { EBC_VIDEO_REVIEWS, EBC_WATCH_VIDEO } from "./trek-films";
 
@@ -262,6 +263,7 @@ export const GHOREPANI_POONHILL_PACKAGE_ID = "gph-lux";
 export const ANNAPURNA_PANORAMA_PACKAGE_ID = "apn-pan";
 export const KATHMANDU_CHITWAN_POON_HILL_PACKAGE_ID = "kcp-lux";
 export const KATHMANDU_HERITAGE_PACKAGE_ID = "kmh-lux";
+export const KATHMANDU_POKHARA_PACKAGE_ID = "ktp-lux";
 export const EBC_HELI_TOUR_PACKAGE_ID = "ebc-heli-tour";
 
 /** Package ids whose public URL slug must not change (SEO / redirects). */
@@ -274,6 +276,7 @@ export const LOCKED_PACKAGE_SLUGS: Record<string, string> = {
   [ANNAPURNA_PANORAMA_PACKAGE_ID]: "annapurna-panorama-luxury-trek",
   [KATHMANDU_CHITWAN_POON_HILL_PACKAGE_ID]: "kathmandu-chitwan-poon-hill-luxury-tour",
   [KATHMANDU_HERITAGE_PACKAGE_ID]: "kathmandu-heritage-luxury-tour",
+  [KATHMANDU_POKHARA_PACKAGE_ID]: "kathmandu-pokhara-luxury-tour",
   [EBC_HELI_TOUR_PACKAGE_ID]: "everest-base-camp-helicopter-tour",
 };
 
@@ -290,6 +293,7 @@ export const FULL_PAGE_PACKAGE_IDS = [
   ANNAPURNA_PANORAMA_PACKAGE_ID,
   KATHMANDU_CHITWAN_POON_HILL_PACKAGE_ID,
   KATHMANDU_HERITAGE_PACKAGE_ID,
+  KATHMANDU_POKHARA_PACKAGE_ID,
   EBC_HELI_TOUR_PACKAGE_ID,
 ] as const;
 
@@ -371,6 +375,14 @@ export function isKathmanduHeritageLuxuryTourPackage(pkg: Pick<TrekPackage, "id"
     pkg.id === KATHMANDU_HERITAGE_PACKAGE_ID ||
     pkg.catalogId === "kathmandu-heritage-lux" ||
     /kathmandu-heritage-luxury-tour/i.test(pkg.slug || "")
+  );
+}
+
+export function isKathmanduPokharaLuxuryTourPackage(pkg: Pick<TrekPackage, "id" | "slug" | "catalogId">) {
+  return (
+    pkg.id === KATHMANDU_POKHARA_PACKAGE_ID ||
+    pkg.catalogId === "kathmandu-pokhara-lux" ||
+    /kathmandu-pokhara-luxury-tour/i.test(pkg.slug || "")
   );
 }
 
@@ -1106,6 +1118,7 @@ export const DEFAULT_TRIP_PACKAGES: TrekPackage[] = [
   ANNAPURNA_PANORAMA_LUXURY_TRIP_PACKAGE,
   KATHMANDU_CHITWAN_POON_HILL_LUXURY_TRIP_PACKAGE,
   KATHMANDU_HERITAGE_LUXURY_TRIP_PACKAGE,
+  KATHMANDU_POKHARA_LUXURY_TRIP_PACKAGE,
   EBC_HELICOPTER_TOUR_PACKAGE,
 ];
 
@@ -1221,6 +1234,7 @@ export const CATALOG_PACKAGE_ALIASES: Record<string, string> = {
   "annapurna-panorama-lux": ANNAPURNA_PANORAMA_PACKAGE_ID,
   "kathmandu-chitwan-poonhill-lux": KATHMANDU_CHITWAN_POON_HILL_PACKAGE_ID,
   "kathmandu-heritage-lux": KATHMANDU_HERITAGE_PACKAGE_ID,
+  "kathmandu-pokhara-lux": KATHMANDU_POKHARA_PACKAGE_ID,
   "ebc-heli-lux": EBC_HELI_TOUR_PACKAGE_ID,
   "everest-base-camp-helicopter": EBC_HELI_TOUR_PACKAGE_ID,
 };
@@ -1265,6 +1279,10 @@ export function packageCatalogKeys(pkg: Pick<TrekPackage, "id" | "catalogId">) {
   if (pkg.id === KATHMANDU_HERITAGE_PACKAGE_ID || pkg.catalogId === "kathmandu-heritage-lux") {
     keys.add("kmh-lux");
     keys.add("kathmandu-heritage-lux");
+  }
+  if (pkg.id === KATHMANDU_POKHARA_PACKAGE_ID || pkg.catalogId === "kathmandu-pokhara-lux") {
+    keys.add("ktp-lux");
+    keys.add("kathmandu-pokhara-lux");
   }
   if (pkg.id === EBC_HELI_TOUR_PACKAGE_ID || pkg.catalogId === "ebc-heli-tour" || pkg.catalogId === "ebc-heli-lux") {
     keys.add("ebc-heli-tour");
@@ -1706,6 +1724,17 @@ export function coerceTripPackages(saved: TrekPackage[] | undefined): TrekPackag
       };
     }
     if (def.id === KATHMANDU_HERITAGE_PACKAGE_ID) {
+      const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
+      return {
+        ...mergedPkg,
+        priceUsd: typeof item.priceUsd === "number" && item.priceUsd > 0 ? item.priceUsd : def.priceUsd,
+        groupPrices: cmsGroupHasRates ? item.groupPrices : def.groupPrices,
+        pricingDisclaimer: "",
+        heroCtaPrimary: "",
+        heroCtaSecondary: "",
+      };
+    }
+    if (def.id === KATHMANDU_POKHARA_PACKAGE_ID) {
       const cmsGroupHasRates = item.groupPrices?.some((row) => row.priceUsd > 0);
       return {
         ...mergedPkg,
