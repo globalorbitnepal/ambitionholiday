@@ -95,6 +95,14 @@ const PACKAGE_MAP: Record<string, { select: ContactFormInterest; label: string }
     select: "Luxury Tour & Trek",
     label: "Kathmandu Pokhara Luxury Tour",
   },
+  "kathmandu-pokhara-chitwan-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu – Pokhara – Chitwan Luxury Tour",
+  },
+  "kpc9-lux": {
+    select: "Luxury Tour & Trek",
+    label: "Kathmandu – Pokhara – Chitwan Luxury Tour",
+  },
   "manaslu-lux": {
     select: "Luxury Tour & Trek",
     label: "Manaslu Circuit luxury trek",

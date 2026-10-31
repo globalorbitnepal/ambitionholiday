@@ -8,6 +8,7 @@ import {
   isKathmanduChitwanPoonHillLuxuryTourPackage,
   isKathmanduHeritageLuxuryTourPackage,
   isKathmanduPokharaLuxuryTourPackage,
+  isKathmanduPokharaChitwanLuxuryTourPackage,
   isPoonHillLuxuryPackage,
   type TrekPackage,
 } from "@/lib/trip-packages";
@@ -52,7 +53,8 @@ export function isPremiumNepalPackagePage(pkg: Pick<TrekPackage, "id" | "slug" |
     isPremiumKhumbuTrekPackage(pkg) ||
     isEbcHelicopterTourPackage(pkg) ||
     isKathmanduHeritageLuxuryTourPackage(pkg) ||
-    isKathmanduPokharaLuxuryTourPackage(pkg)
+    isKathmanduPokharaLuxuryTourPackage(pkg) ||
+    isKathmanduPokharaChitwanLuxuryTourPackage(pkg)
   );
 }
 

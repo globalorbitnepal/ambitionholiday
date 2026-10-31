@@ -23,6 +23,7 @@ import {
   isKathmanduChitwanPoonHillLuxuryTourPackage,
   isKathmanduHeritageLuxuryTourPackage,
   isKathmanduPokharaLuxuryTourPackage,
+  isKathmanduPokharaChitwanLuxuryTourPackage,
   isEverestPanoramaPackage,
   isEbcHelicopterTourPackage,
   LOCKED_PACKAGE_SLUGS,
@@ -820,7 +821,9 @@ export default function AdminPackageEditor() {
             isAnnapurnaPanoramaLuxuryPackage(pkg) ||
             isKathmanduChitwanPoonHillLuxuryTourPackage(pkg)
               ? "Built-in route and altitude charts show on the live page until you upload a replacement (JPG or PNG). Clear a field to restore the drawn chart."
-              : isKathmanduHeritageLuxuryTourPackage(pkg) || isKathmanduPokharaLuxuryTourPackage(pkg)
+              : isKathmanduHeritageLuxuryTourPackage(pkg) ||
+                  isKathmanduPokharaLuxuryTourPackage(pkg) ||
+                  isKathmanduPokharaChitwanLuxuryTourPackage(pkg)
                 ? "Cultural tours do not use trekking route or altitude charts. Upload optional graphics only if you add custom map or weather images."
               : "Upload this package's own map, altitude and weather graphics (JPG or PNG). A section stays hidden until it has an image or a note."}
           </p>
@@ -1540,6 +1543,7 @@ export default function AdminPackageEditor() {
           isKathmanduChitwanPoonHillLuxuryTourPackage(pkg) ||
           isKathmanduHeritageLuxuryTourPackage(pkg) ||
           isKathmanduPokharaLuxuryTourPackage(pkg) ||
+          isKathmanduPokharaChitwanLuxuryTourPackage(pkg) ||
           pkg.luxuryExperience ? (
             <div className="admin-card" style={{ margin: "0 0 16px", padding: 12 }}>
               <p className="admin-side-group-label" style={{ margin: "0 0 10px" }}>

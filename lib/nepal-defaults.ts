@@ -90,7 +90,7 @@ export const DEFAULT_NEPAL: NepalContent = {
     {
       id: "trekking",
       label: "Luxury Trekking",
-      countLabel: "10 Packages",
+      countLabel: "11 Packages",
       packages: [
         pkg(
           "everest-view-lux",
@@ -211,6 +211,18 @@ export const DEFAULT_NEPAL: NepalContent = {
           "Seven-day private tour — Kathmandu heritage, Bandipur village, Pokhara lakeside, Sarangkot and return flight when included.",
           "New",
           "/kathmandu-pokhara-luxury-tour",
+        ),
+        pkg(
+          "kathmandu-pokhara-chitwan-lux",
+          "Kathmandu – Pokhara – Chitwan Luxury Tour",
+          9,
+          "/images/nepal/nepal-cult-ktmpokchit.webp",
+          "Pokhara lake and Chitwan jungle on one luxury journey",
+          "Heritage · Nagarkot · Pokhara · Chitwan",
+          "Easy",
+          "Nine-day tour — Kathmandu valley, Nagarkot, Pokhara, Sarangkot and Chitwan jungle with domestic flights when included.",
+          "New",
+          "/kathmandu-pokhara-chitwan-luxury-tour",
         ),
       ],
     },
