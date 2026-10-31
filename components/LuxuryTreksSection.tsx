@@ -119,6 +119,16 @@ export default function LuxuryTreksSection() {
               );
             })}
           </div>
+
+          <p className="jour-hub-view-all-wrap">
+            <Link
+              href={journeys.viewAllHref || "/nepal"}
+              className="jour-hub-view-all focus-ring"
+            >
+              {journeys.viewAllLabel || "View All Nepal Packages"}
+              <span aria-hidden="true">→</span>
+            </Link>
+          </p>
         </div>
       </div>
     </section>

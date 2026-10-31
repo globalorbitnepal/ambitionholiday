@@ -1354,6 +1354,37 @@ body.nav-mega-open .hero-copy {
   align-items: stretch;
 }
 
+.jour-hub-view-all-wrap {
+  margin: clamp(1.35rem, 2.2vw, 2rem) 0 0;
+  text-align: center;
+}
+
+.jour-hub-view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.jour-hub-view-all span {
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.jour-hub-view-all:hover {
+  color: #f0d78a;
+}
+
+.jour-hub-view-all:focus-visible {
+  outline-offset: 4px;
+}
+
 .jour-card {
   position: relative;
   display: flex;

@@ -442,6 +442,9 @@ export async function readContent(): Promise<SiteContent> {
           parsed.journeys.line2.includes("most loved luxury")
             ? DEFAULT_CONTENT.journeys.line2
             : parsed.journeys.line2,
+        viewAllLabel:
+          parsed.journeys?.viewAllLabel?.trim() || DEFAULT_CONTENT.journeys.viewAllLabel,
+        viewAllHref: parsed.journeys?.viewAllHref?.trim() || DEFAULT_CONTENT.journeys.viewAllHref,
       },
       why: {
         ...DEFAULT_CONTENT.why,

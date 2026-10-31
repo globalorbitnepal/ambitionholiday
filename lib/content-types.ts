@@ -75,6 +75,9 @@ export type JourneysContent = {
   line1: string;
   line2: string;
   allLabel: string;
+  /** Link below the homepage journey grid (e.g. full Nepal catalog). */
+  viewAllLabel: string;
+  viewAllHref: string;
   categories: JourneyCategory[];
   packages: JourneyPackage[];
 };
@@ -1299,6 +1302,8 @@ export const DEFAULT_CONTENT: SiteContent = {
     line1: "Premium Experiences in the Himalayas",
     line2: "Iconic destinations. Luxury stays. Expert guides. Unforgettable journeys.",
     allLabel: "All Treks",
+    viewAllLabel: "View All Nepal Packages",
+    viewAllHref: "/nepal",
     categories: [
       { id: "everest", label: "Everest Region", icon: "peaks" },
       { id: "annapurna", label: "Annapurna Region", icon: "peaks" },

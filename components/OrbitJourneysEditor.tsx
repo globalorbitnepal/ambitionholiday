@@ -116,6 +116,20 @@ export default function OrbitJourneysEditor({ content, setContent, save }: Props
             onChange={(e) => patch({ allLabel: e.target.value })}
           />
         </Field>
+        <Field label="View all link label">
+          <input
+            className={inputClass}
+            value={journeys.viewAllLabel ?? "View All Nepal Packages"}
+            onChange={(e) => patch({ viewAllLabel: e.target.value })}
+          />
+        </Field>
+        <Field label="View all link URL">
+          <input
+            className={inputClass}
+            value={journeys.viewAllHref ?? "/nepal"}
+            onChange={(e) => patch({ viewAllHref: e.target.value })}
+          />
+        </Field>
         <Field label="Headline (gold)">
           <input
             className={inputClass}
